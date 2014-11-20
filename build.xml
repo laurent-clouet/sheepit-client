@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+
+<project name="sheepit-renderfarm-client" default="client">
+    <property name="compile.debug" value="true"/>
+    <property name="compile.deprecation" value="true"/>
+    <property name="compile.optimize" value="true"/>
+    <property name="compile.version" value="1.7"/>
+    <property name="compile.release" value="3.3.2"/>
+    
+    <target name="precompile">
+        <antcall target="clean" />
+        
+        <mkdir dir="build"/>
+        <mkdir dir="bin"/>
+        <echo file="build/VERSION" message="${compile.release}" />
+    </target>
+    
+    <target name="client">
+        <antcall target="precompile" />
+        <javac srcdir="src"
+               destdir="build"
+               target="${compile.version}"
+               source="${compile.version}"
+               debug="${compile.debug}"
+               optimize="${compile.optimize}"
+               deprecation="${compile.deprecation}"
+               includes="com/sheepit/client/*.java,com/sheepit/client/standalone/*.java">
+               <classpath>
+                     <pathelement location="extern/platform.jar"/>
+                     <pathelement location="extern/jna.jar"/>
+                     <pathelement location="extern/commons-compress.jar"/>
+                     <pathelement location="extern/args4j.jar"/>
+               </classpath>
+        </javac>
+        
+        <unjar src="extern/platform.jar" dest="build">
+            <filelist dir="." files="extern/commons-compress.jar" />
+            <filelist dir="." files="extern/jna.jar" />
+            <filelist dir="." files="extern/args4j.jar" />
+        </unjar>
+        
+        <jar destfile="bin/sheepit-client.jar"
+            basedir="build/">
+            <include name="**"/>
+            <manifest>
+                <attribute name="Main-Class" value="com.sheepit.client.standalone.Worker"/>
+            </manifest>
+        </jar>
+    </target>
+    
+    <target name="clean" description="clean files">
+        <delete dir="build"/>
+        <delete dir="bin"/>
+    </target>
+ </project>
+
