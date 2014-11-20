@@ -80,6 +80,9 @@ public class Worker {
 	@Option(name = "-extras", usage = "Extras data push on the authentication request", required = false)
 	private String extras = null;
 	
+	@Option(name = "-ui", usage = "Specify the user interface to you use, default 'text', available 'oneline', 'text'", required = false)
+	private String ui_type = "text";
+	
 	@Option(name = "--version", usage = "Display application version", required = false)
 	private boolean display_version = false;
 	
@@ -248,7 +251,17 @@ public class Worker {
 		
 		Log.getInstance(config).debug("client version " + config.getJarVersion());
 		
-		Gui gui = new GuiText();
+		Gui gui;
+		if (ui_type.equals("oneline")) {
+			if (config.getPrintLog()) {
+				System.out.println("OneLine ui can not be used if the verbose mode is enable");
+				System.exit(2); 
+			}
+			gui = new GuiTextOneLine();
+		}
+		else {
+			gui = new GuiText();
+		}
 		Client cli = new Client(gui, config, server);
 		
 		ShutdownHook hook = new ShutdownHook(cli);
