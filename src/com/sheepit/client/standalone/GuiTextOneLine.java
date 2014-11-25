@@ -51,7 +51,7 @@ public class GuiTextOneLine implements Gui {
 		int charToRemove = line.length();
 		
 		System.out.print("\r");
-		line = String.format("%s | Frame rendered: %d remaining: %d", status, rendered, remaining);
+		line = String.format("Frame rendered: %d remaining: %d | %s", rendered, remaining, status);
 		System.out.print(line);
 		for (int i = line.length(); i <= charToRemove; i++) {
 			System.out.print(" ");
