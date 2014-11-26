@@ -25,6 +25,10 @@ import static org.kohsuke.args4j.ExampleMode.REQUIRED;
 import org.kohsuke.args4j.Option;
 
 import java.io.File;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.Authenticator;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -47,10 +51,10 @@ public class Worker {
 	@Option(name = "-server", usage = "Render-farm server, default https://www.sheepit-renderfarm.com", metaVar = "URL", required = false)
 	private String server = "https://www.sheepit-renderfarm.com";
 	
-	@Option(name = "-login", usage = "User's login", metaVar = "LOGIN", required = true)
+	@Option(name = "-login", usage = "User's login", metaVar = "LOGIN", required = false)
 	private String login = "";
 	
-	@Option(name = "-password", usage = "User's password", metaVar = "PASSWORD", required = true)
+	@Option(name = "-password", usage = "User's password", metaVar = "PASSWORD", required = false)
 	private String password = "";
 	
 	@Option(name = "-cache-dir", usage = "Cache/Working directory. Caution, everything in it not related to the render-farm will be removed", metaVar = "/tmp/cache", required = false)
@@ -85,6 +89,9 @@ public class Worker {
 	
 	@Option(name = "--version", usage = "Display application version", required = false)
 	private boolean display_version = false;
+
+	@Option(name = "-password-file", usage="Specify a file with the username and passwort in it, divided by a space character", required = false)
+	private String password_file = null;
 	
 	public static void main(String[] args) {
 		new Worker().doMain(args);
@@ -109,6 +116,47 @@ public class Worker {
 			System.out.println("Version: " + config.getJarVersion());
 			return;
 		}
+		
+		if (password_file != null) {
+			BufferedReader reader = null;
+			try {
+				reader = new BufferedReader(new FileReader(password_file));
+				String text = null;
+				text = reader.readLine();
+				String[] parts = text.split("\\s+");
+				login = parts[0];
+				password = parts[1];
+			}
+			catch (FileNotFoundException e) {
+				System.err.println("Error: password file '" + password_file + "' was not found");
+				System.exit(2);
+			}
+			catch (IOException e) {
+				System.err.println("Error in reading the password file");
+				System.exit(2);
+			}
+			finally {
+				try {
+					if (reader != null) {
+						reader.close();
+					}
+				} catch (IOException e) {
+				}
+			}
+		}
+		else {
+			if (login.equals("")) {
+				System.err.println("No login name given");
+				parser.printUsage(System.err);
+				System.exit(2);
+			}
+			if (password.equals("")) {
+				System.err.println("No password given");
+				parser.printUsage(System.err);
+				System.exit(2);
+			}
+		}
+
 		
 		ComputeType compute_method = ComputeType.CPU_GPU;
 		Configuration config = new Configuration(null, login, password);
@@ -248,7 +296,7 @@ public class Worker {
 		else {
 			config.setComputeMethod(compute_method); // doing it here because it have to be done after the setUseGPU
 		}
-		
+
 		Log.getInstance(config).debug("client version " + config.getJarVersion());
 		
 		Gui gui;
