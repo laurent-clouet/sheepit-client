@@ -21,6 +21,8 @@ package com.sheepit.client;
 
 import java.io.File;
 
+import com.sheepit.client.os.OS;
+
 public class Job {
 	private String numFrame;
 	private String sceneMD5;
@@ -165,7 +167,7 @@ public class Job {
 	}
 	
 	public String getRendererPath() {
-		return getRendererDirectory() + File.separator + "rend.exe";
+		return getRendererDirectory() + File.separator + OS.getOS().getRenderBinaryPath();
 	}
 	
 	public String getRendererArchivePath() {

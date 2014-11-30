@@ -42,6 +42,11 @@ public class Linux extends OS {
 	}
 	
 	@Override
+	public String getRenderBinaryPath() {
+		return "rend.exe";
+	}
+	
+	@Override
 	public CPU getCPU() {
 		CPU ret = new CPU();
 		try {
