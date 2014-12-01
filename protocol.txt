@@ -7,7 +7,7 @@ Parameters as GET:
     * version: Client's version, for example 3.3.1762.
     * os: Computer's operating system, at the moment only "windows", "mac" and "linux" are supported.
     * bits: Architecture size, at the moment only "32bit" and "64bit" are supported.
-    * cpu_family: CPU's family, on linux it can be get in /proc/cpuinfo via the attribute "cpu fanily".
+    * cpu_family: CPU's family, on linux it can be get in /proc/cpuinfo via the attribute "cpu family".
     * cpu_model: CPU's model, on linux it can be get in /proc/cpuinfo via the attribute "model".
     * cpu_model_name: CPU's model as human readable, on linux it can be get in /proc/cpuinfo via the attribute "model name".
     * cpu_cores: Number of core (or thread) available.
@@ -20,8 +20,8 @@ Answer in case of error:
 where X:
     * 100 => Error no version given.
     * 101 => Client is too old.
-    * 102 => Authentification failure.
-    * 103 => WebSession have expirated.
+    * 102 => Authentication failure.
+    * 103 => WebSession have expired.
     * 104 => Missing parameter.
     * something else => Unknown error.
 
