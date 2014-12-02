@@ -550,17 +550,23 @@ public class Client {
 			
 			long last_update_status = 0;
 			this.log.debug("renderer output");
-			while ((line = input.readLine()) != null) {
-				nb_lines++;
-				this.updateRenderingMemoryPeak(line, ajob);
-				
-				this.log.debug(line);
-				if ((new Date().getTime() - last_update_status) > 2000) { // only call the update every two seconds
-					this.updateRenderingStatus(line, nb_lines, ajob);
-					last_update_status = new Date().getTime();
+			try {
+				while ((line = input.readLine()) != null) {
+					nb_lines++;
+					this.updateRenderingMemoryPeak(line, ajob);
+					
+					//this.log.debug(line);
+					if ((new Date().getTime() - last_update_status) > 2000) { // only call the update every two seconds
+						this.updateRenderingStatus(line, nb_lines, ajob);
+						last_update_status = new Date().getTime();
+					}
 				}
+				input.close();
 			}
-			input.close();
+			catch (IOException err1) { // for the input.readline
+				// most likely The handle is invalid
+				this.log.error("Client:runRenderer exception(B) (silent error) " + err1);
+			}
 			this.log.debug("end of rendering");
 		}
 		catch (Exception err) {
