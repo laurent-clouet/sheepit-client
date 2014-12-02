@@ -62,7 +62,7 @@ public class Worker {
 	@Option(name = "-gpu", usage = "CUDA name of the GPU used for the render, for example CUDA_0", metaVar = "CUDA_0", required = false)
 	private String gpu_device = null;
 	
-	@Option(name = "-compute-method", usage = "CPU: only use cpu, GPU: only use gpu, CPU_GPU: can use cpu and gpu (not at the same time) if -gpu is not use it will not use the gpu", metaVar = "CPU_GPU", required = false)
+	@Option(name = "-compute-method", usage = "CPU: only use cpu, GPU: only use gpu, CPU_GPU: can use cpu and gpu (not at the same time) if -gpu is not use it will not use the gpu", metaVar = "CPU", required = false)
 	private String method = null;
 	
 	@Option(name = "-cores", usage = "Number of core/thread to use for the render", metaVar = "3", required = false)
@@ -110,7 +110,7 @@ public class Worker {
 			return;
 		}
 		
-		ComputeType compute_method = ComputeType.CPU_GPU;
+		ComputeType compute_method = ComputeType.CPU_ONLY;
 		Configuration config = new Configuration(null, login, password);
 		config.setPrintLog(print_log);
 		
@@ -206,6 +206,14 @@ public class Worker {
 				System.exit(2);
 			}
 		}
+		else {
+			if (config.getGPUDevice() == null) {
+				compute_method = ComputeType.CPU_ONLY;
+			}
+			else {
+				compute_method = ComputeType.GPU_ONLY;
+			}
+		}
 		
 		if (proxy != null) {
 			try {
@@ -240,14 +248,26 @@ public class Worker {
 			config.setExtras(extras);
 		}
 		
-		if (compute_method == ComputeType.CPU_ONLY) { // the client was to render with cpu but on the server side project type are cpu+gpu or gpu prefered but never cpu only
-			compute_method = ComputeType.CPU_GPU;
-			config.setComputeMethod(compute_method);
+		if (compute_method == ComputeType.CPU_ONLY && config.getGPUDevice() != null) {
+			System.err.println("You choose to only use the CPU but a GPU was also provided. You can not do bought.");
+			System.err.println("Aborting");
+			System.exit(2);
+		}
+		else if (compute_method == ComputeType.CPU_GPU && config.getGPUDevice() == null) {
+			System.err.println("You choose to only use the CPU and GPU but no GPU device was provided.");
+			System.err.println("Aborting");
+			System.exit(2);
+		}
+		else if (compute_method == ComputeType.GPU_ONLY && config.getGPUDevice() == null) {
+			System.err.println("You choose to only use the GPU but no GPU device was provided.");
+			System.err.println("Aborting");
+			System.exit(2);
+		}
+		else if (compute_method == ComputeType.CPU_ONLY) {
 			config.setUseGPU(null); // remove the GPU
 		}
-		else {
-			config.setComputeMethod(compute_method); // doing it here because it have to be done after the setUseGPU
-		}
+		
+		config.setComputeMethod(compute_method);
 		
 		Log.getInstance(config).debug("client version " + config.getJarVersion());
 		

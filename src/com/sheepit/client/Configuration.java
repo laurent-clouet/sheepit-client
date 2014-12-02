@@ -56,7 +56,7 @@ public class Configuration {
 		this.static_exeDirName = "exe";
 		this.maxUploadingJob = 1;
 		this.nbCores = -1; // ie not set
-		this.computeMethod = ComputeType.CPU_GPU;
+		this.computeMethod = ComputeType.CPU_ONLY;
 		this.GPUDevice = null;
 		this.userSpecifiedACacheDir = false;
 		this.workingDirectory = null;
@@ -117,9 +117,6 @@ public class Configuration {
 	
 	public void setUseGPU(GPUDevice device) {
 		this.GPUDevice = device;
-		if (device == null) {
-			this.computeMethod = ComputeType.CPU_GPU;
-		}
 	}
 	
 	public void setComputeMethod(ComputeType meth) {
