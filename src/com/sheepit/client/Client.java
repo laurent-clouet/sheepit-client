@@ -60,6 +60,7 @@ public class Client {
 	
 	private boolean disableErrorSending;
 	private boolean running;
+	private boolean suspended;
 	
 	public Client(Gui gui_, Configuration config, String url_) {
 		this.config = config;
@@ -72,6 +73,7 @@ public class Client {
 		
 		this.disableErrorSending = false;
 		this.running = true;
+		this.suspended = false;
 	}
 	
 	public String toString() {
@@ -123,6 +125,11 @@ public class Client {
 			this.renderingJob = null;
 			
 			while (this.running == true) {
+				synchronized(this) {
+					while(this.suspended) {
+						wait();
+					}
+				}
 				step = this.log.newCheckPoint();
 				try {
 					Calendar next_request = this.nextJobRequest();
@@ -300,6 +307,15 @@ public class Client {
 		
 		this.gui.stop();
 		return 0;
+	}
+	
+	public void suspend() {
+		suspended = true;
+	}
+	
+	public synchronized void resume() {
+		suspended = false;
+		notify();
 	}
 	
 	public void askForStop() {
