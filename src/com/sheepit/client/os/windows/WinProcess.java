@@ -96,7 +96,7 @@ public class WinProcess {
 	@Override
 	protected void finalize() throws Throwable {
 		if (this.handle != null) {
-			Kernel32.INSTANCE.CloseHandle(this.handle);
+			// Kernel32.INSTANCE.CloseHandle(this.handle); // do not close the handle because the parent Process object might still alive
 			this.handle = null;
 		}
 		this.pid = -1;
@@ -123,6 +123,7 @@ public class WinProcess {
 	
 	private void terminate() {
 		Kernel32.INSTANCE.TerminateProcess(this.handle, 0);
+		Kernel32.INSTANCE.CloseHandle(this.handle); // we are sure that the parent Process object is dead
 	}
 	
 	private List<WinProcess> getChildren() throws IOException {
