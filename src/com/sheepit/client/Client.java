@@ -571,7 +571,7 @@ public class Client {
 					nb_lines++;
 					this.updateRenderingMemoryPeak(line, ajob);
 					
-					//this.log.debug(line);
+					this.log.debug(line);
 					if ((new Date().getTime() - last_update_status) > 2000) { // only call the update every two seconds
 						this.updateRenderingStatus(line, nb_lines, ajob);
 						last_update_status = new Date().getTime();
