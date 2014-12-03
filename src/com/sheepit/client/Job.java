@@ -41,6 +41,7 @@ public class Job {
 	private String updateRenderingStatusMethod;
 	
 	private Process process;
+	private boolean askForRendererKill;
 	
 	private Configuration config;
 	
@@ -63,6 +64,7 @@ public class Job {
 		maxOutputNbLines = 0;
 		updateRenderingStatusMethod = null;
 		process = null;
+		askForRendererKill = false;
 		
 	}
 	
@@ -110,6 +112,14 @@ public class Job {
 		return maxOutputNbLines;
 	}
 	
+	public void setAskForRendererKill(boolean val) {
+	    askForRendererKill = val;
+    }
+    
+    public boolean getAskForRendererKill() {
+        return askForRendererKill;
+    }
+    
 	public void setProcess(Process val) {
 		process = val;
 	}

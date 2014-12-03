@@ -129,6 +129,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 								// kill the current process, it will generate an error but it's okay
 								if (this.client != null && this.client.getRenderingJob() != null && this.client.getRenderingJob().getProcess() != null) {
 									OS.getOS().kill(this.client.getRenderingJob().getProcess());
+									this.client.getRenderingJob().setAskForRendererKill(true);
 								}
 							}
 						}
