@@ -39,13 +39,14 @@ public class Job {
 	private boolean useGPU;
 	private String extras;
 	private String updateRenderingStatusMethod;
+	private boolean synchronousUpload;
 	
 	private Process process;
 	private boolean askForRendererKill;
 	
 	private Configuration config;
 	
-	public Job(Configuration config_, String id_, String frame_, String revision_, String path_, boolean use_gpu, String command_, String script_, String sceneMd5_, String rendererMd5_, String extras_) {
+	public Job(Configuration config_, String id_, String frame_, String revision_, String path_, boolean use_gpu, String command_, String script_, String sceneMd5_, String rendererMd5_, String extras_, boolean synchronous_upload_) {
 		config = config_;
 		id = id_;
 		numFrame = frame_;
@@ -56,6 +57,7 @@ public class Job {
 		sceneMD5 = sceneMd5_;
 		rendererMD5 = rendererMd5_;
 		extras = extras_;
+		synchronousUpload = synchronous_upload_;
 		
 		pictureFilename = null;
 		renderDuration = 0;
@@ -197,9 +199,6 @@ public class Job {
 	}
 	
 	public boolean simultaneousUploadIsAllowed() {
-		// id 0 is power project
-		// id 1 is compute method project
-		// they are made to check is the computer can do render
-		return id.equals("0") == false && id.equals("1") == false;
+		return synchronousUpload;
 	}
 }

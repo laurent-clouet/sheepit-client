@@ -375,6 +375,10 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				}
 				
 				boolean use_gpu = (job_node.getAttribute("use_gpu").compareTo("1") == 0);
+				boolean synchronous_upload = true;
+				if (job_node.hasAttribute("synchronous_upload")) {
+					synchronous_upload = (job_node.getAttribute("synchronous_upload").compareTo("1") == 0);
+				}
 				
 				String frame_extras = "";
 				if (job_node.hasAttribute("extras")) {
@@ -392,7 +396,8 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 						script,
 						job_node.getAttribute("archive_md5"),
 						renderer_node.getAttribute("md5"),
-						frame_extras
+						frame_extras,
+						synchronous_upload
 						);
 				
 				this.client.getGui().framesRemaining(remaining_frames);
