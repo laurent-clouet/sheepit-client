@@ -151,7 +151,7 @@ public class Client {
 					this.renderingJob = this.server.requestJob();
 				}
 				catch (FermeExceptionNoRightToRender e) {
-					this.gui.error("User does not enough right to render scene");
+					this.gui.error("User does not have enough right to render scene");
 					return -2;
 				}
 				catch (FermeExceptionSessionDisabled e) {

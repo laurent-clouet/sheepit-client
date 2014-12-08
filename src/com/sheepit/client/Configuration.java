@@ -34,7 +34,7 @@ import com.sheepit.client.hardware.gpu.GPUDevice;
 public class Configuration {
 	public enum ComputeType {
 		CPU_GPU, CPU_ONLY, GPU_ONLY
-	}; // acccept job for ...
+	}; // accept job for ...
 	
 	public File workingDirectory;
 	public File storageDirectory; // for permanent storage (binary archive)
