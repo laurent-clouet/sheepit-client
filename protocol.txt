@@ -91,7 +91,7 @@ Answer with no error:
 <?xml version="1.0" encoding="utf-8" ?>
 <jobrequest status="0">
     <frames remaining="1187" />
-    <job id="1" use_gpu="1" archive_md5="11d046f9912267a29f99a731c7e4e3b0" revision="0" path="compute_method.blend" frame="0340">
+    <job id="1" use_gpu="1" archive_md5="11d046f9912267a29f99a731c7e4e3b0" revision="0" path="compute_method.blend" frame="0340" synchronous_upload="1">
         <renderer md5="ceda00890578762c6fac96f1a13f671a" commandline=".e --factory-startup --disable-autoexec -b .c -o .o -f .f -x 1" update_method="remainingtime"/>
         <script>import bpy
 # disable the GPU for Cycles
