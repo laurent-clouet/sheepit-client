@@ -20,7 +20,6 @@
 package com.sheepit.client.hardware.gpu;
 
 import com.sun.jna.Library;
-import com.sun.jna.NativeLong;
 
 public interface CUDA extends Library {
 	public int cuInit(int flags);
@@ -32,5 +31,6 @@ public interface CUDA extends Library {
 	
 	public int cuDeviceGetName(byte[] name, int len, int dev);
 	
-	public int cuDeviceTotalMem(NativeLong bytes[], int dev);
+	// http://en.wikipedia.org/wiki/Java_Native_Access
+	public int cuDeviceTotalMem(long bytes[], int dev);
 }

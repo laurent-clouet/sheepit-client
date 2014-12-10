@@ -24,7 +24,6 @@ import java.util.List;
 
 import com.sheepit.client.os.OS;
 import com.sun.jna.Native;
-import com.sun.jna.NativeLong;
 
 public class GPU {
 	public static List<GPUDevice> devices = null;
@@ -84,7 +83,7 @@ public class GPU {
 				continue;
 			}
 			
-			NativeLong[] ram = new NativeLong[1];
+			long[] ram = new long[1];
 			result = cudalib.cuDeviceTotalMem(ram, num);
 			
 			if (result != CUresult.CUDA_SUCCESS) {
@@ -92,7 +91,7 @@ public class GPU {
 				return false;
 			}
 			
-			devices.add(new GPUDevice(new String(name).trim(), ram[0].longValue(), "CUDA_" + Integer.toString(num)));
+			devices.add(new GPUDevice(new String(name).trim(), ram[0], "CUDA_" + Integer.toString(num)));
 		}
 		return true;
 	}
