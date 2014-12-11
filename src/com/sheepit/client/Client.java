@@ -244,6 +244,9 @@ public class Client {
 						gui.error("Client::renderingManagement problem with confirmJob (returned " + ret + ")");
 						sendError(step);
 					}
+					else {
+						gui.AddFrameRendered();
+					}
 				}
 				else {
 					this.jobsToValidate.add(this.renderingJob);
