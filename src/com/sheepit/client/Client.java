@@ -281,7 +281,6 @@ public class Client {
 	}
 	
 	public synchronized int stop() {
-		System.out.println("Client::stop");
 		this.running = false;
 		this.disableErrorSending = true;
 		
