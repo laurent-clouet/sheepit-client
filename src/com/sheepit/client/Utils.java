@@ -171,6 +171,9 @@ public class Utils {
 	}
 	
 	public static ServerCode statusIsOK(Document document_, String rootname_) {
+		if (document_ == null) {
+			return Error.ServerCode.UNKNOWN;
+		}
 		NodeList ns = document_.getElementsByTagName(rootname_);
 		if (ns.getLength() == 0) {
 			return Error.ServerCode.ERROR_NO_ROOT;
