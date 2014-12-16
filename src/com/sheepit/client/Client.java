@@ -104,7 +104,7 @@ public class Client {
 			ret = this.server.getConfiguration();
 			
 			if (ret != Error.Type.OK) {
-				this.gui.error(Error.humainString(ret));
+				this.gui.error(Error.humanString(ret));
 				if (ret != Error.Type.AUTHENTICATION_FAILED) {
 					Log.printCheckPoint(step);
 				}
@@ -155,7 +155,7 @@ public class Client {
 					return -2;
 				}
 				catch (FermeExceptionSessionDisabled e) {
-					this.gui.error(Error.humainString(Error.Type.SESSION_DISABLED));
+					this.gui.error(Error.humanString(Error.Type.SESSION_DISABLED));
 					// should wait forever to actually display the message to the user
 					while (true) {
 						try {
@@ -232,7 +232,7 @@ public class Client {
 				if (ret != Error.Type.OK) {
 					Job frame_to_reset = this.renderingJob; // copie it because the sendError will take ~5min to execute
 					this.renderingJob = null;
-					this.gui.error(Error.humainString(ret));
+					this.gui.error(Error.humanString(ret));
 					this.sendError(step, frame_to_reset, ret);
 					this.log.removeCheckPoint(step);
 					continue;
@@ -273,7 +273,7 @@ public class Client {
 			}
 		}
 		catch (Exception e1) {
-			// no exception should be raise to actual launcher (applet or standalone)
+			// no exception should be raised in the actual launcher (applet or standalone)
 			return -99; // the this.stop will be done after the return of this.run()
 		}
 		
@@ -343,7 +343,7 @@ public class Client {
 				//gui.status("Sending frame");
 				ret = confirmJob(job_to_send);
 				if (ret != Error.Type.OK) {
-					this.gui.error(Error.humainString(ret));
+					this.gui.error(Error.humanString(ret));
 					sendError(step);
 				}
 				else {
@@ -471,12 +471,12 @@ public class Client {
 		File renderer_file = new File(ajob.getRendererPath());
 		
 		if (scene_file.exists() == false) {
-			this.log.error("Client::work job prepration failed (scene file '" + scene_file.getAbsolutePath() + "' does not exist)");
+			this.log.error("Client::work job preparation failed (scene file '" + scene_file.getAbsolutePath() + "' does not exist)");
 			return Error.Type.MISSING_SCENE;
 		}
 		
 		if (renderer_file.exists() == false) {
-			this.log.error("Client::work job prepration failed (renderer file '" + renderer_file.getAbsolutePath() + "' does not exist)");
+			this.log.error("Client::work job preparation failed (renderer file '" + renderer_file.getAbsolutePath() + "' does not exist)");
 			return Error.Type.MISSING_RENDER;
 		}
 		
@@ -639,7 +639,7 @@ public class Client {
 			this.log.error("Client::runRenderer no picture file found (after finished render (namefile_without_extension " + namefile_without_extension + ")");
 			
 			if (ajob.getAskForRendererKill()) {
-			    this.log.debug("Client::runRenderer renderer didn't generate any frame but it due to a kill request");
+			    this.log.debug("Client::runRenderer renderer didn't generate any frame but died due to a kill request");
 			    return Error.Type.RENDERER_KILLED;
 			}
 			
@@ -658,7 +658,7 @@ public class Client {
 			}
 			
 			if (exit_value == 127 && ajob.getRenderDuration() < 10) {
-				this.log.error("Client::runRenderer renderer return 127 and render time took " + ajob.getRenderDuration() + "s, mostly missing libraries");
+				this.log.error("Client::runRenderer renderer returned 127 and took " + ajob.getRenderDuration() + "s, some libraries may be missing");
 				return Error.Type.RENDERER_MISSING_LIBRARIES;
 			}
 			
@@ -688,7 +688,7 @@ public class Client {
 		File renderer_achive_local_path_file = new File(achive_local_path);
 		
 		if (renderer_achive_local_path_file.exists()) {
-			// the archive have been already downloaded
+			// the archive have already been downloaded
 		}
 		else {
 			// we must download the archive
