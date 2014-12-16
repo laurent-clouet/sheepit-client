@@ -28,13 +28,11 @@
                <classpath>
                      <pathelement location="extern/platform.jar"/>
                      <pathelement location="extern/jna.jar"/>
-                     <pathelement location="extern/commons-compress.jar"/>
                      <pathelement location="extern/args4j.jar"/>
                </classpath>
         </javac>
         
         <unjar src="extern/platform.jar" dest="build">
-            <filelist dir="." files="extern/commons-compress.jar" />
             <filelist dir="." files="extern/jna.jar" />
             <filelist dir="." files="extern/args4j.jar" />
         </unjar>
