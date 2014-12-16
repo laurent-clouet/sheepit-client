@@ -74,10 +74,6 @@ public class Job {
 		return String.format("Job (numFrame '%s' sceneMD5 '%s' rendererMD5 '%s' ID '%s' revision '%s' pictureFilename '%s' jobPath '%s' renderDuration '%s', memoryUsed %skB gpu %s extras '%s' updateRenderingStatusMethod '%s')", this.numFrame, this.sceneMD5, this.rendererMD5, this.id, this.revision, this.pictureFilename, this.path, this.renderDuration, this.memoryUsed, this.useGPU, this.extras, this.updateRenderingStatusMethod);
 	}
 	
-	public boolean workeable() {
-		return true;
-	}
-	
 	public String getId() {
 		return id;
 	}

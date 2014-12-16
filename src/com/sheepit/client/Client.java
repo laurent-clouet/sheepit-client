@@ -447,10 +447,6 @@ public class Client {
 	}
 	
 	public Error.Type work(Job ajob) {
-		if (ajob.workeable() == false) {
-			this.log.error("Client::work The received job is not workeable");
-			return Error.Type.WRONG_CONFIGURATION;
-		}
 		int ret;
 		
 		ret = this.downloadExecutable(ajob);
