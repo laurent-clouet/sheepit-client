@@ -77,7 +77,12 @@ public class CPU {
 			this.arch = "64bit";
 		}
 		else {
-			this.arch = "xxbit";
+			this.arch = null;
 		}
 	}
+	
+	public boolean haveData() {
+		return this.name != null && this.model != null && this.family != null && this.arch != null;
+	}
+
 }

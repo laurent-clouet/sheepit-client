@@ -93,6 +93,16 @@ public class Client {
 	}
 	
 	public int run() {
+		if (this.config.checkOSisSupported() == false) {
+			this.gui.error(Error.humanString(Error.Type.OS_NOT_SUPPORTED));
+			return -3;
+		}
+		
+		if (this.config.checkCPUisSUpported() == false) {
+			this.gui.error(Error.humanString(Error.Type.CPU_NOT_SUPPORTED));
+			return -4;
+		}
+		
 		int step;
 		try {
 			step = this.log.newCheckPoint();

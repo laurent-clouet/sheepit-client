@@ -35,6 +35,8 @@ public class Error {
 		RENDERER_KILLED,
 		RENDERER_MISSING_LIBRARIES,
 		FAILED_TO_EXECUTE,
+		OS_NOT_SUPPORTED,
+		CPU_NOT_SUPPORTED,
 		UNKNOWN
 	};
 	
@@ -127,6 +129,10 @@ public class Error {
 			    return "The renderer stopped because either you asked to stop or the server did (usually for a render time too high).";
 			case SESSION_DISABLED:
 				return "The server have disabled your session. Your client may have generated a broken frame (GPU not compatible, not enough RAM/VRAM, etc).";
+			case OS_NOT_SUPPORTED:
+				return "Operating System not supported.";
+			case CPU_NOT_SUPPORTED:
+				return "CPU not supported.";
 			default:
 				return in.toString();
 		}

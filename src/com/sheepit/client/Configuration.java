@@ -29,7 +29,9 @@ import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.sheepit.client.hardware.cpu.CPU;
 import com.sheepit.client.hardware.gpu.GPUDevice;
+import com.sheepit.client.os.OS;
 
 public class Configuration {
 	public enum ComputeType {
@@ -276,5 +278,18 @@ public class Configuration {
 			System.err.println("Configuration::getJarVersion error while reading manifest file (" + versionPath + "): " + ex.getMessage());
 			return "";
 		}
+	}
+	
+	public boolean checkOSisSupported() {
+		return OS.getOS() != null;
+	}
+	
+	public boolean checkCPUisSUpported() {
+		OS os = OS.getOS();
+		if (os != null) {
+			CPU cpu = os.getCPU();
+			return cpu != null && cpu.haveData();
+		}
+		return false;
 	}
 }
