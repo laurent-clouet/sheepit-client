@@ -125,7 +125,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 							Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(in);
 							ServerCode ret = Utils.statusIsOK(document, "keepmealive");
 							if (ret == ServerCode.KEEPMEALIVE_STOP_RENDERING) {
-								this.log.debug("Server::keeepmealive server ask to kill local render process");
+								this.log.debug("Server::keeepmealive server asked to kill local render process");
 								// kill the current process, it will generate an error but it's okay
 								if (this.client != null && this.client.getRenderingJob() != null && this.client.getRenderingJob().getProcess() != null) {
 									OS.getOS().kill(this.client.getRenderingJob().getProcess());
@@ -212,14 +212,14 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				NodeList ns = null;
 				ns = document.getElementsByTagName("config");
 				if (ns.getLength() == 0) {
-					this.log.error("getConfiguration error: failed to parse XML, no node 'config_serveur'");
+					this.log.error("getConfiguration error: failed to parse XML, no node 'config_serveur'"); // 'config_server' ?
 					return Error.Type.WRONG_CONFIGURATION;
 				}
 				config_node = (Element) ns.item(0);
 				
 				ns = config_node.getElementsByTagName("request");
 				if (ns.getLength() == 0) {
-					this.log.error("getConfiguration error: failed to parse XML, node 'config' have no child node 'request'");
+					this.log.error("getConfiguration error: failed to parse XML, node 'config' has no child node 'request'");
 					return Error.Type.WRONG_CONFIGURATION;
 				}
 				for (int i = 0; i < ns.getLength(); i++) {

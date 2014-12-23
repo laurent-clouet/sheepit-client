@@ -65,7 +65,7 @@ public class Worker {
 	@Option(name = "-compute-method", usage = "CPU: only use cpu, GPU: only use gpu, CPU_GPU: can use cpu and gpu (not at the same time) if -gpu is not use it will not use the gpu", metaVar = "CPU", required = false)
 	private String method = null;
 	
-	@Option(name = "-cores", usage = "Number of core/thread to use for the render", metaVar = "3", required = false)
+	@Option(name = "-cores", usage = "Number of cores/threads to use for the render", metaVar = "3", required = false)
 	private int nb_cores = -1;
 	
 	@Option(name = "--verbose", usage = "Display log", required = false)
@@ -80,7 +80,7 @@ public class Worker {
 	@Option(name = "-extras", usage = "Extras data push on the authentication request", required = false)
 	private String extras = null;
 	
-	@Option(name = "-ui", usage = "Specify the user interface to you use, default 'text', available 'oneline', 'text'", required = false)
+	@Option(name = "-ui", usage = "Specify the user interface to use, default 'text', available 'oneline', 'text'", required = false)
 	private String ui_type = "text";
 	
 	@Option(name = "--version", usage = "Display application version", required = false)
@@ -249,7 +249,7 @@ public class Worker {
 		}
 		
 		if (compute_method == ComputeType.CPU_ONLY && config.getGPUDevice() != null) {
-			System.err.println("You choose to only use the CPU but a GPU was also provided. You can not do bought.");
+			System.err.println("You choose to only use the CPU but a GPU was also provided. You can not do both.");
 			System.err.println("Aborting");
 			System.exit(2);
 		}
@@ -274,7 +274,7 @@ public class Worker {
 		Gui gui;
 		if (ui_type.equals("oneline")) {
 			if (config.getPrintLog()) {
-				System.out.println("OneLine ui can not be used if the verbose mode is enable");
+				System.out.println("OneLine UI can not be used if verbose mode is enabled");
 				System.exit(2); 
 			}
 			gui = new GuiTextOneLine();

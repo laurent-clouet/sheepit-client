@@ -120,15 +120,15 @@ public class Error {
 			case AUTHENTICATION_FAILED:
 				return "Failed to authenticate, please check your login and password";
 			case NOOUTPUTFILE:
-				return "Renderer have generated no output file, it's mostly a wrong project configuration or your are missing required libraries. Will try an another project in few minutes.";
+				return "Renderer has generated no output file, possibly a wrong project configuration or you are missing required libraries. Will try another project in a few minutes.";
 			case RENDERER_CRASHED:
-				return "Renderer have crashed. It's mostly due to a bad project or not enough memory. There is nothing you can do about it. Will try an another project in few minutes.";
+				return "Renderer has crashed. It's mostly due to a bad project or not enough memory. There is nothing you can do about it. Will try another project in a few minutes.";
 			case RENDERER_MISSING_LIBRARIES:
-				return "Failed to launch renderer. Please check if you have necessary libraries installed and if you have enough free place in working directory.";
+				return "Failed to launch renderer. Please check if you have necessary libraries installed and if you have enough free space in your working directory.";
 			case RENDERER_KILLED:
 			    return "The renderer stopped because either you asked to stop or the server did (usually for a render time too high).";
 			case SESSION_DISABLED:
-				return "The server have disabled your session. Your client may have generated a broken frame (GPU not compatible, not enough RAM/VRAM, etc).";
+				return "The server has disabled your session. Your client may have generated a broken frame (GPU not compatible, not enough RAM/VRAM, etc).";
 			case OS_NOT_SUPPORTED:
 				return "Operating System not supported.";
 			case CPU_NOT_SUPPORTED:

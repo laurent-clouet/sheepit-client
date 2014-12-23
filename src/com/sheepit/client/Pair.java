@@ -19,7 +19,7 @@ package com.sheepit.client;
 import java.util.Objects;
 
 /**
-* Container to ease passing around a tuple of two objects. This object provides a sensible
+* Container to ease passing around a pair of two objects. This object provides a sensible
 * implementation of equals(), returning true if equals() is true on each of the contained
 * objects.
 */
