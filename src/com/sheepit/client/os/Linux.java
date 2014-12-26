@@ -79,7 +79,7 @@ public class Linux extends OS {
 			scanner.close();
 		}
 		catch (java.lang.NoClassDefFoundError e) {
-			System.err.println("OS.Linux::getCPU error " + e + " mostly because Scanner class was introducted by Java 5 and you are running are lower version");
+			System.err.println("OS.Linux::getCPU error " + e + " mostly because Scanner class was introducted by Java 5 and you are running a lower version");
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -107,7 +107,7 @@ public class Linux extends OS {
 			scanner.close();
 		}
 		catch (java.lang.NoClassDefFoundError e) {
-			System.err.println("Machine::type error " + e + " mostly because Scanner class was introducted by Java 5 and you are running are lower version");
+			System.err.println("Machine::type error " + e + " mostly because Scanner class was introducted by Java 5 and you are running a lower version");
 		}
 		catch (Exception e) {
 			e.printStackTrace();

@@ -31,7 +31,7 @@ public class Job {
 	private String revision;
 	private String pictureFilename;
 	private String path; // path inside of the archive
-	private int renderDuration; // in second
+	private int renderDuration; // in seconds
 	private long memoryUsed; // in kB
 	private String rendererCommand;
 	private String script;

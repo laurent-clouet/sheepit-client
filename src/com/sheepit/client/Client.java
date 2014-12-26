@@ -123,7 +123,7 @@ public class Client {
 			
 			this.server.start(); // for staying alive
 			
-			// create a thread who will send the frame
+			// create a thread which will send the frame
 			Runnable runnable_sender = new Runnable() {
 				public void run() {
 					senderLoop();
@@ -176,7 +176,7 @@ public class Client {
 					}
 				}
 				catch (FermeExceptionNoSession e) {
-					// User have no session need to re-authenticate
+					// User has no session need to re-authenticate
 					
 					ret = this.server.getConfiguration();
 					if (ret != Error.Type.OK) {
@@ -240,7 +240,7 @@ public class Client {
 				}
 				
 				if (ret != Error.Type.OK) {
-					Job frame_to_reset = this.renderingJob; // copie it because the sendError will take ~5min to execute
+					Job frame_to_reset = this.renderingJob; // copy it because the sendError will take ~5min to execute
 					this.renderingJob = null;
 					this.gui.error(Error.humanString(ret));
 					this.sendError(step, frame_to_reset, ret);
@@ -370,7 +370,7 @@ public class Client {
 	
 	protected void sendError(int step_, Job job_to_reset_, Error.Type error) {
 		if (this.disableErrorSending) {
-			this.log.debug("Error sending is disable, do not send log");
+			this.log.debug("Error sending is disabled, do not send log");
 			return;
 		}
 		
@@ -399,7 +399,7 @@ public class Client {
 		}
 		catch (Exception e1) {
 			e1.printStackTrace();
-			// no exception should be raise to actual launcher (applet or standalone)
+			// no exception should be raised to actual launcher (applet or standalone)
 		}
 		
 		if (error != null && error == Error.Type.RENDERER_CRASHED) {
@@ -416,7 +416,7 @@ public class Client {
 	
 	/**
 	 * 
-	 * @return the date of the next request, or null is there is not delay (null <=> now)
+	 * @return the date of the next request, or null if there is not delay (null <=> now)
 	 */
 	public Calendar nextJobRequest() {
 		if (this.config.requestTime == null) {
@@ -511,7 +511,7 @@ public class Client {
 		String command1[] = ajob.getRenderCommand().split(" ");
 		int size_command = command1.length + 2; // + 2 for script
 		
-		if (this.config.getNbCores() > 0) { // user have specified something
+		if (this.config.getNbCores() > 0) { // user has specified something
 			size_command += 2;
 		}
 		
@@ -547,7 +547,7 @@ public class Client {
 			}
 			else if (command1[i].equals(".e")) {
 				command[index] = ajob.getRendererPath();
-				// the number of cores have to be put after the binary and before the scene arg
+				// the number of cores has to be put after the binary and before the scene arg
 				if (this.config.getNbCores() > 0) {
 					index += 1;
 					command[index] = "-t";
@@ -612,7 +612,7 @@ public class Client {
 			script_file.delete();
 		}
 		
-		ajob.setRenderDuration((int) ((rending_end - rending_start) / 1000 + 1)); // render time is in seconds but the getTime is in millisecond
+		ajob.setRenderDuration((int) ((rending_end - rending_start) / 1000 + 1)); // render time is in seconds but the getTime is in milliseconds
 		
 		ajob.setMaxOutputNbLines(nb_lines);
 		int exit_value = 0;
@@ -645,7 +645,7 @@ public class Client {
 		File[] files = this.config.workingDirectory.listFiles(textFilter);
 		
 		if (files.length == 0) {
-			this.log.error("Client::runRenderer no picture file found (after finished render (namefile_without_extension " + namefile_without_extension + ")");
+			this.log.error("Client::runRenderer no picture file found (after render finished (namefile_without_extension " + namefile_without_extension + ")");
 			
 			if (ajob.getAskForRendererKill()) {
 			    this.log.debug("Client::runRenderer renderer didn't generate any frame but died due to a kill request");
@@ -716,7 +716,7 @@ public class Client {
 			if (md5_local.equals(ajob_.getSceneMD5()) == false) {
 				System.err.println("md5 of the downloaded file  and the local file are not the same (local '" + md5_local + "' scene: '" + ajob_.getSceneMD5() + "')");
 				this.log.error("Client::downloadSceneFile mismatch on md5  local: '" + md5_local + "' server: '" + ajob_.getSceneMD5() + "'");
-				// md5 of the file downloaded and the file excepted is not the same
+				// md5 of the downloaded file doesn't match the expected hash
 				return -2;
 			}
 		}
@@ -733,7 +733,7 @@ public class Client {
 		File renderer_achive_local_path_file = new File(renderer_achive_local_path);
 		
 		if (renderer_achive_local_path_file.exists()) {
-			// the archive have been already downloaded
+			// the archive has been already downloaded
 		}
 		else {
 			// we must download the archive
@@ -750,7 +750,7 @@ public class Client {
 		
 		if (md5_local.equals(ajob.getRenderMd5()) == false) {
 			this.log.error("Client::downloadExecutable mismatch on md5  local: '" + md5_local + "' server: '" + ajob.getRenderMd5() + "'");
-			// md5 of the file downloaded and the file excepted is not the same
+				// md5 of the downloaded file doesn't match the expected hash
 			return -10;
 		}
 		return 0;
