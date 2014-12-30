@@ -26,6 +26,7 @@ public class Error {
 		AUTHENTICATION_FAILED,
 		TOO_OLD_CLIENT,
 		SESSION_DISABLED,
+		RENDERER_NOT_AVAILABLE,
 		MISSING_RENDER,
 		MISSING_SCENE,
 		NOOUTPUTFILE,
@@ -55,6 +56,7 @@ public class Error {
 		JOB_REQUEST_ERROR_DEAD_SESSION(202),
 		JOB_REQUEST_ERROR_SESSION_DISABLED(203),
 		JOB_REQUEST_ERROR_INTERNAL_ERROR(204),
+		JOB_REQUEST_ERROR_RENDERER_NOT_AVAILABLE(205),
 		
 		JOB_VALIDATION_ERROR_MISSING_PARAMETER(300),
 		JOB_VALIDATION_ERROR_BROKEN_MACHINE(301), // in GPU the generated frame is black
@@ -108,6 +110,9 @@ public class Error {
 			case JOB_VALIDATION_ERROR_SESSION_DISABLED:
 				return Type.SESSION_DISABLED;
 				
+			case JOB_REQUEST_ERROR_RENDERER_NOT_AVAILABLE:
+				return Type.RENDERER_NOT_AVAILABLE;
+			
 			default:
 				return Type.UNKNOWN;
 		}
@@ -129,6 +134,8 @@ public class Error {
 			    return "The renderer stopped because either you asked to stop or the server did (usually for a render time too high).";
 			case SESSION_DISABLED:
 				return "The server has disabled your session. Your client may have generated a broken frame (GPU not compatible, not enough RAM/VRAM, etc).";
+			case RENDERER_NOT_AVAILABLE:
+				return "No renderer are available on the server for your machine.";
 			case OS_NOT_SUPPORTED:
 				return "Operating System not supported.";
 			case CPU_NOT_SUPPORTED:
