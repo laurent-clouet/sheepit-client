@@ -212,7 +212,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				NodeList ns = null;
 				ns = document.getElementsByTagName("config");
 				if (ns.getLength() == 0) {
-					this.log.error("getConfiguration error: failed to parse XML, no node 'config_serveur'"); // 'config_server' ?
+					this.log.error("getConfiguration error: failed to parse XML, no node 'config'");
 					return Error.Type.WRONG_CONFIGURATION;
 				}
 				config_node = (Element) ns.item(0);
