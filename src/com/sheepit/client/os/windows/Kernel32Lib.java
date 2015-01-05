@@ -159,27 +159,22 @@ public interface Kernel32Lib extends Library {
 	
 	/**
 	 * Takes a snapshot of the specified processes, as well as the heaps, modules, and threads used by these processes.
-	 *  
-	 * @param dwFlags
-	 *   The portions of the system to be included in the snapshot.
-	 * 
-	 * @param th32ProcessID
-	 *   The process identifier of the process to be included in the snapshot. This parameter can be zero to indicate
-	 *   the current process. This parameter is used when the TH32CS_SNAPHEAPLIST, TH32CS_SNAPMODULE,
-	 *   TH32CS_SNAPMODULE32, or TH32CS_SNAPALL value is specified. Otherwise, it is ignored and all processes are
-	 *   included in the snapshot.
 	 *
-	 *   If the specified process is the Idle process or one of the CSRSS processes, this function fails and the last
-	 *   error code is ERROR_ACCESS_DENIED because their access restrictions prevent user-level code from opening them.
-	 *
-	 *   If the specified process is a 64-bit process and the caller is a 32-bit process, this function fails and the
-	 *   last error code is ERROR_PARTIAL_COPY (299).
-	 *
-	 * @return
-	 *   If the function succeeds, it returns an open handle to the specified snapshot.
-	 *
-	 *   If the function fails, it returns INVALID_HANDLE_VALUE. To get extended error information, call GetLastError.
-	 *   Possible error codes include ERROR_BAD_LENGTH.
+	 * @param dwFlags       The portions of the system to be included in the snapshot.
+	 * @param th32ProcessID The process identifier of the process to be included in the snapshot. This parameter can be zero to indicate
+	 *                      the current process. This parameter is used when the TH32CS_SNAPHEAPLIST, TH32CS_SNAPMODULE,
+	 *                      TH32CS_SNAPMODULE32, or TH32CS_SNAPALL value is specified. Otherwise, it is ignored and all processes are
+	 *                      included in the snapshot.
+	 *                      <p/>
+	 *                      If the specified process is the Idle process or one of the CSRSS processes, this function fails and the last
+	 *                      error code is ERROR_ACCESS_DENIED because their access restrictions prevent user-level code from opening them.
+	 *                      <p/>
+	 *                      If the specified process is a 64-bit process and the caller is a 32-bit process, this function fails and the
+	 *                      last error code is ERROR_PARTIAL_COPY (299).
+	 * @return If the function succeeds, it returns an open handle to the specified snapshot.
+	 * <p/>
+	 * If the function fails, it returns INVALID_HANDLE_VALUE. To get extended error information, call GetLastError.
+	 * Possible error codes include ERROR_BAD_LENGTH.
 	 */
 	public WinNT.HANDLE CreateToolhelp32Snapshot(WinDef.DWORD dwFlags, WinDef.DWORD th32ProcessID);
 	
@@ -187,12 +182,11 @@ public interface Kernel32Lib extends Library {
 	 * Retrieves information about the first process encountered in a system snapshot.
 	 *
 	 * @param hSnapshot A handle to the snapshot returned from a previous call to the CreateToolhelp32Snapshot function.
-	 * @param lppe A pointer to a PROCESSENTRY32 structure. It contains process information such as the name of the
-	 *   executable file, the process identifier, and the process identifier of the parent process.
-	 * @return
-	 *   Returns TRUE if the first entry of the process list has been copied to the buffer or FALSE otherwise. The
-	 *   ERROR_NO_MORE_FILES error value is returned by the GetLastError function if no processes exist or the snapshot
-	 *   does not contain process information.
+	 * @param lppe      A pointer to a PROCESSENTRY32 structure. It contains process information such as the name of the
+	 *                  executable file, the process identifier, and the process identifier of the parent process.
+	 * @return Returns TRUE if the first entry of the process list has been copied to the buffer or FALSE otherwise. The
+	 * ERROR_NO_MORE_FILES error value is returned by the GetLastError function if no processes exist or the snapshot
+	 * does not contain process information.
 	 */
 	public boolean Process32First(WinNT.HANDLE hSnapshot, Kernel32Lib.PROCESSENTRY32.ByReference lppe);
 	
@@ -200,11 +194,10 @@ public interface Kernel32Lib extends Library {
 	 * Retrieves information about the next process recorded in a system snapshot.
 	 *
 	 * @param hSnapshot A handle to the snapshot returned from a previous call to the CreateToolhelp32Snapshot function.
-	 * @param lppe A pointer to a PROCESSENTRY32 structure.
-	 * @return
-	 *   Returns TRUE if the next entry of the process list has been copied to the buffer or FALSE otherwise. The
-	 *   ERROR_NO_MORE_FILES error value is returned by the GetLastError function if no processes exist or the snapshot
-	 *   does not contain process information.
+	 * @param lppe      A pointer to a PROCESSENTRY32 structure.
+	 * @return Returns TRUE if the next entry of the process list has been copied to the buffer or FALSE otherwise. The
+	 * ERROR_NO_MORE_FILES error value is returned by the GetLastError function if no processes exist or the snapshot
+	 * does not contain process information.
 	 */
 	public boolean Process32Next(WinNT.HANDLE hSnapshot, Kernel32Lib.PROCESSENTRY32.ByReference lppe);
 	
@@ -213,6 +206,7 @@ public interface Kernel32Lib extends Library {
 	/**
 	 * Controls whether the system will handle the specified types of serious errors or whether the process will handle them.
 	 * See: http://msdn.microsoft.com/en-us/library/ms680621%28VS.85%29.aspx
+	 *
 	 * @param uMode The process error mode. This parameter can be one or more of the following values.
 	 */
 	public int SetErrorMode(DWORD uMode);

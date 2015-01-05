@@ -73,6 +73,7 @@ public class CUresult {
 	/**
 	 * This indicates profiling has not been initialized for this context. 
 	 * Call cuProfilerInitialize() to resolve this. 
+	 *
 	 * @deprecated This error return is deprecated as of CUDA 5.0. 
 	 * It is no longer an error to attempt to enable/disable the 
 	 * profiling via ::cuProfilerStart or ::cuProfilerStop without 
@@ -83,6 +84,7 @@ public class CUresult {
 	/**
 	 * This indicates profiler has already been started and probably
 	 * cuProfilerStart() is incorrectly called.
+	 *
 	 * @deprecated This error return is deprecated as of CUDA 5.0. 
 	 * It is no longer an error to call cuProfilerStart() when 
 	 * profiling is already enabled.
@@ -92,6 +94,7 @@ public class CUresult {
 	/**
 	 * This indicates profiler has already been stopped and probably
 	 * cuProfilerStop() is incorrectly called.
+	 *
 	 * @deprecated This error return is deprecated as of CUDA 5.0. 
 	 * It is no longer an error to call cuProfilerStop() when 
 	 * profiling is already disabled.
@@ -313,6 +316,7 @@ public class CUresult {
 	/**
 	 * This error indicates that a call to ::cuMemPeerRegister is trying to
 	 * register already-registered memory.
+	 *
 	 * @deprecated This value has been added in CUDA 4.0 RC,
 	 * and removed in CUDA 4.0 RC2
 	 */
@@ -321,6 +325,7 @@ public class CUresult {
 	/**
 	 * This error indicates that a call to ::cuMemPeerUnregister is trying to
 	 * unregister memory that has not been registered.
+	 *
 	 * @deprecated This value has been added in CUDA 4.0 RC,
 	 * and removed in CUDA 4.0 RC2
 	 */
