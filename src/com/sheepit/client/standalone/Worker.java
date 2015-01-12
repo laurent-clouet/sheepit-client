@@ -83,8 +83,8 @@ public class Worker {
 	@Option(name = "-ui", usage = "Specify the user interface to use, default 'text', available 'oneline', 'text'", required = false)
 	private String ui_type = "text";
 	
-	@Option(name = "--version", usage = "Display application version", required = false)
-	private boolean display_version = false;
+	@Option(name = "--version", usage = "Display application version", required = false, handler = VersionParameterHandler.class)
+	private VersionParameterHandler versionHandler;
 	
 	public static void main(String[] args) {
 		new Worker().doMain(args);
@@ -101,12 +101,6 @@ public class Worker {
 			parser.printUsage(System.err);
 			System.err.println();
 			System.err.println("Example: java " + this.getClass().getName() + " " + parser.printExample(REQUIRED));
-			return;
-		}
-		
-		if (display_version) {
-			Configuration config = new Configuration(null, "", "");
-			System.out.println("Version: " + config.getJarVersion());
 			return;
 		}
 		
