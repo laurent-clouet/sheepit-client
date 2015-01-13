@@ -46,7 +46,7 @@ public class Job {
 	
 	private Configuration config;
 	
-	public Job(Configuration config_, String id_, String frame_, String revision_, String path_, boolean use_gpu, String command_, String script_, String sceneMd5_, String rendererMd5_, String extras_, boolean synchronous_upload_) {
+	public Job(Configuration config_, String id_, String frame_, String revision_, String path_, boolean use_gpu, String command_, String script_, String sceneMd5_, String rendererMd5_, String extras_, boolean synchronous_upload_, String update_method_) {
 		config = config_;
 		id = id_;
 		numFrame = frame_;
@@ -64,7 +64,7 @@ public class Job {
 		memoryUsed = 0;
 		script = script_;
 		maxOutputNbLines = 0;
-		updateRenderingStatusMethod = null;
+		updateRenderingStatusMethod = update_method_;
 		process = null;
 		askForRendererKill = false;
 		
