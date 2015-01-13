@@ -385,6 +385,11 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 					frame_extras = job_node.getAttribute("extras");
 				}
 				
+				String update_method = null;
+				if (renderer_node.hasAttribute("update_method")) {
+					update_method = renderer_node.getAttribute("update_method");;
+				}
+				
 				Job a_job = new Job(
 						this.user_config,
 						job_node.getAttribute("id"),
@@ -397,7 +402,8 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 						job_node.getAttribute("archive_md5"),
 						renderer_node.getAttribute("md5"),
 						frame_extras,
-						synchronous_upload
+						synchronous_upload,
+						update_method
 						);
 				
 				this.client.getGui().framesRemaining(remaining_frames);
