@@ -49,6 +49,7 @@ import com.sheepit.client.os.OS;
 public class Client {
 	public static final String UPDATE_METHOD_BY_LINE_NUMBER = "linenumber";
 	public static final String UPDATE_METHOD_BY_REMAINING_TIME = "remainingtime";
+	public static final String UPDATE_METHOD_BLENDER_INTERNAL_BY_PART = "blenderinternal";
 	
 	private Gui gui;
 	private Server server;
@@ -865,6 +866,28 @@ public class Client {
 	protected void updateRenderingStatus(String line, int current_number_of_lines, Job ajob) {
 		if (ajob.getUpdateRenderingStatusMethod() != null && ajob.getUpdateRenderingStatusMethod().equals(Client.UPDATE_METHOD_BY_LINE_NUMBER) && ajob.getMaxOutputNbLines() > 0) {
 			this.gui.status(String.format("Rendering %s %%", (int) (100.0 * current_number_of_lines / ajob.getMaxOutputNbLines())));
+		}
+		else if (ajob.getUpdateRenderingStatusMethod() != null && ajob.getUpdateRenderingStatusMethod().equals(Client.UPDATE_METHOD_BLENDER_INTERNAL_BY_PART)) {
+			String search = " Part ";
+			int index = line.lastIndexOf(search);
+			if (index != -1) {
+				String buf = line.substring(index + search.length());
+				String[] parts = buf.split("-");
+				if (parts != null && parts.length == 2) {
+					try {
+						int current = Integer.parseInt(parts[0]); 
+						int total = Integer.parseInt(parts[1]);
+						if (total != 0) {
+							this.gui.status(String.format("Rendering %s %%", (int) (100.0 * current / total)));
+							return;
+						}
+					}
+					catch (NumberFormatException e) {
+						System.out.println("Exception 92: " + e);
+					}
+				}
+			}
+			this.gui.status("Rendering");
 		}
 		else if (ajob.getUpdateRenderingStatusMethod() == null || ajob.getUpdateRenderingStatusMethod().equals(Client.UPDATE_METHOD_BY_REMAINING_TIME)) {
 			String search_remaining = "remaining:";
