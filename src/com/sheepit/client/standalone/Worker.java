@@ -80,8 +80,8 @@ public class Worker {
 	@Option(name = "-extras", usage = "Extras data push on the authentication request", required = false)
 	private String extras = null;
 	
-	@Option(name = "-ui", usage = "Specify the user interface to use, default 'text', available 'oneline', 'text'", required = false)
-	private String ui_type = "text";
+	@Option(name = "-ui", usage = "Specify the user interface to use, default 'text', available 'oneline', 'text', 'swing' (graphical)", required = false)
+	private String ui_type = "swing";
 	
 	@Option(name = "--version", usage = "Display application version", required = false, handler = VersionParameterHandler.class)
 	private VersionParameterHandler versionHandler;
@@ -274,6 +274,11 @@ public class Worker {
 			gui = new GuiTextOneLine();
 		}
 		else if (ui_type.equals("swing")) {
+			if (java.awt.GraphicsEnvironment.isHeadless()) {
+				System.out.println("Graphical ui can not be launch.");
+				System.out.println("You should set a DISPLAY or use a text ui (via -ui oneline or -ui text).");
+				System.exit(3);
+			}
 			gui = new GuiSwing();
 		}
 		else {
