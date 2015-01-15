@@ -37,6 +37,9 @@
             <filelist dir="." files="extern/args4j.jar" />
         </unjar>
         
+        <copy file="resources/icon.png" tofile="build/icon.png" overwrite="true" />
+        <copy file="resources/title.png" tofile="build/title.png" overwrite="true" />
+        
         <jar destfile="bin/sheepit-client.jar"
             basedir="build/">
             <include name="**"/>

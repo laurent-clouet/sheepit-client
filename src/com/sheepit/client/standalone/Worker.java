@@ -273,13 +273,19 @@ public class Worker {
 			}
 			gui = new GuiTextOneLine();
 		}
+		else if (ui_type.equals("swing")) {
+			gui = new GuiSwing();
+		}
 		else {
 			gui = new GuiText();
 		}
 		Client cli = new Client(gui, config, server);
+		gui.setClient(cli);
 		
 		ShutdownHook hook = new ShutdownHook(cli);
 		hook.attachShutDownHook();
+		
+		gui.start();
 		
 		cli.run();
 		cli.stop();

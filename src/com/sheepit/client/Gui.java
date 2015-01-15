@@ -31,4 +31,8 @@ public interface Gui {
 	public void AddFrameRendered();
 	
 	public void framesRemaining(int nb_);
+	
+	public void setClient(Client cli);
+	
+	public Client getClient();
 }

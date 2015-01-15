@@ -1,5 +1,6 @@
 package com.sheepit.client.standalone;
 
+import com.sheepit.client.Client;
 import com.sheepit.client.Gui;
 
 public class GuiTextOneLine implements Gui {
@@ -45,6 +46,15 @@ public class GuiTextOneLine implements Gui {
 	public void framesRemaining(int n_) {
 		remaining = n_;
 		updateLine();
+	}
+	
+	@Override
+	public void setClient(Client cli) {
+	}
+	
+	@Override
+	public Client getClient() {
+		return null;
 	}
 	
 	private void updateLine() {
