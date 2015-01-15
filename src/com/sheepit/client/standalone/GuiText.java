@@ -19,6 +19,7 @@
 
 package com.sheepit.client.standalone;
 
+import com.sheepit.client.Client;
 import com.sheepit.client.Gui;
 import com.sheepit.client.Log;
 
@@ -61,6 +62,15 @@ public class GuiText implements Gui {
 	@Override
 	public void framesRemaining(int n_) {
 		System.out.println("frame remaining: " + n_);
+	}
+	
+	@Override
+	public void setClient(Client cli) {
+	}
+	
+	@Override
+	public Client getClient() {
+		return null;
 	}
 	
 }

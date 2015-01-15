@@ -77,8 +77,16 @@ public class Configuration {
 		return this.login;
 	}
 	
+	public void setLogin(String login_) {
+		this.login = login_;
+	}
+	
 	public String password() {
 		return this.password;
+	}
+	
+	public void setPassword(String password_) {
+		this.password = password_;
 	}
 	
 	public int maxUploadingJob() {
@@ -163,6 +171,10 @@ public class Configuration {
 		else {
 			return this.storageDirectory;
 		}
+	}
+	
+	public boolean getUserSpecifiedACacheDir() {
+		return this.userSpecifiedACacheDir;
 	}
 	
 	public void setExtras(String str) {

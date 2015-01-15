@@ -93,6 +93,10 @@ public class Client {
 		return this.config;
 	}
 	
+	public Server getServer() {
+		return this.server;
+	}
+	
 	public int run() {
 		if (this.config.checkOSisSupported() == false) {
 			this.gui.error(Error.humanString(Error.Type.OS_NOT_SUPPORTED));
