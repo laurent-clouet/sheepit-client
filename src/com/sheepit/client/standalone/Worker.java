@@ -47,10 +47,10 @@ public class Worker {
 	@Option(name = "-server", usage = "Render-farm server, default https://www.sheepit-renderfarm.com", metaVar = "URL", required = false)
 	private String server = "https://www.sheepit-renderfarm.com";
 	
-	@Option(name = "-login", usage = "User's login", metaVar = "LOGIN", required = true)
+	@Option(name = "-login", usage = "User's login", metaVar = "LOGIN", required = false)
 	private String login = "";
 	
-	@Option(name = "-password", usage = "User's password", metaVar = "PASSWORD", required = true)
+	@Option(name = "-password", usage = "User's password", metaVar = "PASSWORD", required = false)
 	private String password = "";
 	
 	@Option(name = "-cache-dir", usage = "Cache/Working directory. Caution, everything in it not related to the render-farm will be removed", metaVar = "/tmp/cache", required = false)
