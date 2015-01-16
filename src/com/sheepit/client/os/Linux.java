@@ -122,7 +122,7 @@ public class Linux extends OS {
 	}
 	
 	@Override
-	public Process exec(String[] command) throws IOException {
+	public Process exec(String[] command, Map<String, String> env_overight) throws IOException {
 		// the renderer have a lib directory so add to the LD_LIBRARY_PATH
 		// (even if we are not sure that it is the renderer who is launch
 		
@@ -155,6 +155,9 @@ public class Linux extends OS {
 		builder.redirectErrorStream(true);
 		Map<String, String> env = builder.environment();
 		env.putAll(new_env);
+		if (env_overight != null) {
+			env.putAll(env_overight);
+		}
 		return builder.start();
 	}
 	

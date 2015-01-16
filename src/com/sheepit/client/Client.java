@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -522,6 +524,10 @@ public class Client {
 		
 		String[] command = new String[size_command];
 		
+		Map<String, String> new_env = new HashMap<String, String>();
+		
+		new_env.put("BLENDER_USER_CONFIG", this.config.workingDirectory.getAbsolutePath().replace("\\", "\\\\"));
+ 				
 		int index = 0;
 		for (int i = 0; i < command1.length; i++) {
 			if (command1[i].equals(".c")) {
@@ -580,7 +586,7 @@ public class Client {
 			String line;
 			this.log.debug(Arrays.toString(command));
 			OS os = OS.getOS();
-			ajob.setProcess(os.exec(command));
+			ajob.setProcess(os.exec(command, new_env));
 			BufferedReader input = new BufferedReader(new InputStreamReader(ajob.getProcess().getInputStream()));
 			
 			long last_update_status = 0;
