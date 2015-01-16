@@ -3,7 +3,6 @@ package com.sheepit.client.standalone.swing.activity;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -88,13 +87,7 @@ public class Settings implements Activity {
 		
 		String destination = DUMMY_CACHE_DIR;
 		if (config.getUserSpecifiedACacheDir()) {
-			try {
-				destination = config.getStorageDir().getCanonicalPath();
-			}
-			catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			destination = config.getStorageDir().getName();
 		}
 		
 		cacheDirText = new JLabel(destination);
