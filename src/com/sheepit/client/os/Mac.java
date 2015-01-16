@@ -22,6 +22,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Map;
 
 import com.sheepit.client.Log;
 import com.sheepit.client.Utils;
@@ -140,7 +141,7 @@ public class Mac extends OS {
 	}
 	
 	@Override
-	public Process exec(String[] command) throws IOException {
+	public Process exec(String[] command, Map<String, String> env) throws IOException {
 		String[] actual_command = command;
 		if (this.hasNiceBinary == null) {
 			this.checkNiceAvailability();
@@ -154,6 +155,9 @@ public class Mac extends OS {
 		}
 		ProcessBuilder builder = new ProcessBuilder(actual_command);
 		builder.redirectErrorStream(true);
+		if (env != null) {
+			builder.environment().putAll(env);
+		}
 		return builder.start();
 	}
 	
