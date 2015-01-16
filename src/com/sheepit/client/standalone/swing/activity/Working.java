@@ -55,7 +55,7 @@ public class Working implements Activity {
 		statusLabel.setBounds(start_label_left, n, 240, size_height_label);
 		parent.getContentPane().add(statusLabel);
 		
-		statusContent.setBounds(start_label_right, n, end_label_right - start_label_right, size_height_label);
+		statusContent.setBounds(start_label_right, n, 600 - 20 - start_label_right, size_height_label);
 		parent.getContentPane().add(statusContent);
 		
 		n += sep;
