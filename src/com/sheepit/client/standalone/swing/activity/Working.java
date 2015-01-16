@@ -55,7 +55,9 @@ public class Working implements Activity {
 		statusLabel.setBounds(start_label_left, n, 240, size_height_label);
 		parent.getContentPane().add(statusLabel);
 		
-		statusContent.setBounds(start_label_right, n, 600 - 20 - start_label_right, size_height_label);
+		statusContent.setVerticalAlignment(JLabel.TOP);
+		statusContent.setVerticalTextPosition(JLabel.TOP);
+		statusContent.setBounds(start_label_right, n, 600 -20 - start_label_right, size_height_label + sep - 3);
 		parent.getContentPane().add(statusContent);
 		
 		n += sep;
@@ -97,7 +99,7 @@ public class Working implements Activity {
 	}
 	
 	public void setStatus(String msg_) {
-		statusContent.setText(msg_);
+		statusContent.setText("<html>" + msg_ + "</html>"); // html for the text wrapping
 	}
 	
 	public void setRemainingFrame(int n) {
