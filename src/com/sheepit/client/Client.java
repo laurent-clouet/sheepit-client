@@ -105,7 +105,7 @@ public class Client {
 			return -3;
 		}
 		
-		if (this.config.checkCPUisSUpported() == false) {
+		if (this.config.checkCPUisSupported() == false) {
 			this.gui.error(Error.humanString(Error.Type.CPU_NOT_SUPPORTED));
 			return -4;
 		}
@@ -649,18 +649,18 @@ public class Client {
 		ajob.setProcess(null);
 		
 		// find the picture file
-		final String namefile_without_extension = ajob.getPrefixOutputImage() + ajob.getFrameNumber();
+		final String filename_without_extension = ajob.getPrefixOutputImage() + ajob.getFrameNumber();
 		
 		FilenameFilter textFilter = new FilenameFilter() {
 			public boolean accept(File dir, String name) {
-				return name.startsWith(namefile_without_extension);
+				return name.startsWith(filename_without_extension);
 			}
 		};
 		
 		File[] files = this.config.workingDirectory.listFiles(textFilter);
 		
 		if (files.length == 0) {
-			this.log.error("Client::runRenderer no picture file found (after render finished (namefile_without_extension " + namefile_without_extension + ")");
+			this.log.error("Client::runRenderer no picture file found (after finished render (filename_without_extension " + filename_without_extension + ")");
 			
 			if (ajob.getAskForRendererKill()) {
 				this.log.debug("Client::runRenderer renderer didn't generate any frame but died due to a kill request");
@@ -707,26 +707,23 @@ public class Client {
 	protected int downloadSceneFile(Job ajob_) {
 		this.gui.status("Downloading scene");
 		
-		String achive_local_path = ajob_.getSceneArchivePath();
+		String archive_local_path = ajob_.getSceneArchivePath();
 		
-		File renderer_achive_local_path_file = new File(achive_local_path);
+		File renderer_archive_local_path_file = new File(archive_local_path);
 		
-		if (renderer_achive_local_path_file.exists()) {
-			// the archive have already been downloaded
-		}
-		else {
+		if (renderer_archive_local_path_file.exists() == false) {
 			// we must download the archive
 			int ret;
 			String real_url;
 			real_url = String.format("%s?type=job&job=%s&revision=%s", this.server.getPage("download-archive"), ajob_.getId(), ajob_.getRevision());
-			ret = this.server.HTTPGetFile(real_url, achive_local_path, this.gui, "Downloading scene %s %%");
+			ret = this.server.HTTPGetFile(real_url, archive_local_path, this.gui, "Downloading scene %s %%");
 			if (ret != 0) {
 				this.gui.error("Client::downloadSceneFile problem with Utils.DownloadFile returned " + ret);
 				return -1;
 			}
 			
 			String md5_local;
-			md5_local = Utils.md5(achive_local_path);
+			md5_local = Utils.md5(archive_local_path);
 			
 			if (md5_local.equals(ajob_.getSceneMD5()) == false) {
 				System.err.println("md5 of the downloaded file  and the local file are not the same (local '" + md5_local + "' scene: '" + ajob_.getSceneMD5() + "')");
@@ -744,16 +741,13 @@ public class Client {
 		real_url = String.format("%s?type=binary&job=%s", this.server.getPage("download-archive"), ajob.getId());
 		
 		// we have the MD5 of the renderer archive
-		String renderer_achive_local_path = ajob.getRendererArchivePath();
-		File renderer_achive_local_path_file = new File(renderer_achive_local_path);
+		String renderer_archive_local_path = ajob.getRendererArchivePath();
+		File renderer_archive_local_path_file = new File(renderer_archive_local_path);
 		
-		if (renderer_achive_local_path_file.exists()) {
-			// the archive has been already downloaded
-		}
-		else {
+		if (renderer_archive_local_path_file.exists() == false) {
 			// we must download the archive
 			int ret;
-			ret = this.server.HTTPGetFile(real_url, renderer_achive_local_path, this.gui, "Downloading renderer %s %%");
+			ret = this.server.HTTPGetFile(real_url, renderer_archive_local_path, this.gui, "Downloading renderer %s %%");
 			if (ret != 0) {
 				this.gui.error("Client::downloadExecutable problem with Utils.DownloadFile returned " + ret);
 				return -9;
@@ -761,7 +755,7 @@ public class Client {
 		}
 		
 		String md5_local;
-		md5_local = Utils.md5(renderer_achive_local_path);
+		md5_local = Utils.md5(renderer_archive_local_path);
 		
 		if (md5_local.equals(ajob.getRenderMd5()) == false) {
 			this.log.error("Client::downloadExecutable mismatch on md5  local: '" + md5_local + "' server: '" + ajob.getRenderMd5() + "'");

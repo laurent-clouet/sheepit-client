@@ -148,7 +148,7 @@ public class Linux extends OS {
 			actual_command = Utils.concatAll(low, command);
 		}
 		else {
-			Log.getInstance(null).error("No low priority binary, will not launch renderer in normal prioity");
+			Log.getInstance(null).error("No low priority binary, will not launch renderer in normal priority");
 		}
 		
 		ProcessBuilder builder = new ProcessBuilder(actual_command);
@@ -172,7 +172,7 @@ public class Linux extends OS {
 		}
 		catch (IOException e) {
 			this.hasNiceBinary = false;
-			Log.getInstance(null).error("Failed to find low priority binary, will not launch renderer in normal prioity (" + e + ")");
+			Log.getInstance(null).error("Failed to find low priority binary, will not launch renderer in normal priority (" + e + ")");
 		}
 		finally {
 			if (process != null) {

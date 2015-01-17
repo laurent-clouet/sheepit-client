@@ -296,7 +296,7 @@ public class Configuration {
 		return OS.getOS() != null;
 	}
 	
-	public boolean checkCPUisSUpported() {
+	public boolean checkCPUisSupported() {
 		OS os = OS.getOS();
 		if (os != null) {
 			CPU cpu = os.getCPU();

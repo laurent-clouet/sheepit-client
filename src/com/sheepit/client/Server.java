@@ -86,7 +86,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 	private HashMap<String, String> pages;
 	private Log log;
 	private long lastRequestTime;
-	private int keepmealive_duration; // time is ms
+	private int keepmealive_duration; // time in ms
 	
 	public Server(String url_, Configuration user_config_, Client client_) {
 		super();
