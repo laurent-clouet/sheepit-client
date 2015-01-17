@@ -23,6 +23,7 @@ public class Working implements Activity {
 	JLabel renderedFrameContent;
 	JLabel remainingFrameContent;
 	JLabel lastRender;
+	JButton pauseButton;
 	
 	public Working(GuiSwing parent_) {
 		parent = parent_;
@@ -92,8 +93,8 @@ public class Working implements Activity {
 		settingsButton.addActionListener(new SettingsAction());
 		parent.getContentPane().add(settingsButton);
 		
-		JButton pauseButton = new JButton("Pause");
-		pauseButton.setBounds(330, 500, 80, 25);
+		pauseButton = new JButton("Pause");
+		pauseButton.setBounds(330, 500, 100, 25);
 		pauseButton.addActionListener(new PauseAction());
 		parent.getContentPane().add(pauseButton);
 	}
@@ -139,7 +140,14 @@ public class Working implements Activity {
 		public void actionPerformed(ActionEvent e) {
 			Client client = parent.getClient();
 			if (client != null) {
-				client.suspend();
+				if (client.isSuspended()) {
+					pauseButton.setText("Pause");
+					client.resume();
+				}
+				else {
+					pauseButton.setText("Resume");
+					client.suspend();
+				}
 			}
 		}
 	}

@@ -334,6 +334,10 @@ public class Client {
 		return 0;
 	}
 	
+	public boolean isSuspended() {
+		return this.suspended;
+	}
+	
 	public void suspend() {
 		suspended = true;
 	}
