@@ -3,7 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="extern/args4j.jar"/>
-	<classpathentry kind="lib" path="extern/commons-compress.jar"/>
 	<classpathentry kind="lib" path="extern/jna.jar"/>
 	<classpathentry kind="lib" path="extern/platform.jar"/>
 	<classpathentry kind="output" path="bin"/>
