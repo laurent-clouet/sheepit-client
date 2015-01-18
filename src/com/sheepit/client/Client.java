@@ -481,9 +481,9 @@ public class Client {
 			return Error.Type.DOWNLOAD_FILE;
 		}
 		
-		ret = this.prepareWorkeableDirectory(ajob); // decompress renderer and scene archives
+		ret = this.prepareWorkingDirectory(ajob); // decompress renderer and scene archives
 		if (ret != 0) {
-			this.log.error("Client::work problem with this.prepareWorkeableDirectory (ret " + ret + ")");
+			this.log.error("Client::work problem with this.prepareWorkingDirectory (ret " + ret + ")");
 			return Error.Type.CAN_NOT_CREATE_DIRECTORY;
 		}
 		
@@ -765,7 +765,7 @@ public class Client {
 		return 0;
 	}
 	
-	protected int prepareWorkeableDirectory(Job ajob) {
+	protected int prepareWorkingDirectory(Job ajob) {
 		int ret;
 		String renderer_archive = ajob.getRendererArchivePath();
 		String renderer_path = ajob.getRendererDirectory();
@@ -781,7 +781,7 @@ public class Client {
 			// unzip the archive
 			ret = Utils.unzipFileIntoDirectory(renderer_archive, renderer_path);
 			if (ret != 0) {
-				this.gui.error("Client::prepareWorkeableDirectory, error with Utils.unzipFileIntoDirectory of the renderer (returned " + ret + ")");
+				this.gui.error("Client::prepareWorkingDirectory, error with Utils.unzipFileIntoDirectory of the renderer (returned " + ret + ")");
 				return -1;
 			}
 		}
@@ -800,7 +800,7 @@ public class Client {
 			// unzip the archive
 			ret = Utils.unzipFileIntoDirectory(scene_archive, scene_path);
 			if (ret != 0) {
-				this.gui.error("Client::prepareWorkeableDirectory, error with Utils.unzipFileIntoDirectory of the scene (returned " + ret + ")");
+				this.gui.error("Client::prepareWorkingDirectory, error with Utils.unzipFileIntoDirectory of the scene (returned " + ret + ")");
 				return -2;
 			}
 		}
