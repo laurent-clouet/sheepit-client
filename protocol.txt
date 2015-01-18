@@ -85,7 +85,7 @@ where X:
     * 201 => The client does not have rendering right.
     * 202 => Client's session is dead. Client should do a config request before requesting a new job.
     * 203 => Client's session have been disabled (usually because the client is sending broken frame). The client warms the end user and logout.
-    * 205 => No renderer is available for Client's hardware (pair of OS and architecture). For example Blender is not avaible for MacOS 32bits.
+    * 205 => No renderer is available for Client's hardware (pair of OS and architecture). For example Blender is not available for MacOS 32bits.
     * something else => unknown error
     
 Answer with no error:

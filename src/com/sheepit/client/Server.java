@@ -524,14 +524,14 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			FileOutputStream fos = new FileOutputStream(destination_);
 			byte[] ch = new byte[512 * 1024];
 			int nb;
-			long writed = 0;
+			long written = 0;
 			long last_gui_update = 0; // size in byte
 			while ((nb = inStrm.read(ch)) != -1) {
 				fos.write(ch, 0, nb);
-				writed += nb;
-				if ((writed - last_gui_update) > 1000000) { // only update the gui every 1MB
-					gui_.status(String.format(status_, (int) (100.0 * writed / size)));
-					last_gui_update = writed;
+				written += nb;
+				if ((written - last_gui_update) > 1000000) { // only update the gui every 1MB
+					gui_.status(String.format(status_, (int) (100.0 * written / size)));
+					last_gui_update = written;
 				}
 			}
 			fos.close();
