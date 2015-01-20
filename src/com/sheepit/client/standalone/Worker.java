@@ -269,7 +269,7 @@ public class Worker {
 		if (ui_type.equals("oneline")) {
 			if (config.getPrintLog()) {
 				System.out.println("OneLine UI can not be used if verbose mode is enabled");
-				System.exit(2); 
+				System.exit(2);
 			}
 			gui = new GuiTextOneLine();
 		}

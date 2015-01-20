@@ -111,13 +111,13 @@ public class Job {
 	}
 	
 	public void setAskForRendererKill(boolean val) {
-	    askForRendererKill = val;
-    }
-    
-    public boolean getAskForRendererKill() {
-        return askForRendererKill;
-    }
-    
+		askForRendererKill = val;
+	}
+	
+	public boolean getAskForRendererKill() {
+		return askForRendererKill;
+	}
+	
 	public void setProcess(Process val) {
 		process = val;
 	}

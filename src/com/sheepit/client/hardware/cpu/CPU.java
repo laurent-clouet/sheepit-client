@@ -84,5 +84,5 @@ public class CPU {
 	public boolean haveData() {
 		return this.name != null && this.model != null && this.family != null && this.arch != null;
 	}
-
+	
 }

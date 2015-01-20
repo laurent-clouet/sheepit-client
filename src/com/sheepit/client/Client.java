@@ -142,8 +142,8 @@ public class Client {
 			this.renderingJob = null;
 			
 			while (this.running == true) {
-				synchronized(this) {
-					while(this.suspended) {
+				synchronized (this) {
+					while (this.suspended) {
 						wait();
 					}
 				}
@@ -531,7 +531,7 @@ public class Client {
 		Map<String, String> new_env = new HashMap<String, String>();
 		
 		new_env.put("BLENDER_USER_CONFIG", this.config.workingDirectory.getAbsolutePath().replace("\\", "\\\\"));
- 				
+		
 		int index = 0;
 		for (int i = 0; i < command1.length; i++) {
 			if (command1[i].equals(".c")) {
@@ -759,7 +759,7 @@ public class Client {
 		
 		if (md5_local.equals(ajob.getRenderMd5()) == false) {
 			this.log.error("Client::downloadExecutable mismatch on md5  local: '" + md5_local + "' server: '" + ajob.getRenderMd5() + "'");
-				// md5 of the downloaded file doesn't match the expected hash
+			// md5 of the downloaded file doesn't match the expected hash
 			return -10;
 		}
 		return 0;
@@ -883,7 +883,7 @@ public class Client {
 				String[] parts = buf.split("-");
 				if (parts != null && parts.length == 2) {
 					try {
-						int current = Integer.parseInt(parts[0]); 
+						int current = Integer.parseInt(parts[0]);
 						int total = Integer.parseInt(parts[1]);
 						if (total != 0) {
 							this.gui.status(String.format("Rendering %s %%", (int) (100.0 * current / total)));
