@@ -33,7 +33,7 @@ public abstract class OS {
 	public abstract int getMemory();
 	
 	public abstract String getRenderBinaryPath();
-		
+	
 	public String getCUDALib() {
 		return null;
 	}

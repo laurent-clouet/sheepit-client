@@ -58,7 +58,7 @@ public class Working implements Activity {
 		
 		statusContent.setVerticalAlignment(JLabel.TOP);
 		statusContent.setVerticalTextPosition(JLabel.TOP);
-		statusContent.setBounds(start_label_right, n, 600 -20 - start_label_right, size_height_label + sep - 3);
+		statusContent.setBounds(start_label_right, n, 600 - 20 - start_label_right, size_height_label + sep - 3);
 		parent.getContentPane().add(statusContent);
 		
 		n += sep;
