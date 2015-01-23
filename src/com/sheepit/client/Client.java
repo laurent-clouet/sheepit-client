@@ -358,7 +358,7 @@ public class Client {
 		while (true) {
 			Job job_to_send;
 			try {
-				job_to_send = (Job) jobsToValidate.take();
+				job_to_send = jobsToValidate.take();
 				this.log.debug("will validate " + job_to_send);
 				//gui.status("Sending frame");
 				ret = confirmJob(job_to_send);
