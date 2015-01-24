@@ -96,7 +96,7 @@ public class GPU {
 		return true;
 	}
 	
-	public static List<String> listDevices() {
+	public static List<String> listModels() {
 		if (devices == null) {
 			generate();
 		}
@@ -109,6 +109,17 @@ public class GPU {
 			devs.add(dev.getModel());
 		}
 		return devs;
+	}
+	
+	public static List<GPUDevice> listDevices() {
+		if (devices == null) {
+			generate();
+		}
+		if (devices == null) {
+			return null;
+		}
+		
+		return devices;
 	}
 	
 	public static GPUDevice getGPUDevice(String device_model) {

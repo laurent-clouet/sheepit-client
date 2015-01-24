@@ -30,12 +30,12 @@ public class Settings implements Activity {
 	private File cacheDir;
 	private JFileChooser cacheDirChooser;
 	private JCheckBox useCPU;
-	private List<JCheckBox> useGPUs;
+	private List<JCheckBoxGPU> useGPUs;
 	
 	public Settings(GuiSwing parent_) {
 		parent = parent_;
 		cacheDir = null;
-		useGPUs = new LinkedList<JCheckBox>();
+		useGPUs = new LinkedList<JCheckBoxGPU>();
 	}
 	
 	@Override
@@ -128,11 +128,12 @@ public class Settings implements Activity {
 		useCPU.setBounds(start_label_right, n, size, size_height_label);
 		parent.getContentPane().add(useCPU);
 		
-		List<String> gpus = GPU.listDevices();
+		List<GPUDevice> gpus = GPU.listDevices();
 		if (gpus != null) {
-			for (String model : gpus) {
+			for (GPUDevice gpu : gpus) {
 				n += 20;
-				JCheckBox gpuCheckBox = new JCheckBox(model);
+				JCheckBoxGPU gpuCheckBox = new JCheckBoxGPU(gpu);
+				
 				gpuCheckBox.setSelected(gpuChecked);
 				gpuCheckBox.setBounds(start_label_right, n, 200, size_height_label);
 				gpuCheckBox.addActionListener(new GpuChangeAction());
@@ -198,10 +199,10 @@ public class Settings implements Activity {
 				}
 			}
 			
-			String selected_gpu = null;
-			for (JCheckBox box : useGPUs) {
+			GPUDevice selected_gpu = null;
+			for (JCheckBoxGPU box : useGPUs) {
 				if (box.isSelected()) {
-					selected_gpu = box.getText(); // model
+					selected_gpu = box.getGPUDevice();
 				}
 			}
 			
@@ -217,13 +218,24 @@ public class Settings implements Activity {
 			}
 			config.setComputeMethod(method);
 			
-			GPUDevice gpu = GPU.getGPUDevice(selected_gpu);
-			if (gpu != null) {
-				config.setUseGPU(gpu);
+			if (selected_gpu != null) {
+				config.setUseGPU(selected_gpu);
 			}
 			
 			parent.setCredentials(login.getText(), new String(password.getPassword()));
 		}
 	}
 	
+	class JCheckBoxGPU extends JCheckBox {
+		private GPUDevice gpu;
+		
+		public JCheckBoxGPU(GPUDevice gpu) {
+			super(gpu.getModel());
+			this.gpu = gpu;
+		}
+		
+		public GPUDevice getGPUDevice() {
+			return gpu;
+		}
+	}
 }
