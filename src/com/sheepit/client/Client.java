@@ -46,6 +46,7 @@ import com.sheepit.client.exception.FermeException;
 import com.sheepit.client.exception.FermeExceptionNoRightToRender;
 import com.sheepit.client.exception.FermeExceptionNoSession;
 import com.sheepit.client.exception.FermeExceptionSessionDisabled;
+import com.sheepit.client.hardware.gpu.GPUDevice;
 import com.sheepit.client.os.OS;
 
 public class Client {
@@ -513,11 +514,13 @@ public class Client {
 		this.gui.status("Rendering");
 		String core_script = "";
 		if (ajob.getUseGPU() && this.config.getGPUDevice() != null) {
-			core_script += "import bpy\n" + "bpy.context.user_preferences.system.compute_device_type = \"CUDA\"" + "\n" + "bpy.context.scene.cycles.device = \"GPU\"" + "\n" + "bpy.context.user_preferences.system.compute_device = \"" + this.config.getGPUDevice().getCudaName() + "\"\n" + "bpy.context.scene.render.tile_x = 256" + "\n" + "bpy.context.scene.render.tile_y = 256" + "\n";
+			core_script += "import bpy\n" + "bpy.context.user_preferences.system.compute_device_type = \"CUDA\"" + "\n" + "bpy.context.scene.cycles.device = \"GPU\"" + "\n" + "bpy.context.user_preferences.system.compute_device = \"" + this.config.getGPUDevice().getCudaName() + "\"\n";
 		}
 		else {
-			core_script += "import bpy\n" + "bpy.context.user_preferences.system.compute_device_type = \"NONE\"" + "\n" + "bpy.context.scene.cycles.device = \"CPU\"" + "\n" + "bpy.context.scene.render.tile_x = 32" + "\n" + "bpy.context.scene.render.tile_y = 32" + "\n";
+			core_script += "import bpy\n" + "bpy.context.user_preferences.system.compute_device_type = \"NONE\"" + "\n" + "bpy.context.scene.cycles.device = \"CPU\"" + "\n";
 		}
+		int tile_size = this.getTileSize(ajob);
+		core_script += "bpy.context.scene.render.tile_x = " + tile_size + "\n" + "bpy.context.scene.render.tile_y = " + tile_size + "\n";
 		File script_file = null;
 		String command1[] = ajob.getRenderCommand().split(" ");
 		int size_command = command1.length + 2; // + 2 for script
@@ -958,5 +961,16 @@ public class Client {
 				}
 			}
 		}
+	}
+	
+	protected int getTileSize(Job ajob) {
+		int size = 32; // CPU
+		GPUDevice gpu = this.config.getGPUDevice();
+		if (ajob.getUseGPU() && this.config.getGPUDevice() != null) {
+			// GPU
+			// if the vram is lower than 1G reduce the size of tile to avoid black output
+			size = (gpu.getMemory() > 1073741824L) ? 256 : 128;
+		}
+		return size;
 	}
 }
