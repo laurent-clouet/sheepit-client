@@ -39,7 +39,7 @@ public class Error {
 		OS_NOT_SUPPORTED,
 		CPU_NOT_SUPPORTED,
 		UNKNOWN
-	};
+	}
 	
 	public enum ServerCode {
 		OK(0),

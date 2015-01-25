@@ -387,7 +387,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				
 				String update_method = null;
 				if (renderer_node.hasAttribute("update_method")) {
-					update_method = renderer_node.getAttribute("update_method");;
+					update_method = renderer_node.getAttribute("update_method");
 				}
 				
 				Job a_job = new Job(

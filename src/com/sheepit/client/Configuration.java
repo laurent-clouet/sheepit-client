@@ -36,7 +36,7 @@ import com.sheepit.client.os.OS;
 public class Configuration {
 	public enum ComputeType {
 		CPU_GPU, CPU_ONLY, GPU_ONLY
-	}; // accept job for ...
+	} // accept job for ...
 	
 	public File workingDirectory;
 	public File storageDirectory; // for permanent storage (binary archive)
