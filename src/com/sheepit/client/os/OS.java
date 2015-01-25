@@ -19,6 +19,7 @@
 package com.sheepit.client.os;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import com.sheepit.client.hardware.cpu.CPU;
@@ -38,7 +39,7 @@ public abstract class OS {
 		return null;
 	}
 	
-	public Process exec(String[] command, Map<String, String> env) throws IOException {
+	public Process exec(List<String> command, Map<String, String> env) throws IOException {
 		ProcessBuilder builder = new ProcessBuilder(command);
 		builder.redirectErrorStream(true);
 		if (env != null) {

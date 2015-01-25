@@ -22,10 +22,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.Map;
 
 import com.sheepit.client.Log;
-import com.sheepit.client.Utils;
 import com.sheepit.client.hardware.cpu.CPU;
 
 public class Mac extends OS {
@@ -141,14 +141,16 @@ public class Mac extends OS {
 	}
 	
 	@Override
-	public Process exec(String[] command, Map<String, String> env) throws IOException {
-		String[] actual_command = command;
+	public Process exec(List<String> command, Map<String, String> env) throws IOException {
+		List<String> actual_command = command;
 		if (this.hasNiceBinary == null) {
 			this.checkNiceAvailability();
 		}
 		if (this.hasNiceBinary.booleanValue()) {
-			String[] low = { NICE_BINARY_PATH, "-n", "19" }; // launch the process in lowest priority
-			actual_command = Utils.concatAll(low, command);
+			// launch the process in lowest priority
+			actual_command.add(0, "19");
+			actual_command.add(0, "-n");
+			actual_command.add(0, NICE_BINARY_PATH);
 		}
 		else {
 			Log.getInstance(null).error("No low priority binary, will not launch renderer in normal priority");
