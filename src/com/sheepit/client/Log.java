@@ -86,7 +86,7 @@ public class Log {
 		}
 	}
 	
-	public final synchronized static Log getInstance(Configuration config) {
+	public static synchronized Log getInstance(Configuration config) {
 		if (instance == null) {
 			boolean print = false;
 			if (config != null) {
@@ -97,7 +97,7 @@ public class Log {
 		return instance;
 	}
 	
-	public final synchronized static void printCheckPoint(int point_) {
+	public static synchronized void printCheckPoint(int point_) {
 		Log log = Log.getInstance(null);
 		ArrayList<String> logs = log.getForCheckPoint(point_);
 		Iterator<String> it = logs.iterator();
