@@ -57,13 +57,13 @@ public abstract class OS {
 	
 	public static OS getOS() {
 		String os = System.getProperty("os.name").toLowerCase();
-		if (os.indexOf("win") >= 0) {
+		if (os.contains("win")) {
 			return new Windows();
 		}
-		else if (os.indexOf("mac") >= 0) {
+		else if (os.contains("mac")) {
 			return new Mac();
 		}
-		else if (os.indexOf("nix") >= 0 || os.indexOf("nux") >= 0) {
+		else if (os.contains("nix") || os.contains("nux")) {
 			return new Linux();
 		}
 		else {
