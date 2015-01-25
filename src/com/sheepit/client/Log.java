@@ -30,7 +30,7 @@ import java.util.Map;
 public class Log {
 	private static Log instance = null;
 	
-	private Map<Integer, ArrayList<String>> checkpoints = new HashMap<Integer, ArrayList<String>>();;
+	private Map<Integer, ArrayList<String>> checkpoints = new HashMap<Integer, ArrayList<String>>();
 	private int lastCheckPoint;
 	private DateFormat dateFormat;
 	
