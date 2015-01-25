@@ -19,6 +19,7 @@
 package com.sheepit.client.os;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import com.sheepit.client.hardware.cpu.CPU;
@@ -107,7 +108,7 @@ public class Windows extends OS {
 	}
 	
 	@Override
-	public Process exec(String[] command, Map<String, String> env) throws IOException {
+	public Process exec(List<String> command, Map<String, String> env) throws IOException {
 		// disable a popup because the renderer might crash (seg fault)
 		Kernel32Lib kernel32lib = null;
 		try {

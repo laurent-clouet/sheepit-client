@@ -21,11 +21,11 @@ package com.sheepit.client.os;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
 import com.sheepit.client.Log;
-import com.sheepit.client.Utils;
 import com.sheepit.client.hardware.cpu.CPU;
 
 public class Linux extends OS {
@@ -122,7 +122,7 @@ public class Linux extends OS {
 	}
 	
 	@Override
-	public Process exec(String[] command, Map<String, String> env_overight) throws IOException {
+	public Process exec(List<String> command, Map<String, String> env_overight) throws IOException {
 		// the renderer have a lib directory so add to the LD_LIBRARY_PATH
 		// (even if we are not sure that it is the renderer who is launch
 		
@@ -130,7 +130,7 @@ public class Linux extends OS {
 		new_env.putAll(java.lang.System.getenv()); // clone the env
 		Boolean has_ld_library_path = new_env.containsKey("LD_LIBRARY_PATH");
 		
-		String lib_dir = (new File(command[0])).getParent() + File.separator + "lib";
+		String lib_dir = (new File(command.get(0))).getParent() + File.separator + "lib";
 		String new_ld_library_path = "/lib:/lib64:/usr/lib:/usr/lib64:/lib/i386-linux-gnu:/lib/x86_64-linux-gnu:/usr/share/local" + ":" + lib_dir;
 		if (has_ld_library_path == false) {
 			new_env.put("LD_LIBRARY_PATH", new_ld_library_path);
@@ -139,13 +139,15 @@ public class Linux extends OS {
 			new_env.put("LD_LIBRARY_PATH", new_env.get("LD_LIBRARY_PATH") + ":" + new_ld_library_path);
 		}
 		
-		String[] actual_command = command;
+		List<String> actual_command = command;
 		if (this.hasNiceBinary == null) {
 			this.checkNiceAvailability();
 		}
 		if (this.hasNiceBinary.booleanValue()) {
-			String[] low = { NICE_BINARY_PATH, "-n", "19" }; // launch the process in lowest priority
-			actual_command = Utils.concatAll(low, command);
+			// launch the process in lowest priority
+			actual_command.add(0, "19");
+			actual_command.add(0, "-n");
+			actual_command.add(0, NICE_BINARY_PATH);
 		}
 		else {
 			Log.getInstance(null).error("No low priority binary, will not launch renderer in normal priority");

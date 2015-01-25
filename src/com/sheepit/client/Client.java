@@ -32,10 +32,10 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -529,19 +529,16 @@ public class Client {
 			size_command += 2;
 		}
 		
-		String[] command = new String[size_command];
+		List<String> command = new ArrayList<String>(size_command);
 		
 		Map<String, String> new_env = new HashMap<String, String>();
 		
 		new_env.put("BLENDER_USER_CONFIG", this.config.workingDirectory.getAbsolutePath().replace("\\", "\\\\"));
 		
-		int index = 0;
 		for (String arg : command1) {
 			if (arg.equals(".c")) {
-				command[index] = ajob.getScenePath();
-				index += 1;
-				command[index] = "-P";
-				index += 1;
+				command.add(ajob.getScenePath());
+				command.add("-P");
 				
 				try {
 					script_file = File.createTempFile("script_", "", this.config.workingDirectory);
@@ -556,7 +553,7 @@ public class Client {
 					out.write("\n"); // GPU part
 					out.close();
 					
-					command[index] = script_file.getAbsolutePath();
+					command.add(script_file.getAbsolutePath());
 				}
 				catch (IOException e) {
 					return Error.Type.UNKNOWN;
@@ -564,26 +561,22 @@ public class Client {
 				script_file.deleteOnExit();
 			}
 			else if (arg.equals(".e")) {
-				command[index] = ajob.getRendererPath();
+				command.add(ajob.getRendererPath());
 				// the number of cores has to be put after the binary and before the scene arg
 				if (this.config.getNbCores() > 0) {
-					index += 1;
-					command[index] = "-t";
-					index += 1;
-					command[index] = Integer.toString(this.config.getNbCores());
-					//index += 1; // do not do it, it will be done at the end of the loop 
+					command.add("-t");
+					command.add(Integer.toString(this.config.getNbCores()));
 				}
 			}
 			else if (arg.equals(".o")) {
-				command[index] = this.config.workingDirectory.getAbsolutePath() + File.separator + ajob.getPrefixOutputImage();
+				command.add(this.config.workingDirectory.getAbsolutePath() + File.separator + ajob.getPrefixOutputImage());
 			}
 			else if (arg.equals(".f")) {
-				command[index] = ajob.getFrameNumber();
+				command.add(ajob.getFrameNumber());
 			}
 			else {
-				command[index] = arg;
+				command.add(arg);
 			}
-			index += 1;
 		}
 		
 		long rending_start = new Date().getTime();
@@ -591,7 +584,7 @@ public class Client {
 		int nb_lines = 0;
 		try {
 			String line;
-			this.log.debug(Arrays.toString(command));
+			this.log.debug(command.toString());
 			OS os = OS.getOS();
 			ajob.setProcess(os.exec(command, new_env));
 			BufferedReader input = new BufferedReader(new InputStreamReader(ajob.getProcess().getInputStream()));

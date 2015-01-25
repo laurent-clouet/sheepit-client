@@ -28,7 +28,6 @@ import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -232,19 +231,5 @@ public class Utils {
 				return 0;
 		}
 		return Math.round(Double.parseDouble(m.group(1)) * scale);
-	}
-	
-	public static <T> T[] concatAll(T[] first, T[]... rest) {
-		int totalLength = first.length;
-		for (T[] array : rest) {
-			totalLength += array.length;
-		}
-		T[] result = Arrays.copyOf(first, totalLength);
-		int offset = first.length;
-		for (T[] array : rest) {
-			System.arraycopy(array, 0, result, offset, array.length);
-			offset += array.length;
-		}
-		return result;
 	}
 }
