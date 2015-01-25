@@ -82,9 +82,9 @@ public class Error {
 		
 		public static ServerCode fromInt(int val) {
 			ServerCode[] As = ServerCode.values();
-			for (int i = 0; i < As.length; i++) {
-				if (As[i].getValue() == val) {
-					return As[i];
+			for (ServerCode A : As) {
+				if (A.getValue() == val) {
+					return A;
 				}
 			}
 			return ServerCode.UNKNOWN;

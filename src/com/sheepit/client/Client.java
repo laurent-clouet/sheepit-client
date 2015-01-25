@@ -536,8 +536,8 @@ public class Client {
 		new_env.put("BLENDER_USER_CONFIG", this.config.workingDirectory.getAbsolutePath().replace("\\", "\\\\"));
 		
 		int index = 0;
-		for (int i = 0; i < command1.length; i++) {
-			if (command1[i].equals(".c")) {
+		for (String arg : command1) {
+			if (arg.equals(".c")) {
 				command[index] = ajob.getScenePath();
 				index += 1;
 				command[index] = "-P";
@@ -563,7 +563,7 @@ public class Client {
 				}
 				script_file.deleteOnExit();
 			}
-			else if (command1[i].equals(".e")) {
+			else if (arg.equals(".e")) {
 				command[index] = ajob.getRendererPath();
 				// the number of cores has to be put after the binary and before the scene arg
 				if (this.config.getNbCores() > 0) {
@@ -574,14 +574,14 @@ public class Client {
 					//index += 1; // do not do it, it will be done at the end of the loop 
 				}
 			}
-			else if (command1[i].equals(".o")) {
+			else if (arg.equals(".o")) {
 				command[index] = this.config.workingDirectory.getAbsolutePath() + File.separator + ajob.getPrefixOutputImage();
 			}
-			else if (command1[i].equals(".f")) {
+			else if (arg.equals(".f")) {
 				command[index] = ajob.getFrameNumber();
 			}
 			else {
-				command[index] = command1[i];
+				command[index] = arg;
 			}
 			index += 1;
 		}

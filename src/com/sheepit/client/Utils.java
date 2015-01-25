@@ -155,8 +155,8 @@ public class Utils {
 		if (directory_.isDirectory()) {
 			File[] list = directory_.listFiles();
 			if (list != null) {
-				for (int i = 0; i < list.length; i++) {
-					double max1 = lastModificationTime(list[i]);
+				for (File aFile : list) {
+					double max1 = lastModificationTime(aFile);
 					if (max1 > max) {
 						max = max1;
 					}
