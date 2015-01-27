@@ -133,7 +133,7 @@ public class Settings implements Activity {
 			for (GPUDevice gpu : gpus) {
 				n += 20;
 				JCheckBoxGPU gpuCheckBox = new JCheckBoxGPU(gpu);
-				
+				gpuCheckBox.setToolTipText(gpu.getCudaName());
 				gpuCheckBox.setSelected(gpuChecked);
 				gpuCheckBox.setBounds(start_label_right, n, 200, size_height_label);
 				gpuCheckBox.addActionListener(new GpuChangeAction());
