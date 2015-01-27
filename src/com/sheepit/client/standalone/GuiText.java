@@ -27,6 +27,8 @@ public class GuiText implements Gui {
 	private int framesRendered;
 	private Log log;
 	
+	private Client client;
+	
 	public GuiText() {
 		this.framesRendered = 0;
 		this.log = Log.getInstance(null);
@@ -34,6 +36,10 @@ public class GuiText implements Gui {
 	
 	@Override
 	public void start() {
+		if (client != null) {
+			client.run();
+			client.stop();
+		}
 	}
 	
 	@Override
@@ -66,11 +72,12 @@ public class GuiText implements Gui {
 	
 	@Override
 	public void setClient(Client cli) {
+		client = cli;
 	}
 	
 	@Override
 	public Client getClient() {
-		return null;
+		return client;
 	}
 	
 }

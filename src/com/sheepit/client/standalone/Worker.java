@@ -291,8 +291,5 @@ public class Worker {
 		hook.attachShutDownHook();
 		
 		gui.start();
-		
-		cli.run();
-		cli.stop();
 	}
 }

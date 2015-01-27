@@ -48,6 +48,8 @@ public class GuiSwing extends JFrame implements Gui {
 	private boolean waitingForAuthentication;
 	private Client client;
 	
+	private ThreadClient threadClient;
+	
 	public GuiSwing() {
 		framesRendered = 0;
 		
@@ -158,6 +160,14 @@ public class GuiSwing extends JFrame implements Gui {
 			notifyAll();
 		}
 		
+		if (threadClient != null && threadClient.isAlive()) {
+			System.out.println("Old thread client is alive, do not regenerate one");
+		}
+		else {
+			threadClient = new ThreadClient();
+			threadClient.start();
+		}
+		
 		showActivity(ActivityType.WORKING);
 	}
 	
@@ -175,4 +185,15 @@ public class GuiSwing extends JFrame implements Gui {
 		setVisible(true);
 		panel.repaint();
 	}
+	
+	public class ThreadClient extends Thread {
+		@Override
+		public void run() {
+			if (GuiSwing.this.client != null) {
+				int ret = GuiSwing.this.client.run();
+				System.out.println("Client.run return " + ret);
+			}
+		}
+	}
+	
 }
