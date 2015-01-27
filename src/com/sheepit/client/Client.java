@@ -701,7 +701,7 @@ public class Client {
 	}
 	
 	protected int downloadSceneFile(Job ajob_) {
-		this.gui.status("Downloading scene");
+		this.gui.status("Downloading project");
 		
 		String archive_local_path = ajob_.getSceneArchivePath();
 		
@@ -712,7 +712,7 @@ public class Client {
 			int ret;
 			String real_url;
 			real_url = String.format("%s?type=job&job=%s&revision=%s", this.server.getPage("download-archive"), ajob_.getId(), ajob_.getRevision());
-			ret = this.server.HTTPGetFile(real_url, archive_local_path, this.gui, "Downloading scene %s %%");
+			ret = this.server.HTTPGetFile(real_url, archive_local_path, this.gui, "Downloading project %s %%");
 			if (ret != 0) {
 				this.gui.error("Client::downloadSceneFile problem with Utils.DownloadFile returned " + ret);
 				return -1;
