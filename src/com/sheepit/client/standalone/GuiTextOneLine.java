@@ -9,6 +9,8 @@ public class GuiTextOneLine implements Gui {
 	private String status;
 	private String line;
 	
+	private Client client;
+	
 	public GuiTextOneLine() {
 		rendered = 0;
 		remaining = 0;
@@ -18,6 +20,10 @@ public class GuiTextOneLine implements Gui {
 	
 	@Override
 	public void start() {
+		if (client != null) {
+			client.run();
+			client.stop();
+		}
 	}
 	
 	@Override
@@ -50,11 +56,12 @@ public class GuiTextOneLine implements Gui {
 	
 	@Override
 	public void setClient(Client cli) {
+		client = cli;
 	}
 	
 	@Override
 	public Client getClient() {
-		return null;
+		return client;
 	}
 	
 	private void updateLine() {
