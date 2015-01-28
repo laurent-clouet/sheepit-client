@@ -352,7 +352,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 					ns = job_node.getElementsByTagName("script");
 					if (ns.getLength() != 0) {
 						Element a_node3 = (Element) ns.item(0);
-						script += new String(a_node3.getTextContent());
+						script += a_node3.getTextContent();
 					}
 				}
 				catch (Exception e) {
