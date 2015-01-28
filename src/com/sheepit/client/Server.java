@@ -112,7 +112,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 					String args = "";
 					if (this.client != null && this.client.getRenderingJob() != null) {
 						args = "?frame=" + this.client.getRenderingJob().getFrameNumber() + "&job=" + this.client.getRenderingJob().getId();
-						if (this.client.getRenderingJob().getExtras() != null && this.client.getRenderingJob().getExtras().length() > 0) {
+						if (this.client.getRenderingJob().getExtras() != null && this.client.getRenderingJob().getExtras().isEmpty() == false) {
 							args += "&extras=" + this.client.getRenderingJob().getExtras();
 						}
 					}
