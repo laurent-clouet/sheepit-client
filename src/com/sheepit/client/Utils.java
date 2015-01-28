@@ -28,6 +28,9 @@ import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -231,5 +234,26 @@ public class Utils {
 				return 0;
 		}
 		return Math.round(Double.parseDouble(m.group(1)) * scale);
+	}
+	
+	public static String humanDuration(Date date) {
+		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+		calendar.setTime(date);
+		
+		int hours = (calendar.get(Calendar.DAY_OF_MONTH) - 1) * 24 + calendar.get(Calendar.HOUR_OF_DAY);
+		int minutes = calendar.get(Calendar.MINUTE);
+		int seconds = calendar.get(Calendar.SECOND);
+		
+		String output = "";
+		if (hours > 0) {
+			output += hours + "h";
+		}
+		if (minutes > 0) {
+			output += minutes + "min";
+		}
+		if (seconds > 0) {
+			output += seconds + "s";
+		}
+		return output;
 	}
 }
