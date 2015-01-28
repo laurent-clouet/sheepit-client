@@ -32,6 +32,8 @@ public class Settings implements Activity {
 	private JCheckBox useCPU;
 	private List<JCheckBoxGPU> useGPUs;
 	
+	JButton saveButton;
+	
 	public Settings(GuiSwing parent_) {
 		parent = parent_;
 		cacheDir = null;
@@ -125,6 +127,7 @@ public class Settings implements Activity {
 		}
 		
 		int size = 60;
+		useCPU.addActionListener(new CpuChangeAction());
 		useCPU.setBounds(start_label_right, n, size, size_height_label);
 		parent.getContentPane().add(useCPU);
 		
@@ -144,11 +147,21 @@ public class Settings implements Activity {
 		
 		n += sep;
 		
-		JButton saveButton = new JButton("Start");
+		saveButton = new JButton("Start");
 		saveButton.setBounds(start_label_right, n, 80, size_height_label);
 		saveButton.addActionListener(new SaveAction());
 		parent.getContentPane().add(saveButton);
 		
+	}
+	
+	public void checkDisplaySaveButton() {
+		boolean selected = useCPU.isSelected();
+		for (JCheckBoxGPU box : useGPUs) {
+			if (box.isSelected()) {
+				selected = true;
+			}
+		}
+		saveButton.setEnabled(selected);
 	}
 	
 	class ChooseFileAction implements ActionListener {
@@ -164,6 +177,14 @@ public class Settings implements Activity {
 		}
 	}
 	
+	class CpuChangeAction implements ActionListener {
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			checkDisplaySaveButton();
+		}
+	}
+	
 	class GpuChangeAction implements ActionListener {
 		
 		@Override
@@ -173,6 +194,7 @@ public class Settings implements Activity {
 					box.setSelected(false);
 				}
 			}
+			checkDisplaySaveButton();
 		}
 	}
 	
