@@ -537,46 +537,48 @@ public class Client {
 		new_env.put("BLENDER_USER_CONFIG", this.config.workingDirectory.getAbsolutePath().replace("\\", "\\\\"));
 		
 		for (String arg : command1) {
-			if (arg.equals(".c")) {
-				command.add(ajob.getScenePath());
-				command.add("-P");
-				
-				try {
-					script_file = File.createTempFile("script_", "", this.config.workingDirectory);
-					File file = new File(script_file.getAbsolutePath());
-					FileWriter txt;
-					txt = new FileWriter(file);
+			switch (arg) {
+				case ".c":
+					command.add(ajob.getScenePath());
+					command.add("-P");
 					
-					PrintWriter out = new PrintWriter(txt);
-					out.write(ajob.getScript());
-					out.write("\n");
-					out.write(core_script); // GPU part
-					out.write("\n"); // GPU part
-					out.close();
-					
-					command.add(script_file.getAbsolutePath());
-				}
-				catch (IOException e) {
-					return Error.Type.UNKNOWN;
-				}
-				script_file.deleteOnExit();
-			}
-			else if (arg.equals(".e")) {
-				command.add(ajob.getRendererPath());
-				// the number of cores has to be put after the binary and before the scene arg
-				if (this.config.getNbCores() > 0) {
-					command.add("-t");
-					command.add(Integer.toString(this.config.getNbCores()));
-				}
-			}
-			else if (arg.equals(".o")) {
-				command.add(this.config.workingDirectory.getAbsolutePath() + File.separator + ajob.getPrefixOutputImage());
-			}
-			else if (arg.equals(".f")) {
-				command.add(ajob.getFrameNumber());
-			}
-			else {
-				command.add(arg);
+					try {
+						script_file = File.createTempFile("script_", "", this.config.workingDirectory);
+						File file = new File(script_file.getAbsolutePath());
+						FileWriter txt;
+						txt = new FileWriter(file);
+						
+						PrintWriter out = new PrintWriter(txt);
+						out.write(ajob.getScript());
+						out.write("\n");
+						out.write(core_script); // GPU part
+						out.write("\n"); // GPU part
+						out.close();
+						
+						command.add(script_file.getAbsolutePath());
+					}
+					catch (IOException e) {
+						return Error.Type.UNKNOWN;
+					}
+					script_file.deleteOnExit();
+					break;
+				case ".e":
+					command.add(ajob.getRendererPath());
+					// the number of cores has to be put after the binary and before the scene arg
+					if (this.config.getNbCores() > 0) {
+						command.add("-t");
+						command.add(Integer.toString(this.config.getNbCores()));
+					}
+					break;
+				case ".o":
+					command.add(this.config.workingDirectory.getAbsolutePath() + File.separator + ajob.getPrefixOutputImage());
+					break;
+				case ".f":
+					command.add(ajob.getFrameNumber());
+					break;
+				default:
+					command.add(arg);
+					break;
 			}
 		}
 		
