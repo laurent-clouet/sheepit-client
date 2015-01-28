@@ -80,7 +80,7 @@ public class Worker {
 	@Option(name = "-extras", usage = "Extras data push on the authentication request", required = false)
 	private String extras = null;
 	
-	@Option(name = "-ui", usage = "Specify the user interface to use, default 'text', available 'oneline', 'text', 'swing' (graphical)", required = false)
+	@Option(name = "-ui", usage = "Specify the user interface to use, default 'swing', available 'oneline', 'text', 'swing' (graphical)", required = false)
 	private String ui_type = "swing";
 	
 	@Option(name = "--version", usage = "Display application version", required = false, handler = VersionParameterHandler.class)
