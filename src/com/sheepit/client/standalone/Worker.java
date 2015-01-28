@@ -266,23 +266,25 @@ public class Worker {
 		Log.getInstance(config).debug("client version " + config.getJarVersion());
 		
 		Gui gui;
-		if (ui_type.equals("oneline")) {
-			if (config.getPrintLog()) {
-				System.out.println("OneLine UI can not be used if verbose mode is enabled");
-				System.exit(2);
-			}
-			gui = new GuiTextOneLine();
-		}
-		else if (ui_type.equals("swing")) {
-			if (java.awt.GraphicsEnvironment.isHeadless()) {
-				System.out.println("Graphical ui can not be launch.");
-				System.out.println("You should set a DISPLAY or use a text ui (via -ui oneline or -ui text).");
-				System.exit(3);
-			}
-			gui = new GuiSwing();
-		}
-		else {
-			gui = new GuiText();
+		switch (ui_type) {
+			case "oneline":
+				if (config.getPrintLog()) {
+					System.out.println("OneLine UI can not be used if verbose mode is enabled");
+					System.exit(2);
+				}
+				gui = new GuiTextOneLine();
+				break;
+			case "swing":
+				if (java.awt.GraphicsEnvironment.isHeadless()) {
+					System.out.println("Graphical ui can not be launch.");
+					System.out.println("You should set a DISPLAY or use a text ui (via -ui oneline or -ui text).");
+					System.exit(3);
+				}
+				gui = new GuiSwing();
+				break;
+			default:
+				gui = new GuiText();
+				break;
 		}
 		Client cli = new Client(gui, config, server);
 		gui.setClient(cli);
