@@ -190,8 +190,7 @@ public class GuiSwing extends JFrame implements Gui {
 		@Override
 		public void run() {
 			if (GuiSwing.this.client != null) {
-				int ret = GuiSwing.this.client.run();
-				System.out.println("Client.run return " + ret);
+				GuiSwing.this.client.run();
 			}
 		}
 	}
