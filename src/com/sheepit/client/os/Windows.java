@@ -49,10 +49,10 @@ public class Windows extends OS {
 			String[] identifier = java.lang.System.getenv("PROCESSOR_IDENTIFIER").split(" ");
 			for (int i = 0; i < (identifier.length - 1); i++) {
 				if (identifier[i].equals("Family")) {
-					ret.setFamily(new String(identifier[i + 1]));
+					ret.setFamily(identifier[i + 1]);
 				}
 				if (identifier[i].equals("Model")) {
-					ret.setModel(new String(identifier[i + 1]));
+					ret.setModel(identifier[i + 1]);
 				}
 			}
 		}
