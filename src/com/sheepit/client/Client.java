@@ -37,6 +37,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -910,16 +911,12 @@ public class Client {
 					try {
 						DateFormat date_parse_minute = new SimpleDateFormat("m:s");
 						DateFormat date_parse_hour = new SimpleDateFormat("h:m:s");
-						SimpleDateFormat date_output_minute = new SimpleDateFormat("mm'min'ss");
-						SimpleDateFormat date_output_hour = new SimpleDateFormat("HH'h'mm'min'ss");
 						DateFormat date_parse = date_parse_minute;
-						DateFormat date_output = date_output_minute;
 						if (remaining_time.split(":").length > 2) {
 							date_parse = date_parse_hour;
-							date_output = date_output_hour;
 						}
-						Date d1 = date_parse.parse(remaining_time);
-						this.gui.status(String.format("Rendering (remaining %s)", date_output.format(d1)));
+						date_parse.setTimeZone(TimeZone.getTimeZone("GMT"));
+						this.gui.status(String.format("Rendering (remaining %s)", Utils.humanDuration(date_parse.parse(remaining_time))));
 					}
 					catch (ParseException err) {
 						this.log.error("Client::updateRenderingStatus ParseException " + err);
