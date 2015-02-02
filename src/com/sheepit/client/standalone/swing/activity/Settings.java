@@ -11,6 +11,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import com.sheepit.client.Configuration;
@@ -173,6 +174,7 @@ public class Settings implements Activity {
 		
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
+			JOptionPane.showMessageDialog(parent.getContentPane(), "<html>The working directory has to be dedicated directory. <br />Caution, everything not related to SheepIt-Renderfarm will be removed.<br />You should create a directory specifically for it.</html>", "Warning: files will be removed!", JOptionPane.WARNING_MESSAGE);
 			int returnVal = cacheDirChooser.showOpenDialog(parent.getContentPane());
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				File file = cacheDirChooser.getSelectedFile();
