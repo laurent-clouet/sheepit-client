@@ -516,6 +516,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			
 			InputStream inStrm = httpCon.getInputStream();
 			if (httpCon.getResponseCode() != HttpURLConnection.HTTP_OK) {
+				this.log.error("Server::HTTPGetFile(" + url_ + ", ...) HTTP code is not " + HttpURLConnection.HTTP_OK + " it's " + httpCon.getResponseCode());
 				return -1;
 			}
 			int size = httpCon.getContentLength();
