@@ -32,7 +32,7 @@ public class GPU {
 		OS os = OS.getOS();
 		String path = os.getCUDALib();
 		if (path == null) {
-			System.out.println("GPU.listDevices failed to get CUDA lib");
+			System.out.println("GPU::generate no CUDA lib path found");
 			return false;
 		}
 		CUDA cudalib = null;
@@ -40,15 +40,15 @@ public class GPU {
 			cudalib = (CUDA) Native.loadLibrary(path, CUDA.class);
 		}
 		catch (java.lang.UnsatisfiedLinkError e) {
-			System.out.println("GPU.listDevices failed to load CUDA lib");
+			System.out.println("GPU::generate failed to load CUDA lib (path: " + path + ")");
 			return false;
 		}
 		catch (java.lang.ExceptionInInitializerError e) {
-			System.out.println("GPU.listDevices ExceptionInInitializerError " + e);
+			System.out.println("GPU::generate ExceptionInInitializerError " + e);
 			return false;
 		}
 		catch (Exception e) {
-			System.out.println("GPU.listDevices generic exception " + e);
+			System.out.println("GPU::generate generic exception " + e);
 			return false;
 		}
 		
@@ -56,11 +56,11 @@ public class GPU {
 		
 		result = cudalib.cuInit(0);
 		if (result != CUresult.CUDA_SUCCESS) {
+			System.out.println("GPU::generate cuInit failed (ret: " + result + ")");
 			return false;
 		}
 		
 		if (result == CUresult.CUDA_ERROR_NO_DEVICE) {
-			System.out.println("NO DEVICE");
 			return false;
 		}
 		
@@ -68,7 +68,7 @@ public class GPU {
 		result = cudalib.cuDeviceGetCount(count);
 		
 		if (result != CUresult.CUDA_SUCCESS) {
-			System.out.println("GPU.listDevices cuDeviceGetCount failed (ret: " + CUresult.stringFor(result) + ")");
+			System.out.println("GPU::generate cuDeviceGetCount failed (ret: " + CUresult.stringFor(result) + ")");
 			return false;
 		}
 		
@@ -79,7 +79,7 @@ public class GPU {
 			
 			result = cudalib.cuDeviceGetName(name, 256, num);
 			if (result != CUresult.CUDA_SUCCESS) {
-				System.out.println("GPU.listDevices cuDeviceGetName failed (ret: " + CUresult.stringFor(result) + ")");
+				System.out.println("GPU::generate cuDeviceGetName failed (ret: " + CUresult.stringFor(result) + ")");
 				continue;
 			}
 			
@@ -87,7 +87,7 @@ public class GPU {
 			result = cudalib.cuDeviceTotalMem(ram, num);
 			
 			if (result != CUresult.CUDA_SUCCESS) {
-				System.out.println("GPU.listDevices cuDeviceTotalMem failed (ret: " + CUresult.stringFor(result) + ")");
+				System.out.println("GPU::generate cuDeviceTotalMem failed (ret: " + CUresult.stringFor(result) + ")");
 				return false;
 			}
 			
