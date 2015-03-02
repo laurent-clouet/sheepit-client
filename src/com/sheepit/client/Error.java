@@ -125,7 +125,7 @@ public class Error {
 			case AUTHENTICATION_FAILED:
 				return "Failed to authenticate, please check your login and password";
 			case DOWNLOAD_FILE:
-				return "Error will downloading project's needed files. Will try another project in a few minutes.";
+				return "Error while downloading project files. Will try another project in a few minutes.";
 			case NOOUTPUTFILE:
 				return "Renderer has generated no output file, possibly a wrong project configuration or you are missing required libraries. Will try another project in a few minutes.";
 			case RENDERER_CRASHED:
