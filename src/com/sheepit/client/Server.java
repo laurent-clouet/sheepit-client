@@ -750,6 +750,41 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 		return null;
 	}
 	
+	public String getCreditEarnedOnCurrentSession() {
+		try {
+			HttpURLConnection httpCon = this.HTTPRequest(this.getPage("credits-earned"));
+			
+			InputStream inStrm = httpCon.getInputStream();
+			if (httpCon.getResponseCode() != HttpURLConnection.HTTP_OK) {
+				this.log.debug("Server::getCreditEarnedOnCurrentSession code not ok " + httpCon.getResponseCode());
+				return null;
+			}
+			int size = httpCon.getContentLength();
+			
+			if (size == 0) {
+				this.log.debug("Server::getLastRender size is 0");
+				return null;
+			}
+			
+			byte[] ret = new byte[size];
+			byte[] ch = new byte[1024];
+			int n = 0;
+			int i = 0;
+			while ((n = inStrm.read(ch)) != -1) {
+				System.arraycopy(ch, 0, ret, i, n);
+				i += n;
+			}
+			inStrm.close();
+			return new String(ret);
+		}
+		catch (Exception e) {
+			System.err.println("Server::getCreditEarnedOnCurrentSession exception " + e);
+			e.printStackTrace();
+			
+		}
+		return null;
+	}
+	
 	private String generateXMLForMD5cache() {
 		String xml_str = null;
 		try {
