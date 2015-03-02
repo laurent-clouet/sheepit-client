@@ -23,6 +23,7 @@ public class Working implements Activity {
 	JLabel renderedFrameContent;
 	JLabel remainingFrameContent;
 	JLabel lastRender;
+	JLabel creditEarned;
 	JButton pauseButton;
 	
 	public Working(GuiSwing parent_) {
@@ -31,6 +32,7 @@ public class Working implements Activity {
 		statusContent = new JLabel("Init");
 		renderedFrameContent = new JLabel("0");
 		remainingFrameContent = new JLabel("0");
+		creditEarned = new JLabel("");
 		
 		lastRender = new JLabel();
 	}
@@ -60,6 +62,15 @@ public class Working implements Activity {
 		statusContent.setVerticalTextPosition(JLabel.TOP);
 		statusContent.setBounds(start_label_right, n, 600 - 20 - start_label_right, size_height_label + sep - 3);
 		parent.getContentPane().add(statusContent);
+		
+		n += sep;
+		
+		JLabel creditsEarnedLabel = new JLabel("Credits earned:");
+		creditsEarnedLabel.setBounds(start_label_left, n, 240, size_height_label);
+		parent.getContentPane().add(creditsEarnedLabel);
+		
+		creditEarned.setBounds(start_label_right, n, end_label_right - start_label_right, size_height_label);
+		parent.getContentPane().add(creditEarned);
 		
 		n += sep;
 		
@@ -109,6 +120,7 @@ public class Working implements Activity {
 	
 	public void setRenderedFrame(int n) {
 		renderedFrameContent.setText(String.valueOf(n));
+		showCreditEarned();
 		showLastRender();
 	}
 	
@@ -132,6 +144,19 @@ public class Working implements Activity {
 			}
 		}
 		
+	}
+	
+	public void showCreditEarned() {
+		Client client = parent.getClient();
+		if (client != null) {
+			Server server = client.getServer();
+			if (server != null) {
+				String data = server.getCreditEarnedOnCurrentSession();
+				if (data != null) {
+					creditEarned.setText(data);
+				}
+			}
+		}
 	}
 	
 	class PauseAction implements ActionListener {
