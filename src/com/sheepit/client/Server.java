@@ -33,6 +33,7 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.NoRouteToHostException;
 import java.net.URL;
@@ -163,7 +164,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 		OS os = OS.getOS();
 		HttpURLConnection connection = null;
 		try {
-			String url_contents = String.format("%s%s?login=%s&password=%s&cpu_family=%s&cpu_model=%s&cpu_model_name=%s&cpu_cores=%s&os=%s&ram=%s&bits=%s&version=%s&extras=%s", 
+			String url_contents = String.format("%s%s?login=%s&password=%s&cpu_family=%s&cpu_model=%s&cpu_model_name=%s&cpu_cores=%s&os=%s&ram=%s&bits=%s&version=%s&hostname=%s&extras=%s", 
 				this.base_url,
 				"/server/config.php",
 				URLEncoder.encode(this.user_config.login(), "UTF-8"),
@@ -176,6 +177,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				os.getMemory(),
 				os.getCPU().arch(),
 				this.user_config.getJarVersion(),
+				URLEncoder.encode(InetAddress.getLocalHost().getHostName(), "UTF-8"),
 				this.user_config.getExtras());
 			this.log.debug("Server::getConfiguration url " + url_contents);
 			
