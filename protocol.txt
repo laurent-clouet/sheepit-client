@@ -13,6 +13,7 @@ Parameters as GET:
     * cpu_cores: Number of core (or thread) available.
     * ram: Memory available in bytes.
     * extras (optional): Extra data use for the configuration.
+    * hostname (optional): Hostname of the machine, it's useful when the user have multiple machines with same hardware configuration. It's only used for display for server website.
 
 Answer in case of error:
 <?xml version="1.0" encoding="utf-8" ?>
