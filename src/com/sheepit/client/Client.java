@@ -604,6 +604,13 @@ public class Client {
 						this.updateRenderingStatus(line, nb_lines, ajob);
 						last_update_status = new Date().getTime();
 					}
+					Type error = this.detectError(line, ajob);
+					if (error != Error.Type.OK) {
+						if (script_file != null) {
+							script_file.delete();
+						}
+						return error;
+					}
 				}
 				input.close();
 			}
@@ -956,6 +963,51 @@ public class Client {
 				}
 			}
 		}
+	}
+	
+	private Type detectError(String line, Job ajob) {
+		
+		if (line.indexOf("CUDA error: Out of memory") != -1) {
+			//	Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Mem:470.26M, Peak:470.26M | Scene, RenderLayer | Updating Device | Writing constant memory
+			//	Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Mem:470.26M, Peak:470.26M | Scene, RenderLayer | Path Tracing Tile 0/135, Sample 0/200
+			//	Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Mem:470.82M, Peak:470.82M | Scene, RenderLayer | Path Tracing Tile 1/135, Sample 0/200
+			//	CUDA error: Out of memory in cuLaunchKernel(cuPathTrace, xblocks , yblocks, 1, xthreads, ythreads, 1, 0, 0, args, 0)
+			//	Refer to the Cycles GPU rendering documentation for possible solutions:
+			//	http://www.blender.org/manual/render/cycles/gpu_rendering.html
+			//	Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Remaining:09:26.57 | Mem:470.26M, Peak:470.82M | Scene, RenderLayer | Path Tracing Tile 1/135, Sample 200/200
+			//	Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Remaining:00:00.06 | Mem:470.50M, Peak:470.82M | Scene, RenderLayer | Path Tracing Tile 134/135, Sample 0/200
+			//	Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Remaining:00:00.03 | Mem:470.26M, Peak:470.82M | Scene, RenderLayer | Path Tracing Tile 134/135, Sample 200/200
+			//	Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Remaining:00:00.03 | Mem:470.50M, Peak:470.82M | Scene, RenderLayer | Path Tracing Tile 135/135, Sample 0/200
+			//	Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Mem:470.26M, Peak:470.82M | Scene, RenderLayer | Path Tracing Tile 135/135, Sample 200/200
+			//	Error: CUDA error: Out of memory in cuLaunchKernel(cuPathTrace, xblocks , yblocks, 1, xthreads, ythreads, 1, 0, 0, args, 0)
+			//	Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Mem:470.26M, Peak:470.82M | Scene, RenderLayer | Cancel | CUDA error: Out of memory in cuLaunchKernel(cuPathTrace, xblocks , yblocks, 1, xthreads, ythreads, 1, 0, 0, args, 0)
+			//	Fra:151 Mem:405.89M (0.00M, Peak 633.81M) Sce: Scene Ve:0 Fa:0 La:0
+			//	Saved: /tmp/xx/26885_0151.png Time: 00:04.67 (Saving: 00:00.22)
+			//	Blender quit
+			return Type.RENDERER_OUT_OF_VIDEO_MEMORY;
+		}
+		else if (line.indexOf("CUDA device supported only with compute capability") != -1) {
+			// found bundled python: /tmp/xx/2.73/python
+			// read blend: /tmp/xx/compute-method.blend
+			// Fra:340 Mem:7.64M (0.00M, Peak 8.23M) | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Sun
+			// Fra:340 Mem:7.64M (0.00M, Peak 8.23M) | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Plane
+			// Fra:340 Mem:7.64M (0.00M, Peak 8.23M) | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Cube
+			// Fra:340 Mem:7.64M (0.00M, Peak 8.23M) | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Camera
+			// Fra:340 Mem:7.64M (0.00M, Peak 8.23M) | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Initializing
+			// Fra:340 Mem:7.64M (0.00M, Peak 8.23M) | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Loading render kernels (may take a few minutes the first time)
+			// CUDA device supported only with compute capability 2.0 or up, found 1.2.
+			// Refer to the Cycles GPU rendering documentation for possible solutions:
+			// http://www.blender.org/manual/render/cycles/gpu_rendering.html
+			// Fra:340 Mem:7.64M (0.00M, Peak 8.23M) | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Error | CUDA device supported only with compute capability 2.0 or up, found 1.2.
+			// Error: CUDA device supported only with compute capability 2.0 or up, found 1.2.
+			// Fra:340 Mem:7.64M (0.00M, Peak 8.23M) | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Waiting for render to start
+			// Fra:340 Mem:7.64M (0.00M, Peak 8.23M) | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Cancel | CUDA device supported only with compute capability 2.0 or up, found 1.2.
+			// Fra:340 Mem:7.64M (0.00M, Peak 8.23M) Sce: Scene Ve:0 Fa:0 La:0
+			// Saved: /tmp/xx/0_0340.png Time: 00:00.12 (Saving: 00:00.03)
+			// Blender quit
+			return Type.GPU_NOT_SUPPORTED;
+		}
+		return Type.OK;
 	}
 	
 	protected int getTileSize(Job ajob) {

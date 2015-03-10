@@ -32,12 +32,15 @@ public class Error {
 		NOOUTPUTFILE,
 		DOWNLOAD_FILE,
 		CAN_NOT_CREATE_DIRECTORY,
-		NETWORK_ISSUE, RENDERER_CRASHED,
+		NETWORK_ISSUE,
+		RENDERER_CRASHED,
+		RENDERER_OUT_OF_VIDEO_MEMORY,
 		RENDERER_KILLED,
 		RENDERER_MISSING_LIBRARIES,
 		FAILED_TO_EXECUTE,
 		OS_NOT_SUPPORTED,
 		CPU_NOT_SUPPORTED,
+		GPU_NOT_SUPPORTED,
 		UNKNOWN
 	}
 	
@@ -129,7 +132,11 @@ public class Error {
 			case NOOUTPUTFILE:
 				return "Renderer has generated no output file, possibly a wrong project configuration or you are missing required libraries. Will try another project in a few minutes.";
 			case RENDERER_CRASHED:
-				return "Renderer has crashed. It's mostly due to a bad project or not enough memory. There is nothing you can do about it. Will try another project in a few minutes.";
+				return "Renderer has crashed. It's usually due to a bad project or not enough memory. There is nothing you can do about it. Will try another project in a few minutes.";
+			case RENDERER_OUT_OF_VIDEO_MEMORY:
+				return "Renderer has crashed, due to not enough video memory (vram). There is nothing you can do about it. Will try another project in a few minutes.";
+			case GPU_NOT_SUPPORTED:
+				return "Rendering have failed due to a GPU not supported (please check the CUDA version)";
 			case RENDERER_MISSING_LIBRARIES:
 				return "Failed to launch renderer. Please check if you have necessary libraries installed and if you have enough free space in your working directory.";
 			case RENDERER_KILLED:
