@@ -726,7 +726,7 @@ public class Client {
 			
 			if (md5_local.equals(ajob_.getSceneMD5()) == false) {
 				System.err.println("md5 of the downloaded file  and the local file are not the same (local '" + md5_local + "' scene: '" + ajob_.getSceneMD5() + "')");
-				this.log.error("Client::downloadSceneFile mismatch on md5  local: '" + md5_local + "' server: '" + ajob_.getSceneMD5() + "'");
+				this.log.error("Client::downloadSceneFile mismatch on md5 local: '" + md5_local + "' server: '" + ajob_.getSceneMD5() + "' (local size: " + new File(archive_local_path).length() + ")");
 				// md5 of the downloaded file doesn't match the expected hash
 				return -2;
 			}
@@ -757,7 +757,7 @@ public class Client {
 		md5_local = Utils.md5(renderer_archive_local_path);
 		
 		if (md5_local.equals(ajob.getRenderMd5()) == false) {
-			this.log.error("Client::downloadExecutable mismatch on md5  local: '" + md5_local + "' server: '" + ajob.getRenderMd5() + "'");
+			this.log.error("Client::downloadExecutable mismatch on md5  local: '" + md5_local + "' server: '" + ajob.getRenderMd5() + "' (local size: " + new File(renderer_archive_local_path).length() + ")");
 			// md5 of the downloaded file doesn't match the expected hash
 			return -10;
 		}
