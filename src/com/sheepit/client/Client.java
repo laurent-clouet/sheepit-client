@@ -614,6 +614,9 @@ public class Client {
 			this.log.debug("end of rendering");
 		}
 		catch (Exception err) {
+			if (script_file != null) {
+				script_file.delete();
+			}
 			StringWriter sw = new StringWriter();
 			err.printStackTrace(new PrintWriter(sw));
 			this.log.error("Client:runRenderer exception(A) " + err + " stacktrace " + sw.toString());
