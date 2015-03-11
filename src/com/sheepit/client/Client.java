@@ -400,9 +400,9 @@ public class Client {
 			}
 			
 			writer.close();
-			String args = "";
+			String args = "?type=" + (error == null ? "" : error.getValue());
 			if (job_to_reset_ != null) {
-				args = "?frame=" + job_to_reset_.getFrameNumber() + "&job=" + job_to_reset_.getId() + "&render_time=" + job_to_reset_.getRenderDuration();
+				args += "&frame=" + job_to_reset_.getFrameNumber() + "&job=" + job_to_reset_.getId() + "&render_time=" + job_to_reset_.getRenderDuration();
 				if (job_to_reset_.getExtras() != null && job_to_reset_.getExtras().isEmpty() == false) {
 					args += "&extras=" + job_to_reset_.getExtras();
 				}
