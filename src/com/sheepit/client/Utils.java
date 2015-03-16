@@ -112,7 +112,10 @@ public class Utils {
 			byte[] buffer = new byte[8192];
 			while (dis.read(buffer) > 0)
 				; // process the entire file
-			return DatatypeConverter.printHexBinary(md.digest()).toLowerCase();
+			String data = DatatypeConverter.printHexBinary(md.digest()).toLowerCase();
+			dis.close();
+			is.close();
+			return data;
 		}
 		catch (NoSuchAlgorithmException | IOException e) {
 			return "";
