@@ -141,9 +141,8 @@ public class Client {
 			Thread thread_sender = new Thread(runnable_sender);
 			thread_sender.start();
 			
-			this.renderingJob = null;
-			
 			while (this.running == true) {
+				this.renderingJob = null;
 				synchronized (this) {
 					while (this.suspended) {
 						wait();
