@@ -512,15 +512,14 @@ public class Client {
 	
 	protected Error.Type runRenderer(Job ajob) {
 		this.gui.status("Rendering");
-		String core_script = "";
+		String core_script = "import bpy\n" + "bpy.context.user_preferences.system.compute_device_type = \"%s\"\n" + "bpy.context.scene.cycles.device = \"%s\"\n" + "bpy.context.user_preferences.system.compute_device = \"%s\"\n";
 		if (ajob.getUseGPU() && this.config.getGPUDevice() != null) {
-			core_script += "import bpy\n" + "bpy.context.user_preferences.system.compute_device_type = \"CUDA\"" + "\n" + "bpy.context.scene.cycles.device = \"GPU\"" + "\n" + "bpy.context.user_preferences.system.compute_device = \"" + this.config.getGPUDevice().getCudaName() + "\"\n";
+			core_script = String.format(core_script, "CUDA", "GPU", this.config.getGPUDevice().getCudaName());
 		}
 		else {
-			core_script += "import bpy\n" + "bpy.context.user_preferences.system.compute_device_type = \"NONE\"" + "\n" + "bpy.context.scene.cycles.device = \"CPU\"" + "\n";
+			core_script = String.format(core_script, "NONE", "CPU", "CPU");
 		}
-		int tile_size = this.getTileSize(ajob);
-		core_script += "bpy.context.scene.render.tile_x = " + tile_size + "\n" + "bpy.context.scene.render.tile_y = " + tile_size + "\n";
+		core_script += String.format("bpy.context.scene.render.tile_x = %1$d\nbpy.context.scene.render.tile_y = %1$d\n", this.getTileSize(ajob));
 		File script_file = null;
 		String command1[] = ajob.getRenderCommand().split(" ");
 		int size_command = command1.length + 2; // + 2 for script
