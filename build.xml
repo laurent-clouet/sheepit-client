@@ -45,6 +45,10 @@
             <include name="**"/>
             <manifest>
                 <attribute name="Main-Class" value="com.sheepit.client.standalone.Worker"/>
+                <attribute name="Application-Name" value="SheepIt-client"/>
+                <attribute name="Trusted-Library" value="true"/>
+                <attribute name="Permissions" value="all-permissions"/>
+                <attribute name="Codebase" value="*"/>
             </manifest>
         </jar>
     </target>
