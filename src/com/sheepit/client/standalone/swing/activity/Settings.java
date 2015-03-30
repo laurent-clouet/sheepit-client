@@ -19,6 +19,7 @@ import com.sheepit.client.Configuration.ComputeType;
 import com.sheepit.client.hardware.gpu.GPU;
 import com.sheepit.client.hardware.gpu.GPUDevice;
 import com.sheepit.client.standalone.GuiSwing;
+import com.sheepit.client.standalone.swing.SettingsLoader;
 
 public class Settings implements Activity {
 	private static final String DUMMY_CACHE_DIR = "Auto detected";
@@ -44,6 +45,7 @@ public class Settings implements Activity {
 	@Override
 	public void show() {
 		Configuration config = parent.getConfiguration();
+		new SettingsLoader().merge(config);
 		
 		int size_height_label = 24;
 		int start_label_left = 109;
@@ -252,6 +254,13 @@ public class Settings implements Activity {
 			}
 			
 			parent.setCredentials(login.getText(), new String(password.getPassword()));
+			
+			String cachePath = null;
+			if (config.getUserSpecifiedACacheDir() && config.getStorageDir() != null) {
+				cachePath = config.getStorageDir().getAbsolutePath();
+			}
+			
+			new SettingsLoader(login.getText(), new String(password.getPassword()), method, selected_gpu, cachePath).saveFile();
 		}
 	}
 	
