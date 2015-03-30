@@ -24,7 +24,7 @@
                debug="${compile.debug}"
                optimize="${compile.optimize}"
                deprecation="${compile.deprecation}"
-               includes="com/sheepit/client/*.java,com/sheepit/client/standalone/*.java">
+               includes="**">
                <classpath>
                      <pathelement location="extern/platform.jar"/>
                      <pathelement location="extern/jna.jar"/>
