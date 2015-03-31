@@ -144,6 +144,10 @@ public class SettingsLoader {
 		}
 	}
 	
+	/**
+	 * Merge the Settings file with the Configuration.
+	 * The Configuration will have high priority.
+	 */
 	public void merge(Configuration config) {
 		if (config == null) {
 			System.out.println("SettingsLoader::merge config is null");
@@ -151,23 +155,23 @@ public class SettingsLoader {
 		
 		loadFile();
 		
-		if (login != null) {
+		if (config.login().isEmpty() && login != null) {
 			config.setLogin(login);
 		}
-		if (password != null) {
+		if (config.password().isEmpty() && password != null) {
 			config.setPassword(password);
 		}
 		
-		if (computeMethod != null) {
+		if (config.getComputeMethod() == null && computeMethod != null) {
 			config.setComputeMethod(ComputeType.valueOf(computeMethod));
 		}
-		if (gpu != null) {
+		if (config.getGPUDevice() == null && gpu != null) {
 			GPUDevice device = GPU.getGPUDevice(gpu);
 			if (device != null) {
 				config.setUseGPU(device);
 			}
 		}
-		if (cacheDir != null) {
+		if (config.getUserSpecifiedACacheDir() == false && cacheDir != null) {
 			config.setCacheDir(new File(cacheDir));
 		}
 	}
