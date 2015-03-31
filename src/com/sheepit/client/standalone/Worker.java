@@ -186,16 +186,10 @@ public class Worker {
 		}
 		
 		if (method != null) {
-			if (method.equalsIgnoreCase("cpu")) {
-				compute_method = ComputeType.CPU_ONLY;
+			try {
+				compute_method = ComputeType.valueOf(method);
 			}
-			else if (method.equalsIgnoreCase("gpu")) {
-				compute_method = ComputeType.GPU_ONLY;
-			}
-			else if (method.equalsIgnoreCase("cpu_gpu") || method.equalsIgnoreCase("gpu_cpu")) {
-				compute_method = ComputeType.CPU_GPU;
-			}
-			else {
+			catch (IllegalArgumentException e) {
 				System.err.println("Error: compute-method unknown");
 				System.exit(2);
 			}
