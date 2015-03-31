@@ -34,6 +34,7 @@ public class Settings implements Activity {
 	private JCheckBox useCPU;
 	private List<JCheckBoxGPU> useGPUs;
 	
+	private JCheckBox saveFile;
 	JButton saveButton;
 	
 	public Settings(GuiSwing parent_) {
@@ -155,6 +156,12 @@ public class Settings implements Activity {
 		
 		n += sep;
 		
+		saveFile = new JCheckBox("Save settings", true);
+		saveFile.setBounds(start_label_right, n, end_label_right - start_label_right, size_height_label);
+		parent.getContentPane().add(saveFile);
+		
+		n += sep;
+		
 		saveButton = new JButton("Start");
 		saveButton.setBounds(start_label_right, n, 80, size_height_label);
 		saveButton.addActionListener(new SaveAction());
@@ -260,7 +267,9 @@ public class Settings implements Activity {
 				cachePath = config.getStorageDir().getAbsolutePath();
 			}
 			
-			new SettingsLoader(login.getText(), new String(password.getPassword()), method, selected_gpu, cachePath).saveFile();
+			if (saveFile.isSelected()) {
+				new SettingsLoader(login.getText(), new String(password.getPassword()), method, selected_gpu, cachePath).saveFile();
+			}
 		}
 	}
 	
