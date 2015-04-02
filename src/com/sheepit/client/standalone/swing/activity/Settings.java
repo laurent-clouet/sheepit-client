@@ -3,6 +3,7 @@ package com.sheepit.client.standalone.swing.activity;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -269,6 +270,13 @@ public class Settings implements Activity {
 			
 			if (saveFile.isSelected()) {
 				new SettingsLoader(login.getText(), new String(password.getPassword()), method, selected_gpu, cachePath).saveFile();
+			}
+			else {
+				try {
+					new File(new SettingsLoader().getFilePath()).delete();
+				}
+				catch (SecurityException e3) {
+				}
 			}
 		}
 	}

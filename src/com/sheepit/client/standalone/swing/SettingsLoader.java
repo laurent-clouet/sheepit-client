@@ -49,6 +49,10 @@ public class SettingsLoader {
 		path = System.getProperty("user.home") + File.separator + ".sheepit.conf";
 	}
 	
+	public String getFilePath() {
+		return path;
+	}
+	
 	public void saveFile() {
 		Properties prop = new Properties();
 		OutputStream output = null;
