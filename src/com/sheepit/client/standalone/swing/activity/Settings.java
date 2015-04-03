@@ -38,12 +38,16 @@ public class Settings implements Activity {
 	private List<JCheckBoxGPU> useGPUs;
 	
 	private JCheckBox saveFile;
+	private JCheckBox autoSignIn;
 	JButton saveButton;
+	
+	private boolean haveAutoStarted;
 	
 	public Settings(GuiSwing parent_) {
 		parent = parent_;
 		cacheDir = null;
 		useGPUs = new LinkedList<JCheckBoxGPU>();
+		haveAutoStarted = false;
 	}
 	
 	@Override
@@ -165,6 +169,13 @@ public class Settings implements Activity {
 		saveFile.setBounds(start_label_right, n, end_label_right - start_label_right, size_height_label);
 		parent.getContentPane().add(saveFile);
 		
+		n += 20;
+		
+		autoSignIn = new JCheckBox("Auto sign in", config.getAutoSignIn());
+		autoSignIn.setBounds(start_label_right, n, end_label_right - start_label_right, size_height_label);
+		autoSignIn.addActionListener(new AutoSignInChangeAction());
+		parent.getContentPane().add(autoSignIn);
+		
 		n += sep;
 		
 		saveButton = new JButton("Start");
@@ -172,10 +183,14 @@ public class Settings implements Activity {
 		saveButton.addActionListener(new SaveAction());
 		parent.getContentPane().add(saveButton);
 		
-		checkDisplaySaveButton();
+		if (haveAutoStarted == false && config.getAutoSignIn() && checkDisplaySaveButton()) {
+			// auto start
+			haveAutoStarted = true;
+			new SaveAction().actionPerformed(null);
+		}
 	}
 	
-	public void checkDisplaySaveButton() {
+	public boolean checkDisplaySaveButton() {
 		boolean selected = useCPU.isSelected();
 		for (JCheckBoxGPU box : useGPUs) {
 			if (box.isSelected()) {
@@ -186,6 +201,7 @@ public class Settings implements Activity {
 			selected = false;
 		}
 		saveButton.setEnabled(selected);
+		return selected;
 	}
 	
 	class ChooseFileAction implements ActionListener {
@@ -287,7 +303,7 @@ public class Settings implements Activity {
 			}
 			
 			if (saveFile.isSelected()) {
-				new SettingsLoader(login.getText(), new String(password.getPassword()), method, selected_gpu, cachePath).saveFile();
+				new SettingsLoader(login.getText(), new String(password.getPassword()), method, selected_gpu, cachePath, autoSignIn.isSelected()).saveFile();
 			}
 			else {
 				try {
