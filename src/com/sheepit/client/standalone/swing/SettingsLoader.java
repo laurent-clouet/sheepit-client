@@ -21,16 +21,18 @@ public class SettingsLoader {
 	private String computeMethod;
 	private String gpu;
 	private String cacheDir;
+	private String autoSignIn;
 	
 	public SettingsLoader() {
 		generateFilePath();
 	}
 	
-	public SettingsLoader(String login_, String password_, ComputeType computeMethod_, GPUDevice gpu_, String cacheDir_) {
+	public SettingsLoader(String login_, String password_, ComputeType computeMethod_, GPUDevice gpu_, String cacheDir_, boolean autoSignIn_) {
 		generateFilePath();
 		login = login_;
 		password = password_;
 		cacheDir = cacheDir_;
+		autoSignIn = String.valueOf(autoSignIn_);
 		
 		if (computeMethod_ != null) {
 			try {
@@ -79,6 +81,10 @@ public class SettingsLoader {
 				prop.setProperty("password", password);
 			}
 			
+			if (autoSignIn != null) {
+				prop.setProperty("auto-signin", autoSignIn);
+			}
+			
 			prop.store(output, null);
 		}
 		catch (IOException io) {
@@ -102,6 +108,7 @@ public class SettingsLoader {
 		this.computeMethod = null;
 		this.gpu = null;
 		this.cacheDir = null;
+		this.autoSignIn = null;
 		
 		if (new File(path).exists() == false) {
 			return;
@@ -131,6 +138,10 @@ public class SettingsLoader {
 			
 			if (prop.containsKey("password")) {
 				this.password = prop.getProperty("password");
+			}
+			
+			if (prop.containsKey("auto-signin")) {
+				this.autoSignIn = prop.getProperty("auto-signin");
 			}
 		}
 		catch (IOException io) {
@@ -178,6 +189,8 @@ public class SettingsLoader {
 		if (config.getUserSpecifiedACacheDir() == false && cacheDir != null) {
 			config.setCacheDir(new File(cacheDir));
 		}
+		
+		config.setAutoSignIn(Boolean.valueOf(autoSignIn));
 	}
 	
 	@Override

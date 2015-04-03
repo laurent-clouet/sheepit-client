@@ -51,6 +51,7 @@ public class Configuration {
 	private boolean printLog;
 	public List<Pair<Calendar, Calendar>> requestTime;
 	private String extras;
+	private boolean autoSignIn;
 	
 	public Configuration(File cache_dir_, String login_, String password_) {
 		this.login = login_;
@@ -67,6 +68,7 @@ public class Configuration {
 		this.printLog = false;
 		this.requestTime = null;
 		this.extras = "";
+		this.autoSignIn = false;
 	}
 	
 	public String toString() {
@@ -183,6 +185,14 @@ public class Configuration {
 	
 	public String getExtras() {
 		return this.extras;
+	}
+	
+	public void setAutoSignIn(boolean v) {
+		this.autoSignIn = v;
+	}
+	
+	public boolean getAutoSignIn() {
+		return this.autoSignIn;
 	}
 	
 	public void cleanWorkingDirectory() {
