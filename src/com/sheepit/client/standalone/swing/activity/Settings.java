@@ -2,6 +2,8 @@ package com.sheepit.client.standalone.swing.activity;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -72,6 +74,7 @@ public class Settings implements Activity {
 		login.setBounds(start_label_right, n, end_label_right - start_label_right, size_height_label);
 		login.setText(parent.getConfiguration().login());
 		login.setColumns(20);
+		login.addKeyListener(new CheckCanStart());
 		parent.getContentPane().add(login);
 		
 		n += sep;
@@ -84,6 +87,7 @@ public class Settings implements Activity {
 		password.setBounds(start_label_right, n, end_label_right - start_label_right, size_height_label);
 		password.setText(parent.getConfiguration().password());
 		password.setColumns(10);
+		password.addKeyListener(new CheckCanStart());
 		parent.getContentPane().add(password);
 		
 		n += sep;
@@ -168,6 +172,7 @@ public class Settings implements Activity {
 		saveButton.addActionListener(new SaveAction());
 		parent.getContentPane().add(saveButton);
 		
+		checkDisplaySaveButton();
 	}
 	
 	public void checkDisplaySaveButton() {
@@ -176,6 +181,9 @@ public class Settings implements Activity {
 			if (box.isSelected()) {
 				selected = true;
 			}
+		}
+		if (login.getText().isEmpty() || password.getPassword().length == 0) {
+			selected = false;
 		}
 		saveButton.setEnabled(selected);
 	}
@@ -212,6 +220,16 @@ public class Settings implements Activity {
 				}
 			}
 			checkDisplaySaveButton();
+		}
+	}
+	
+	class AutoSignInChangeAction implements ActionListener {
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (autoSignIn.isSelected()) {
+				saveFile.setSelected(true);
+			}
 		}
 	}
 	
@@ -292,5 +310,22 @@ public class Settings implements Activity {
 		public GPUDevice getGPUDevice() {
 			return gpu;
 		}
+	}
+	
+	public class CheckCanStart implements KeyListener {
+		
+		@Override
+		public void keyPressed(KeyEvent arg0) {
+		}
+		
+		@Override
+		public void keyReleased(KeyEvent arg0) {
+		}
+		
+		@Override
+		public void keyTyped(KeyEvent arg0) {
+			checkDisplaySaveButton();
+		}
+		
 	}
 }
