@@ -104,7 +104,7 @@ public class Worker {
 			return;
 		}
 		
-		ComputeType compute_method = ComputeType.CPU_ONLY;
+		ComputeType compute_method = ComputeType.CPU;
 		Configuration config = new Configuration(null, login, password);
 		config.setPrintLog(print_log);
 		
@@ -196,10 +196,10 @@ public class Worker {
 		}
 		else {
 			if (config.getGPUDevice() == null) {
-				compute_method = ComputeType.CPU_ONLY;
+				compute_method = ComputeType.CPU;
 			}
 			else {
-				compute_method = ComputeType.GPU_ONLY;
+				compute_method = ComputeType.GPU;
 			}
 		}
 		
@@ -236,7 +236,7 @@ public class Worker {
 			config.setExtras(extras);
 		}
 		
-		if (compute_method == ComputeType.CPU_ONLY && config.getGPUDevice() != null) {
+		if (compute_method == ComputeType.CPU && config.getGPUDevice() != null) {
 			System.err.println("You choose to only use the CPU but a GPU was also provided. You can not do both.");
 			System.err.println("Aborting");
 			System.exit(2);
@@ -246,12 +246,12 @@ public class Worker {
 			System.err.println("Aborting");
 			System.exit(2);
 		}
-		else if (compute_method == ComputeType.GPU_ONLY && config.getGPUDevice() == null) {
+		else if (compute_method == ComputeType.GPU && config.getGPUDevice() == null) {
 			System.err.println("You choose to only use the GPU but no GPU device was provided.");
 			System.err.println("Aborting");
 			System.exit(2);
 		}
-		else if (compute_method == ComputeType.CPU_ONLY) {
+		else if (compute_method == ComputeType.CPU) {
 			config.setUseGPU(null); // remove the GPU
 		}
 		
