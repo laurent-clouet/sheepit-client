@@ -181,8 +181,14 @@ public class SettingsLoader {
 			config.setPassword(password);
 		}
 		
-		if ((config.getComputeMethod() == null && computeMethod != null) || (computeMethod != null && config.getComputeMethod() != ComputeType.valueOf(computeMethod))) {
-			config.setComputeMethod(ComputeType.valueOf(computeMethod));
+		try {
+			if ((config.getComputeMethod() == null && computeMethod != null) || (computeMethod != null && config.getComputeMethod() != ComputeType.valueOf(computeMethod))) {
+				config.setComputeMethod(ComputeType.valueOf(computeMethod));
+			}
+		}
+		catch (IllegalArgumentException e) {
+			System.err.println("SettingsLoader::merge failed to handle compute method (raw value: '" + computeMethod + "')");
+			computeMethod = null;
 		}
 		if (config.getGPUDevice() == null && gpu != null) {
 			GPUDevice device = GPU.getGPUDevice(gpu);
