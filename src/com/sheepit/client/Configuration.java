@@ -35,7 +35,7 @@ import com.sheepit.client.os.OS;
 
 public class Configuration {
 	public enum ComputeType {
-		CPU_GPU, CPU_ONLY, GPU_ONLY
+		CPU_GPU, CPU, GPU
 	} // accept job for ...
 	
 	public File workingDirectory;

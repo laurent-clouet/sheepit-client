@@ -271,7 +271,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 		HttpURLConnection connection = null;
 		try {
 			String url = String.format("%s?computemethod=%s", this.getPage("request-job"), this.user_config.computeMethodToInt());
-			if (this.user_config.getComputeMethod() != ComputeType.CPU_ONLY && this.user_config.getGPUDevice() != null) {
+			if (this.user_config.getComputeMethod() != ComputeType.CPU && this.user_config.getGPUDevice() != null) {
 				String gpu_model = "";
 				try {
 					gpu_model = URLEncoder.encode(this.user_config.getGPUDevice().getModel(), "UTF-8");

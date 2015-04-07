@@ -130,11 +130,11 @@ public class Settings implements Activity {
 			useCPU.setSelected(true);
 			gpuChecked = true;
 		}
-		else if (method == ComputeType.CPU_ONLY) {
+		else if (method == ComputeType.CPU) {
 			useCPU.setSelected(true);
 			gpuChecked = false;
 		}
-		else if (method == ComputeType.GPU_ONLY) {
+		else if (method == ComputeType.GPU) {
 			useCPU.setSelected(false);
 			gpuChecked = true;
 		}
@@ -279,12 +279,12 @@ public class Settings implements Activity {
 				}
 			}
 			
-			ComputeType method = ComputeType.CPU_ONLY;
+			ComputeType method = ComputeType.CPU;
 			if (useCPU.isSelected() && selected_gpu == null) {
-				method = ComputeType.CPU_ONLY;
+				method = ComputeType.CPU;
 			}
 			else if (useCPU.isSelected() == false && selected_gpu != null) {
-				method = ComputeType.GPU_ONLY;
+				method = ComputeType.GPU;
 			}
 			else if (useCPU.isSelected() && selected_gpu != null) {
 				method = ComputeType.CPU_GPU;
