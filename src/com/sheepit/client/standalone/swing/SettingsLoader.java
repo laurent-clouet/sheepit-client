@@ -24,11 +24,15 @@ public class SettingsLoader {
 	private String autoSignIn;
 	
 	public SettingsLoader() {
-		generateFilePath();
+		path = getDefaultFilePath();
+	}
+	
+	public SettingsLoader(String path_) {
+		path = path_;
 	}
 	
 	public SettingsLoader(String login_, String password_, ComputeType computeMethod_, GPUDevice gpu_, String cacheDir_, boolean autoSignIn_) {
-		generateFilePath();
+		path = getDefaultFilePath();
 		login = login_;
 		password = password_;
 		cacheDir = cacheDir_;
@@ -47,8 +51,8 @@ public class SettingsLoader {
 		}
 	}
 	
-	private void generateFilePath() {
-		path = System.getProperty("user.home") + File.separator + ".sheepit.conf";
+	public static String getDefaultFilePath() {
+		return System.getProperty("user.home") + File.separator + ".sheepit.conf";
 	}
 	
 	public String getFilePath() {

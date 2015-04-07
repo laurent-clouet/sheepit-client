@@ -42,6 +42,7 @@ import com.sheepit.client.ShutdownHook;
 import com.sheepit.client.hardware.gpu.GPU;
 import com.sheepit.client.hardware.gpu.GPUDevice;
 import com.sheepit.client.network.ProxyAuthenticator;
+import com.sheepit.client.standalone.swing.SettingsLoader;
 
 public class Worker {
 	@Option(name = "-server", usage = "Render-farm server, default https://www.sheepit-renderfarm.com", metaVar = "URL", required = false)
@@ -82,6 +83,9 @@ public class Worker {
 	
 	@Option(name = "-ui", usage = "Specify the user interface to use, default 'swing', available 'oneline', 'text', 'swing' (graphical)", required = false)
 	private String ui_type = "swing";
+	
+	@Option(name = "-config", usage = "Specify the configuration file", required = false)
+	private String config_file = null;
 	
 	@Option(name = "--version", usage = "Display application version", required = false, handler = VersionParameterHandler.class)
 	private VersionParameterHandler versionHandler;
@@ -256,6 +260,16 @@ public class Worker {
 		}
 		
 		config.setComputeMethod(compute_method);
+		
+		
+		if (config_file != null) {
+			if (new File(config_file).exists() == false) {
+				System.err.println("Configuration file not found.");
+				System.err.println("Aborting");
+				System.exit(2);
+			}
+			new SettingsLoader(config_file).merge(config);
+		}
 		
 		Log.getInstance(config).debug("client version " + config.getJarVersion());
 		
