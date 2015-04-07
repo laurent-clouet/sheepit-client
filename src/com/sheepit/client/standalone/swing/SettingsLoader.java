@@ -177,7 +177,7 @@ public class SettingsLoader {
 			config.setPassword(password);
 		}
 		
-		if ((config.getComputeMethod() == null && computeMethod != null) || (config.getComputeMethod() != ComputeType.valueOf(computeMethod) && computeMethod != null)) {
+		if ((config.getComputeMethod() == null && computeMethod != null) || (computeMethod != null && config.getComputeMethod() != ComputeType.valueOf(computeMethod))) {
 			config.setComputeMethod(ComputeType.valueOf(computeMethod));
 		}
 		if (config.getGPUDevice() == null && gpu != null) {
