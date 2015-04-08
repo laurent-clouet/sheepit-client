@@ -19,10 +19,10 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import com.sheepit.client.Configuration;
 import com.sheepit.client.Configuration.ComputeType;
+import com.sheepit.client.SettingsLoader;
 import com.sheepit.client.hardware.gpu.GPU;
 import com.sheepit.client.hardware.gpu.GPUDevice;
 import com.sheepit.client.standalone.GuiSwing;
-import com.sheepit.client.standalone.swing.SettingsLoader;
 
 public class Settings implements Activity {
 	private static final String DUMMY_CACHE_DIR = "Auto detected";

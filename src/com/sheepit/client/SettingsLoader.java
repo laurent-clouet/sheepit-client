@@ -1,4 +1,4 @@
-package com.sheepit.client.standalone.swing;
+package com.sheepit.client;
 
 import java.io.File;
 import java.io.FileInputStream;

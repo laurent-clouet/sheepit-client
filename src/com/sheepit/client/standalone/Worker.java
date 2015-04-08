@@ -38,11 +38,11 @@ import com.sheepit.client.Configuration.ComputeType;
 import com.sheepit.client.Gui;
 import com.sheepit.client.Log;
 import com.sheepit.client.Pair;
+import com.sheepit.client.SettingsLoader;
 import com.sheepit.client.ShutdownHook;
 import com.sheepit.client.hardware.gpu.GPU;
 import com.sheepit.client.hardware.gpu.GPUDevice;
 import com.sheepit.client.network.ProxyAuthenticator;
-import com.sheepit.client.standalone.swing.SettingsLoader;
 
 public class Worker {
 	@Option(name = "-server", usage = "Render-farm server, default https://www.sheepit-renderfarm.com", metaVar = "URL", required = false)
