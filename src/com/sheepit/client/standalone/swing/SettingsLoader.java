@@ -22,6 +22,7 @@ public class SettingsLoader {
 	private String gpu;
 	private String cacheDir;
 	private String autoSignIn;
+	private String ui;
 	
 	public SettingsLoader() {
 		path = getDefaultFilePath();
@@ -31,12 +32,13 @@ public class SettingsLoader {
 		path = path_;
 	}
 	
-	public SettingsLoader(String login_, String password_, ComputeType computeMethod_, GPUDevice gpu_, String cacheDir_, boolean autoSignIn_) {
+	public SettingsLoader(String login_, String password_, ComputeType computeMethod_, GPUDevice gpu_, String cacheDir_, boolean autoSignIn_, String ui_) {
 		path = getDefaultFilePath();
 		login = login_;
 		password = password_;
 		cacheDir = cacheDir_;
 		autoSignIn = String.valueOf(autoSignIn_);
+		ui = ui_;
 		
 		if (computeMethod_ != null) {
 			try {
@@ -89,6 +91,10 @@ public class SettingsLoader {
 				prop.setProperty("auto-signin", autoSignIn);
 			}
 			
+			if (ui != null) {
+				prop.setProperty("ui", ui);
+			}
+			
 			prop.store(output, null);
 		}
 		catch (IOException io) {
@@ -113,6 +119,7 @@ public class SettingsLoader {
 		this.gpu = null;
 		this.cacheDir = null;
 		this.autoSignIn = null;
+		this.ui = null;
 		
 		if (new File(path).exists() == false) {
 			return;
@@ -146,6 +153,10 @@ public class SettingsLoader {
 			
 			if (prop.containsKey("auto-signin")) {
 				this.autoSignIn = prop.getProperty("auto-signin");
+			}
+			
+			if (prop.containsKey("ui")) {
+				this.ui = prop.getProperty("ui");
 			}
 		}
 		catch (IOException io) {
@@ -198,6 +209,10 @@ public class SettingsLoader {
 		}
 		if (config.getUserSpecifiedACacheDir() == false && cacheDir != null) {
 			config.setCacheDir(new File(cacheDir));
+		}
+		
+		if (config.getUIType() == null && ui != null) {
+			config.setUIType(ui);
 		}
 		
 		config.setAutoSignIn(Boolean.valueOf(autoSignIn));
