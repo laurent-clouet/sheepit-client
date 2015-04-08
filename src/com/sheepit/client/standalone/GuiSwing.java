@@ -35,6 +35,7 @@ import com.sheepit.client.standalone.swing.activity.Settings;
 import com.sheepit.client.standalone.swing.activity.Working;
 
 public class GuiSwing extends JFrame implements Gui {
+	public static final String type = "swing";
 	public enum ActivityType {
 		WORKING, SETTINGS
 	}

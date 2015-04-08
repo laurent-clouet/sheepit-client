@@ -4,6 +4,8 @@ import com.sheepit.client.Client;
 import com.sheepit.client.Gui;
 
 public class GuiTextOneLine implements Gui {
+	public static final String type = "oneLine";
+	
 	private int rendered;
 	private int remaining;
 	private String status;
