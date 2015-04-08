@@ -303,7 +303,7 @@ public class Settings implements Activity {
 			}
 			
 			if (saveFile.isSelected()) {
-				new SettingsLoader(login.getText(), new String(password.getPassword()), method, selected_gpu, cachePath, autoSignIn.isSelected()).saveFile();
+				new SettingsLoader(login.getText(), new String(password.getPassword()), method, selected_gpu, cachePath, autoSignIn.isSelected(), GuiSwing.type).saveFile();
 			}
 			else {
 				try {

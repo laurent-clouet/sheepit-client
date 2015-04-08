@@ -52,6 +52,7 @@ public class Configuration {
 	public List<Pair<Calendar, Calendar>> requestTime;
 	private String extras;
 	private boolean autoSignIn;
+	private String UIType;
 	
 	public Configuration(File cache_dir_, String login_, String password_) {
 		this.login = login_;
@@ -69,6 +70,7 @@ public class Configuration {
 		this.requestTime = null;
 		this.extras = "";
 		this.autoSignIn = false;
+		this.UIType = null;
 	}
 	
 	public String toString() {
@@ -193,6 +195,14 @@ public class Configuration {
 	
 	public boolean getAutoSignIn() {
 		return this.autoSignIn;
+	}
+	
+	public void setUIType(String ui) {
+		this.UIType = ui;
+	}
+	
+	public String getUIType() {
+		return this.UIType;
 	}
 	
 	public void cleanWorkingDirectory() {

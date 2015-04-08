@@ -82,7 +82,7 @@ public class Worker {
 	private String extras = null;
 	
 	@Option(name = "-ui", usage = "Specify the user interface to use, default 'swing', available 'oneline', 'text', 'swing' (graphical)", required = false)
-	private String ui_type = GuiSwing.type;
+	private String ui_type = null;
 	
 	@Option(name = "-config", usage = "Specify the configuration file", required = false)
 	private String config_file = null;
@@ -261,6 +261,10 @@ public class Worker {
 		
 		config.setComputeMethod(compute_method);
 		
+		if (ui_type != null) {
+			config.setUIType(ui_type);
+		}
+		
 		if (config_file != null) {
 			if (new File(config_file).exists() == false) {
 				System.err.println("Configuration file not found.");
@@ -273,7 +277,11 @@ public class Worker {
 		Log.getInstance(config).debug("client version " + config.getJarVersion());
 		
 		Gui gui;
-		switch (ui_type) {
+		String type = config.getUIType();
+		if (type == null) {
+			type = "swing";
+		}
+		switch (type) {
 			case GuiTextOneLine.type:
 				if (config.getPrintLog()) {
 					System.out.println("OneLine UI can not be used if verbose mode is enabled");
@@ -281,6 +289,10 @@ public class Worker {
 				}
 				gui = new GuiTextOneLine();
 				break;
+			case GuiText.type:
+				gui = new GuiText();
+				break;
+			default:
 			case GuiSwing.type:
 				if (java.awt.GraphicsEnvironment.isHeadless()) {
 					System.out.println("Graphical ui can not be launch.");
@@ -288,9 +300,6 @@ public class Worker {
 					System.exit(3);
 				}
 				gui = new GuiSwing();
-				break;
-			default:
-				gui = new GuiText();
 				break;
 		}
 		Client cli = new Client(gui, config, server);
