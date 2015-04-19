@@ -74,7 +74,7 @@ public class Working implements Activity {
 		
 		n += sep;
 		
-		JLabel renderedFrameLabel = new JLabel("Rendered Frame:");
+		JLabel renderedFrameLabel = new JLabel("Rendered frames:");
 		renderedFrameLabel.setBounds(start_label_left, n, 240, size_height_label);
 		parent.getContentPane().add(renderedFrameLabel);
 		
@@ -83,7 +83,7 @@ public class Working implements Activity {
 		
 		n += sep;
 		
-		JLabel remainingFrameLabel = new JLabel("Remaining Frame:");
+		JLabel remainingFrameLabel = new JLabel("Remaining frames:");
 		remainingFrameLabel.setBounds(start_label_left, n, 240, size_height_label);
 		parent.getContentPane().add(remainingFrameLabel);
 		

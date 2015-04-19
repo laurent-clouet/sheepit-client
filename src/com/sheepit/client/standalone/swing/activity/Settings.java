@@ -96,7 +96,7 @@ public class Settings implements Activity {
 		
 		n += sep;
 		
-		JLabel cacheLabel = new JLabel("Working directory");
+		JLabel cacheLabel = new JLabel("Working directory:");
 		cacheLabel.setBounds(start_label_left, n, 240, size_height_label);
 		parent.getContentPane().add(cacheLabel);
 		
@@ -118,7 +118,7 @@ public class Settings implements Activity {
 		
 		n += sep;
 		
-		JLabel computeMethodLabel = new JLabel("Use");
+		JLabel computeMethodLabel = new JLabel("Use:");
 		computeMethodLabel.setBounds(start_label_left, n, 240, size_height_label);
 		parent.getContentPane().add(computeMethodLabel);
 		
