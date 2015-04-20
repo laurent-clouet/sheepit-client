@@ -5,7 +5,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -16,10 +15,12 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
+import javax.swing.JSlider;
 import javax.swing.JTextField;
 import com.sheepit.client.Configuration;
 import com.sheepit.client.Configuration.ComputeType;
 import com.sheepit.client.SettingsLoader;
+import com.sheepit.client.hardware.cpu.CPU;
 import com.sheepit.client.hardware.gpu.GPU;
 import com.sheepit.client.hardware.gpu.GPUDevice;
 import com.sheepit.client.standalone.GuiSwing;
@@ -36,6 +37,7 @@ public class Settings implements Activity {
 	private JFileChooser cacheDirChooser;
 	private JCheckBox useCPU;
 	private List<JCheckBoxGPU> useGPUs;
+	private JSlider cpuCores;
 	
 	private JCheckBox saveFile;
 	private JCheckBox autoSignIn;
@@ -164,6 +166,22 @@ public class Settings implements Activity {
 		}
 		
 		n += sep;
+		
+		CPU cpu = new CPU();
+		if (cpu.cores() > 1) { // if only one core is available, no need to show the choice
+			cpuCores = new JSlider(1, cpu.cores());
+			cpuCores.setMajorTickSpacing(1);
+			cpuCores.setMinorTickSpacing(1);
+			cpuCores.setPaintTicks(true);
+			cpuCores.setPaintLabels(true);
+			cpuCores.setValue(config.getNbCores() != -1 ? config.getNbCores() : cpuCores.getMaximum());
+			JLabel coreLabel = new JLabel("CPU cores:");
+			coreLabel.setBounds(start_label_left, n, 170, size_height_label);
+			parent.getContentPane().add(coreLabel);
+			cpuCores.setBounds(start_label_right, n, end_label_right - start_label_right, size_height_label * 2);
+			parent.getContentPane().add(cpuCores);
+			n += sep + size_height_label;
+		}
 		
 		saveFile = new JCheckBox("Save settings", true);
 		saveFile.setBounds(start_label_right, n, end_label_right - start_label_right, size_height_label);
@@ -295,6 +313,16 @@ public class Settings implements Activity {
 				config.setUseGPU(selected_gpu);
 			}
 			
+			int cpu_cores = -1;
+			CPU cpu = new CPU();
+			if (cpuCores != null && cpuCores.getValue() != cpu.cores()) { // max core <=> no config (-1)
+				cpu_cores = cpuCores.getValue();
+			}
+			
+			if (cpu_cores > 0) {
+				config.setUseNbCores(cpu_cores);
+			}
+			
 			parent.setCredentials(login.getText(), new String(password.getPassword()));
 			
 			String cachePath = null;
@@ -303,7 +331,7 @@ public class Settings implements Activity {
 			}
 			
 			if (saveFile.isSelected()) {
-				new SettingsLoader(login.getText(), new String(password.getPassword()), method, selected_gpu, cachePath, autoSignIn.isSelected(), GuiSwing.type).saveFile();
+				new SettingsLoader(login.getText(), new String(password.getPassword()), method, selected_gpu, cpu_cores, cachePath, autoSignIn.isSelected(), GuiSwing.type).saveFile();
 			}
 			else {
 				try {
