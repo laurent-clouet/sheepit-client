@@ -6,7 +6,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
 import com.sheepit.client.Configuration;
 import com.sheepit.client.Configuration.ComputeType;
@@ -117,6 +122,21 @@ public class SettingsLoader {
 					e.printStackTrace();
 				}
 			}
+		}
+		
+		// Set Owner read/write
+		Set<PosixFilePermission> perms = new HashSet<PosixFilePermission>();
+		perms.add(PosixFilePermission.OWNER_READ);
+		perms.add(PosixFilePermission.OWNER_WRITE);
+		
+		try {
+			Files.setPosixFilePermissions(Paths.get(path), perms);
+		}
+		catch (UnsupportedOperationException e) {
+			// most likely because it's MS Windows
+		}
+		catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	
