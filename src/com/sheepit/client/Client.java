@@ -51,7 +51,6 @@ import com.sheepit.client.hardware.gpu.GPUDevice;
 import com.sheepit.client.os.OS;
 
 public class Client {
-	public static final String UPDATE_METHOD_BY_LINE_NUMBER = "linenumber";
 	public static final String UPDATE_METHOD_BY_REMAINING_TIME = "remainingtime";
 	public static final String UPDATE_METHOD_BLENDER_INTERNAL_BY_PART = "blenderinternal";
 	
@@ -582,7 +581,6 @@ public class Client {
 		
 		long rending_start = new Date().getTime();
 		
-		int nb_lines = 0;
 		try {
 			String line;
 			this.log.debug(command.toString());
@@ -594,12 +592,11 @@ public class Client {
 			this.log.debug("renderer output");
 			try {
 				while ((line = input.readLine()) != null) {
-					nb_lines++;
 					this.updateRenderingMemoryPeak(line, ajob);
 					
 					this.log.debug(line);
 					if ((new Date().getTime() - last_update_status) > 2000) { // only call the update every two seconds
-						this.updateRenderingStatus(line, nb_lines, ajob);
+						this.updateRenderingStatus(line, ajob);
 						last_update_status = new Date().getTime();
 					}
 					Type error = this.detectError(line, ajob);
@@ -636,7 +633,6 @@ public class Client {
 		
 		ajob.setRenderDuration((int) ((rending_end - rending_start) / 1000 + 1)); // render time is in seconds but the getTime is in milliseconds
 		
-		ajob.setMaxOutputNbLines(nb_lines);
 		int exit_value = 0;
 		try {
 			exit_value = ajob.getProcess().exitValue();
@@ -878,11 +874,8 @@ public class Client {
 		return (concurrent_job >= this.config.maxUploadingJob());
 	}
 	
-	protected void updateRenderingStatus(String line, int current_number_of_lines, Job ajob) {
-		if (ajob.getUpdateRenderingStatusMethod() != null && ajob.getUpdateRenderingStatusMethod().equals(Client.UPDATE_METHOD_BY_LINE_NUMBER) && ajob.getMaxOutputNbLines() > 0) {
-			this.gui.status(String.format("Rendering %s %%", (int) (100.0 * current_number_of_lines / ajob.getMaxOutputNbLines())));
-		}
-		else if (ajob.getUpdateRenderingStatusMethod() != null && ajob.getUpdateRenderingStatusMethod().equals(Client.UPDATE_METHOD_BLENDER_INTERNAL_BY_PART)) {
+	protected void updateRenderingStatus(String line, Job ajob) {
+		if (ajob.getUpdateRenderingStatusMethod() != null && ajob.getUpdateRenderingStatusMethod().equals(Client.UPDATE_METHOD_BLENDER_INTERNAL_BY_PART)) {
 			String search = " Part ";
 			int index = line.lastIndexOf(search);
 			if (index != -1) {
