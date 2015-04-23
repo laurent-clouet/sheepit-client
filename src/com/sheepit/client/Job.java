@@ -35,7 +35,6 @@ public class Job {
 	private long memoryUsed; // in kB
 	private String rendererCommand;
 	private String script;
-	private int maxOutputNbLines;
 	private boolean useGPU;
 	private String extras;
 	private String updateRenderingStatusMethod;
@@ -63,7 +62,6 @@ public class Job {
 		renderDuration = 0;
 		memoryUsed = 0;
 		script = script_;
-		maxOutputNbLines = 0;
 		updateRenderingStatusMethod = update_method_;
 		process = null;
 		askForRendererKill = false;
@@ -106,10 +104,6 @@ public class Job {
 		return updateRenderingStatusMethod;
 	}
 	
-	public int getMaxOutputNbLines() {
-		return maxOutputNbLines;
-	}
-	
 	public void setAskForRendererKill(boolean val) {
 		askForRendererKill = val;
 	}
@@ -140,10 +134,6 @@ public class Job {
 	
 	public void setRenderDuration(int val) {
 		renderDuration = val;
-	}
-	
-	public void setMaxOutputNbLines(int val) {
-		maxOutputNbLines = val;
 	}
 	
 	public String getRenderCommand() {
