@@ -216,6 +216,10 @@ public class Client {
 				}
 				catch (FermeException e) {
 					this.gui.error("Client::renderingManagement exception requestJob (1) " + e.getMessage());
+					StringWriter sw = new StringWriter();
+					PrintWriter pw = new PrintWriter(sw);
+					e.printStackTrace(pw);
+					this.log.debug("Client::run exception " + e + " stacktrace: " + sw.toString());
 					this.sendError(step);
 					continue;
 				}
@@ -364,6 +368,7 @@ public class Client {
 				ret = confirmJob(job_to_send);
 				if (ret != Error.Type.OK) {
 					this.gui.error(Error.humanString(ret));
+					this.log.debug("Client::senderLoop confirm failed, ret: " + ret);
 					sendError(step);
 				}
 				else {
