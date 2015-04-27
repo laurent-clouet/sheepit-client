@@ -128,8 +128,8 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 							if (ret == ServerCode.KEEPMEALIVE_STOP_RENDERING) {
 								this.log.debug("Server::keeepmealive server asked to kill local render process");
 								// kill the current process, it will generate an error but it's okay
-								if (this.client != null && this.client.getRenderingJob() != null && this.client.getRenderingJob().getProcess() != null) {
-									OS.getOS().kill(this.client.getRenderingJob().getProcess());
+								if (this.client != null && this.client.getRenderingJob() != null && this.client.getRenderingJob().getProcessRender().getProcess() != null) {
+									OS.getOS().kill(this.client.getRenderingJob().getProcessRender().getProcess());
 									this.client.getRenderingJob().setAskForRendererKill(true);
 								}
 							}
