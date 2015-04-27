@@ -145,6 +145,8 @@ Parameter as GET or POST:
     * job: Id of the rendering job
     * frame: Frame number of the rendering job
     * extras: Extras data get on job request of the rendering job
+    * rendertime: current render time (optional)
+    * remainingtime: current remaining time to render the frame (optional)
 
 Answer:
 <?xml version="1.0" encoding="utf-8" ?>

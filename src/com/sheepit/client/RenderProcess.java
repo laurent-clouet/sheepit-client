@@ -24,6 +24,7 @@ import java.util.Date;
 public class RenderProcess {
 	private long start;
 	private long end;
+	private int remainingDuration;
 	private long memoryUsed; // in kB
 	private Process process;
 	
@@ -32,6 +33,7 @@ public class RenderProcess {
 		start = -1;
 		end = -1;
 		memoryUsed = 0;
+		remainingDuration = 0;
 	}
 	
 	public void setMemoryUsed(long val) {
@@ -62,6 +64,18 @@ public class RenderProcess {
 			return (int) ((new Date().getTime() - start) / 1000);
 		}
 		return 0;
+	}
+	
+	/**
+	 * 
+	 * @return duration in seconds
+	 */
+	public int getRemainingDuration() {
+		return remainingDuration;
+	}
+	
+	public void setRemainingDuration(int val) {
+		remainingDuration = val;
 	}
 	
 	public void finish() {

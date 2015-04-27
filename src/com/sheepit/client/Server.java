@@ -116,6 +116,10 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 						if (this.client.getRenderingJob().getExtras() != null && this.client.getRenderingJob().getExtras().isEmpty() == false) {
 							args += "&extras=" + this.client.getRenderingJob().getExtras();
 						}
+						if (this.client.getRenderingJob().getProcessRender() != null) {
+							args += "&rendertime=" + this.client.getRenderingJob().getProcessRender().getDuration();
+							args += "&remainingtime=" + this.client.getRenderingJob().getProcessRender().getRemainingDuration();
+						}
 					}
 					
 					HttpURLConnection connection = this.HTTPRequest(this.base_url + "/server/keepmealive.php" + args);

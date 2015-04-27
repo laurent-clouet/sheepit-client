@@ -905,7 +905,9 @@ public class Client {
 							date_parse = date_parse_hour;
 						}
 						date_parse.setTimeZone(TimeZone.getTimeZone("GMT"));
-						this.gui.status(String.format("Rendering (remaining %s)", Utils.humanDuration(date_parse.parse(remaining_time))));
+						Date date = date_parse.parse(remaining_time);
+						this.gui.status(String.format("Rendering (remaining %s)", Utils.humanDuration(date)));
+						ajob.getProcessRender().setRemainingDuration((int) (date.getTime() / 1000));
 					}
 					catch (ParseException err) {
 						this.log.error("Client::updateRenderingStatus ParseException " + err);
