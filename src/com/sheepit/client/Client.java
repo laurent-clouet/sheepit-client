@@ -306,8 +306,8 @@ public class Client {
 		this.disableErrorSending = true;
 		
 		if (this.renderingJob != null) {
-			if (this.renderingJob.getProcess() != null) {
-				OS.getOS().kill(this.renderingJob.getProcess());
+			if (this.renderingJob.getProcessRender().getProcess() != null) {
+				OS.getOS().kill(this.renderingJob.getProcessRender().getProcess());
 				this.renderingJob.setAskForRendererKill(true);
 			}
 		}
@@ -405,7 +405,7 @@ public class Client {
 			writer.close();
 			String args = "?type=" + (error == null ? "" : error.getValue());
 			if (job_to_reset_ != null) {
-				args += "&frame=" + job_to_reset_.getFrameNumber() + "&job=" + job_to_reset_.getId() + "&render_time=" + job_to_reset_.getRenderDuration();
+				args += "&frame=" + job_to_reset_.getFrameNumber() + "&job=" + job_to_reset_.getId() + "&render_time=" + job_to_reset_.getProcessRender().getDuration();
 				if (job_to_reset_.getExtras() != null && job_to_reset_.getExtras().isEmpty() == false) {
 					args += "&extras=" + job_to_reset_.getExtras();
 				}
@@ -516,6 +516,7 @@ public class Client {
 	
 	protected Error.Type runRenderer(Job ajob) {
 		this.gui.status("Rendering");
+		RenderProcess process = ajob.getProcessRender();
 		String core_script = "import bpy\n" + "bpy.context.user_preferences.system.compute_device_type = \"%s\"\n" + "bpy.context.scene.cycles.device = \"%s\"\n" + "bpy.context.user_preferences.system.compute_device = \"%s\"\n";
 		if (ajob.getUseGPU() && this.config.getGPUDevice() != null) {
 			core_script = String.format(core_script, "CUDA", "GPU", this.config.getGPUDevice().getCudaName());
@@ -584,14 +585,13 @@ public class Client {
 			}
 		}
 		
-		long rending_start = new Date().getTime();
-		
 		try {
 			String line;
 			this.log.debug(command.toString());
 			OS os = OS.getOS();
-			ajob.setProcess(os.exec(command, new_env));
-			BufferedReader input = new BufferedReader(new InputStreamReader(ajob.getProcess().getInputStream()));
+			process.start();
+			ajob.getProcessRender().setProcess(os.exec(command, new_env));
+			BufferedReader input = new BufferedReader(new InputStreamReader(ajob.getProcessRender().getProcess().getInputStream()));
 			
 			long last_update_status = 0;
 			this.log.debug("renderer output");
@@ -630,31 +630,12 @@ public class Client {
 			return Error.Type.FAILED_TO_EXECUTE;
 		}
 		
-		long rending_end = new Date().getTime();
+		int exit_value = process.exitValue();
+		process.finish();
 		
 		if (script_file != null) {
 			script_file.delete();
 		}
-		
-		ajob.setRenderDuration((int) ((rending_end - rending_start) / 1000 + 1)); // render time is in seconds but the getTime is in milliseconds
-		
-		int exit_value = 0;
-		try {
-			exit_value = ajob.getProcess().exitValue();
-		}
-		catch (IllegalThreadStateException e) {
-			// the process is not finished yet
-			exit_value = 0;
-		}
-		catch (Exception e) {
-			// actually is for java.io.IOException: GetExitCodeProcess error=6, The handle is invalid
-			// it was not declared throwable
-			
-			// the process is not finished yet
-			exit_value = 0;
-		}
-		
-		ajob.setProcess(null);
 		
 		// find the picture file
 		final String filename_without_extension = ajob.getPrefixOutputImage() + ajob.getFrameNumber();
@@ -689,8 +670,8 @@ public class Client {
 				return Error.Type.RENDERER_CRASHED;
 			}
 			
-			if (exit_value == 127 && ajob.getRenderDuration() < 10) {
-				this.log.error("Client::runRenderer renderer returned 127 and took " + ajob.getRenderDuration() + "s, some libraries may be missing");
+			if (exit_value == 127 && process.getDuration() < 10) {
+				this.log.error("Client::runRenderer renderer returned 127 and took " + process.getDuration() + "s, some libraries may be missing");
 				return Error.Type.RENDERER_MISSING_LIBRARIES;
 			}
 			
@@ -703,11 +684,11 @@ public class Client {
 		
 		File scene_dir = new File(ajob.getSceneDirectory());
 		long date_modification_scene_directory = (long) Utils.lastModificationTime(scene_dir);
-		if (date_modification_scene_directory > rending_start) {
+		if (date_modification_scene_directory > process.getStartTime()) {
 			scene_dir.delete();
 		}
 		
-		this.gui.status(String.format("Frame rendered in %dmin%ds", ajob.getRenderDuration() / 60, ajob.getRenderDuration() % 60));
+		this.gui.status(String.format("Frame rendered in %dmin%ds", process.getDuration() / 60, process.getDuration() % 60));
 		
 		return Error.Type.OK;
 	}
@@ -822,7 +803,7 @@ public class Client {
 			extras_config = "&cores=" + this.config.getNbCores();
 		}
 		
-		String url_real = String.format("%s?job=%s&frame=%s&rendertime=%d&revision=%s&memoryused=%s&extras=%s%s", this.server.getPage("validate-job"), ajob.getId(), ajob.getFrameNumber(), ajob.getRenderDuration(), ajob.getRevision(), ajob.getMemoryUsed(), ajob.getExtras(), extras_config);
+		String url_real = String.format("%s?job=%s&frame=%s&rendertime=%d&revision=%s&memoryused=%s&extras=%s%s", this.server.getPage("validate-job"), ajob.getId(), ajob.getFrameNumber(), ajob.getProcessRender().getDuration(), ajob.getRevision(), ajob.getProcessRender().getMemoryUsed(), ajob.getExtras(), extras_config);
 		
 		this.isValidatingJob = true;
 		int nb_try = 1;
@@ -942,8 +923,8 @@ public class Client {
 				int end = element.indexOf(')');
 				if (end > 0) {
 					long mem = Utils.parseNumber(element.substring(1, end).trim());
-					if (mem > ajob.getMemoryUsed()) {
-						ajob.setMemoryUsed(mem);
+					if (mem > ajob.getProcessRender().getMemoryUsed()) {
+						ajob.getProcessRender().setMemoryUsed(mem);
 					}
 				}
 			}
@@ -952,8 +933,8 @@ public class Client {
 					int end = element.indexOf('|');
 					if (end > 0) {
 						long mem = Utils.parseNumber(element.substring(1, end).trim());
-						if (mem > ajob.getMemoryUsed()) {
-							ajob.setMemoryUsed(mem);
+						if (mem > ajob.getProcessRender().getMemoryUsed()) {
+							ajob.getProcessRender().setMemoryUsed(mem);
 						}
 					}
 				}

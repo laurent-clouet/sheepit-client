@@ -31,16 +31,13 @@ public class Job {
 	private String revision;
 	private String pictureFilename;
 	private String path; // path inside of the archive
-	private int renderDuration; // in seconds
-	private long memoryUsed; // in kB
 	private String rendererCommand;
 	private String script;
 	private boolean useGPU;
 	private String extras;
 	private String updateRenderingStatusMethod;
 	private boolean synchronousUpload;
-	
-	private Process process;
+	private RenderProcess render;
 	private boolean askForRendererKill;
 	
 	private Configuration config;
@@ -59,17 +56,19 @@ public class Job {
 		synchronousUpload = synchronous_upload_;
 		
 		pictureFilename = null;
-		renderDuration = 0;
-		memoryUsed = 0;
 		script = script_;
 		updateRenderingStatusMethod = update_method_;
-		process = null;
 		askForRendererKill = false;
 		
+		render = new RenderProcess();
+	}
+	
+	public RenderProcess getProcessRender() {
+		return render;
 	}
 	
 	public String toString() {
-		return String.format("Job (numFrame '%s' sceneMD5 '%s' rendererMD5 '%s' ID '%s' revision '%s' pictureFilename '%s' jobPath '%s' renderDuration '%s', memoryUsed %skB gpu %s extras '%s' updateRenderingStatusMethod '%s')", this.numFrame, this.sceneMD5, this.rendererMD5, this.id, this.revision, this.pictureFilename, this.path, this.renderDuration, this.memoryUsed, this.useGPU, this.extras, this.updateRenderingStatusMethod);
+		return String.format("Job (numFrame '%s' sceneMD5 '%s' rendererMD5 '%s' ID '%s' revision '%s' pictureFilename '%s' jobPath '%s' gpu %s extras '%s' updateRenderingStatusMethod '%s' render %s)", numFrame, sceneMD5, rendererMD5, id, revision, pictureFilename, path, useGPU, extras, updateRenderingStatusMethod, render);
 	}
 	
 	public String getId() {
@@ -110,30 +109,6 @@ public class Job {
 	
 	public boolean getAskForRendererKill() {
 		return askForRendererKill;
-	}
-	
-	public void setProcess(Process val) {
-		process = val;
-	}
-	
-	public Process getProcess() {
-		return process;
-	}
-	
-	public long getMemoryUsed() {
-		return memoryUsed;
-	}
-	
-	public void setMemoryUsed(long val) {
-		memoryUsed = val;
-	}
-	
-	public int getRenderDuration() {
-		return renderDuration;
-	}
-	
-	public void setRenderDuration(int val) {
-		renderDuration = val;
 	}
 	
 	public String getRenderCommand() {
