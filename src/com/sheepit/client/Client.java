@@ -711,6 +711,8 @@ public class Client {
 			int ret = this.server.HTTPGetFile(url, local_path, this.gui, update_ui);
 			if (ret != 0) {
 				this.gui.error("Client::downloadFile problem with Utils.HTTPGetFile returned " + ret);
+				this.log.debug("Client::downloadFile problem with Utils.HTTPGetFile removing local file (path: " + local_path + ")");
+				local_path_file.delete();
 				return -9;
 			}
 		}
@@ -720,6 +722,8 @@ public class Client {
 		if (md5_local.equals(md5_server) == false) {
 			this.log.error("Client::downloadFile mismatch on md5 local: '" + md5_local + "' server: '" + ajob.getRenderMd5() + "' (local size: " + new File(local_path).length() + ")");
 			// md5 of the downloaded file doesn't match the expected hash
+			this.log.debug("Client::downloadFile mismatch md5 removing local file (path: " + local_path + ")");
+			local_path_file.delete();
 			return -10;
 		}
 		return 0;
