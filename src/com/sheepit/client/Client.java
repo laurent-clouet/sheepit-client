@@ -695,59 +695,30 @@ public class Client {
 	
 	protected int downloadSceneFile(Job ajob_) {
 		this.gui.status("Downloading project");
-		
-		String archive_local_path = ajob_.getSceneArchivePath();
-		
-		File renderer_archive_local_path_file = new File(archive_local_path);
-		
-		if (renderer_archive_local_path_file.exists() == false) {
-			// we must download the archive
-			int ret;
-			String real_url;
-			real_url = String.format("%s?type=job&job=%s&revision=%s", this.server.getPage("download-archive"), ajob_.getId(), ajob_.getRevision());
-			ret = this.server.HTTPGetFile(real_url, archive_local_path, this.gui, "Downloading project %s %%");
-			if (ret != 0) {
-				this.gui.error("Client::downloadSceneFile problem with Utils.DownloadFile returned " + ret);
-				return -1;
-			}
-			
-			String md5_local;
-			md5_local = Utils.md5(archive_local_path);
-			
-			if (md5_local.equals(ajob_.getSceneMD5()) == false) {
-				System.err.println("md5 of the downloaded file  and the local file are not the same (local '" + md5_local + "' scene: '" + ajob_.getSceneMD5() + "')");
-				this.log.error("Client::downloadSceneFile mismatch on md5 local: '" + md5_local + "' server: '" + ajob_.getSceneMD5() + "' (local size: " + new File(archive_local_path).length() + ")");
-				// md5 of the downloaded file doesn't match the expected hash
-				return -2;
-			}
-		}
-		return 0;
+		return this.downloadFile(ajob_, ajob_.getSceneArchivePath(), ajob_.getSceneMD5(), String.format("%s?type=job&job=%s&revision=%s", this.server.getPage("download-archive"), ajob_.getId(), ajob_.getRevision()), "Downloading project %s %%");
 	}
 	
 	protected int downloadExecutable(Job ajob) {
 		this.gui.status("Downloading renderer");
-		String real_url = new String();
-		real_url = String.format("%s?type=binary&job=%s", this.server.getPage("download-archive"), ajob.getId());
+		return this.downloadFile(ajob, ajob.getRendererArchivePath(), ajob.getRenderMd5(), String.format("%s?type=binary&job=%s", this.server.getPage("download-archive"), ajob.getId()), "Downloading renderer %s %%");
+	}
+	
+	private int downloadFile(Job ajob, String local_path, String md5_server, String url, String update_ui) {
+		File local_path_file = new File(local_path);
 		
-		// we have the MD5 of the renderer archive
-		String renderer_archive_local_path = ajob.getRendererArchivePath();
-		File renderer_archive_local_path_file = new File(renderer_archive_local_path);
-		
-		if (renderer_archive_local_path_file.exists() == false) {
-			// we must download the archive
-			int ret;
-			ret = this.server.HTTPGetFile(real_url, renderer_archive_local_path, this.gui, "Downloading renderer %s %%");
+		if (local_path_file.exists() == false) {
+			// must download the archive
+			int ret = this.server.HTTPGetFile(url, local_path, this.gui, update_ui);
 			if (ret != 0) {
-				this.gui.error("Client::downloadExecutable problem with Utils.DownloadFile returned " + ret);
+				this.gui.error("Client::downloadFile problem with Utils.HTTPGetFile returned " + ret);
 				return -9;
 			}
 		}
 		
-		String md5_local;
-		md5_local = Utils.md5(renderer_archive_local_path);
+		String md5_local = Utils.md5(local_path);
 		
-		if (md5_local.equals(ajob.getRenderMd5()) == false) {
-			this.log.error("Client::downloadExecutable mismatch on md5  local: '" + md5_local + "' server: '" + ajob.getRenderMd5() + "' (local size: " + new File(renderer_archive_local_path).length() + ")");
+		if (md5_local.equals(md5_server) == false) {
+			this.log.error("Client::downloadFile mismatch on md5 local: '" + md5_local + "' server: '" + ajob.getRenderMd5() + "' (local size: " + new File(local_path).length() + ")");
 			// md5 of the downloaded file doesn't match the expected hash
 			return -10;
 		}
