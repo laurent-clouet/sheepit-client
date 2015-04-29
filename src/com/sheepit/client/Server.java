@@ -543,6 +543,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			System.err.println("Server::HTTPGetFile exception");
 			e.printStackTrace();
 		}
+		this.log.debug("Server::HTTPGetFile(" + url_ + ", ...) will failed (end of function)");
 		return -2;
 	}
 	
