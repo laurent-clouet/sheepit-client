@@ -390,6 +390,7 @@ public class Client {
 			return;
 		}
 		
+		this.log.debug("Sending error to server (type: " + error + ")");
 		try {
 			File temp_file = File.createTempFile("farm_", "");
 			temp_file.createNewFile();
@@ -711,7 +712,7 @@ public class Client {
 			int ret = this.server.HTTPGetFile(url, local_path, this.gui, update_ui);
 			if (ret != 0) {
 				this.gui.error("Client::downloadFile problem with Utils.HTTPGetFile returned " + ret);
-				this.log.debug("Client::downloadFile problem with Utils.HTTPGetFile removing local file (path: " + local_path + ")");
+				this.log.debug("Client::downloadFile problem with Utils.HTTPGetFile (return: " + ret + ") removing local file (path: " + local_path + ")");
 				local_path_file.delete();
 				return -9;
 			}
