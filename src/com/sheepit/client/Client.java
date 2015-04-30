@@ -295,6 +295,10 @@ public class Client {
 		}
 		catch (Exception e1) {
 			// no exception should be raised in the actual launcher (applet or standalone)
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			e1.printStackTrace(pw);
+			this.log.debug("Client::run exception(D) " + e1 + " stacktrace: " + sw.toString());
 			return -99; // the this.stop will be done after the return of this.run()
 		}
 		
