@@ -562,6 +562,9 @@ public class Client {
 						command.add(script_file.getAbsolutePath());
 					}
 					catch (IOException e) {
+						StringWriter sw = new StringWriter();
+						e.printStackTrace(new PrintWriter(sw));
+						this.log.error("Client:runRenderer exception on script generation, will return UNKNOWN " + e + " stacktrace " + sw.toString());
 						return Error.Type.UNKNOWN;
 					}
 					script_file.deleteOnExit();
