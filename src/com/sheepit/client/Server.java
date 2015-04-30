@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
@@ -540,8 +541,9 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			return 0;
 		}
 		catch (Exception e) {
-			System.err.println("Server::HTTPGetFile exception");
-			e.printStackTrace();
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			this.log.error("Server::HTTPGetFile exception " + e + " stacktrace " + sw.toString());
 		}
 		this.log.debug("Server::HTTPGetFile(" + url_ + ", ...) will failed (end of function)");
 		return -2;
