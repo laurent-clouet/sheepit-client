@@ -242,7 +242,7 @@ public class SettingsLoader {
 		if (config.getNbCores() == -1  && cores != null) {
 			config.setUseNbCores(Integer.valueOf(cores));
 		}
-		if (config.getUserSpecifiedACacheDir() == false && cacheDir != null) {
+		if (config.getUserSpecifiedACacheDir() == false && cacheDir != null && new File(cacheDir).exists()) {
 			config.setCacheDir(new File(cacheDir));
 		}
 		
