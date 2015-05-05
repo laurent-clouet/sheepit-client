@@ -66,6 +66,8 @@ public class Client {
 	private boolean running;
 	private boolean suspended;
 	
+	private int maxDownloadFileAttempts = 5;
+	
 	public Client(Gui gui_, Configuration config, String url_) {
 		this.config = config;
 		this.server = new Server(url_, this.config, this);
@@ -714,27 +716,58 @@ public class Client {
 	private int downloadFile(Job ajob, String local_path, String md5_server, String url, String update_ui) {
 		File local_path_file = new File(local_path);
 		
-		if (local_path_file.exists() == false) {
-			// must download the archive
-			int ret = this.server.HTTPGetFile(url, local_path, this.gui, update_ui);
+		if (local_path_file.exists() == true) {
+			return 0;
+		}
+		
+		// must download the archive
+		int ret = this.server.HTTPGetFile(url, local_path, this.gui, update_ui);
+		boolean md5_check = this.checkFile(ajob, local_path, md5_server);
+		int attempts = 1;
+		
+		while ((ret != 0 || md5_check == false) && attempts < this.maxDownloadFileAttempts) {
 			if (ret != 0) {
 				this.gui.error("Client::downloadFile problem with Utils.HTTPGetFile returned " + ret);
 				this.log.debug("Client::downloadFile problem with Utils.HTTPGetFile (return: " + ret + ") removing local file (path: " + local_path + ")");
+			}
+			else if (md5_check == false) {
+				this.gui.error("Client::downloadFile problem with Client::checkFile mismatch on md5");
+				this.log.debug("Client::downloadFile problem with Client::checkFile mismatch on md5, removing local file (path: " + local_path + ")");
+			}
+			local_path_file.delete();
+			
+			this.log.debug("Client::downloadFile failed, let's try again (" + (attempts + 1) + "/" + this.maxDownloadFileAttempts + ") ...");
+			
+			ret = this.server.HTTPGetFile(url, local_path, this.gui, update_ui);
+			md5_check = this.checkFile(ajob, local_path, md5_server);
+			attempts++;
+			
+			if ((ret != 0 || md5_check == false) && attempts >= this.maxDownloadFileAttempts) {
+				this.log.debug("Client::downloadFile failed after " + this.maxDownloadFileAttempts + " attempts, removing local file (path: " + local_path + "), stopping...");
 				local_path_file.delete();
 				return -9;
 			}
 		}
 		
+		return 0;
+	}
+	
+	private boolean checkFile(Job ajob, String local_path, String md5_server) {
+		File local_path_file = new File(local_path);
+		
+		if (local_path_file.exists() == false) {
+			this.log.error("Client::checkFile cannot check md5 on a nonexistent file (path: " + local_path + ")");
+			return false;
+		}
+		
 		String md5_local = Utils.md5(local_path);
 		
 		if (md5_local.equals(md5_server) == false) {
-			this.log.error("Client::downloadFile mismatch on md5 local: '" + md5_local + "' server: '" + ajob.getRenderMd5() + "' (local size: " + new File(local_path).length() + ")");
-			// md5 of the downloaded file doesn't match the expected hash
-			this.log.debug("Client::downloadFile mismatch md5 removing local file (path: " + local_path + ")");
-			local_path_file.delete();
-			return -10;
+			this.log.error("Client::checkFile mismatch on md5 local: '" + md5_local + "' server: '" + ajob.getRenderMd5() + "' (local size: " + new File(local_path).length() + ")");
+			return false;
 		}
-		return 0;
+		
+		return true;
 	}
 	
 	protected int prepareWorkingDirectory(Job ajob) {
