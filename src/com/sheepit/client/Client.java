@@ -717,12 +717,7 @@ public class Client {
 		File local_path_file = new File(local_path);
 		
 		if (local_path_file.exists() == true) {
-			if (this.checkFile(ajob, local_path, md5_server) == false) {
-				this.log.debug("Client::downloadFile mismatch on md5, removing local file (path: " + local_path + "), we will try to download it again...");
-				local_path_file.delete();
-			}
-			else
-				return 0;
+			return 0;
 		}
 		
 		// must download the archive
@@ -748,7 +743,8 @@ public class Client {
 			attempts++;
 			
 			if ((ret != 0 || md5_check == false) && attempts >= this.maxDownloadFileAttempts) {
-				this.log.debug("Client::downloadFile failed after " + this.maxDownloadFileAttempts + " attempts, stopping...");
+				this.log.debug("Client::downloadFile failed after " + this.maxDownloadFileAttempts + " attempts, removing local file (path: " + local_path + "), stopping...");
+				local_path_file.delete();
 				return -9;
 			}
 		}
