@@ -720,7 +720,8 @@ public class Client {
 			if (this.checkFile(ajob, local_path, md5_server) == false) {
 				this.log.debug("Client::downloadFile mismatch on md5, removing local file (path: " + local_path + "), we will try to download it again...");
 				local_path_file.delete();
-			} else
+			}
+			else
 				return 0;
 		}
 		
@@ -733,20 +734,21 @@ public class Client {
 			if (ret != 0) {
 				this.gui.error("Client::downloadFile problem with Utils.HTTPGetFile returned " + ret);
 				this.log.debug("Client::downloadFile problem with Utils.HTTPGetFile (return: " + ret + ") removing local file (path: " + local_path + ")");
-			} else if (md5_check == false) {
+			}
+			else if (md5_check == false) {
 				this.gui.error("Client::downloadFile problem with Client::checkFile mismatch on md5");
 				this.log.debug("Client::downloadFile problem with Client::checkFile mismatch on md5, removing local file (path: " + local_path + ")");
 			}
 			local_path_file.delete();
 			
-			this.log.debug("Client::downloadFile failed, let's try again ("+(attempts+1)+"/"+this.maxDownloadFileAttempts+") ...");
+			this.log.debug("Client::downloadFile failed, let's try again (" + (attempts + 1) + "/" + this.maxDownloadFileAttempts + ") ...");
 			
 			ret = this.server.HTTPGetFile(url, local_path, this.gui, update_ui);
 			md5_check = this.checkFile(ajob, local_path, md5_server);
 			attempts++;
 			
 			if ((ret != 0 || md5_check == false) && attempts >= this.maxDownloadFileAttempts) {
-				this.log.debug("Client::downloadFile failed after "+this.maxDownloadFileAttempts+" attempts, stopping...");
+				this.log.debug("Client::downloadFile failed after " + this.maxDownloadFileAttempts + " attempts, stopping...");
 				return -9;
 			}
 		}
