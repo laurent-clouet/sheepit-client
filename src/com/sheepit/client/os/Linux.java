@@ -131,12 +131,11 @@ public class Linux extends OS {
 		Boolean has_ld_library_path = new_env.containsKey("LD_LIBRARY_PATH");
 		
 		String lib_dir = (new File(command.get(0))).getParent() + File.separator + "lib";
-		String new_ld_library_path = "/lib:/lib64:/usr/lib:/usr/lib64:/lib/i386-linux-gnu:/lib/x86_64-linux-gnu:/usr/share/local" + ":" + lib_dir;
 		if (has_ld_library_path == false) {
-			new_env.put("LD_LIBRARY_PATH", new_ld_library_path);
+			new_env.put("LD_LIBRARY_PATH", lib_dir);
 		}
 		else {
-			new_env.put("LD_LIBRARY_PATH", new_env.get("LD_LIBRARY_PATH") + ":" + new_ld_library_path);
+			new_env.put("LD_LIBRARY_PATH", new_env.get("LD_LIBRARY_PATH") + ":" + lib_dir);
 		}
 		
 		List<String> actual_command = command;
