@@ -25,6 +25,7 @@ public class Working implements Activity {
 	JLabel lastRender;
 	JLabel creditEarned;
 	JButton pauseButton;
+        JButton exitAfterFrame;
 	
 	public Working(GuiSwing parent_) {
 		parent = parent_;
@@ -108,6 +109,11 @@ public class Working implements Activity {
 		pauseButton.setBounds(330, 500, 100, 25);
 		pauseButton.addActionListener(new PauseAction());
 		parent.getContentPane().add(pauseButton);
+                
+                exitAfterFrame = new JButton("Exit after this frame");
+                exitAfterFrame.setBounds(440, 500, 120, 25);
+		exitAfterFrame.addActionListener(new ExitAfterAction());
+		parent.getContentPane().add(exitAfterFrame);
 	}
 	
 	public void setStatus(String msg_) {
@@ -182,6 +188,23 @@ public class Working implements Activity {
 		public void actionPerformed(ActionEvent e) {
 			if (parent != null) {
 				parent.showActivity(ActivityType.SETTINGS);
+			}
+		}
+	}
+        
+        class ExitAfterAction implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			Client client = parent.getClient();
+			if (client != null) {
+				if (client.isRunning()) {
+					exitAfterFrame.setText("Cancel exit");
+					client.askForStop();
+				}
+				else {
+					exitAfterFrame.setText("Exit after this frame");
+					client.cancelStop();
+				}
 			}
 		}
 	}
