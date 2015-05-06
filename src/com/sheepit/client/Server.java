@@ -399,6 +399,8 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				
 				Job a_job = new Job(
 						this.user_config,
+						this.client.getGui(),
+						this.client.getLog(),
 						job_node.getAttribute("id"),
 						job_node.getAttribute("frame"),
 						job_node.getAttribute("revision"),
