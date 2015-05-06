@@ -763,7 +763,7 @@ public class Client {
 		String md5_local = Utils.md5(local_path);
 		
 		if (md5_local.equals(md5_server) == false) {
-			this.log.error("Client::checkFile mismatch on md5 local: '" + md5_local + "' server: '" + ajob.getRenderMd5() + "' (local size: " + new File(local_path).length() + ")");
+			this.log.error("Client::checkFile mismatch on md5 local: '" + md5_local + "' server: '" + md5_server + "' (local size: " + new File(local_path).length() + ")");
 			return false;
 		}
 		
