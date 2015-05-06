@@ -57,21 +57,21 @@ public class Linux extends OS {
 				String line = scanner.nextLine();
 				if (line.startsWith("model name")) {
 					String buf[] = line.split(":");
-					if (buf.length > 0) {
+					if (buf.length > 1) {
 						ret.setName(buf[1].trim());
 					}
 				}
 				
 				if (line.startsWith("cpu family")) {
 					String buf[] = line.split(":");
-					if (buf.length > 0) {
+					if (buf.length > 1) {
 						ret.setFamily(buf[1].trim());
 					}
 				}
 				
 				if (line.startsWith("model") && line.startsWith("model name") == false) {
 					String buf[] = line.split(":");
-					if (buf.length > 0) {
+					if (buf.length > 1) {
 						ret.setModel(buf[1].trim());
 					}
 				}
