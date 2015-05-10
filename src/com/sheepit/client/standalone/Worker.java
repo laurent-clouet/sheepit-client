@@ -81,7 +81,7 @@ public class Worker {
 	@Option(name = "-extras", usage = "Extras data push on the authentication request", required = false)
 	private String extras = null;
 	
-	@Option(name = "-ui", usage = "Specify the user interface to use, default 'swing', available 'oneline', 'text', 'swing' (graphical)", required = false)
+	@Option(name = "-ui", usage = "Specify the user interface to use, default '" + GuiSwing.type + "', available '" + GuiTextOneLine.type + "', '" + GuiText.type + "', '" + GuiSwing.type + "' (graphical)", required = false)
 	private String ui_type = null;
 	
 	@Option(name = "-config", usage = "Specify the configuration file", required = false)
