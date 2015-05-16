@@ -296,7 +296,7 @@ public class Worker {
 			case GuiSwing.type:
 				if (java.awt.GraphicsEnvironment.isHeadless()) {
 					System.out.println("Graphical ui can not be launch.");
-					System.out.println("You should set a DISPLAY or use a text ui (via -ui oneline or -ui text).");
+					System.out.println("You should set a DISPLAY or use a text ui (with -ui " + GuiTextOneLine.type + " or -ui " + GuiText.type + ").");
 					System.exit(3);
 				}
 				gui = new GuiSwing();
