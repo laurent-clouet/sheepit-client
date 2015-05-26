@@ -101,7 +101,7 @@ public class GuiSwing extends JFrame implements Gui {
 	
 	@Override
 	public void stop() {
-		System.out.println("GuiAWT::stop()");
+		System.out.println("GuiSwing::stop()");
 	}
 	
 	@Override
@@ -124,7 +124,7 @@ public class GuiSwing extends JFrame implements Gui {
 			this.activityWorking.setRenderedFrame(framesRendered);
 		}
 		else {
-			System.out.println("GuiAWT::AddFrameRendered() error: no working activity");
+			System.out.println("GuiSwing::AddFrameRendered() error: no working activity");
 		}
 	}
 	
@@ -134,7 +134,7 @@ public class GuiSwing extends JFrame implements Gui {
 			this.activityWorking.setRemainingFrame(n);
 		}
 		else {
-			System.out.println("GuiAWT::framesRemaining(" + n + ") error: no working activity");
+			System.out.println("GuiSwing::framesRemaining(" + n + ") error: no working activity");
 		}
 	}
 	
