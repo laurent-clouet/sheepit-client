@@ -26,6 +26,7 @@ public class RenderProcess {
 	private long end;
 	private int remainingDuration;
 	private long memoryUsed; // in kB
+	private int coresUsed;
 	private Process process;
 	
 	public RenderProcess() {
@@ -33,6 +34,7 @@ public class RenderProcess {
 		start = -1;
 		end = -1;
 		memoryUsed = 0;
+		coresUsed = 0;
 		remainingDuration = 0;
 	}
 	
@@ -42,6 +44,14 @@ public class RenderProcess {
 	
 	public long getMemoryUsed() {
 		return memoryUsed;
+	}
+	
+	public void setCoresUsed(int val) {
+		coresUsed = val;
+	}
+	
+	public int getCoresUsed() {
+		return coresUsed;
 	}
 	
 	public long getStartTime() {

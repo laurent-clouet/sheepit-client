@@ -622,8 +622,9 @@ public class Client {
 	
 	protected Error.Type confirmJob(Job ajob) {
 		String extras_config = "";
-		if (this.config.getNbCores() > 0) {
-			extras_config = "&cores=" + this.config.getNbCores();
+		RenderProcess process = ajob.getProcessRender();
+		if (process != null && process.getCoresUsed() > 0) {
+			extras_config = "&cores=" + process.getCoresUsed();
 		}
 		
 		String url_real = String.format("%s?job=%s&frame=%s&rendertime=%d&revision=%s&memoryused=%s&extras=%s%s", this.server.getPage("validate-job"), ajob.getId(), ajob.getFrameNumber(), ajob.getProcessRender().getDuration(), ajob.getRevision(), ajob.getProcessRender().getMemoryUsed(), ajob.getExtras(), extras_config);
