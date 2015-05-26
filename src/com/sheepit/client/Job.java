@@ -263,6 +263,7 @@ public class Job {
 			String line;
 			log.debug(command.toString());
 			OS os = OS.getOS();
+			process.setCoresUsed(config.getNbCores());
 			process.start();
 			getProcessRender().setProcess(os.exec(command, new_env));
 			BufferedReader input = new BufferedReader(new InputStreamReader(getProcessRender().getProcess().getInputStream()));
