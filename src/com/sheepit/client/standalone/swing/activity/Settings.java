@@ -314,8 +314,7 @@ public class Settings implements Activity {
 			}
 			
 			int cpu_cores = -1;
-			CPU cpu = new CPU();
-			if (cpuCores != null && cpuCores.getValue() != cpu.cores()) { // max core <=> no config (-1)
+			if (cpuCores != null) {
 				cpu_cores = cpuCores.getValue();
 			}
 			
