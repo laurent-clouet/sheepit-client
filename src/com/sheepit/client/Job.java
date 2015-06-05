@@ -473,6 +473,66 @@ public class Job {
 			// Blender quit
 			return Type.RENDERER_OUT_OF_VIDEO_MEMORY;
 		}
+		else if (line.indexOf("CUDA error: Launch exceeded timeout in") != -1) {
+			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:01:08.44 | Mem:176.04M, Peak:199.23M | Scene, RenderLayer | Path Tracing Tile 2/24, Sample 10/14
+			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:01:07.08 | Mem:175.48M, Peak:199.23M | Scene, RenderLayer | Path Tracing Tile 2/24, Sample 14/14
+			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:01:07.11 | Mem:176.04M, Peak:199.23M | Scene, RenderLayer | Path Tracing Tile 3/24, Sample 0/14
+			// CUDA error: Launch exceeded timeout in cuCtxSynchronize()
+			// Refer to the Cycles GPU rendering documentation for possible solutions:
+			// http://www.blender.org/manual/render/cycles/gpu_rendering.html
+			// CUDA error: Launch exceeded timeout in cuMemcpyDtoH((uchar*)mem.data_pointer + offset, (CUdeviceptr)(mem.device_pointer + offset), size)
+			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:03:04.30 | Mem:176.04M, Peak:199.23M | Scene, RenderLayer | Path Tracing Tile 3/24, Sample 1/14
+			// CUDA error: Launch exceeded timeout in cuMemcpyDtoH((uchar*)mem.data_pointer + offset, (CUdeviceptr)(mem.device_pointer + offset), size)
+			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:02:01.87 | Mem:175.48M, Peak:199.23M | Scene, RenderLayer | Path Tracing Tile 3/24, Sample 14/14
+			// CUDA error: Launch exceeded timeout in cuMemAlloc(&device_pointer, size)
+			// CUDA error: Launch exceeded timeout in cuMemAlloc(&device_pointer, size)
+			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:02:01.87 | Mem:176.04M, Peak:199.23M | Scene, RenderLayer | Path Tracing Tile 4/24, Sample 0/14
+			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:01:27.05 | Mem:176.04M, Peak:199.23M | Scene, RenderLayer | Path Tracing Tile 4/24, Sample 14/14
+			// CUDA error: Launch exceeded timeout in cuMemAlloc(&device_pointer, size)
+			// CUDA error: Launch exceeded timeout in cuMemAlloc(&device_pointer, size)
+			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:00:00.75 | Mem:185.66M, Peak:199.23M | Scene, RenderLayer | Path Tracing Tile 24/24, Sample 0/14
+			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Mem:185.66M, Peak:199.23M | Scene, RenderLayer | Path Tracing Tile 24/24, Sample 14/14
+			// Error: CUDA error: Launch exceeded timeout in cuCtxSynchronize()
+			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Mem:185.66M, Peak:199.23M | Scene, RenderLayer | Cancel | CUDA error: Launch exceeded timeout in cuCtxSynchronize()
+			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// Mem:109.00M (0.00M, Peak 215.18M) | Elapsed 00:00.00 | Tree Compositing Nodetree, Tile 1-6
+			// Mem:109.00M (0.00M, Peak 215.18M) | Elapsed 00:00.00 | Tree Compositing Nodetree, Tile 2-6
+			// Mem:109.00M (0.00M, Peak 215.18M) | Elapsed 00:00.00 | Tree Compositing Nodetree, Tile 3-6
+			// Mem:109.00M (0.00M, Peak 215.18M) | Elapsed 00:00.00 | Tree Compositing Nodetree, Tile 4-6
+			// Mem:109.00M (0.00M, Peak 215.18M) | Elapsed 00:00.00 | Tree Compositing Nodetree, Tile 5-6
+			// Mem:109.00M (0.00M, Peak 215.18M) | Elapsed 00:00.00 | Tree Compositing Nodetree, Tile 6-6
+			// Fra:420 Mem:109.00M (0.00M, Peak 215.18M) Sce: Scene Ve:0 Fa:0 La:0
+			// Saved: /tmp/xx/1234_0420.bmp Time: 00:18.29 (Saving: 00:00.06)
+			// Blender quit
+			// end of rendering
+			return Type.RENDERER_OUT_OF_VIDEO_MEMORY;
+		}
 		else if (line.indexOf("CUDA device supported only with compute capability") != -1) {
 			// found bundled python: /tmp/xx/2.73/python
 			// read blend: /tmp/xx/compute-method.blend
