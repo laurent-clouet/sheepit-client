@@ -161,10 +161,7 @@ public class GuiSwing extends JFrame implements Gui {
 			notifyAll();
 		}
 		
-		if (threadClient != null && threadClient.isAlive()) {
-			System.out.println("Old thread client is alive, do not regenerate one");
-		}
-		else {
+		if (threadClient == null || threadClient.isAlive() == false) {
 			threadClient = new ThreadClient();
 			threadClient.start();
 		}
