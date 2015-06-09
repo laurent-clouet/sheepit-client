@@ -76,6 +76,7 @@ On error: an 404 http code
 Url: use the request type "request-job" from the configuration answer.
 Parameter as GET or POST:
     * computemethod: What are my computer capability, 0 for using gpu and cpu (the computer is capable of using both but it will not use it at the same time), 1 for cpu only, 2 for gpu only. 
+    * cpu_cores: Number of cores currently available for rendering (optional).
 
 Answer in case of error:
 <?xml version="1.0" encoding="utf-8" ?>
