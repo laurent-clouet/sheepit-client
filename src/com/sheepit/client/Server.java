@@ -275,7 +275,8 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 		
 		HttpURLConnection connection = null;
 		try {
-			String url = String.format("%s?computemethod=%s", this.getPage("request-job"), this.user_config.computeMethodToInt());
+			OS os = OS.getOS();
+			String url = String.format("%s?computemethod=%s&cpu_cores=%s", this.getPage("request-job"), this.user_config.computeMethodToInt(), ((this.user_config.getNbCores() == -1) ? os.getCPU().cores() : this.user_config.getNbCores()));
 			if (this.user_config.getComputeMethod() != ComputeType.CPU && this.user_config.getGPUDevice() != null) {
 				String gpu_model = "";
 				try {
