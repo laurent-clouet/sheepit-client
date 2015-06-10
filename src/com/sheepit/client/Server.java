@@ -435,7 +435,9 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			throw e;
 		}
 		catch (Exception e) {
-			throw new FermeException("error requestJob: unknow exception " + e);
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			throw new FermeException("error requestJob: unknow exception " + e + " stacktrace: " + sw.toString());
 		}
 		finally {
 			if (connection != null) {
