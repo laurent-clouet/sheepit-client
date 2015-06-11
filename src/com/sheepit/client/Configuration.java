@@ -230,7 +230,6 @@ public class Configuration {
 							String md5_local = Utils.md5(file.getAbsolutePath());
 							
 							if (md5_local.equals(name) == false) {
-								System.err.println("cleanDirectory find an partial file => remove (" + file.getAbsolutePath() + ")");
 								file.delete();
 							}
 							
