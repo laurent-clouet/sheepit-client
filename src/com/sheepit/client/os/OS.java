@@ -25,9 +25,7 @@ import java.util.Map;
 import com.sheepit.client.hardware.cpu.CPU;
 
 public abstract class OS {
-	public String name() {
-		return "others";
-	}
+	public abstract String name();
 	
 	public abstract CPU getCPU();
 	
