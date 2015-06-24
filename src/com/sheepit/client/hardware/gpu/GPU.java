@@ -57,6 +57,11 @@ public class GPU {
 		result = cudalib.cuInit(0);
 		if (result != CUresult.CUDA_SUCCESS) {
 			System.out.println("GPU::generate cuInit failed (ret: " + result + ")");
+			if (result == CUresult.CUDA_ERROR_UNKNOWN) {
+				System.out.println("If you are running Linux, this error is usually due to nvidia kernel module 'nvidia_uvm' not loaded.");
+				System.out.println("Relaunch the application as root or load the module.");
+				System.out.println("Most of time it does fix the issue.");
+			}
 			return false;
 		}
 		
