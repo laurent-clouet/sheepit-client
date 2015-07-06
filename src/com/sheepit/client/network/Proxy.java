@@ -67,7 +67,6 @@ public class Proxy {
 			return true;
 		}
 		catch (MalformedURLException e) {
-			e.printStackTrace();
 			return false;
 		}
 	}
