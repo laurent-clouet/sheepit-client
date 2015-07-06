@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
+import java.net.MalformedURLException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -23,6 +24,7 @@ import com.sheepit.client.SettingsLoader;
 import com.sheepit.client.hardware.cpu.CPU;
 import com.sheepit.client.hardware.gpu.GPU;
 import com.sheepit.client.hardware.gpu.GPUDevice;
+import com.sheepit.client.network.Proxy;
 import com.sheepit.client.standalone.GuiSwing;
 
 public class Settings implements Activity {
@@ -38,6 +40,7 @@ public class Settings implements Activity {
 	private JCheckBox useCPU;
 	private List<JCheckBoxGPU> useGPUs;
 	private JSlider cpuCores;
+	private JTextField proxy;
 	
 	private JCheckBox saveFile;
 	private JCheckBox autoSignIn;
@@ -61,8 +64,8 @@ public class Settings implements Activity {
 		int start_label_left = 109;
 		int start_label_right = 265;
 		int end_label_right = 490;
-		int n = 10;
-		int sep = 45;
+		int n = 5;
+		int sep = 40;
 		
 		ImageIcon image = new ImageIcon(getClass().getResource("/title.png"));
 		JLabel labelImage = new JLabel(image);
@@ -70,7 +73,7 @@ public class Settings implements Activity {
 		n = labelImage.getHeight();
 		parent.getContentPane().add(labelImage);
 		
-		n += 40;
+		n += sep;
 		
 		JLabel loginLabel = new JLabel("Login:");
 		loginLabel.setBounds(start_label_left, n, 170, size_height_label);
@@ -95,6 +98,21 @@ public class Settings implements Activity {
 		password.setColumns(10);
 		password.addKeyListener(new CheckCanStart());
 		parent.getContentPane().add(password);
+		
+		n += sep;
+		
+		JLabel proxyLabel = new JLabel("Proxy:");
+		proxyLabel.setBounds(start_label_left, n, 170, size_height_label);
+		proxyLabel.setToolTipText("http://login:password@host:port");
+		parent.getContentPane().add(proxyLabel);
+		
+		proxy = new JTextField();
+		proxy.setBounds(start_label_right, n, end_label_right - start_label_right, size_height_label);
+		proxy.setToolTipText("http://login:password@host:port");
+		System.out.println("parent.getConfiguration().getProxy() " + parent.getConfiguration().getProxy());
+		proxy.setText(parent.getConfiguration().getProxy());
+		proxy.addKeyListener(new CheckCanStart());
+		parent.getContentPane().add(proxy);
 		
 		n += sep;
 		
@@ -215,7 +233,7 @@ public class Settings implements Activity {
 				selected = true;
 			}
 		}
-		if (login.getText().isEmpty() || password.getPassword().length == 0) {
+		if (login.getText().isEmpty() || password.getPassword().length == 0 || Proxy.isValidURL(proxy.getText()) == false) {
 			selected = false;
 		}
 		saveButton.setEnabled(selected);
@@ -322,6 +340,19 @@ public class Settings implements Activity {
 				config.setUseNbCores(cpu_cores);
 			}
 			
+			String proxyText = null;
+			if (proxy != null) {
+				try {
+					Proxy.set(proxy.getText());
+					proxyText = proxy.getText();
+				}
+				catch (MalformedURLException e1) {
+					System.err.println("Error: wrong url for proxy");
+					System.err.println(e);
+					System.exit(2);
+				}
+			}
+			
 			parent.setCredentials(login.getText(), new String(password.getPassword()));
 			
 			String cachePath = null;
@@ -330,7 +361,7 @@ public class Settings implements Activity {
 			}
 			
 			if (saveFile.isSelected()) {
-				new SettingsLoader(login.getText(), new String(password.getPassword()), method, selected_gpu, cpu_cores, cachePath, autoSignIn.isSelected(), GuiSwing.type).saveFile();
+				new SettingsLoader(login.getText(), new String(password.getPassword()), proxyText, method, selected_gpu, cpu_cores, cachePath, autoSignIn.isSelected(), GuiSwing.type).saveFile();
 			}
 			else {
 				try {

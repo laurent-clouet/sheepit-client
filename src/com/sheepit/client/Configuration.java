@@ -44,6 +44,7 @@ public class Configuration {
 	public String static_exeDirName;
 	private String login;
 	private String password;
+	private String proxy;
 	private int maxUploadingJob;
 	private int nbCores;
 	private ComputeType computeMethod;
@@ -57,6 +58,7 @@ public class Configuration {
 	public Configuration(File cache_dir_, String login_, String password_) {
 		this.login = login_;
 		this.password = password_;
+		this.proxy = null;
 		this.static_exeDirName = "exe";
 		this.maxUploadingJob = 1;
 		this.nbCores = -1; // ie not set
@@ -91,6 +93,14 @@ public class Configuration {
 	
 	public void setPassword(String password_) {
 		this.password = password_;
+	}
+	
+	public String getProxy() {
+		return this.proxy;
+	}
+
+	public void setProxy(String url) {
+		this.proxy = url;
 	}
 	
 	public int maxUploadingJob() {
