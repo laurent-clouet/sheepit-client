@@ -23,6 +23,7 @@ public class SettingsLoader {
 	
 	private String login;
 	private String password;
+	private String proxy;
 	private String computeMethod;
 	private String gpu;
 	private String cores;
@@ -38,10 +39,11 @@ public class SettingsLoader {
 		path = path_;
 	}
 	
-	public SettingsLoader(String login_, String password_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, String cacheDir_, boolean autoSignIn_, String ui_) {
+	public SettingsLoader(String login_, String password_, String proxy_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, String cacheDir_, boolean autoSignIn_, String ui_) {
 		path = getDefaultFilePath();
 		login = login_;
 		password = password_;
+		proxy = proxy_;
 		cacheDir = cacheDir_;
 		autoSignIn = String.valueOf(autoSignIn_);
 		ui = ui_;
@@ -100,6 +102,10 @@ public class SettingsLoader {
 				prop.setProperty("password", password);
 			}
 			
+			if (proxy != null) {
+				prop.setProperty("proxy", proxy);
+			}
+			
 			if (autoSignIn != null) {
 				prop.setProperty("auto-signin", autoSignIn);
 			}
@@ -143,6 +149,7 @@ public class SettingsLoader {
 	public void loadFile() {
 		this.login = null;
 		this.password = null;
+		this.proxy = null;
 		this.computeMethod = null;
 		this.gpu = null;
 		this.cacheDir = null;
@@ -181,6 +188,10 @@ public class SettingsLoader {
 			
 			if (prop.containsKey("password")) {
 				this.password = prop.getProperty("password");
+			}
+			
+			if (prop.containsKey("proxy")) {
+				this.proxy = prop.getProperty("proxy");
 			}
 			
 			if (prop.containsKey("auto-signin")) {
@@ -222,6 +233,10 @@ public class SettingsLoader {
 		}
 		if (config.password().isEmpty() && password != null) {
 			config.setPassword(password);
+		}
+		
+		if ((config.getProxy() == null || config.getProxy().isEmpty()) && proxy != null) {
+			config.setProxy(proxy);
 		}
 		
 		try {

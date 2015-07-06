@@ -25,9 +25,7 @@ import static org.kohsuke.args4j.ExampleMode.REQUIRED;
 import org.kohsuke.args4j.Option;
 
 import java.io.File;
-import java.net.Authenticator;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -42,7 +40,7 @@ import com.sheepit.client.SettingsLoader;
 import com.sheepit.client.ShutdownHook;
 import com.sheepit.client.hardware.gpu.GPU;
 import com.sheepit.client.hardware.gpu.GPUDevice;
-import com.sheepit.client.network.ProxyAuthenticator;
+import com.sheepit.client.network.Proxy;
 
 public class Worker {
 	@Option(name = "-server", usage = "Render-farm server, default https://www.sheepit-renderfarm.com", metaVar = "URL", required = false)
@@ -209,25 +207,7 @@ public class Worker {
 		
 		if (proxy != null) {
 			try {
-				URL url = new URL(proxy);
-				String userinfo = url.getUserInfo();
-				if (userinfo != null) {
-					String[] elements = userinfo.split(":");
-					if (elements.length == 2) {
-						String proxy_user = elements[0];
-						String proxy_password = elements[1];
-						
-						if (proxy_user != null && proxy_password != null) {
-							Authenticator.setDefault(new ProxyAuthenticator(proxy_user, proxy_password));
-						}
-					}
-				}
-				
-				System.setProperty("http.proxyHost", url.getHost());
-				System.setProperty("http.proxyPort", Integer.toString(url.getPort()));
-				
-				System.setProperty("https.proxyHost", url.getHost());
-				System.setProperty("https.proxyPort", Integer.toString(url.getPort()));
+				Proxy.set(proxy);
 			}
 			catch (MalformedURLException e) {
 				System.err.println("Error: wrong url for proxy");
