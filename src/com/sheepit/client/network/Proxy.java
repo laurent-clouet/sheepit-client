@@ -28,6 +28,9 @@ import com.sheepit.client.network.ProxyAuthenticator;
 public class Proxy {
 	
 	public static void set(String url_) throws MalformedURLException {
+		if (url_ == null || url_.isEmpty()) {
+			return;
+		}
 		URL url = new URL(url_);
 		String userinfo = url.getUserInfo();
 		if (userinfo != null) {
