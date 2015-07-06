@@ -109,7 +109,6 @@ public class Settings implements Activity {
 		proxy = new JTextField();
 		proxy.setBounds(start_label_right, n, end_label_right - start_label_right, size_height_label);
 		proxy.setToolTipText("http://login:password@host:port");
-		System.out.println("parent.getConfiguration().getProxy() " + parent.getConfiguration().getProxy());
 		proxy.setText(parent.getConfiguration().getProxy());
 		proxy.addKeyListener(new CheckCanStart());
 		parent.getContentPane().add(proxy);
