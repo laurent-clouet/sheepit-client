@@ -78,6 +78,7 @@ import com.sheepit.client.exception.FermeException;
 import com.sheepit.client.exception.FermeExceptionNoRightToRender;
 import com.sheepit.client.exception.FermeExceptionNoSession;
 import com.sheepit.client.exception.FermeExceptionSessionDisabled;
+import com.sheepit.client.exception.FermeServerDown;
 import com.sheepit.client.os.OS;
 
 public class Server extends Thread implements HostnameVerifier, X509TrustManager {
@@ -144,6 +145,9 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 						catch (ParserConfigurationException e) {
 						}
 					}
+				}
+				catch (NoRouteToHostException e) {
+					this.log.debug("Server::keeepmealive can not connect to server");
 				}
 				catch (IOException e) {
 					e.printStackTrace();
@@ -433,6 +437,9 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 		}
 		catch (FermeException e) {
 			throw e;
+		}
+		catch (NoRouteToHostException e) {
+			throw new FermeServerDown();
 		}
 		catch (Exception e) {
 			StringWriter sw = new StringWriter();
