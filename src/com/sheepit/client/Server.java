@@ -426,6 +426,10 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			}
 			else {
 				System.out.println("Server::requestJob url " + url_contents + " r " + r + " contentType " + contentType);
+				if (r == HttpURLConnection.HTTP_UNAVAILABLE) {
+					// most likely varnish is up but apache down
+					throw new FermeServerDown();
+				}
 				InputStream in = connection.getInputStream();
 				String line;
 				BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
