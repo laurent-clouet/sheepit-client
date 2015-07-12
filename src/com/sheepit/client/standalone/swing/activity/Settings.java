@@ -214,6 +214,7 @@ public class Settings implements Activity {
 		n += sep;
 		
 		saveButton = new JButton("Start");
+		checkDisplaySaveButton();
 		saveButton.setBounds(start_label_right, n, 80, size_height_label);
 		saveButton.addActionListener(new SaveAction());
 		parent.getContentPane().add(saveButton);
@@ -393,11 +394,11 @@ public class Settings implements Activity {
 		
 		@Override
 		public void keyReleased(KeyEvent arg0) {
+			checkDisplaySaveButton();
 		}
 		
 		@Override
 		public void keyTyped(KeyEvent arg0) {
-			checkDisplaySaveButton();
 		}
 		
 	}
