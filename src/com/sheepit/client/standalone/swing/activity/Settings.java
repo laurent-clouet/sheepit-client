@@ -11,8 +11,11 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
 import java.net.MalformedURLException;
+import java.text.MessageFormat;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -37,8 +40,6 @@ import com.sheepit.client.network.Proxy;
 import com.sheepit.client.standalone.GuiSwing;
 
 public class Settings implements Activity {
-	private static final String DUMMY_CACHE_DIR = "Auto detected";
-	
 	private GuiSwing parent;
 	
 	private JTextField login;
@@ -56,6 +57,8 @@ public class Settings implements Activity {
 	JButton saveButton;
 	
 	private boolean haveAutoStarted;
+
+	private ResourceBundle guiResources, warningResources, exceptionResources;
 	
 	public Settings(GuiSwing parent_) {
 		parent = parent_;
@@ -78,6 +81,10 @@ public class Settings implements Activity {
 		parent.addPadding(1, ++currentRow, columns - 2, 1);
 		++currentRow;
 		
+		guiResources = ResourceBundle.getBundle("GUIResources", parent.getConfiguration().getLocale());
+		exceptionResources = ResourceBundle.getBundle("ExceptionResources", parent.getConfiguration().getLocale());
+		warningResources = ResourceBundle.getBundle("WarningResources", parent.getConfiguration().getLocale());
+		
 		ImageIcon image = new ImageIcon(getClass().getResource("/title.png"));
 		JLabel labelImage = new JLabel(image);
 		constraints.fill = GridBagConstraints.BOTH;
@@ -91,7 +98,7 @@ public class Settings implements Activity {
 		parent.addPadding(1, ++currentRow, columns - 2, 1);
 		++currentRow;
 		
-		JLabel loginLabel = new JLabel("Login:");
+		JLabel loginLabel = new JLabel(guiResources.getString("LoginLabel") + ":");
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		constraints.weighty = 0.0;
 		constraints.gridwidth = 1;
@@ -109,7 +116,7 @@ public class Settings implements Activity {
 		parent.addPadding(1, ++currentRow, columns - 2, 1);
 		++currentRow;
 		
-		JLabel passwordLabel = new JLabel("Password:");
+		JLabel passwordLabel = new JLabel(guiResources.getString("PasswordLabel") + ":");
 		constraints.weighty = 0.0;
 		constraints.gridwidth = 1;
 		constraints.gridx = 1;
@@ -127,15 +134,15 @@ public class Settings implements Activity {
 		parent.addPadding(1, ++currentRow, columns - 2, 1);
 		++currentRow;
 		
-		JLabel proxyLabel = new JLabel("Proxy:");
-		proxyLabel.setToolTipText("http://login:password@host:port");
+		JLabel proxyLabel = new JLabel(guiResources.getString("ProxyLabel") + ":");
+		proxyLabel.setToolTipText(guiResources.getString("ProxyTooltip"));
 		constraints.gridwidth = 1;
 		constraints.gridx = 1;
 		constraints.gridy = currentRow;
 		parent.getContentPane().add(proxyLabel, constraints);
 		
 		proxy = new JTextField();
-		proxy.setToolTipText("http://login:password@host:port");
+		proxy.setToolTipText(guiResources.getString("ProxyTooltip"));
 		proxy.setText(parent.getConfiguration().getProxy());
 		proxy.addKeyListener(new CheckCanStart());
 		constraints.gridwidth = columns - 3;
@@ -145,13 +152,13 @@ public class Settings implements Activity {
 		parent.addPadding(1, ++currentRow, columns - 2, 1);
 		++currentRow;
 		
-		JLabel cacheLabel = new JLabel("Working directory:");
+		JLabel cacheLabel = new JLabel(guiResources.getString("WorkDirLabel") + ":");
 		constraints.gridwidth = 1;
 		constraints.gridx = 1;
 		constraints.gridy = currentRow;
 		parent.getContentPane().add(cacheLabel, constraints);
 		
-		String destination = DUMMY_CACHE_DIR;
+		String destination = guiResources.getString("DummyCacheDir");
 		if (config.getUserSpecifiedACacheDir()) {
 			destination = config.getStorageDir().getName();
 		}
@@ -165,7 +172,7 @@ public class Settings implements Activity {
 		
 		cacheDirChooser = new JFileChooser();
 		cacheDirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		JButton openButton = new JButton("...");
+		JButton openButton = new JButton(guiResources.getString("WorkDirButton"));
 		openButton.addActionListener(new ChooseFileAction());
 		cacheDirWrapper.add(openButton);
 		
@@ -176,13 +183,13 @@ public class Settings implements Activity {
 		parent.addPadding(1, ++currentRow, columns - 2, 1);
 		++currentRow;
 		
-		JLabel computeMethodLabel = new JLabel("Use:");
+		JLabel computeMethodLabel = new JLabel(guiResources.getString("ComputeMethodLabel") + ":");
 		constraints.gridx = 1;
 		constraints.gridy = currentRow;
 		parent.getContentPane().add(computeMethodLabel, constraints);
 		
 		ComputeType method = config.getComputeMethod();
-		useCPU = new JCheckBox("CPU");
+		useCPU = new JCheckBox(guiResources.getString("CPUCheckboxLabel"));
 		boolean gpuChecked = false;
 		
 		if (method == ComputeType.CPU_GPU) {
@@ -233,7 +240,7 @@ public class Settings implements Activity {
 			cpuCores.setPaintTicks(true);
 			cpuCores.setPaintLabels(true);
 			cpuCores.setValue(config.getNbCores() != -1 ? config.getNbCores() : cpuCores.getMaximum());
-			JLabel coreLabel = new JLabel("CPU cores:");
+			JLabel coreLabel = new JLabel(guiResources.getString("CPUCoreLabel") + ":");
 			constraints.gridx = 1;
 			constraints.gridy = currentRow;
 			parent.getContentPane().add(coreLabel, constraints);
@@ -245,7 +252,7 @@ public class Settings implements Activity {
 			++currentRow;
 		}
 		
-		saveFile = new JCheckBox("Save settings", true);
+		saveFile = new JCheckBox(guiResources.getString("SaveSettingsButton"), true);
 		constraints.gridwidth = columns - 3;
 		constraints.gridx = 2;
 		constraints.gridy = currentRow;
@@ -254,7 +261,7 @@ public class Settings implements Activity {
 		parent.addPadding(1, ++currentRow, columns - 2, 1);
 		++currentRow;
 		
-		autoSignIn = new JCheckBox("Auto sign in", config.getAutoSignIn());
+		autoSignIn = new JCheckBox(guiResources.getString("AutoSignInButton"), config.getAutoSignIn());
 		autoSignIn.addActionListener(new AutoSignInChangeAction());
 		constraints.gridy = currentRow;
 		parent.getContentPane().add(autoSignIn, constraints);
@@ -262,7 +269,7 @@ public class Settings implements Activity {
 		parent.addPadding(1, ++currentRow, columns - 2, 1);
 		++currentRow;
 		
-		saveButton = new JButton("Start");
+		saveButton = new JButton(guiResources.getString("StartButton"));
 		checkDisplaySaveButton();
 		saveButton.addActionListener(new SaveAction());
 		constraints.gridwidth = columns - 2;
@@ -300,7 +307,7 @@ public class Settings implements Activity {
 		
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			JOptionPane.showMessageDialog(parent.getContentPane(), "<html>The working directory has to be dedicated directory. <br />Caution, everything not related to SheepIt-Renderfarm will be removed.<br />You should create a directory specifically for it.</html>", "Warning: files will be removed!", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(parent.getContentPane(), guiResources.getString("CacheDirWarningContents"), guiResources.getString("CacheDirWarningTitle"), JOptionPane.WARNING_MESSAGE);
 			int returnVal = cacheDirChooser.showOpenDialog(parent.getContentPane());
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				File file = cacheDirChooser.getSelectedFile();
@@ -360,7 +367,8 @@ public class Settings implements Activity {
 					config.setCacheDir(cacheDir);
 				}
 				else {
-					System.out.println("Activity::Settings::handle do not dir since it did not change (dir: " + cacheDir + ")");
+					MessageFormat formatter = new MessageFormat(warningResources.getString("CacheDirUnchanged"), config.getLocale());
+					System.out.println(formatter.format(new Object[]{cacheDir}));
 				}
 			}
 			
@@ -403,7 +411,7 @@ public class Settings implements Activity {
 					proxyText = proxy.getText();
 				}
 				catch (MalformedURLException e1) {
-					System.err.println("Error: wrong url for proxy");
+					System.err.println(exceptionResources.getString("InvalidProxyURL"));
 					System.err.println(e);
 					System.exit(2);
 				}
@@ -417,7 +425,7 @@ public class Settings implements Activity {
 			}
 			
 			if (saveFile.isSelected()) {
-				new SettingsLoader(login.getText(), new String(password.getPassword()), proxyText, method, selected_gpu, cpu_cores, cachePath, autoSignIn.isSelected(), GuiSwing.type).saveFile();
+				new SettingsLoader(login.getText(), new String(password.getPassword()), proxyText, method, selected_gpu, cpu_cores, cachePath, autoSignIn.isSelected(), GuiSwing.type, config.getLocale().toString()).saveFile();
 			}
 			else {
 				try {

@@ -28,6 +28,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.DateFormat;
+import java.text.MessageFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.TimeZone;
 
 import com.sheepit.client.Error.Type;
@@ -63,6 +65,7 @@ public class Job {
 	private Gui gui;
 	private Configuration config;
 	private Log log;
+	private ResourceBundle guiResources;
 	
 	public Job(Configuration config_, Gui gui_, Log log_, String id_, String frame_, String revision_, String path_, boolean use_gpu, String command_, String script_, String sceneMd5_, String rendererMd5_, String extras_, boolean synchronous_upload_, String update_method_) {
 		config = config_;
@@ -82,6 +85,7 @@ public class Job {
 		updateRenderingStatusMethod = update_method_;
 		askForRendererKill = false;
 		log = log_;
+		guiResources = ResourceBundle.getBundle("GUIResources", config_.getLocale());
 		render = new RenderProcess();
 	}
 	
@@ -186,7 +190,7 @@ public class Job {
 	}
 	
 	public Error.Type render() {
-		gui.status("Rendering");
+		gui.status(this.guiResources.getString("Rendering"));
 		RenderProcess process = getProcessRender();
 		String core_script = "import bpy\n" + "bpy.context.user_preferences.system.compute_device_type = \"%s\"\n" + "bpy.context.scene.cycles.device = \"%s\"\n" + "bpy.context.user_preferences.system.compute_device = \"%s\"\n";
 		if (getUseGPU() && config.getGPUDevice() != null) {
@@ -234,7 +238,7 @@ public class Job {
 					catch (IOException e) {
 						StringWriter sw = new StringWriter();
 						e.printStackTrace(new PrintWriter(sw));
-						log.error("Client:runRenderer exception on script generation, will return UNKNOWN " + e + " stacktrace " + sw.toString());
+						log.errorF("RunRendererUnknown", new Object[]{e, sw.toString()});
 						return Error.Type.UNKNOWN;
 					}
 					script_file.deleteOnExit();
@@ -261,7 +265,7 @@ public class Job {
 		
 		try {
 			String line;
-			log.debug(command.toString());
+			log.debugR(command.toString());
 			OS os = OS.getOS();
 			process.setCoresUsed(config.getNbCores());
 			process.start();
@@ -269,12 +273,12 @@ public class Job {
 			BufferedReader input = new BufferedReader(new InputStreamReader(getProcessRender().getProcess().getInputStream()));
 			
 			long last_update_status = 0;
-			log.debug("renderer output");
+			log.debug("RendererOutputNotify");
 			try {
 				while ((line = input.readLine()) != null) {
 					updateRenderingMemoryPeak(line);
 					
-					log.debug(line);
+					log.debugR(line);
 					if ((new Date().getTime() - last_update_status) > 2000) { // only call the update every two seconds
 						updateRenderingStatus(line);
 						last_update_status = new Date().getTime();
@@ -291,9 +295,9 @@ public class Job {
 			}
 			catch (IOException err1) { // for the input.readline
 				// most likely The handle is invalid
-				log.error("Client:runRenderer exception(B) (silent error) " + err1);
+				log.errorF("RunRendererExceptionB", new Object[]{err1});
 			}
-			log.debug("end of rendering");
+			log.debug("EndOfRenderingNotify");
 		}
 		catch (Exception err) {
 			if (script_file != null) {
@@ -301,7 +305,7 @@ public class Job {
 			}
 			StringWriter sw = new StringWriter();
 			err.printStackTrace(new PrintWriter(sw));
-			log.error("Client:runRenderer exception(A) " + err + " stacktrace " + sw.toString());
+			log.errorF("RunRendererExceptionA", new Object[]{err, sw.toString()});
 			return Error.Type.FAILED_TO_EXECUTE;
 		}
 		
@@ -324,10 +328,10 @@ public class Job {
 		File[] files = config.workingDirectory.listFiles(textFilter);
 		
 		if (files.length == 0) {
-			log.error("Client::runRenderer no picture file found (after finished render (filename_without_extension " + filename_without_extension + ")");
+			log.errorF("RunRendererNoPicture", new Object[]{filename_without_extension});
 			
 			if (getAskForRendererKill()) {
-				log.debug("Client::runRenderer renderer didn't generate any frame but died due to a kill request");
+				log.debug("RunRendererKilled");
 				return Error.Type.RENDERER_KILLED;
 			}
 			
@@ -340,13 +344,13 @@ public class Job {
 			}
 			File crash_file = new File(config.workingDirectory + File.separator + basename + ".crash.txt");
 			if (crash_file.exists()) {
-				log.error("Client::runRenderer crash file found => the renderer crashed");
+				log.error("RunRendererCrash");
 				crash_file.delete();
 				return Error.Type.RENDERER_CRASHED;
 			}
 			
 			if (exit_value == 127 && process.getDuration() < 10) {
-				log.error("Client::runRenderer renderer returned 127 and took " + process.getDuration() + "s, some libraries may be missing");
+				log.errorF("RunRendererReturn127", new Object[]{process.getDuration()});
 				return Error.Type.RENDERER_MISSING_LIBRARIES;
 			}
 			
@@ -354,7 +358,7 @@ public class Job {
 		}
 		else {
 			setOutputImagePath(files[0].getAbsolutePath());
-			log.debug("Client::runRenderer pictureFilename: '" + getOutputImagePath() + "'");
+			log.debugF("RunRendererPictureFilename", new Object[]{getOutputImagePath()});
 		}
 		
 		File scene_dir = new File(getSceneDirectory());
@@ -363,7 +367,8 @@ public class Job {
 			scene_dir.delete();
 		}
 		
-		gui.status(String.format("Frame rendered in %dmin%ds", process.getDuration() / 60, process.getDuration() % 60));
+		MessageFormat formatter = new MessageFormat(guiResources.getString("FrameRenderedIn"), this.guiResources.getLocale());
+		gui.status(formatter.format(new Object[]{process.getDuration() / 60, process.getDuration() % 60}));
 		
 		return Error.Type.OK;
 	}
@@ -380,16 +385,18 @@ public class Job {
 						int current = Integer.parseInt(parts[0]);
 						int total = Integer.parseInt(parts[1]);
 						if (total != 0) {
-							gui.status(String.format("Rendering %s %%", (int) (100.0 * current / total)));
+							MessageFormat formatter = new MessageFormat(guiResources.getString("RenderingPercent"), guiResources.getLocale());
+							gui.status(formatter.format(new Object[]{100.0 * current / total}));
 							return;
 						}
 					}
 					catch (NumberFormatException e) {
-						System.out.println("Exception 92: " + e);
+						MessageFormat formatter = new MessageFormat(ResourceBundle.getBundle("ExceptionResources", config.getLocale()).getString("Exception92"), config.getLocale());
+						System.out.println(formatter.format(new Object[]{e}));
 					}
 				}
 			}
-			gui.status("Rendering");
+			gui.status(guiResources.getString("Rendering"));
 		}
 		else if (getUpdateRenderingStatusMethod() == null || getUpdateRenderingStatusMethod().equals(Job.UPDATE_METHOD_BY_REMAINING_TIME)) {
 			String search_remaining = "remaining:";
@@ -414,11 +421,12 @@ public class Job {
 						}
 						date_parse.setTimeZone(TimeZone.getTimeZone("GMT"));
 						Date date = date_parse.parse(remaining_time);
-						gui.status(String.format("Rendering (remaining %s)", Utils.humanDuration(date)));
+						MessageFormat formatter = new MessageFormat(guiResources.getString("RenderingTime"), guiResources.getLocale());
+						gui.status(formatter.format(new Object[]{Utils.humanDuration(date)}));
 						getProcessRender().setRemainingDuration((int) (date.getTime() / 1000));
 					}
 					catch (ParseException err) {
-						log.error("Client::updateRenderingStatus ParseException " + err);
+						log.errorF("UpdateRenderingStatusParse", new Object[]{err});
 					}
 				}
 			}

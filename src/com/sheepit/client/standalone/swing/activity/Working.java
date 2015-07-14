@@ -8,6 +8,9 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.MessageFormat;
+import java.text.NumberFormat;
+import java.util.ResourceBundle;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -29,6 +32,8 @@ public class Working implements Activity {
 	JLabel creditEarned;
 	JButton pauseButton;
 	
+	ResourceBundle exceptionResources, guiResources;
+	
 	public Working(GuiSwing parent_) {
 		parent = parent_;
 		
@@ -38,6 +43,9 @@ public class Working implements Activity {
 		creditEarned = new JLabel("");
 		
 		lastRender = new JLabel();
+		
+		exceptionResources = ResourceBundle.getBundle("ExceptionResources", parent_.getConfiguration().getLocale());
+		guiResources = ResourceBundle.getBundle("GUIResources", parent_.getConfiguration().getLocale());
 	}
 	
 	@Override
@@ -61,7 +69,7 @@ public class Working implements Activity {
 		parent.addPadding(1, ++currentRow, 2, 1);
 		++currentRow;
 		
-		JLabel statusLabel = new JLabel("Status:");
+		JLabel statusLabel = new JLabel(this.guiResources.getString("Status") + ":");
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		constraints.weighty = 0.0;
 		constraints.gridwidth = 1;
@@ -76,7 +84,7 @@ public class Working implements Activity {
 		parent.addPadding(1, ++currentRow, 2, 1);
 		++currentRow;
 		
-		JLabel creditsEarnedLabel = new JLabel("Credits earned:");
+		JLabel creditsEarnedLabel = new JLabel(this.guiResources.getString("CreditsEarned") + ":");
 		constraints.gridx = 1;
 		constraints.gridy = currentRow;
 		parent.getContentPane().add(creditsEarnedLabel, constraints);
@@ -87,7 +95,7 @@ public class Working implements Activity {
 		parent.addPadding(1, ++currentRow, 2, 1);
 		++currentRow;
 		
-		JLabel renderedFrameLabel = new JLabel("Rendered frames:");
+		JLabel renderedFrameLabel = new JLabel(this.guiResources.getString("RenderedFrames") + ":");
 		constraints.gridx = 1;
 		constraints.gridy = currentRow;
 		parent.getContentPane().add(renderedFrameLabel, constraints);
@@ -98,7 +106,7 @@ public class Working implements Activity {
 		parent.addPadding(1, ++currentRow, 2, 1);
 		++currentRow;
 		
-		JLabel remainingFrameLabel = new JLabel("Remaining frames:");
+		JLabel remainingFrameLabel = new JLabel(this.guiResources.getString("RemainingFrames") + ":");
 		constraints.gridx = 1;
 		constraints.gridy = currentRow;
 		parent.getContentPane().add(remainingFrameLabel, constraints);
@@ -109,7 +117,7 @@ public class Working implements Activity {
 		parent.addPadding(1, ++currentRow, 2, 1);
 		++currentRow;
 		
-		JLabel lastRenderedFrameLabel = new JLabel("Last rendered frame:");
+		JLabel lastRenderedFrameLabel = new JLabel(this.guiResources.getString("LastRenderedFrame") + ":");
 		constraints.gridx = 1;
 		constraints.gridy = currentRow;
 		parent.getContentPane().add(lastRenderedFrameLabel, constraints);
@@ -120,13 +128,13 @@ public class Working implements Activity {
 		parent.addPadding(1, ++currentRow, 2, 1);
 		++currentRow;
 		
-		JButton settingsButton = new JButton("Settings");
+		JButton settingsButton = new JButton(this.guiResources.getString("Settings"));
 		settingsButton.addActionListener(new SettingsAction());
 		constraints.gridx = 1;
 		constraints.gridy = currentRow;
 		parent.getContentPane().add(settingsButton, constraints);
 		
-		pauseButton = new JButton("Pause");
+		pauseButton = new JButton(this.guiResources.getString("Pause"));
 		pauseButton.addActionListener(new PauseAction());
 		constraints.gridx = 2;
 		parent.getContentPane().add(pauseButton, constraints);
@@ -141,11 +149,11 @@ public class Working implements Activity {
 	}
 	
 	public void setRemainingFrame(int n) {
-		remainingFrameContent.setText(String.valueOf(n));
+		remainingFrameContent.setText(NumberFormat.getInstance(parent.getConfiguration().getLocale()).format(n));
 	}
 	
 	public void setRenderedFrame(int n) {
-		renderedFrameContent.setText(String.valueOf(n));
+		renderedFrameContent.setText(NumberFormat.getInstance(parent.getConfiguration().getLocale()).format(n));
 		showCreditEarned();
 		showLastRender();
 	}
@@ -163,7 +171,8 @@ public class Working implements Activity {
 						lastRender.setIcon(new ImageIcon(image));
 					}
 					catch (IOException e) {
-						System.out.println("Working::showLastRender() exception " + e);
+						MessageFormat formatter = new MessageFormat(exceptionResources.getString("ShowLastRender"), client.getConfiguration().getLocale());
+						System.out.println(formatter.format(new Object[]{e}));
 						e.printStackTrace();
 					}
 				}
@@ -190,13 +199,14 @@ public class Working implements Activity {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			Client client = parent.getClient();
+			ResourceBundle guiResources = ResourceBundle.getBundle("GUIResources", client.getConfiguration().getLocale());
 			if (client != null) {
 				if (client.isSuspended()) {
-					pauseButton.setText("Pause");
+					pauseButton.setText(guiResources.getString("Pause"));
 					client.resume();
 				}
 				else {
-					pauseButton.setText("Resume");
+					pauseButton.setText(guiResources.getString("Resume"));
 					client.suspend();
 				}
 			}

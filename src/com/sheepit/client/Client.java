@@ -24,9 +24,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.ResourceBundle;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -54,6 +56,8 @@ public class Client {
 	
 	private int maxDownloadFileAttempts = 5;
 	
+	private ResourceBundle guiResources, exceptionResources;
+	
 	public Client(Gui gui_, Configuration config, String url_) {
 		this.config = config;
 		this.server = new Server(url_, this.config, this);
@@ -66,6 +70,9 @@ public class Client {
 		this.disableErrorSending = false;
 		this.running = true;
 		this.suspended = false;
+		
+		this.guiResources = ResourceBundle.getBundle("GUIResources", this.config.getLocale());
+		this.exceptionResources = ResourceBundle.getBundle("ExceptionResources", this.config.getLocale());
 	}
 	
 	public String toString() {
@@ -94,19 +101,19 @@ public class Client {
 	
 	public int run() {
 		if (this.config.checkOSisSupported() == false) {
-			this.gui.error(Error.humanString(Error.Type.OS_NOT_SUPPORTED));
+			this.gui.error(Error.humanString(Error.Type.OS_NOT_SUPPORTED, this.config.getLocale()));
 			return -3;
 		}
 		
 		if (this.config.checkCPUisSupported() == false) {
-			this.gui.error(Error.humanString(Error.Type.CPU_NOT_SUPPORTED));
+			this.gui.error(Error.humanString(Error.Type.CPU_NOT_SUPPORTED, this.config.getLocale()));
 			return -4;
 		}
 		
 		int step;
 		try {
 			step = this.log.newCheckPoint();
-			this.gui.status("Starting");
+			this.gui.status(guiResources.getString("Starting"));
 			
 			this.config.cleanWorkingDirectory();
 			
@@ -114,7 +121,7 @@ public class Client {
 			ret = this.server.getConfiguration();
 			
 			if (ret != Error.Type.OK) {
-				this.gui.error(Error.humanString(ret));
+				this.gui.error(Error.humanString(ret, this.config.getLocale()));
 				if (ret != Error.Type.AUTHENTICATION_FAILED) {
 					Log.printCheckPoint(step);
 				}
@@ -145,7 +152,8 @@ public class Client {
 					if (next_request != null) {
 						// wait
 						Date now = new Date();
-						this.gui.status(String.format("Waiting until %tR before requesting job", next_request));
+						MessageFormat formatter = new MessageFormat(this.guiResources.getString("JobWaiting"), this.guiResources.getLocale());
+						this.gui.status(formatter.format(new Object[]{String.format("%tR", next_request)}));
 						try {
 							Thread.sleep(next_request.getTimeInMillis() - now.getTime());
 						}
@@ -153,18 +161,18 @@ public class Client {
 							
 						}
 						catch (IllegalArgumentException e3) {
-							this.log.error("Client::run sleepA failed " + e3);
+							this.log.errorF("SleepAFail", new Object[]{e3});
 						}
 					}
-					this.gui.status("Requesting Job");
+					this.gui.status(this.guiResources.getString("RequestingJob"));
 					this.renderingJob = this.server.requestJob();
 				}
 				catch (FermeExceptionNoRightToRender e) {
-					this.gui.error("User does not have enough right to render scene");
+					this.gui.error(this.exceptionResources.getString("InsufficientRights"));
 					return -2;
 				}
 				catch (FermeExceptionSessionDisabled e) {
-					this.gui.error(Error.humanString(Error.Type.SESSION_DISABLED));
+					this.gui.error(Error.humanString(Error.Type.SESSION_DISABLED, this.config.getLocale()));
 					// should wait forever to actually display the message to the user
 					while (true) {
 						try {
@@ -187,7 +195,8 @@ public class Client {
 							if (next_request != null) {
 								// wait
 								Date now = new Date();
-								this.gui.status(String.format("Waiting until %tR before requesting job", next_request));
+								MessageFormat formatter = new MessageFormat(this.guiResources.getString("JobWaiting"), this.guiResources.getLocale());
+								this.gui.status(formatter.format(new Object[]{String.format("%tR", next_request)}));
 								try {
 									Thread.sleep(next_request.getTimeInMillis() - now.getTime());
 								}
@@ -195,10 +204,10 @@ public class Client {
 									
 								}
 								catch (IllegalArgumentException e3) {
-									this.log.error("Client::run sleepB failed " + e3);
+									this.log.errorF("SleepBFail", new Object[]{e3});
 								}
 							}
-							this.gui.status("Requesting Job");
+							this.gui.status(this.guiResources.getString("RequestingJob"));
 							this.renderingJob = this.server.requestJob();
 						}
 						catch (FermeException e1) {
@@ -209,7 +218,8 @@ public class Client {
 				catch (FermeServerDown e) {
 					int wait = 15;
 					int time_sleep = 1000 * 60 * wait;
-					this.gui.status(String.format("Can not connect to server. Please check your connectivity. Will retry in %s minutes", 15));
+					MessageFormat formatter = new MessageFormat(this.guiResources.getString("CantConnect"), this.guiResources.getLocale());
+					this.gui.status(formatter.format(new Object[]{15}));
 					try {
 						Thread.sleep(time_sleep);
 					}
@@ -219,11 +229,13 @@ public class Client {
 					continue; // go back to ask job
 				}
 				catch (FermeException e) {
-					this.gui.error("Client::renderingManagement exception requestJob (1) " + e.getMessage());
+					//e.getMessage()
+					MessageFormat formatter = new MessageFormat(this.exceptionResources.getString("RequestJob"), this.exceptionResources.getLocale());
+					this.gui.error(formatter.format(new Object[]{e.getMessage()}));
 					StringWriter sw = new StringWriter();
 					PrintWriter pw = new PrintWriter(sw);
 					e.printStackTrace(pw);
-					this.log.debug("Client::run exception " + e + " stacktrace: " + sw.toString());
+					this.log.debugF("RunException", new Object[]{e, sw.toString()});
 					this.sendError(step);
 					continue;
 				}
@@ -231,7 +243,8 @@ public class Client {
 				if (this.renderingJob == null) { // no job
 					int time_sleep = 1000 * 60 * 15;
 					Date wakeup_time = new Date(new Date().getTime() + time_sleep);
-					this.gui.status(String.format("No job available. Sleeping for 15 minutes (will wake up at ~%tR)", wakeup_time));
+					MessageFormat formatter = new MessageFormat(this.guiResources.getString("NoJobs"), this.guiResources.getLocale());
+					this.gui.status(formatter.format(new Object[]{String.format("%tR", wakeup_time)}));
 					this.gui.framesRemaining(0);
 					int time_slept = 0;
 					while (time_slept < time_sleep && this.running == true) {
@@ -246,7 +259,7 @@ public class Client {
 					continue; // go back to ask job
 				}
 				
-				this.log.debug("Got work to do id: " + this.renderingJob.getId() + " frame: " + this.renderingJob.getFrameNumber());
+				this.log.debugF("GotWork", new Object[]{this.renderingJob.getId(), this.renderingJob.getFrameNumber()});
 				
 				ret = this.work(this.renderingJob);
 				if (ret == Error.Type.RENDERER_KILLED) {
@@ -257,7 +270,7 @@ public class Client {
 				if (ret != Error.Type.OK) {
 					Job frame_to_reset = this.renderingJob; // copy it because the sendError will take ~5min to execute
 					this.renderingJob = null;
-					this.gui.error(Error.humanString(ret));
+					this.gui.error(Error.humanString(ret, this.config.getLocale()));
 					this.sendError(step, frame_to_reset, ret);
 					this.log.removeCheckPoint(step);
 					continue;
@@ -266,7 +279,8 @@ public class Client {
 				if (this.renderingJob.simultaneousUploadIsAllowed() == false) { // power or compute_method job, need to upload right away
 					ret = confirmJob(this.renderingJob);
 					if (ret != Error.Type.OK) {
-						gui.error("Client::renderingManagement problem with confirmJob (returned " + ret + ")");
+						MessageFormat formatter = new MessageFormat(this.exceptionResources.getString("ConfirmJobProblem"), this.exceptionResources.getLocale());
+						this.gui.error(formatter.format(new Object[]{ret}));
 						sendError(step);
 					}
 					else {
@@ -302,7 +316,7 @@ public class Client {
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
 			e1.printStackTrace(pw);
-			this.log.debug("Client::run exception(D) " + e1 + " stacktrace: " + sw.toString());
+			this.log.debugF("RunExceptionD", new Object[]{e1, sw.toString()});
 			return -99; // the this.stop will be done after the return of this.run()
 		}
 		
@@ -371,12 +385,12 @@ public class Client {
 			Job job_to_send;
 			try {
 				job_to_send = jobsToValidate.take();
-				this.log.debug("will validate " + job_to_send);
+				this.log.debugF("WillValidate", new Object[]{job_to_send});
 				//gui.status("Sending frame");
 				ret = confirmJob(job_to_send);
 				if (ret != Error.Type.OK) {
-					this.gui.error(Error.humanString(ret));
-					this.log.debug("Client::senderLoop confirm failed, ret: " + ret);
+					this.gui.error(Error.humanString(ret, this.config.getLocale()));
+					this.log.debugF("SenderLoopFail", new Object[]{ret});
 					sendError(step);
 				}
 				else {
@@ -394,11 +408,11 @@ public class Client {
 	
 	protected void sendError(int step_, Job job_to_reset_, Error.Type error) {
 		if (this.disableErrorSending) {
-			this.log.debug("Error sending is disabled, do not send log");
+			this.log.debug("ErrorSendingDisabled");
 			return;
 		}
 		
-		this.log.debug("Sending error to server (type: " + error + ")");
+		this.log.debugF("SendingError", new Object[]{error});
 		try {
 			File temp_file = File.createTempFile("farm_", "");
 			temp_file.createNewFile();
@@ -485,19 +499,19 @@ public class Client {
 		
 		ret = this.downloadExecutable(ajob);
 		if (ret != 0) {
-			this.log.error("Client::work problem with downloadExecutable (ret " + ret + ")");
+			this.log.errorF("DownloadExecutableProblem", new Object[]{ret});
 			return Error.Type.DOWNLOAD_FILE;
 		}
 		
 		ret = this.downloadSceneFile(ajob);
 		if (ret != 0) {
-			this.log.error("Client::work problem with downloadSceneFile (ret " + ret + ")");
+			this.log.errorF("DownloadSceneFileProblem", new Object[]{ret});
 			return Error.Type.DOWNLOAD_FILE;
 		}
 		
 		ret = this.prepareWorkingDirectory(ajob); // decompress renderer and scene archives
 		if (ret != 0) {
-			this.log.error("Client::work problem with this.prepareWorkingDirectory (ret " + ret + ")");
+			this.log.errorF("PrepareWorkingDirectory", new Object[]{ret});
 			return Error.Type.CAN_NOT_CREATE_DIRECTORY;
 		}
 		
@@ -505,18 +519,18 @@ public class Client {
 		File renderer_file = new File(ajob.getRendererPath());
 		
 		if (scene_file.exists() == false) {
-			this.log.error("Client::work job preparation failed (scene file '" + scene_file.getAbsolutePath() + "' does not exist)");
+			this.log.errorF("NoSceneFile", new Object[]{scene_file.getAbsolutePath()});
 			return Error.Type.MISSING_SCENE;
 		}
 		
 		if (renderer_file.exists() == false) {
-			this.log.error("Client::work job preparation failed (renderer file '" + renderer_file.getAbsolutePath() + "' does not exist)");
+			this.log.errorF("NoRendererFile", new Object[]{scene_file.getAbsolutePath()});
 			return Error.Type.MISSING_RENDER;
 		}
 		
 		Error.Type err = ajob.render();
 		if (err != Error.Type.OK) {
-			this.log.error("Client::work problem with runRenderer (ret " + err + ")");
+			this.log.errorF("WorkProblem", new Object[]{err});
 			return err;
 		}
 		
@@ -524,16 +538,16 @@ public class Client {
 	}
 	
 	protected int downloadSceneFile(Job ajob_) {
-		this.gui.status("Downloading project");
-		return this.downloadFile(ajob_, ajob_.getSceneArchivePath(), ajob_.getSceneMD5(), String.format("%s?type=job&job=%s&revision=%s", this.server.getPage("download-archive"), ajob_.getId(), ajob_.getRevision()), "Downloading project %s %%");
+		this.gui.status(this.guiResources.getString("DownloadingProject"));
+		return this.downloadFile(ajob_, ajob_.getSceneArchivePath(), ajob_.getSceneMD5(), String.format("%s?type=job&job=%s&revision=%s", this.server.getPage("download-archive"), ajob_.getId(), ajob_.getRevision()), "DownloadingProjectPercent");
 	}
 	
 	protected int downloadExecutable(Job ajob) {
-		this.gui.status("Downloading renderer");
-		return this.downloadFile(ajob, ajob.getRendererArchivePath(), ajob.getRenderMd5(), String.format("%s?type=binary&job=%s", this.server.getPage("download-archive"), ajob.getId()), "Downloading renderer %s %%");
+		this.gui.status(this.guiResources.getString("DownloadingRenderer"));
+		return this.downloadFile(ajob, ajob.getRendererArchivePath(), ajob.getRenderMd5(), String.format("%s?type=binary&job=%s", this.server.getPage("download-archive"), ajob.getId()), "DownloadingRendererPercent");
 	}
 	
-	private int downloadFile(Job ajob, String local_path, String md5_server, String url, String update_ui) {
+	private int downloadFile(Job ajob, String local_path, String md5_server, String url, String update_ui_key) {
 		File local_path_file = new File(local_path);
 		
 		if (local_path_file.exists() == true) {
@@ -541,29 +555,30 @@ public class Client {
 		}
 		
 		// must download the archive
-		int ret = this.server.HTTPGetFile(url, local_path, this.gui, update_ui);
+		int ret = this.server.HTTPGetFile(url, local_path, this.gui, update_ui_key);
 		boolean md5_check = this.checkFile(ajob, local_path, md5_server);
 		int attempts = 1;
 		
 		while ((ret != 0 || md5_check == false) && attempts < this.maxDownloadFileAttempts) {
 			if (ret != 0) {
-				this.gui.error("Client::downloadFile problem with Utils.HTTPGetFile returned " + ret);
-				this.log.debug("Client::downloadFile problem with Utils.HTTPGetFile (return: " + ret + ") removing local file (path: " + local_path + ")");
+				MessageFormat formatter = new MessageFormat(this.exceptionResources.getString("HTTPGetFileProblem"), this.exceptionResources.getLocale());
+				this.gui.error(formatter.format(new Object[]{ret}));
+				this.log.debugF("HTTPGetFileProblemDetailed", new Object[]{ret, local_path});
 			}
 			else if (md5_check == false) {
-				this.gui.error("Client::downloadFile problem with Client::checkFile mismatch on md5");
-				this.log.debug("Client::downloadFile problem with Client::checkFile mismatch on md5, removing local file (path: " + local_path + ")");
+				this.gui.error(this.exceptionResources.getString("MD5Mismatch"));
+				this.log.debugF("MD5MismatchDetailed2", new Object[]{local_path});
 			}
 			local_path_file.delete();
 			
-			this.log.debug("Client::downloadFile failed, let's try again (" + (attempts + 1) + "/" + this.maxDownloadFileAttempts + ") ...");
+			this.log.debugF("DownloadFileRetry", new Object[]{new Integer(attempts + 1), new Integer(this.maxDownloadFileAttempts)});
 			
-			ret = this.server.HTTPGetFile(url, local_path, this.gui, update_ui);
+			ret = this.server.HTTPGetFile(url, local_path, this.gui, update_ui_key);
 			md5_check = this.checkFile(ajob, local_path, md5_server);
 			attempts++;
 			
 			if ((ret != 0 || md5_check == false) && attempts >= this.maxDownloadFileAttempts) {
-				this.log.debug("Client::downloadFile failed after " + this.maxDownloadFileAttempts + " attempts, removing local file (path: " + local_path + "), stopping...");
+				this.log.debugF("DownloadFileFail", new Object[]{this.maxDownloadFileAttempts, local_path});
 				local_path_file.delete();
 				return -9;
 			}
@@ -576,14 +591,14 @@ public class Client {
 		File local_path_file = new File(local_path);
 		
 		if (local_path_file.exists() == false) {
-			this.log.error("Client::checkFile cannot check md5 on a nonexistent file (path: " + local_path + ")");
+			this.log.errorF("MD5NonExistent", new Object[]{local_path});
 			return false;
 		}
 		
 		String md5_local = Utils.md5(local_path);
 		
 		if (md5_local.equals(md5_server) == false) {
-			this.log.error("Client::checkFile mismatch on md5 local: '" + md5_local + "' server: '" + md5_server + "' (local size: " + new File(local_path).length() + ")");
+			this.log.errorF("MD5MismatchDetailed1", new Object[]{md5_local, md5_server, new File(local_path).length()});
 			return false;
 		}
 		
@@ -606,7 +621,8 @@ public class Client {
 			// unzip the archive
 			ret = Utils.unzipFileIntoDirectory(renderer_archive, renderer_path);
 			if (ret != 0) {
-				this.gui.error("Client::prepareWorkingDirectory, error with Utils.unzipFileIntoDirectory of the renderer (returned " + ret + ")");
+				MessageFormat formatter = new MessageFormat(this.exceptionResources.getString("UnzipErrorRenderer"), this.exceptionResources.getLocale());
+				this.gui.error(formatter.format(new Object[]{ret}));
 				return -1;
 			}
 		}
@@ -625,7 +641,8 @@ public class Client {
 			// unzip the archive
 			ret = Utils.unzipFileIntoDirectory(scene_archive, scene_path);
 			if (ret != 0) {
-				this.gui.error("Client::prepareWorkingDirectory, error with Utils.unzipFileIntoDirectory of the scene (returned " + ret + ")");
+				MessageFormat formatter = new MessageFormat(this.exceptionResources.getString("UnzipErrorScene"), this.exceptionResources.getLocale());
+				this.gui.error(formatter.format(new Object[]{ret}));
 				return -2;
 			}
 		}
@@ -670,7 +687,7 @@ public class Client {
 			nb_try++;
 			if (ret != ServerCode.OK && nb_try < max_try) {
 				try {
-					this.log.debug("Sleep for 32s before trying to re-upload the frame");
+					this.log.debug("ReuploadSleep");
 					Thread.sleep(32000);
 				}
 				catch (InterruptedException e) {

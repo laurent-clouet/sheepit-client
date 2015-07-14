@@ -19,6 +19,9 @@
 
 package com.sheepit.client;
 
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 public class Error {
 	public enum Type {
 		// id have to be kept synchronised with the server side.
@@ -132,34 +135,35 @@ public class Error {
 		}
 	}
 	
-	public static String humanString(Type in) {
+	public static String humanString(Type in, Locale locale) {
+		ResourceBundle exceptionResources = ResourceBundle.getBundle("ExceptionResources", locale);
 		switch (in) {
 			case TOO_OLD_CLIENT:
-				return "This client is too old, you need to update it";
+				return exceptionResources.getString("OutdatedClient");
 			case AUTHENTICATION_FAILED:
-				return "Failed to authenticate, please check your login and password";
+				return exceptionResources.getString("AuthenticationFailed");
 			case DOWNLOAD_FILE:
-				return "Error while downloading project files. Will try another project in a few minutes.";
+				return exceptionResources.getString("DownloadError");
 			case NOOUTPUTFILE:
-				return "Renderer has generated no output file, possibly a wrong project configuration or you are missing required libraries. Will try another project in a few minutes.";
+				return exceptionResources.getString("NoRendererOutput");
 			case RENDERER_CRASHED:
-				return "Renderer has crashed. It's usually due to a bad project or not enough memory. There is nothing you can do about it. Will try another project in a few minutes.";
+				return exceptionResources.getString("CrashedRenderer");
 			case RENDERER_OUT_OF_VIDEO_MEMORY:
-				return "Renderer has crashed, due to not enough video memory (vram). There is nothing you can do about it. Will try another project in a few minutes.";
+				return exceptionResources.getString("CrashedRendererVram");
 			case GPU_NOT_SUPPORTED:
-				return "Rendering have failed due to a GPU not supported (please check the CUDA version)";
+				return exceptionResources.getString("UnsupportedGPU");
 			case RENDERER_MISSING_LIBRARIES:
-				return "Failed to launch renderer. Please check if you have necessary libraries installed and if you have enough free space in your working directory.";
+				return exceptionResources.getString("MissingLibraries");
 			case RENDERER_KILLED:
-			    return "The renderer stopped because either you asked to stop or the server did (usually for a render time too high).";
+				return exceptionResources.getString("KilledRenderer");
 			case SESSION_DISABLED:
-				return "The server has disabled your session. Your client may have generated a broken frame (GPU not compatible, not enough RAM/VRAM, etc).";
+				return exceptionResources.getString("SessionDisabled");
 			case RENDERER_NOT_AVAILABLE:
-				return "No renderer are available on the server for your machine.";
+				return exceptionResources.getString("NoRendererAvailable");
 			case OS_NOT_SUPPORTED:
-				return "Operating System not supported.";
+				return exceptionResources.getString("UnsupportedOS");
 			case CPU_NOT_SUPPORTED:
-				return "CPU not supported.";
+				return exceptionResources.getString("UnsupportedCPU");
 			default:
 				return in.toString();
 		}

@@ -24,10 +24,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import com.sheepit.client.hardware.cpu.CPU;
 import com.sheepit.client.hardware.gpu.GPUDevice;
@@ -54,6 +57,8 @@ public class Configuration {
 	private String extras;
 	private boolean autoSignIn;
 	private String UIType;
+	private Locale locale;
+	private ResourceBundle exceptionResources;
 	
 	public Configuration(File cache_dir_, String login_, String password_) {
 		this.login = login_;
@@ -73,6 +78,8 @@ public class Configuration {
 		this.extras = "";
 		this.autoSignIn = false;
 		this.UIType = null;
+		this.locale = null;
+		this.exceptionResources = ResourceBundle.getBundle("ExceptionResources", Locale.getDefault());
 	}
 	
 	public String toString() {
@@ -215,6 +222,24 @@ public class Configuration {
 		return this.UIType;
 	}
 	
+	public void setLocale(String localeString) {
+		String[] localeSplit = localeString.split("_");
+		if(localeSplit.length > 2) {
+			System.out.println(ResourceBundle.getBundle("WarningResources", this.exceptionResources.getLocale()).getString("UnsupportedLocaleFormat"));
+			return;
+		}
+		this.setLocale(new Locale(localeSplit[0], localeSplit[1]));
+	}
+	
+	public void setLocale(Locale loc) {
+		this.locale = loc;
+		this.exceptionResources = ResourceBundle.getBundle("ExceptionResources", loc);
+	}
+	
+	public Locale getLocale() {
+		return this.locale;
+	}
+	
 	public void cleanWorkingDirectory() {
 		this.cleanDirectory(this.workingDirectory);
 		this.cleanDirectory(this.storageDirectory);
@@ -303,7 +328,7 @@ public class Configuration {
 		
 		InputStream versionStream = Client.class.getResourceAsStream(versionPath);
 		if (versionStream == null) {
-			System.err.println("Configuration::getJarVersion Failed to get version file");
+			System.err.println(this.exceptionResources.getString("FailedToGetVersionFile"));
 			return "";
 		}
 		
@@ -315,7 +340,8 @@ public class Configuration {
 			return version;
 		}
 		catch (IOException ex) {
-			System.err.println("Configuration::getJarVersion error while reading manifest file (" + versionPath + "): " + ex.getMessage());
+			MessageFormat formatter = new MessageFormat(this.exceptionResources.getString("ManifestFileReadError"), this.exceptionResources.getLocale());
+			System.err.println(formatter.format(new Object[]{versionPath,ex.getMessage()}));
 			return "";
 		}
 	}

@@ -44,10 +44,12 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -91,6 +93,8 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 	private long lastRequestTime;
 	private int keepmealive_duration; // time in ms
 	
+	private ResourceBundle warningResources, exceptionResources;
+	
 	public Server(String url_, Configuration user_config_, Client client_) {
 		super();
 		this.base_url = url_;
@@ -101,6 +105,8 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 		this.log = Log.getInstance(this.user_config);
 		this.lastRequestTime = 0;
 		this.keepmealive_duration = 15 * 60 * 1000; // default 15min
+		this.warningResources = ResourceBundle.getBundle("WarningResources", user_config_.getLocale());
+		this.exceptionResources = ResourceBundle.getBundle("ExceptionResources", user_config_.getLocale());
 	}
 	
 	public void run() {
@@ -132,7 +138,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 							Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(in);
 							ServerCode ret = Utils.statusIsOK(document, "keepmealive");
 							if (ret == ServerCode.KEEPMEALIVE_STOP_RENDERING) {
-								this.log.debug("Server::keeepmealive server asked to kill local render process");
+								this.log.debug("ServerKill");
 								// kill the current process, it will generate an error but it's okay
 								if (this.client != null && this.client.getRenderingJob() != null && this.client.getRenderingJob().getProcessRender().getProcess() != null) {
 									OS.getOS().kill(this.client.getRenderingJob().getProcessRender().getProcess());
@@ -147,7 +153,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 					}
 				}
 				catch (NoRouteToHostException e) {
-					this.log.debug("Server::keeepmealive can not connect to server");
+					this.log.debug("CantConnectToServer");
 				}
 				catch (IOException e) {
 					e.printStackTrace();
@@ -188,7 +194,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				this.user_config.getJarVersion(),
 				URLEncoder.encode(InetAddress.getLocalHost().getHostName(), "UTF-8"),
 				this.user_config.getExtras());
-			this.log.debug("Server::getConfiguration url " + url_contents);
+			this.log.debugF("GetConfigurationURL", new Object[]{url_contents});
 			
 			connection = this.HTTPRequest(url_contents);
 			int r = connection.getResponseCode();
@@ -202,15 +208,15 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 					document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(in);
 				}
 				catch (SAXException e) {
-					this.log.error("getConfiguration error: failed to parse XML SAXException " + e);
+					this.log.errorF("ParseXMLSAXException", new Object[]{e});
 					return Error.Type.WRONG_CONFIGURATION;
 				}
 				catch (IOException e) {
-					this.log.error("getConfiguration error: failed to parse XML IOException " + e);
+					this.log.errorF("ParseXMLIOException", new Object[]{e});
 					return Error.Type.WRONG_CONFIGURATION;
 				}
 				catch (ParserConfigurationException e) {
-					this.log.error("getConfiguration error: failed to parse XML ParserConfigurationException " + e);
+					this.log.errorF("ParseXMLConfigException", new Object[]{e});
 					return Error.Type.WRONG_CONFIGURATION;
 				}
 				
@@ -223,14 +229,14 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				NodeList ns = null;
 				ns = document.getElementsByTagName("config");
 				if (ns.getLength() == 0) {
-					this.log.error("getConfiguration error: failed to parse XML, no node 'config'");
+					this.log.error("ParseXMLNoConfig");
 					return Error.Type.WRONG_CONFIGURATION;
 				}
 				config_node = (Element) ns.item(0);
 				
 				ns = config_node.getElementsByTagName("request");
 				if (ns.getLength() == 0) {
-					this.log.error("getConfiguration error: failed to parse XML, node 'config' has no child node 'request'");
+					this.log.error("ParseXMLNoRequest");
 					return Error.Type.WRONG_CONFIGURATION;
 				}
 				for (int i = 0; i < ns.getLength(); i++) {
@@ -244,24 +250,24 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				}
 			}
 			else {
-				this.log.error("Server::getConfiguration: Invalid response " + contentType + " " + r);
+				this.log.errorF("GetConfigInvalidResponse", new Object[]{contentType, r});
 				return Error.Type.WRONG_CONFIGURATION;
 			}
 		}
 		catch (ConnectException e) {
-			this.log.error("Server::getConfiguration error ConnectException " + e);
+			this.log.errorF("GetConfigConnectException", new Object[]{e});
 			return Error.Type.NETWORK_ISSUE;
 		}
 		catch (UnknownHostException e) {
-			this.log.error("Server::getConfiguration error UnknownHostException " + e);
+			this.log.errorF("GetConfigUnknownHost", new Object[]{e});
 			return Error.Type.NETWORK_ISSUE;
 		}
 		catch (NoRouteToHostException e) {
-			this.log.error("Server::getConfiguration error NoRouteToHost " + e);
+			this.log.errorF("GetConfigNoRouteToHost", new Object[]{e});
 			return Error.Type.NETWORK_ISSUE;
 		}
 		catch (Exception e) {
-			this.log.error("Server::getConfiguration: exception 02R " + e);
+			this.log.errorF("GetConfig02R", new Object[]{e});
 			e.printStackTrace();
 			return Error.Type.UNKNOWN;
 		}
@@ -274,7 +280,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 	}
 	
 	public Job requestJob() throws FermeException {
-		this.log.debug("Server::requestJob");
+		this.log.debug("RequestJobNotify");
 		String url_contents = "";
 		
 		HttpURLConnection connection = null;
@@ -327,7 +333,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 					else if (ret == ServerCode.JOB_REQUEST_ERROR_SESSION_DISABLED) {
 						throw new FermeExceptionSessionDisabled();
 					}
-					this.log.error("Server::requestJob: Utils.statusIsOK(document, 'jobrequest') -> ret " + ret);
+					this.log.errorF("RequestJobNotOK", new Object[]{ret});
 					throw new FermeException("error requestJob: status is not ok (it's " + ret + ")");
 				}
 				
@@ -425,7 +431,8 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				return a_job;
 			}
 			else {
-				System.out.println("Server::requestJob url " + url_contents + " r " + r + " contentType " + contentType);
+				MessageFormat formatter = new MessageFormat(warningResources.getString("RequestJobInfo"), warningResources.getLocale());
+				System.out.println(formatter.format(new Object[]{url_contents, r, contentType}));
 				if (r == HttpURLConnection.HTTP_UNAVAILABLE) {
 					// most likely varnish is up but apache down
 					throw new FermeServerDown();
@@ -464,7 +471,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 	}
 	
 	public HttpURLConnection HTTPRequest(String url_, String data_) throws IOException {
-		this.log.debug("Server::HTTPRequest url(" + url_ + ")");
+		this.log.debugF("HTTPRequestInfo", new Object[]{url_});
 		HttpURLConnection connection = null;
 		URL url = new URL(url_);
 		
@@ -524,14 +531,14 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 		return connection;
 	}
 	
-	public int HTTPGetFile(String url_, String destination_, Gui gui_, String status_) {
+	public int HTTPGetFile(String url_, String destination_, Gui gui_, String statusKey_) {
 		// the destination_ parent directory must exist
 		try {
 			HttpURLConnection httpCon = this.HTTPRequest(url_);
 			
 			InputStream inStrm = httpCon.getInputStream();
 			if (httpCon.getResponseCode() != HttpURLConnection.HTTP_OK) {
-				this.log.error("Server::HTTPGetFile(" + url_ + ", ...) HTTP code is not " + HttpURLConnection.HTTP_OK + " it's " + httpCon.getResponseCode());
+				this.log.errorF("HTTPGetFileNotOK", new Object[] {url_, HttpURLConnection.HTTP_OK, httpCon.getResponseCode()});
 				return -1;
 			}
 			int size = httpCon.getContentLength();
@@ -546,28 +553,29 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				fos.write(ch, 0, nb);
 				written += nb;
 				if ((written - last_gui_update) > 1000000) { // only update the gui every 1MB
-					gui_.status(String.format(status_, (int) (100.0 * written / size)));
+					MessageFormat formatter = new MessageFormat(ResourceBundle.getBundle("GUIResources").getString(statusKey_), warningResources.getLocale());
+					gui_.status(formatter.format(new Object[]{(int) (100.0 * written / size)}));
 					last_gui_update = written;
 				}
 			}
 			fos.close();
 			inStrm.close();
 			long end = new Date().getTime();
-			this.log.debug(String.format("File downloaded at %.1f kB/s", ((float) (size / 1000)) / ((float) (end - start) / 1000)));
+			this.log.debugF("FileDownloaded", new Object[]{String.format("%.1f", ((float) (size / 1000)) / ((float) (end - start) / 1000))});
 			this.lastRequestTime = new Date().getTime();
 			return 0;
 		}
 		catch (Exception e) {
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
-			this.log.error("Server::HTTPGetFile exception " + e + " stacktrace " + sw.toString());
+			this.log.errorF("HTTPGetFileException", new Object[]{e, sw.toString()});
 		}
-		this.log.debug("Server::HTTPGetFile(" + url_ + ", ...) will failed (end of function)");
+		this.log.debugF("HTTPGetFileWillFail", new Object[]{url_});
 		return -2;
 	}
 	
 	public ServerCode HTTPSendFile(String surl, String file1) {
-		this.log.debug("Server::HTTPSendFile(" + surl + "," + file1 + ")");
+		this.log.debugF("HTTPSendFileInfo", new Object[]{surl, file1});
 		
 		HttpURLConnection conn = null;
 		DataOutputStream dos = null;
@@ -612,7 +620,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 					((HttpsURLConnection) conn).setHostnameVerifier(this);
 				}
 				catch (NoSuchAlgorithmException e) {
-					this.log.error("Server::HTTPSendFile, exception NoSuchAlgorithmException " + e);
+					this.log.errorF("HTTPSendFileNoSuchAlgorithm", new Object[]{e});
 					try {
 						fileInputStream.close();
 					}
@@ -622,7 +630,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 					return ServerCode.UNKNOWN;
 				}
 				catch (KeyManagementException e) {
-					this.log.error("Server::HTTPSendFile, exception KeyManagementException " + e);
+					this.log.errorF("HTTPSendFileKeyManagement", new Object[]{e});
 					try {
 						fileInputStream.close();
 					}
@@ -658,15 +666,15 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			dos.close();
 		}
 		catch (MalformedURLException ex) {
-			this.log.error("Server::HTTPSendFile, exception MalformedURLException " + ex);
+			this.log.errorF("HTTPSendFileMalformedURL", new Object[]{ex});
 			return ServerCode.UNKNOWN;
 		}
 		catch (IOException ioe) {
-			this.log.error("Server::HTTPSendFile, exception IOException " + ioe);
+			this.log.errorF("HTTPSendFileIOException", new Object[]{ioe});
 			return ServerCode.UNKNOWN;
 		}
 		catch (Exception e6) {
-			this.log.error("Server::HTTPSendFile, exception Exception " + e6);
+			this.log.errorF("HTTPSendFileException", new Object[]{e6});
 			return ServerCode.UNKNOWN;
 		}
 		
@@ -710,7 +718,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			
 			ServerCode ret1 = Utils.statusIsOK(document, "jobvalidate");
 			if (ret1 != ServerCode.OK) {
-				this.log.error("Server::HTTPSendFile wrong status (is " + ret1 + ")");
+				this.log.errorF("HTTPSendFileWrongStatus", new Object[]{ret1});
 				return ret1;
 			}
 			return ServerCode.OK;
@@ -738,13 +746,13 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			
 			InputStream inStrm = httpCon.getInputStream();
 			if (httpCon.getResponseCode() != HttpURLConnection.HTTP_OK) {
-				this.log.debug("Server::getLastRender code not ok " + httpCon.getResponseCode());
+				this.log.debugF("GetLastRenderNotOk", new Object[]{httpCon.getResponseCode()});
 				return null;
 			}
 			int size = httpCon.getContentLength();
 			
 			if (size == 0) {
-				this.log.debug("Server::getLastRender size is 0");
+				this.log.debug("GetLastRenderSize0");
 				return null;
 			}
 			
@@ -760,7 +768,8 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			return ret;
 		}
 		catch (Exception e) {
-			System.err.println("Server::getLastRender exception " + e);
+			MessageFormat formatter = new MessageFormat(this.exceptionResources.getString("GetLastRenderException"), this.exceptionResources.getLocale());
+			System.err.println(formatter.format(new Object[]{e}));
 			e.printStackTrace();
 			
 		}
@@ -773,13 +782,13 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			
 			InputStream inStrm = httpCon.getInputStream();
 			if (httpCon.getResponseCode() != HttpURLConnection.HTTP_OK) {
-				this.log.debug("Server::getCreditEarnedOnCurrentSession code not ok " + httpCon.getResponseCode());
+				this.log.debugF("GetCreditsEarnedOnCurrenSessionNotOk", new Object[] {httpCon.getResponseCode()});
 				return null;
 			}
 			int size = httpCon.getContentLength();
 			
 			if (size == 0) {
-				this.log.debug("Server::getLastRender size is 0");
+				this.log.debug("GetLastRenderSize0");
 				return null;
 			}
 			
@@ -795,7 +804,8 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			return new String(ret);
 		}
 		catch (Exception e) {
-			System.err.println("Server::getCreditEarnedOnCurrentSession exception " + e);
+			MessageFormat formatter = new MessageFormat(this.exceptionResources.getString("GetCreditsEarnedOnCurrentSessionNotOk"), this.exceptionResources.getLocale());
+			System.err.println(formatter.format(new Object[]{e}));
 			e.printStackTrace();
 			
 		}
@@ -835,13 +845,13 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			xml_str = writer.getBuffer().toString();
 		}
 		catch (TransformerConfigurationException e) {
-			this.log.debug("Server::generateXMLForMD5cache " + e);
+			this.log.debugF("GenerateXMLException", new Object[]{e});
 		}
 		catch (TransformerException e) {
-			this.log.debug("Server::generateXMLForMD5cache " + e);
+			this.log.debugF("GenerateXMLException", new Object[]{e});
 		}
 		catch (ParserConfigurationException e) {
-			this.log.debug("Server::generateXMLForMD5cache " + e);
+			this.log.debugF("GenerateXMLException", new Object[]{e});
 		}
 		
 		return xml_str;
@@ -852,12 +862,12 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 		if (ns.getLength() > 0) {
 			Element root_node = (Element) ns.item(0);
 			ns = root_node.getElementsByTagName("file");
-			if (ns.getLength() > 0) {
+			if (ns.getLength() > 0) { // TODO Remove unnecessary check
 				for (int i = 0; i < ns.getLength(); ++i) {
 					Element file_node = (Element) ns.item(i);
 					if (file_node.hasAttribute("md5") && file_node.hasAttribute("action") && file_node.getAttribute("action").equals("delete")) {
 						String path = this.user_config.workingDirectory.getAbsolutePath() + File.separatorChar + file_node.getAttribute("md5");
-						this.log.debug("Server::handleFileMD5DeleteDocument delete old file " + path);
+						this.log.debugF("HandleMD5DeleteDocumentInfo", new Object[]{path});
 						File file_to_delete = new File(path + ".zip");
 						file_to_delete.delete();
 						Utils.delete(new File(path));

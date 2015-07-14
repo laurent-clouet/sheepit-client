@@ -149,7 +149,7 @@ public class Linux extends OS {
 			actual_command.add(0, NICE_BINARY_PATH);
 		}
 		else {
-			Log.getInstance(null).error("No low priority binary, will not launch renderer in normal priority");
+			Log.getInstance(null).error("NoLowPriorityBinary");
 		}
 		
 		ProcessBuilder builder = new ProcessBuilder(actual_command);
@@ -173,7 +173,7 @@ public class Linux extends OS {
 		}
 		catch (IOException e) {
 			this.hasNiceBinary = false;
-			Log.getInstance(null).error("Failed to find low priority binary, will not launch renderer in normal priority (" + e + ")");
+			Log.getInstance(null).errorF("FailedToFindLowPriorityBinary", new Object[]{e});
 		}
 		finally {
 			if (process != null) {

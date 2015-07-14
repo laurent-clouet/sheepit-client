@@ -9,8 +9,10 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermission;
+import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.Properties;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 import com.sheepit.client.Configuration;
@@ -30,6 +32,7 @@ public class SettingsLoader {
 	private String cacheDir;
 	private String autoSignIn;
 	private String ui;
+	private String locale;
 	
 	public SettingsLoader() {
 		path = getDefaultFilePath();
@@ -39,7 +42,7 @@ public class SettingsLoader {
 		path = path_;
 	}
 	
-	public SettingsLoader(String login_, String password_, String proxy_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, String cacheDir_, boolean autoSignIn_, String ui_) {
+	public SettingsLoader(String login_, String password_, String proxy_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, String cacheDir_, boolean autoSignIn_, String ui_, String locale_) {
 		path = getDefaultFilePath();
 		login = login_;
 		password = password_;
@@ -47,6 +50,7 @@ public class SettingsLoader {
 		cacheDir = cacheDir_;
 		autoSignIn = String.valueOf(autoSignIn_);
 		ui = ui_;
+		locale = locale_;
 		if (cores_ > 0) {
 			cores = String.valueOf(cores_);
 		}
@@ -223,7 +227,7 @@ public class SettingsLoader {
 	 */
 	public void merge(Configuration config) {
 		if (config == null) {
-			System.out.println("SettingsLoader::merge config is null");
+			System.out.println(ResourceBundle.getBundle("WarningResources", config.getLocale()).getString("NullConfig"));
 		}
 		
 		loadFile();
@@ -245,7 +249,8 @@ public class SettingsLoader {
 			}
 		}
 		catch (IllegalArgumentException e) {
-			System.err.println("SettingsLoader::merge failed to handle compute method (raw value: '" + computeMethod + "')");
+			MessageFormat formatter = new MessageFormat(ResourceBundle.getBundle("ExceptionResources", config.getLocale()).getString("HandleComputeMethodFail"), config.getLocale());
+			System.err.println(formatter.format(new Object[]{computeMethod}));
 			computeMethod = null;
 		}
 		if (config.getGPUDevice() == null && gpu != null) {
@@ -263,6 +268,10 @@ public class SettingsLoader {
 		
 		if (config.getUIType() == null && ui != null) {
 			config.setUIType(ui);
+		}
+		
+		if(config.getLocale() == null && locale != null) {
+			config.setLocale(locale);
 		}
 		
 		config.setAutoSignIn(Boolean.valueOf(autoSignIn));

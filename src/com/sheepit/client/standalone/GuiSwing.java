@@ -23,6 +23,9 @@ import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.net.URL;
+import java.text.MessageFormat;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -56,10 +59,14 @@ public class GuiSwing extends JFrame implements Gui {
 	
 	private ThreadClient threadClient;
 	
+	private ResourceBundle exceptionResources;
+	
 	public GuiSwing() {
 		framesRendered = 0;
 		
 		waitingForAuthentication = true;
+		
+		exceptionResources = ResourceBundle.getBundle("ExceptionResources", Locale.getDefault());
 	}
 	
 	@Override
@@ -129,7 +136,7 @@ public class GuiSwing extends JFrame implements Gui {
 			this.activityWorking.setRenderedFrame(framesRendered);
 		}
 		else {
-			System.out.println("GuiSwing::AddFrameRendered() error: no working activity");
+			System.out.println(this.exceptionResources.getString("AddFrameRenderedNoActivity"));
 		}
 	}
 	
@@ -139,7 +146,8 @@ public class GuiSwing extends JFrame implements Gui {
 			this.activityWorking.setRemainingFrame(n);
 		}
 		else {
-			System.out.println("GuiSwing::framesRemaining(" + n + ") error: no working activity");
+			MessageFormat formatter = new MessageFormat(this.exceptionResources.getString("FramesRemainingNoActivity"), this.exceptionResources.getLocale());
+			System.out.println(formatter.format(new Object[]{n}));
 		}
 	}
 	
@@ -151,6 +159,7 @@ public class GuiSwing extends JFrame implements Gui {
 	@Override
 	public void setClient(Client cli) {
 		client = cli;
+		exceptionResources = ResourceBundle.getBundle("ExceptionResources", cli.getConfiguration().getLocale());
 	}
 	
 	public void addPadding(int x, int y, int width, int height) {

@@ -93,12 +93,12 @@ public class Utils {
 		}
 		catch (IllegalArgumentException e) {
 			Log logger = Log.getInstance(null); // might not print the log since the config is null
-			logger.error("Utils::unzipFileIntoDirectory(" + zipFileName_ + "," + jiniHomeParentDirName_ + ") exception " + e);
+			logger.errorF("UnzipFileIntoDirException", new Object[]{zipFileName_, jiniHomeParentDirName_, e});
 			return -2;
 		}
 		catch (Exception e) {
 			Log logger = Log.getInstance(null); // might not print the log since the config is null
-			logger.error("Utils::unzipFileIntoDirectory(" + zipFileName_ + "," + jiniHomeParentDirName_ + ") exception " + e);
+			logger.errorF("UnzipFileIntoDirException", new Object[]{zipFileName_, jiniHomeParentDirName_, e});
 			return -1;
 		}
 		return 0;

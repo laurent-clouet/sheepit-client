@@ -39,6 +39,9 @@
         
         <copy file="resources/icon.png" tofile="build/icon.png" overwrite="true" />
         <copy file="resources/title.png" tofile="build/title.png" overwrite="true" />
+        <copy todir="build">
+        	<fileset dir="resources/translations" />
+        </copy>
         
         <jar destfile="bin/sheepit-client.jar"
             basedir="build/">

@@ -1,5 +1,9 @@
 package com.sheepit.client.standalone;
 
+import java.text.MessageFormat;
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 import com.sheepit.client.Client;
 import com.sheepit.client.Gui;
 
@@ -40,7 +44,8 @@ public class GuiTextOneLine implements Gui {
 	
 	@Override
 	public void error(String msg_) {
-		status = "Error " + msg_;
+		MessageFormat formatter = new MessageFormat(ResourceBundle.getBundle("LogResources", client != null ? client.getConfiguration().getLocale() : Locale.getDefault()).getString("GenericError"), client != null ? client.getConfiguration().getLocale() : Locale.getDefault());
+		status = formatter.format(new Object[]{msg_});
 		updateLine();
 	}
 	
@@ -68,9 +73,9 @@ public class GuiTextOneLine implements Gui {
 	
 	private void updateLine() {
 		int charToRemove = line.length();
-		
 		System.out.print("\r");
-		line = String.format("Frames rendered: %d remaining: %d | %s", rendered, remaining, status);
+		MessageFormat formatter = new MessageFormat(ResourceBundle.getBundle("GUIResources", client != null ? client.getConfiguration().getLocale() : Locale.getDefault()).getString("UpdateLine"), client != null ? client.getConfiguration().getLocale() : Locale.getDefault());
+		line = formatter.format(new Object[]{rendered,remaining,status})
 		System.out.print(line);
 		for (int i = line.length(); i <= charToRemove; i++) {
 			System.out.print(" ");

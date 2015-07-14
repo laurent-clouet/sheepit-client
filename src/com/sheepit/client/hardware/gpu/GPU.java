@@ -19,8 +19,11 @@
 
 package com.sheepit.client.hardware.gpu;
 
+import java.text.MessageFormat;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import com.sheepit.client.os.OS;
 import com.sun.jna.Native;
@@ -28,11 +31,12 @@ import com.sun.jna.Native;
 public class GPU {
 	public static List<GPUDevice> devices = null;
 	
-	public static boolean generate() {
+	public static boolean generate(Locale errorLocale) {
+		ResourceBundle warningResources = ResourceBundle.getBundle("WarningResources", errorLocale);
 		OS os = OS.getOS();
 		String path = os.getCUDALib();
 		if (path == null) {
-			System.out.println("GPU::generate no CUDA lib path found");
+			System.out.println(warningResources.getString("NoCUDALibPath"));
 			return false;
 		}
 		CUDA cudalib = null;
@@ -40,15 +44,18 @@ public class GPU {
 			cudalib = (CUDA) Native.loadLibrary(path, CUDA.class);
 		}
 		catch (java.lang.UnsatisfiedLinkError e) {
-			System.out.println("GPU::generate failed to load CUDA lib (path: " + path + ")");
+			MessageFormat formatter = new MessageFormat(warningResources.getString("CUDALoadFail"), errorLocale);
+			System.out.println(formatter.format(new Object[]{path}));
 			return false;
 		}
 		catch (java.lang.ExceptionInInitializerError e) {
-			System.out.println("GPU::generate ExceptionInInitializerError " + e);
+			MessageFormat formatter = new MessageFormat(warningResources.getString("GPUInitializerException"), errorLocale);
+			System.out.println(formatter.format(new Object[]{e}));
 			return false;
 		}
 		catch (Exception e) {
-			System.out.println("GPU::generate generic exception " + e);
+			MessageFormat formatter = new MessageFormat(warningResources.getString("GPUGenericException"), errorLocale);
+			System.out.println(formatter.format(new Object[]{e}));
 			return false;
 		}
 		
@@ -56,11 +63,10 @@ public class GPU {
 		
 		result = cudalib.cuInit(0);
 		if (result != CUresult.CUDA_SUCCESS) {
-			System.out.println("GPU::generate cuInit failed (ret: " + result + ")");
+			MessageFormat formatter = new MessageFormat(warningResources.getString("CuIntFailed"), errorLocale);
+			System.out.println(formatter.format(new Object[]{result}));
 			if (result == CUresult.CUDA_ERROR_UNKNOWN) {
-				System.out.println("If you are running Linux, this error is usually due to nvidia kernel module 'nvidia_uvm' not loaded.");
-				System.out.println("Relaunch the application as root or load the module.");
-				System.out.println("Most of time it does fix the issue.");
+				System.out.println(warningResources.getString("UnknownCUDAError"));
 			}
 			return false;
 		}
@@ -73,7 +79,8 @@ public class GPU {
 		result = cudalib.cuDeviceGetCount(count);
 		
 		if (result != CUresult.CUDA_SUCCESS) {
-			System.out.println("GPU::generate cuDeviceGetCount failed (ret: " + CUresult.stringFor(result) + ")");
+			MessageFormat formatter = new MessageFormat(warningResources.getString("CuDeviceGetCountFailed"), errorLocale);
+			System.out.println(formatter.format(new Object[]{CUresult.stringFor(result)}));
 			return false;
 		}
 		
@@ -84,7 +91,8 @@ public class GPU {
 			
 			result = cudalib.cuDeviceGetName(name, 256, num);
 			if (result != CUresult.CUDA_SUCCESS) {
-				System.out.println("GPU::generate cuDeviceGetName failed (ret: " + CUresult.stringFor(result) + ")");
+				MessageFormat formatter = new MessageFormat(warningResources.getString("CuDeviceGetNameFailed"), errorLocale);
+				System.out.println(formatter.format(new Object[]{CUresult.stringFor(result)}));
 				continue;
 			}
 			
@@ -92,7 +100,8 @@ public class GPU {
 			result = cudalib.cuDeviceTotalMem(ram, num);
 			
 			if (result != CUresult.CUDA_SUCCESS) {
-				System.out.println("GPU::generate cuDeviceTotalMem failed (ret: " + CUresult.stringFor(result) + ")");
+				MessageFormat formatter = new MessageFormat(warningResources.getString("CuDevcieTotalMemFailed"), errorLocale);
+				System.out.println(formatter.format(new Object[]{CUresult.stringFor(result)}));
 				return false;
 			}
 			
@@ -102,8 +111,12 @@ public class GPU {
 	}
 	
 	public static List<String> listModels() {
+		return GPU.listModels(Locale.getDefault());
+	}
+	
+	public static List<String> listModels(Locale errorLocale) {
 		if (devices == null) {
-			generate();
+			generate(errorLocale);
 		}
 		if (devices == null) {
 			return null;
@@ -117,8 +130,12 @@ public class GPU {
 	}
 	
 	public static List<GPUDevice> listDevices() {
+		return GPU.listDevices(Locale.getDefault());
+	}
+	
+	public static List<GPUDevice> listDevices(Locale errorLocale) {
 		if (devices == null) {
-			generate();
+			generate(errorLocale);
 		}
 		if (devices == null) {
 			return null;
@@ -128,12 +145,16 @@ public class GPU {
 	}
 	
 	public static GPUDevice getGPUDevice(String device_model) {
+		return GPU.getGPUDevice(device_model, Locale.getDefault());
+	}
+	
+	public static GPUDevice getGPUDevice(String device_model, Locale errorLocale) {
 		if (device_model == null) {
 			return null;
 		}
 		
 		if (devices == null) {
-			generate();
+			generate(errorLocale);
 		}
 		
 		if (devices == null) {

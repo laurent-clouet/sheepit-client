@@ -26,10 +26,14 @@ import org.kohsuke.args4j.Option;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.text.MessageFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.LinkedList;
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 import com.sheepit.client.Client;
 import com.sheepit.client.Configuration;
 import com.sheepit.client.Configuration.ComputeType;
@@ -76,6 +80,9 @@ public class Worker {
 	@Option(name = "-proxy", usage = "URL of the proxy", metaVar = "http://login:password@host:port", required = false)
 	private String proxy = null;
 	
+	@Option(name = "-locale", usage = "Locale to use", metaVar = "en_US", required = false)
+	private String localeString = null;
+	
 	@Option(name = "-extras", usage = "Extras data push on the authentication request", required = false)
 	private String extras = null;
 	
@@ -87,6 +94,8 @@ public class Worker {
 	
 	@Option(name = "--version", usage = "Display application version", required = false, handler = VersionParameterHandler.class)
 	private VersionParameterHandler versionHandler;
+	
+	private ResourceBundle exceptionResources, warningResources;
 	
 	public static void main(String[] args) {
 		new Worker().doMain(args);
@@ -110,6 +119,22 @@ public class Worker {
 		Configuration config = new Configuration(null, login, password);
 		config.setPrintLog(print_log);
 		
+		if(localeString == null) {
+			localeString = Locale.getDefault().toString();
+			config.setLocale(Locale.getDefault());
+		}
+		else {
+			if(!localeString.matches("^[a-zA-Z]{2,8}(_([a-zA-Z]{2}|[0-9]{3}))?$")) {
+				System.err.println("Error: invalid locale format");
+				System.exit(2);
+			}
+			// TODO Warn when the specific locale is not supported
+			config.setLocale(localeString);
+		}
+		
+		exceptionResources = ResourceBundle.getBundle("ExceptionResources", config.getLocale());
+		warningResources = ResourceBundle.getBundle("WarningResources", config.getLocale());
+		
 		if (cache_dir != null) {
 			File a_dir = new File(cache_dir);
 			if (a_dir.isDirectory() && a_dir.canWrite()) {
@@ -119,7 +144,7 @@ public class Worker {
 		
 		if (max_upload != -1) {
 			if (max_upload <= 0) {
-				System.err.println("Error: max upload should be a greater than zero");
+				System.err.println(exceptionResources.getString("InvalidMaxUpload"));
 				return;
 			}
 			config.setMaxUploadingJob(max_upload);
@@ -128,19 +153,19 @@ public class Worker {
 		if (gpu_device != null) {
 			String cuda_str = "CUDA_";
 			if (gpu_device.startsWith(cuda_str) == false) {
-				System.err.println("CUDA_DEVICE should look like 'CUDA_X' where X is a number");
+				System.err.println(exceptionResources.getString("InvalidCUDADevice"));
 				return;
 			}
 			try {
 				Integer.parseInt(gpu_device.substring(cuda_str.length()));
 			}
 			catch (NumberFormatException en) {
-				System.err.println("CUDA_DEVICE should look like 'CUDA_X' where X is a number");
+				System.err.println(exceptionResources.getString("InvalidCUDADevice"));
 				return;
 			}
-			GPUDevice gpu = GPU.getGPUDevice(gpu_device);
+			GPUDevice gpu = GPU.getGPUDevice(gpu_device, config.getLocale());
 			if (gpu == null) {
-				System.err.println("GPU unknown");
+				System.err.println(exceptionResources.getString("UnknownGPU"));
 				System.exit(2);
 			}
 			config.setUseGPU(gpu);
@@ -163,7 +188,7 @@ public class Worker {
 							end.setTime(timeFormat.parse(times[1]));
 						}
 						catch (ParseException e) {
-							System.err.println("Error: wrong format in request time");
+							System.err.println(exceptionResources.getString("InvalidRequestTime"));
 							System.exit(2);
 						}
 						
@@ -171,16 +196,21 @@ public class Worker {
 							config.requestTime.add(new Pair<Calendar, Calendar>(start, end));
 						}
 						else {
-							System.err.println("Error: wrong request time " + times[0] + " is after " + times[1]);
+							MessageFormat formatter = new MessageFormat(exceptionResources.getString("BackwardsRequestTime"), exceptionResources.getLocale());
+							System.out.println(formatter.format(new Object[]{times[0], times[1]}));
 							System.exit(2);
 						}
+					}
+					else {
+						System.err.println(exceptionResources.getString("InvalidRequestTime"));
+						System.exit(2);
 					}
 				}
 			}
 		}
 		
 		if (nb_cores < -1 || nb_cores == 0) { // -1 is the default
-			System.err.println("Error: use-number-core should be a greater than zero");
+			System.err.println(exceptionResources.getString("NegativeCores"));
 			return;
 		}
 		else {
@@ -192,7 +222,7 @@ public class Worker {
 				compute_method = ComputeType.valueOf(method);
 			}
 			catch (IllegalArgumentException e) {
-				System.err.println("Error: compute-method unknown");
+				System.err.println(exceptionResources.getString("UnknownComputeMethod"));
 				System.exit(2);
 			}
 		}
@@ -210,7 +240,7 @@ public class Worker {
 				Proxy.set(proxy);
 			}
 			catch (MalformedURLException e) {
-				System.err.println("Error: wrong url for proxy");
+				System.err.println(exceptionResources.getString("InvalidProxyURL"));
 				System.err.println(e);
 				System.exit(2);
 			}
@@ -221,18 +251,18 @@ public class Worker {
 		}
 		
 		if (compute_method == ComputeType.CPU && config.getGPUDevice() != null) {
-			System.err.println("You choose to only use the CPU but a GPU was also provided. You can not do both.");
-			System.err.println("Aborting");
+			System.err.println(exceptionResources.getString("GPUProvidedOnlyCPU"));
+			System.err.println(exceptionResources.getString("NotifyAbort"));
 			System.exit(2);
 		}
 		else if (compute_method == ComputeType.CPU_GPU && config.getGPUDevice() == null) {
-			System.err.println("You choose to only use the CPU and GPU but no GPU device was provided.");
-			System.err.println("Aborting");
+			System.err.println(exceptionResources.getString("NoGPUProvidedOnlyGPUAndCPU"));
+			System.err.println(exceptionResources.getString("NotifyAbort"));
 			System.exit(2);
 		}
 		else if (compute_method == ComputeType.GPU && config.getGPUDevice() == null) {
-			System.err.println("You choose to only use the GPU but no GPU device was provided.");
-			System.err.println("Aborting");
+			System.err.println(exceptionResources.getString("NoGPUProvided"));
+			System.err.println(exceptionResources.getString("NotifyAbort"));
 			System.exit(2);
 		}
 		else if (compute_method == ComputeType.CPU) {
@@ -247,14 +277,14 @@ public class Worker {
 		
 		if (config_file != null) {
 			if (new File(config_file).exists() == false) {
-				System.err.println("Configuration file not found.");
-				System.err.println("Aborting");
+				System.err.println(exceptionResources.getString("ConfigNotFound"));
+				System.err.println(exceptionResources.getString("AbortMessage"));
 				System.exit(2);
 			}
 			new SettingsLoader(config_file).merge(config);
 		}
 		
-		Log.getInstance(config).debug("client version " + config.getJarVersion());
+		Log.getInstance(config).debugF("ClientVersion", new Object[]{config.getJarVersion()});
 		
 		Gui gui;
 		String type = config.getUIType();
@@ -264,7 +294,7 @@ public class Worker {
 		switch (type) {
 			case GuiTextOneLine.type:
 				if (config.getPrintLog()) {
-					System.out.println("OneLine UI can not be used if verbose mode is enabled");
+					System.out.println(exceptionResources.getString("OneLineVerbose"));
 					System.exit(2);
 				}
 				gui = new GuiTextOneLine();
@@ -273,10 +303,13 @@ public class Worker {
 				gui = new GuiText();
 				break;
 			default:
+				MessageFormat formatter = new MessageFormat(warningResources.getString("UnknownUI"), warningResources.getLocale());
+				System.out.println(formatter.format(new Object[]{type}));
 			case GuiSwing.type:
 				if (java.awt.GraphicsEnvironment.isHeadless()) {
-					System.out.println("Graphical ui can not be launch.");
-					System.out.println("You should set a DISPLAY or use a text ui (with -ui " + GuiTextOneLine.type + " or -ui " + GuiText.type + ").");
+					System.out.println(exceptionResources.getString("GUICouldntLaunch"));
+					MessageFormat formatter2 = new MessageFormat(warningResources.getString("DisplayAdvice"), warningResources.getLocale());
+					System.out.println(formatter2.format(new Object[]{GuiTextOneLine.type,GuiText.type}));
 					System.exit(3);
 				}
 				gui = new GuiSwing();
