@@ -1,5 +1,7 @@
 package com.sheepit.client.standalone.swing.activity;
 
+import java.awt.Color;
+import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -8,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -39,75 +42,99 @@ public class Working implements Activity {
 	
 	@Override
 	public void show() {
-		int n = 10;
-		int size_height_label = 24;
-		int sep = 45;
-		int start_label_left = 109;
-		int start_label_right = 280;
-		int end_label_right = 490;
+		GridBagConstraints constraints = new GridBagConstraints();
+		int currentRow = 0;
+		
+		parent.addPadding(1, ++currentRow, 2, 1);
+		++currentRow;
 		
 		ImageIcon image = new ImageIcon(getClass().getResource("/title.png"));
 		JLabel labelImage = new JLabel(image);
-		labelImage.setBounds(600 / 2 - 265 / 2, n, 265, 130 + n);
-		n = labelImage.getHeight();
-		parent.getContentPane().add(labelImage);
+		labelImage.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, Color.DARK_GRAY));
+		constraints.fill = GridBagConstraints.BOTH;
+		constraints.weightx = 1.0;
+		constraints.weighty = 3.0;
+		constraints.gridwidth = 2;
+		constraints.gridx = 1;
+		constraints.gridy = currentRow;
+		parent.getContentPane().add(labelImage, constraints);
 		
-		n += 40;
+		parent.addPadding(1, ++currentRow, 2, 1);
+		++currentRow;
 		
 		JLabel statusLabel = new JLabel("Status:");
-		statusLabel.setBounds(start_label_left, n, 240, size_height_label);
-		parent.getContentPane().add(statusLabel);
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		constraints.weighty = 0.0;
+		constraints.gridwidth = 1;
+		constraints.gridy = currentRow;
+		parent.getContentPane().add(statusLabel, constraints);
 		
 		statusContent.setVerticalAlignment(JLabel.TOP);
 		statusContent.setVerticalTextPosition(JLabel.TOP);
-		statusContent.setBounds(start_label_right, n, 600 - 20 - start_label_right, size_height_label + sep - 3);
-		parent.getContentPane().add(statusContent);
+		constraints.gridx = 2;
+		parent.getContentPane().add(statusContent, constraints);
 		
-		n += sep;
+		parent.addPadding(1, ++currentRow, 2, 1);
+		++currentRow;
 		
 		JLabel creditsEarnedLabel = new JLabel("Credits earned:");
-		creditsEarnedLabel.setBounds(start_label_left, n, 240, size_height_label);
-		parent.getContentPane().add(creditsEarnedLabel);
+		constraints.gridx = 1;
+		constraints.gridy = currentRow;
+		parent.getContentPane().add(creditsEarnedLabel, constraints);
 		
-		creditEarned.setBounds(start_label_right, n, end_label_right - start_label_right, size_height_label);
-		parent.getContentPane().add(creditEarned);
+		constraints.gridx = 2;
+		parent.getContentPane().add(creditEarned, constraints);
 		
-		n += sep;
+		parent.addPadding(1, ++currentRow, 2, 1);
+		++currentRow;
 		
 		JLabel renderedFrameLabel = new JLabel("Rendered frames:");
-		renderedFrameLabel.setBounds(start_label_left, n, 240, size_height_label);
-		parent.getContentPane().add(renderedFrameLabel);
+		constraints.gridx = 1;
+		constraints.gridy = currentRow;
+		parent.getContentPane().add(renderedFrameLabel, constraints);
 		
-		renderedFrameContent.setBounds(start_label_right, n, end_label_right - start_label_right, size_height_label);
-		parent.getContentPane().add(renderedFrameContent);
+		constraints.gridx = 2;
+		parent.getContentPane().add(renderedFrameContent, constraints);
 		
-		n += sep;
+		parent.addPadding(1, ++currentRow, 2, 1);
+		++currentRow;
 		
 		JLabel remainingFrameLabel = new JLabel("Remaining frames:");
-		remainingFrameLabel.setBounds(start_label_left, n, 240, size_height_label);
-		parent.getContentPane().add(remainingFrameLabel);
+		constraints.gridx = 1;
+		constraints.gridy = currentRow;
+		parent.getContentPane().add(remainingFrameLabel, constraints);
 		
-		remainingFrameContent.setBounds(start_label_right, n, end_label_right - start_label_right, size_height_label);
-		parent.getContentPane().add(remainingFrameContent);
+		constraints.gridx = 2;
+		parent.getContentPane().add(remainingFrameContent, constraints);
 		
-		n += sep;
+		parent.addPadding(1, ++currentRow, 2, 1);
+		++currentRow;
 		
 		JLabel lastRenderedFrameLabel = new JLabel("Last rendered frame:");
-		lastRenderedFrameLabel.setBounds(start_label_left, n, 240, size_height_label);
-		parent.getContentPane().add(lastRenderedFrameLabel);
+		constraints.gridx = 1;
+		constraints.gridy = currentRow;
+		parent.getContentPane().add(lastRenderedFrameLabel, constraints);
 		
-		lastRender.setBounds(start_label_right, n, 200, 112);
-		parent.getContentPane().add(lastRender);
+		constraints.gridx = 2;
+		parent.getContentPane().add(lastRender, constraints);
+		
+		parent.addPadding(1, ++currentRow, 2, 1);
+		++currentRow;
 		
 		JButton settingsButton = new JButton("Settings");
-		settingsButton.setBounds(220, 500, 100, 25);
 		settingsButton.addActionListener(new SettingsAction());
-		parent.getContentPane().add(settingsButton);
+		constraints.gridx = 1;
+		constraints.gridy = currentRow;
+		parent.getContentPane().add(settingsButton, constraints);
 		
 		pauseButton = new JButton("Pause");
-		pauseButton.setBounds(330, 500, 100, 25);
 		pauseButton.addActionListener(new PauseAction());
-		parent.getContentPane().add(pauseButton);
+		constraints.gridx = 2;
+		parent.getContentPane().add(pauseButton, constraints);
+		
+		parent.addPadding(1, ++currentRow, 2, 1);
+		parent.addPadding(0, 0, 1, currentRow + 1);
+		parent.addPadding(3, 0, 1, currentRow + 1);
 	}
 	
 	public void setStatus(String msg_) {
