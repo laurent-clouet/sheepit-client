@@ -19,10 +19,15 @@
 
 package com.sheepit.client.standalone;
 
+import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.net.URL;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -78,7 +83,7 @@ public class GuiSwing extends JFrame implements Gui {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		panel = new JPanel();
-		panel.setLayout(null);
+		panel.setLayout(new GridBagLayout());
 		setContentPane(this.panel);
 		panel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		
@@ -146,6 +151,19 @@ public class GuiSwing extends JFrame implements Gui {
 	@Override
 	public void setClient(Client cli) {
 		client = cli;
+	}
+	
+	public void addPadding(int x, int y, int width, int height) {
+		GridBagConstraints constraints = new GridBagConstraints();
+		JLabel label = new JLabel("");
+		constraints.fill = GridBagConstraints.BOTH;
+		constraints.weightx = 1.0;
+		constraints.weighty = 1.0;
+		constraints.gridwidth = width;
+		constraints.gridheight = height;
+		constraints.gridx = x;
+		constraints.gridy = y;
+		getContentPane().add(label, constraints);
 	}
 	
 	public Configuration getConfiguration() {

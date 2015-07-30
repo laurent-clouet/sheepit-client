@@ -1,5 +1,10 @@
 package com.sheepit.client.standalone.swing.activity;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -9,12 +14,16 @@ import java.net.MalformedURLException;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
@@ -60,86 +69,117 @@ public class Settings implements Activity {
 		Configuration config = parent.getConfiguration();
 		new SettingsLoader().merge(config);
 		
-		int size_height_label = 24;
-		int start_label_left = 109;
-		int start_label_right = 265;
-		int end_label_right = 490;
-		int n = 5;
-		int sep = 40;
+		List<GPUDevice> gpus = GPU.listDevices();
+		
+		GridBagConstraints constraints = new GridBagConstraints();
+		int columns = 4 + (gpus != null ? gpus.size() : 0);
+		int currentRow = 0;
+		
+		parent.addPadding(1, ++currentRow, columns - 2, 1);
+		++currentRow;
 		
 		ImageIcon image = new ImageIcon(getClass().getResource("/title.png"));
 		JLabel labelImage = new JLabel(image);
-		labelImage.setBounds(600 / 2 - 265 / 2, n, 265, 130 + n);
-		n = labelImage.getHeight();
-		parent.getContentPane().add(labelImage);
+		constraints.fill = GridBagConstraints.BOTH;
+		constraints.weightx = 1.0;
+		constraints.weighty = 3.0;
+		constraints.gridwidth = columns - 2;
+		constraints.gridx = 1;
+		constraints.gridy = currentRow;
+		parent.getContentPane().add(labelImage, constraints);
 		
-		n += sep;
+		parent.addPadding(1, ++currentRow, columns - 2, 1);
+		++currentRow;
 		
 		JLabel loginLabel = new JLabel("Login:");
-		loginLabel.setBounds(start_label_left, n, 170, size_height_label);
-		parent.getContentPane().add(loginLabel);
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		constraints.weighty = 0.0;
+		constraints.gridwidth = 1;
+		constraints.gridy = currentRow;
+		parent.getContentPane().add(loginLabel, constraints);
 		
 		login = new JTextField();
-		login.setBounds(start_label_right, n, end_label_right - start_label_right, size_height_label);
 		login.setText(parent.getConfiguration().login());
 		login.setColumns(20);
 		login.addKeyListener(new CheckCanStart());
-		parent.getContentPane().add(login);
+		constraints.gridwidth = columns - 3;
+		constraints.gridx = 2;
+		parent.getContentPane().add(login, constraints);
 		
-		n += sep;
+		parent.addPadding(1, ++currentRow, columns - 2, 1);
+		++currentRow;
 		
 		JLabel passwordLabel = new JLabel("Password:");
-		passwordLabel.setBounds(start_label_left, n, 170, size_height_label);
-		parent.getContentPane().add(passwordLabel);
+		constraints.weighty = 0.0;
+		constraints.gridwidth = 1;
+		constraints.gridx = 1;
+		constraints.gridy = currentRow;
+		parent.getContentPane().add(passwordLabel, constraints);
 		
 		password = new JPasswordField();
-		password.setBounds(start_label_right, n, end_label_right - start_label_right, size_height_label);
 		password.setText(parent.getConfiguration().password());
 		password.setColumns(10);
 		password.addKeyListener(new CheckCanStart());
-		parent.getContentPane().add(password);
+		constraints.gridwidth = columns - 3;
+		constraints.gridx = 2;
+		parent.getContentPane().add(password, constraints);
 		
-		n += sep;
+		parent.addPadding(1, ++currentRow, columns - 2, 1);
+		++currentRow;
 		
 		JLabel proxyLabel = new JLabel("Proxy:");
-		proxyLabel.setBounds(start_label_left, n, 170, size_height_label);
 		proxyLabel.setToolTipText("http://login:password@host:port");
-		parent.getContentPane().add(proxyLabel);
+		constraints.gridwidth = 1;
+		constraints.gridx = 1;
+		constraints.gridy = currentRow;
+		parent.getContentPane().add(proxyLabel, constraints);
 		
 		proxy = new JTextField();
-		proxy.setBounds(start_label_right, n, end_label_right - start_label_right, size_height_label);
 		proxy.setToolTipText("http://login:password@host:port");
 		proxy.setText(parent.getConfiguration().getProxy());
 		proxy.addKeyListener(new CheckCanStart());
-		parent.getContentPane().add(proxy);
+		constraints.gridwidth = columns - 3;
+		constraints.gridx = 2;
+		parent.getContentPane().add(proxy, constraints);
 		
-		n += sep;
+		parent.addPadding(1, ++currentRow, columns - 2, 1);
+		++currentRow;
 		
 		JLabel cacheLabel = new JLabel("Working directory:");
-		cacheLabel.setBounds(start_label_left, n, 240, size_height_label);
-		parent.getContentPane().add(cacheLabel);
+		constraints.gridwidth = 1;
+		constraints.gridx = 1;
+		constraints.gridy = currentRow;
+		parent.getContentPane().add(cacheLabel, constraints);
 		
 		String destination = DUMMY_CACHE_DIR;
 		if (config.getUserSpecifiedACacheDir()) {
 			destination = config.getStorageDir().getName();
 		}
 		
+		JPanel cacheDirWrapper = new JPanel();
+		cacheDirWrapper.setLayout(new BoxLayout(cacheDirWrapper, BoxLayout.LINE_AXIS));
 		cacheDirText = new JLabel(destination);
-		cacheDirText.setBounds(start_label_right, n, 240, size_height_label);
-		parent.getContentPane().add(cacheDirText);
+		cacheDirWrapper.add(cacheDirText);
+		
+		cacheDirWrapper.add(Box.createHorizontalGlue());
 		
 		cacheDirChooser = new JFileChooser();
 		cacheDirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		JButton openButton = new JButton("...");
 		openButton.addActionListener(new ChooseFileAction());
-		openButton.setBounds(end_label_right - 50, n, 50, size_height_label);
-		parent.getContentPane().add(openButton);
+		cacheDirWrapper.add(openButton);
 		
-		n += sep;
+		constraints.gridwidth = columns - 3;
+		constraints.gridx = 2;
+		parent.getContentPane().add(cacheDirWrapper, constraints);
+		
+		parent.addPadding(1, ++currentRow, columns - 2, 1);
+		++currentRow;
 		
 		JLabel computeMethodLabel = new JLabel("Use:");
-		computeMethodLabel.setBounds(start_label_left, n, 240, size_height_label);
-		parent.getContentPane().add(computeMethodLabel);
+		constraints.gridx = 1;
+		constraints.gridy = currentRow;
+		parent.getContentPane().add(computeMethodLabel, constraints);
 		
 		ComputeType method = config.getComputeMethod();
 		useCPU = new JCheckBox("CPU");
@@ -158,15 +198,15 @@ public class Settings implements Activity {
 			gpuChecked = true;
 		}
 		
-		int size = 60;
 		useCPU.addActionListener(new CpuChangeAction());
-		useCPU.setBounds(start_label_right, n, size, size_height_label);
-		parent.getContentPane().add(useCPU);
+		constraints.gridwidth = Math.max(1, columns - (gpus != null ? gpus.size() : 0) - 3);
+		constraints.gridx = 2;
+		parent.getContentPane().add(useCPU, constraints);
 		
-		List<GPUDevice> gpus = GPU.listDevices();
+		constraints.gridwidth = 1;
 		if (gpus != null) {
-			for (GPUDevice gpu : gpus) {
-				n += 20;
+			for (int i=0; i < gpus.size(); i++) {
+				GPUDevice gpu = gpus.get(i);
 				JCheckBoxGPU gpuCheckBox = new JCheckBoxGPU(gpu);
 				gpuCheckBox.setToolTipText(gpu.getCudaName());
 				if (gpuChecked) {
@@ -175,14 +215,15 @@ public class Settings implements Activity {
 						gpuCheckBox.setSelected(gpuChecked);
 					}
 				}
-				gpuCheckBox.setBounds(start_label_right, n, 200, size_height_label);
 				gpuCheckBox.addActionListener(new GpuChangeAction());
-				parent.getContentPane().add(gpuCheckBox);
+				constraints.gridx = i + 3;
+				parent.getContentPane().add(gpuCheckBox, constraints);
 				useGPUs.add(gpuCheckBox);
 			}
 		}
 		
-		n += sep;
+		parent.addPadding(1, ++currentRow, columns - 2, 1);
+		++currentRow;
 		
 		CPU cpu = new CPU();
 		if (cpu.cores() > 1) { // if only one core is available, no need to show the choice
@@ -193,31 +234,46 @@ public class Settings implements Activity {
 			cpuCores.setPaintLabels(true);
 			cpuCores.setValue(config.getNbCores() != -1 ? config.getNbCores() : cpuCores.getMaximum());
 			JLabel coreLabel = new JLabel("CPU cores:");
-			coreLabel.setBounds(start_label_left, n, 170, size_height_label);
-			parent.getContentPane().add(coreLabel);
-			cpuCores.setBounds(start_label_right, n, end_label_right - start_label_right, size_height_label * 2);
-			parent.getContentPane().add(cpuCores);
-			n += sep + size_height_label;
+			constraints.gridx = 1;
+			constraints.gridy = currentRow;
+			parent.getContentPane().add(coreLabel, constraints);
+			constraints.gridwidth = columns - 3;
+			constraints.gridx = 2;
+			parent.getContentPane().add(cpuCores, constraints);
+			
+			parent.addPadding(1, ++currentRow, columns - 2, 1);
+			++currentRow;
 		}
 		
 		saveFile = new JCheckBox("Save settings", true);
-		saveFile.setBounds(start_label_right, n, end_label_right - start_label_right, size_height_label);
-		parent.getContentPane().add(saveFile);
+		constraints.gridwidth = columns - 3;
+		constraints.gridx = 2;
+		constraints.gridy = currentRow;
+		parent.getContentPane().add(saveFile, constraints);
 		
-		n += 20;
+		parent.addPadding(1, ++currentRow, columns - 2, 1);
+		++currentRow;
 		
 		autoSignIn = new JCheckBox("Auto sign in", config.getAutoSignIn());
-		autoSignIn.setBounds(start_label_right, n, end_label_right - start_label_right, size_height_label);
 		autoSignIn.addActionListener(new AutoSignInChangeAction());
-		parent.getContentPane().add(autoSignIn);
+		constraints.gridy = currentRow;
+		parent.getContentPane().add(autoSignIn, constraints);
 		
-		n += sep;
+		parent.addPadding(1, ++currentRow, columns - 2, 1);
+		++currentRow;
 		
 		saveButton = new JButton("Start");
 		checkDisplaySaveButton();
-		saveButton.setBounds(start_label_right, n, 80, size_height_label);
 		saveButton.addActionListener(new SaveAction());
-		parent.getContentPane().add(saveButton);
+		constraints.gridwidth = columns - 2;
+		constraints.gridx = 1;
+		constraints.gridy = currentRow;
+		parent.getContentPane().add(saveButton, constraints);
+		
+		parent.addPadding(1, ++currentRow, columns - 2, 1);
+		parent.addPadding(0, 0, 1, currentRow + 1);
+		parent.addPadding(columns - 1, 0, 1, currentRow + 1);
+		
 		
 		if (haveAutoStarted == false && config.getAutoSignIn() && checkDisplaySaveButton()) {
 			// auto start
