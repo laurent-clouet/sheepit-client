@@ -50,7 +50,6 @@ public class Working implements Activity {
 		
 		ImageIcon image = new ImageIcon(getClass().getResource("/title.png"));
 		JLabel labelImage = new JLabel(image);
-		labelImage.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, Color.DARK_GRAY));
 		constraints.fill = GridBagConstraints.BOTH;
 		constraints.weightx = 1.0;
 		constraints.weighty = 3.0;

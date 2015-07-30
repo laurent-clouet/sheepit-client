@@ -1,6 +1,7 @@
 package com.sheepit.client.standalone.swing.activity;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
@@ -14,12 +15,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
@@ -68,7 +72,7 @@ public class Settings implements Activity {
 		List<GPUDevice> gpus = GPU.listDevices();
 		
 		GridBagConstraints constraints = new GridBagConstraints();
-		int columns = Math.max(5, 4 + (gpus != null ? gpus.size() : 0));
+		int columns = 4 + (gpus != null ? gpus.size() : 0);
 		int currentRow = 0;
 		
 		parent.addPadding(1, ++currentRow, columns - 2, 1);
@@ -76,7 +80,6 @@ public class Settings implements Activity {
 		
 		ImageIcon image = new ImageIcon(getClass().getResource("/title.png"));
 		JLabel labelImage = new JLabel(image);
-		labelImage.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, Color.DARK_GRAY));
 		constraints.fill = GridBagConstraints.BOTH;
 		constraints.weightx = 1.0;
 		constraints.weighty = 3.0;
@@ -153,20 +156,22 @@ public class Settings implements Activity {
 			destination = config.getStorageDir().getName();
 		}
 		
+		JPanel cacheDirWrapper = new JPanel();
+		cacheDirWrapper.setLayout(new BoxLayout(cacheDirWrapper, BoxLayout.LINE_AXIS));
 		cacheDirText = new JLabel(destination);
-		constraints.weightx = 1.0;
-		constraints.gridwidth = columns - 4;
-		constraints.gridx = 2;
-		parent.getContentPane().add(cacheDirText, constraints);
+		cacheDirWrapper.add(cacheDirText);
+		
+		cacheDirWrapper.add(Box.createHorizontalGlue());
 		
 		cacheDirChooser = new JFileChooser();
 		cacheDirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		JButton openButton = new JButton("...");
 		openButton.addActionListener(new ChooseFileAction());
-		constraints.weightx = 0.0;
-		constraints.gridwidth = 1;
-		constraints.gridx = columns - 2;
-		parent.getContentPane().add(openButton, constraints);
+		cacheDirWrapper.add(openButton);
+		
+		constraints.gridwidth = columns - 3;
+		constraints.gridx = 2;
+		parent.getContentPane().add(cacheDirWrapper, constraints);
 		
 		parent.addPadding(1, ++currentRow, columns - 2, 1);
 		++currentRow;
