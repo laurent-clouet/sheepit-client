@@ -19,12 +19,19 @@
 
 package com.sheepit.client.standalone;
 
-import java.awt.Color;
+import java.awt.AWTException;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
+import java.awt.SystemTray;
+import java.awt.Toolkit;
+import java.awt.TrayIcon;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.net.URL;
 
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -44,6 +51,8 @@ public class GuiSwing extends JFrame implements Gui {
 	public enum ActivityType {
 		WORKING, SETTINGS
 	}
+
+	private static final SystemTray TRAY = SystemTray.getSystemTray();
 	
 	private JPanel panel;
 	private Working activityWorking;
@@ -55,6 +64,8 @@ public class GuiSwing extends JFrame implements Gui {
 	private Client client;
 	
 	private ThreadClient threadClient;
+	
+	private TrayIcon trayIcon;
 	
 	public GuiSwing() {
 		framesRendered = 0;
@@ -200,6 +211,80 @@ public class GuiSwing extends JFrame implements Gui {
 		
 		setVisible(true);
 		panel.repaint();
+	}
+	
+	public void hideToTray() {
+		if (! SystemTray.isSupported()) {
+			System.out.println("GuiSwing::SystemTray not supported!");
+			return;
+		}
+		
+		try {
+			trayIcon = getTrayIcon();
+			TRAY.add(trayIcon);
+		}
+		catch (AWTException e) {
+			System.out.println("GuiSwing::an error occured while trying to add system tray icon");
+			return;
+		}
+		
+		setVisible(false);
+		
+	}
+	
+	public void restoreFromTray() {
+		TRAY.remove(trayIcon);
+		setVisible(true);
+	}
+	
+	public TrayIcon getTrayIcon() {
+		final PopupMenu trayMenu = new PopupMenu();
+
+		URL iconUrl = getClass().getResource("/icon.png");
+		Image img = Toolkit.getDefaultToolkit().getImage(iconUrl);
+		final TrayIcon icon = new TrayIcon(img);
+
+		MenuItem exit = new MenuItem("Exit");
+		exit.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+		});
+		trayMenu.add(exit);
+
+		MenuItem open = new MenuItem("Open...");
+		open.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				restoreFromTray();
+			}
+		});
+		trayMenu.add(open);
+
+		MenuItem settings = new MenuItem("Settings...");
+		settings.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				restoreFromTray();
+				showActivity(ActivityType.SETTINGS);
+			}
+		});
+		trayMenu.add(settings);
+		
+		icon.setPopupMenu(trayMenu);
+		icon.setImageAutoSize(true);
+		icon.setToolTip("SheepIt! Client");
+		
+		icon.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				restoreFromTray();
+			}
+		});
+		
+		return icon;
+		
 	}
 	
 	public class ThreadClient extends Thread {
