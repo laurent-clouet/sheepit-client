@@ -137,7 +137,6 @@ public class Working implements Activity {
 			hideButton.addActionListener(new HideAction());
 			constraints.gridx = 3;
 			parent.getContentPane().add(hideButton, constraints);
-			System.out.println("SHOULD WORK!");
 		}
 		else {
 			System.out.println("GuiSwing::Hiding to system tray is not supported");
