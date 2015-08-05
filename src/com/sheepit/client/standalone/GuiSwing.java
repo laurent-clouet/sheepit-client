@@ -117,6 +117,7 @@ public class GuiSwing extends JFrame implements Gui {
 	@Override
 	public void stop() {
 		System.out.println("GuiSwing::stop()");
+		System.exit(0);
 	}
 	
 	@Override
