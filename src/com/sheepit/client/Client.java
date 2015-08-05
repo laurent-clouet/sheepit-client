@@ -360,12 +360,12 @@ public class Client {
 	}
 	
 	public void askForStop() {
-		System.out.println("Client::askForStop");
+		this.log.debug("Client::askForStop");
 		this.running = false;
 	}
         
 	public void cancelStop() {
-		System.out.println("Client::cancelStop");
+		this.log.debug("Client::cancelStop");
 		this.running = true;
 	}
         
