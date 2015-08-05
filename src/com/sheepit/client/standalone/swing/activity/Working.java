@@ -1,7 +1,7 @@
 package com.sheepit.client.standalone.swing.activity;
 
-import java.awt.Color;
 import java.awt.GridBagConstraints;
+import java.awt.SystemTray;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -131,6 +131,14 @@ public class Working implements Activity {
 		constraints.gridx = 2;
 		parent.getContentPane().add(pauseButton, constraints);
 		
+		//Add hide button if os supports it
+		if (SystemTray.isSupported()) {
+			JButton hideButton = new JButton("Hide window");
+			hideButton.addActionListener(new HideAction());
+			constraints.gridx = 3;
+			parent.getContentPane().add(hideButton, constraints);
+		}
+		
 		parent.addPadding(1, ++currentRow, 2, 1);
 		parent.addPadding(0, 0, 1, currentRow + 1);
 		parent.addPadding(3, 0, 1, currentRow + 1);
@@ -208,6 +216,15 @@ public class Working implements Activity {
 		public void actionPerformed(ActionEvent e) {
 			if (parent != null) {
 				parent.showActivity(ActivityType.SETTINGS);
+			}
+		}
+	}
+	
+	class HideAction implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (parent != null) {
+				parent.hideToTray();
 			}
 		}
 	}
