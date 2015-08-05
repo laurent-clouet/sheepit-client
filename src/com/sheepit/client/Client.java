@@ -306,6 +306,7 @@ public class Client {
 			return -99; // the this.stop will be done after the return of this.run()
 		}
 		
+		this.gui.stop();
 		return 0;
 	}
 	
@@ -342,7 +343,6 @@ public class Client {
 		
 		this.server = null;
 		
-		this.gui.stop();
 		return 0;
 	}
 	
@@ -362,6 +362,15 @@ public class Client {
 	public void askForStop() {
 		System.out.println("Client::askForStop");
 		this.running = false;
+	}
+        
+	public void cancelStop() {
+		System.out.println("Client::cancelStop");
+		this.running = true;
+	}
+        
+	public boolean isRunning() {
+		return this.running;
 	}
 	
 	public int senderLoop() {

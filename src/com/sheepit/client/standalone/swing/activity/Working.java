@@ -28,6 +28,7 @@ public class Working implements Activity {
 	JLabel lastRender;
 	JLabel creditEarned;
 	JButton pauseButton;
+	JButton exitAfterFrame;
 	
 	public Working(GuiSwing parent_) {
 		parent = parent_;
@@ -129,15 +130,24 @@ public class Working implements Activity {
 		pauseButton = new JButton("Pause");
 		pauseButton.addActionListener(new PauseAction());
 		constraints.gridx = 2;
+		constraints.gridy = currentRow;
 		parent.getContentPane().add(pauseButton, constraints);
 		
+		++currentRow;
 		//Add hide button if os supports it
 		if (SystemTray.isSupported()) {
 			JButton hideButton = new JButton("Hide window");
 			hideButton.addActionListener(new HideAction());
-			constraints.gridx = 3;
+			constraints.gridx = 1;
+			constraints.gridy = currentRow;
 			parent.getContentPane().add(hideButton, constraints);
 		}
+		
+		exitAfterFrame = new JButton("Exit after this frame");
+		constraints.gridx = 2;
+		constraints.gridy = currentRow;
+		exitAfterFrame.addActionListener(new ExitAfterAction());
+		parent.getContentPane().add(exitAfterFrame, constraints);
 		
 		parent.addPadding(1, ++currentRow, 2, 1);
 		parent.addPadding(0, 0, 1, currentRow + 1);
@@ -225,6 +235,23 @@ public class Working implements Activity {
 		public void actionPerformed(ActionEvent e) {
 			if (parent != null) {
 				parent.hideToTray();
+			}
+		}
+	}
+        
+	class ExitAfterAction implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			Client client = parent.getClient();
+			if (client != null) {
+				if (client.isRunning()) {
+					exitAfterFrame.setText("Cancel exit");
+					client.askForStop();
+				}
+				else {
+					exitAfterFrame.setText("Exit after this frame");
+					client.cancelStop();
+				}
 			}
 		}
 	}
