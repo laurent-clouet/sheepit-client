@@ -29,6 +29,7 @@ import java.nio.file.Paths;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.BitSet;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -225,5 +226,25 @@ public class Utils {
 			output += seconds + "s";
 		}
 		return output;
+	}
+	
+	public static long convertBitset64ToLong(BitSet bs) {
+		long result = 0L;
+		for (int i = bs.nextSetBit(0); i >= 0 && i < 64; i = bs.nextSetBit(i + 1))
+			result |= 1L << i;
+		return result;
+	}
+
+	public static BitSet convertLongToBitset64(long value) {
+		BitSet bits = new BitSet();
+		int index = 0;
+		while (value != 0L) {
+			if (value % 2L != 0) {
+				bits.set(index);
+			}
+			++index;
+			value = value >>> 1;
+		}
+		return bits;
 	}
 }

@@ -1,20 +1,16 @@
 package com.sheepit.client.standalone.swing.activity;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
 import java.net.MalformedURLException;
+import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -26,10 +22,15 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JSlider;
+import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+
 import com.sheepit.client.Configuration;
 import com.sheepit.client.Configuration.ComputeType;
 import com.sheepit.client.SettingsLoader;
+import com.sheepit.client.Utils;
 import com.sheepit.client.hardware.cpu.CPU;
 import com.sheepit.client.hardware.gpu.GPU;
 import com.sheepit.client.hardware.gpu.GPUDevice;
@@ -49,8 +50,8 @@ public class Settings implements Activity {
 	private JCheckBox useCPU;
 	private List<JCheckBoxGPU> useGPUs;
 	private JSlider cpuCores;
+	private JTable affinitytable = null;
 	private JTextField proxy;
-	
 	private JCheckBox saveFile;
 	private JCheckBox autoSignIn;
 	JButton saveButton;
@@ -243,6 +244,42 @@ public class Settings implements Activity {
 			
 			parent.addPadding(1, ++currentRow, columns - 2, 1);
 			++currentRow;
+			
+			JLabel afinityLabel = new JLabel("CPU Afinity:");
+			constraints.gridx = 1;
+			constraints.gridy = currentRow;
+			parent.getContentPane().add(afinityLabel, constraints);
+			
+			final int max_colums = 64;
+			int nbcores = cpu.cores();
+			int nb_colums = nbcores < max_colums ? nbcores : max_colums;
+			Object[] columnNames = new String[nb_colums];
+			Object[][] data = new Object[1][ nb_colums ];
+			BitSet bs = Utils.convertLongToBitset64(config.getCoreAffinity());
+			for(int i=0 ; i<nb_colums ; i++ ){
+				columnNames[i] = "CPU" + i;
+				data[0][i] = bs.isEmpty() ? true : bs.get(i);
+			}
+			DefaultTableModel model = new DefaultTableModel(data, columnNames);
+			affinitytable = new JTable(model) {
+				private static final long serialVersionUID = 1L;
+				@Override
+				public Class getColumnClass(int column) {
+					return Boolean.class;
+				}
+			};
+			GridBagConstraints affinityContraints = new GridBagConstraints();			
+			affinityContraints.fill = GridBagConstraints.BOTH;
+			affinityContraints.weightx = 0.0;
+			affinityContraints.weighty = 0.0;
+			affinityContraints.gridx = 2;
+			affinityContraints.gridy = currentRow;
+			affinityContraints.gridwidth = columns - 3;
+			affinityContraints.gridheight = 1;
+			affinitytable.setRowSelectionAllowed(false);
+			parent.getContentPane().add(affinitytable, affinityContraints);
+			parent.addPadding(1, ++currentRow, columns - 2, 1);
+			++currentRow;
 		}
 		
 		saveFile = new JCheckBox("Save settings", true);
@@ -396,6 +433,18 @@ public class Settings implements Activity {
 				config.setUseNbCores(cpu_cores);
 			}
 			
+			long coreAffinity = 0;
+			if (affinitytable != null) {
+				TableModel model = affinitytable.getModel();
+				BitSet bs = new BitSet(64);
+				for (int i=0;i<model.getColumnCount();i++) {
+					if ((Boolean)model.getValueAt(0, i) && i<64)
+						bs.set(i);
+				}
+				coreAffinity = Utils.convertBitset64ToLong(bs);
+			}
+			config.setCoreAffinity(coreAffinity);
+			
 			String proxyText = null;
 			if (proxy != null) {
 				try {
@@ -417,7 +466,7 @@ public class Settings implements Activity {
 			}
 			
 			if (saveFile.isSelected()) {
-				new SettingsLoader(login.getText(), new String(password.getPassword()), proxyText, method, selected_gpu, cpu_cores, cachePath, autoSignIn.isSelected(), GuiSwing.type).saveFile();
+				new SettingsLoader(login.getText(), new String(password.getPassword()), proxyText, method, selected_gpu, cpu_cores, coreAffinity, cachePath, autoSignIn.isSelected(), GuiSwing.type).saveFile();
 			}
 			else {
 				try {

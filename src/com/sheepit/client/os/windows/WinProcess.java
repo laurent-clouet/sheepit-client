@@ -23,9 +23,11 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
+import com.sun.jna.platform.win32.BaseTSD.DWORD_PTR;
 import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.Kernel32Util;
 import com.sun.jna.platform.win32.WinDef.DWORD;
@@ -119,6 +121,25 @@ public class WinProcess {
 	
 	public boolean setPriority(int priority) {
 		return this.kernel32lib.SetPriorityClass(this.handle, priority);
+	}
+	
+	public boolean SetProcessAffinity(Map<String, String> env) {
+		System.out.println("get env");
+		if (env == null)
+			return false;
+		try {
+			System.out.println("get PROCESS_CORE_AFFINITY env");
+			if (env.containsKey("PROCESS_CORE_AFFINITY") == false)
+				return false;
+			System.out.println("get long env");
+			long coreaffinity = Long.valueOf(env.get("PROCESS_CORE_AFFINITY"));
+			if (coreaffinity == 0)
+				return false;
+			System.out.println("coreaffinity="+coreaffinity);
+			return this.kernel32lib.SetProcessAffinityMask(this.handle, new DWORD_PTR(coreaffinity));
+		} catch (Exception e) {
+			return false;
+		}
 	}
 	
 	private void terminate() {
