@@ -57,5 +57,11 @@
         <delete dir="build"/>
         <delete dir="bin"/>
     </target>
+	
+    <target name="run">
+    	<antcall target="client" />
+        <java jar="bin/sheepit-client.jar" fork="true"/>
+    </target>
+	
  </project>
 
