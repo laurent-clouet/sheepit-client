@@ -124,18 +124,14 @@ public class WinProcess {
 	}
 	
 	public boolean SetProcessAffinity(Map<String, String> env) {
-		System.out.println("get env");
 		if (env == null)
 			return false;
 		try {
-			System.out.println("get PROCESS_CORE_AFFINITY env");
 			if (env.containsKey("PROCESS_CORE_AFFINITY") == false)
 				return false;
-			System.out.println("get long env");
 			long coreaffinity = Long.valueOf(env.get("PROCESS_CORE_AFFINITY"));
 			if (coreaffinity == 0)
 				return false;
-			System.out.println("coreaffinity="+coreaffinity);
 			return this.kernel32lib.SetProcessAffinityMask(this.handle, new DWORD_PTR(coreaffinity));
 		} catch (Exception e) {
 			return false;

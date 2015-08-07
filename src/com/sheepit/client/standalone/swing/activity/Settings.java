@@ -24,6 +24,11 @@ import javax.swing.JPasswordField;
 import javax.swing.JSlider;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.plaf.SliderUI;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
@@ -234,6 +239,13 @@ public class Settings implements Activity {
 			cpuCores.setPaintTicks(true);
 			cpuCores.setPaintLabels(true);
 			cpuCores.setValue(config.getNbCores() != -1 ? config.getNbCores() : cpuCores.getMaximum());
+			cpuCores.getModel().addChangeListener(new ChangeListener() {
+				@Override
+				public void stateChanged(ChangeEvent e) {
+					 if (cpuCores.getValueIsAdjusting() == true) 
+						 return;
+				}
+			});
 			JLabel coreLabel = new JLabel("CPU cores:");
 			constraints.gridx = 1;
 			constraints.gridy = currentRow;
@@ -268,6 +280,20 @@ public class Settings implements Activity {
 					return Boolean.class;
 				}
 			};
+			affinitytable.getModel().addTableModelListener(new TableModelListener() {
+				@Override
+				public void tableChanged(TableModelEvent e) {
+					if (e.getType() != TableModelEvent.UPDATE)
+						return;
+					TableModel tm = affinitytable.getModel();
+					int count = 0;
+					for (int i = 0; i < tm.getColumnCount(); i++)
+						if ((boolean) tm.getValueAt(0, i))
+							count++;
+					if (count > 0 && count != cpuCores.getValue())
+						cpuCores.setValue(count);
+				}
+			});
 			GridBagConstraints affinityContraints = new GridBagConstraints();			
 			affinityContraints.fill = GridBagConstraints.BOTH;
 			affinityContraints.weightx = 0.0;

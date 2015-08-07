@@ -186,6 +186,7 @@ public class SettingsLoader {
 			if (prop.containsKey("cpu-cores")) {
 				this.cores = prop.getProperty("cpu-cores");
 			}
+			
 			if (prop.containsKey("cpu-affinity")) {
 				this.affinity = prop.getProperty("cpu-affinity");
 			}
@@ -265,9 +266,9 @@ public class SettingsLoader {
 			config.setUseNbCores(Integer.valueOf(cores));
 		}
 		
-			if (config.getCoreAffinity() == 0 && affinity != null) {
-			config.setCoreAffinity(Long.valueOf(cores));
-			}
+		if (config.getCoreAffinity() == 0 && affinity != null) {
+			config.setCoreAffinity(Long.valueOf(affinity));
+		}
 		
 		if (config.getUserSpecifiedACacheDir() == false && cacheDir != null && new File(cacheDir).exists()) {
 			config.setCacheDir(new File(cacheDir));
