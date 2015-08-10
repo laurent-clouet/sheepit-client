@@ -363,12 +363,12 @@ public class Client {
 		this.log.debug("Client::askForStop");
 		this.running = false;
 	}
-        
+		
 	public void cancelStop() {
 		this.log.debug("Client::cancelStop");
 		this.running = true;
 	}
-        
+		
 	public boolean isRunning() {
 		return this.running;
 	}

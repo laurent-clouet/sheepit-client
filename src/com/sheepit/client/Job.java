@@ -209,7 +209,8 @@ public class Job {
 		Map<String, String> new_env = new HashMap<String, String>();
 		
 		new_env.put("BLENDER_USER_CONFIG", config.workingDirectory.getAbsolutePath().replace("\\", "\\\\"));
-		
+		new_env.put("PROCESS_CORE_AFFINITY", String.valueOf(config.getCoreAffinity()));
+
 		for (String arg : command1) {
 			switch (arg) {
 				case ".c":
