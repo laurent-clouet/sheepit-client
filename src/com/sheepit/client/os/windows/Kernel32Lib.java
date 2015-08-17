@@ -212,8 +212,6 @@ public interface Kernel32Lib extends Library {
 	 */
 	public int SetErrorMode(DWORD uMode);
 	
-	
-	
 	/**
 	 * See : https://msdn.microsoft.com/en-us/library/windows/desktop/ms686247%28v=vs.85%29.aspx
 	 * 
@@ -222,5 +220,5 @@ public interface Kernel32Lib extends Library {
 	 * @return If the function succeeds, the return value is the thread's previous affinity mask.
 	 */
 	public boolean SetProcessAffinityMask(HANDLE hProcess, DWORD_PTR dwProcessAffinityMask);
-	
+
 }

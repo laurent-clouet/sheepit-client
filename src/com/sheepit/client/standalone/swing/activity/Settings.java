@@ -28,7 +28,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import javax.swing.plaf.SliderUI;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
@@ -211,7 +210,7 @@ public class Settings implements Activity {
 		
 		constraints.gridwidth = 1;
 		if (gpus != null) {
-			for (int i=0; i < gpus.size(); i++) {
+			for (int i = 0; i < gpus.size(); i++) {
 				GPUDevice gpu = gpus.get(i);
 				JCheckBoxGPU gpuCheckBox = new JCheckBoxGPU(gpu);
 				gpuCheckBox.setToolTipText(gpu.getCudaName());
@@ -242,8 +241,8 @@ public class Settings implements Activity {
 			cpuCores.getModel().addChangeListener(new ChangeListener() {
 				@Override
 				public void stateChanged(ChangeEvent e) {
-					 if (cpuCores.getValueIsAdjusting() == true) 
-						 return;
+					if (cpuCores.getValueIsAdjusting() == true)
+						return;
 				}
 			});
 			JLabel coreLabel = new JLabel("CPU cores:");
@@ -266,17 +265,18 @@ public class Settings implements Activity {
 			int nbcores = cpu.cores();
 			int nb_colums = nbcores < max_colums ? nbcores : max_colums;
 			Object[] columnNames = new String[nb_colums];
-			Object[][] data = new Object[1][ nb_colums ];
+			Object[][] data = new Object[1][nb_colums];
 			BitSet bs = Utils.convertLongToBitset64(config.getCoreAffinity());
-			for(int i=0 ; i<nb_colums ; i++ ){
+			for (int i = 0; i < nb_colums; i++) {
 				columnNames[i] = "CPU" + i;
 				data[0][i] = bs.isEmpty() ? true : bs.get(i);
 			}
 			DefaultTableModel model = new DefaultTableModel(data, columnNames);
 			affinitytable = new JTable(model) {
 				private static final long serialVersionUID = 1L;
+				
 				@Override
-				public Class getColumnClass(int column) {
+				public Class<?> getColumnClass(int column) {
 					return Boolean.class;
 				}
 			};
@@ -294,7 +294,7 @@ public class Settings implements Activity {
 						cpuCores.setValue(count);
 				}
 			});
-			GridBagConstraints affinityContraints = new GridBagConstraints();			
+			GridBagConstraints affinityContraints = new GridBagConstraints();
 			affinityContraints.fill = GridBagConstraints.BOTH;
 			affinityContraints.weightx = 0.0;
 			affinityContraints.weighty = 0.0;
@@ -336,7 +336,6 @@ public class Settings implements Activity {
 		parent.addPadding(1, ++currentRow, columns - 2, 1);
 		parent.addPadding(0, 0, 1, currentRow + 1);
 		parent.addPadding(columns - 1, 0, 1, currentRow + 1);
-		
 		
 		if (haveAutoStarted == false && config.getAutoSignIn() && checkDisplaySaveButton()) {
 			// auto start
@@ -463,8 +462,8 @@ public class Settings implements Activity {
 			if (affinitytable != null) {
 				TableModel model = affinitytable.getModel();
 				BitSet bs = new BitSet(64);
-				for (int i=0;i<model.getColumnCount();i++) {
-					if ((Boolean)model.getValueAt(0, i) && i<64)
+				for (int i = 0; i < model.getColumnCount(); i++) {
+					if ((Boolean) model.getValueAt(0, i) && i < 64)
 						bs.set(i);
 				}
 				coreAffinity = Utils.convertBitset64ToLong(bs);
@@ -505,6 +504,7 @@ public class Settings implements Activity {
 	}
 	
 	class JCheckBoxGPU extends JCheckBox {
+		private static final long serialVersionUID = 1L;
 		private GPUDevice gpu;
 		
 		public JCheckBoxGPU(GPUDevice gpu) {

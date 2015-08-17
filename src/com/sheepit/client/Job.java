@@ -210,7 +210,7 @@ public class Job {
 		
 		new_env.put("BLENDER_USER_CONFIG", config.workingDirectory.getAbsolutePath().replace("\\", "\\\\"));
 		new_env.put("PROCESS_CORE_AFFINITY", String.valueOf(config.getCoreAffinity()));
-
+		
 		for (String arg : command1) {
 			switch (arg) {
 				case ".c":

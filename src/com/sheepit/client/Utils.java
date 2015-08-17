@@ -234,7 +234,7 @@ public class Utils {
 			result |= 1L << i;
 		return result;
 	}
-
+	
 	public static BitSet convertLongToBitset64(long value) {
 		BitSet bits = new BitSet();
 		int index = 0;

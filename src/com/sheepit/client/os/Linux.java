@@ -162,10 +162,10 @@ public class Linux extends OS {
 		}
 		Process retProc = builder.start();
 		if (env.containsKey("PROCESS_CORE_AFFINITY") == false)
-            return retProc;
-        long coreaffinity = Long.valueOf(env.get("PROCESS_CORE_AFFINITY"));
-        int pidOfProc = LinuxProcess.getPid(retProc);
-        LinuxProcess.setAffinity(pidOfProc, coreaffinity);     
+			return retProc;
+		long coreaffinity = Long.valueOf(env.get("PROCESS_CORE_AFFINITY"));
+		int pidOfProc = LinuxProcess.getPid(retProc);
+		LinuxProcess.setAffinity(pidOfProc, coreaffinity);
 		return retProc;
 	}
 	

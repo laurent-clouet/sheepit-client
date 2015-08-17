@@ -40,7 +40,7 @@ public class SettingsLoader {
 		path = path_;
 	}
 	
-	public SettingsLoader(String login_, String password_, String proxy_, ComputeType computeMethod_, GPUDevice gpu_, int cores_,long affinity_, String cacheDir_, boolean autoSignIn_, String ui_) {
+	public SettingsLoader(String login_, String password_, String proxy_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, long affinity_, String cacheDir_, boolean autoSignIn_, String ui_) {
 		path = getDefaultFilePath();
 		login = login_;
 		password = password_;
@@ -190,6 +190,7 @@ public class SettingsLoader {
 			if (prop.containsKey("cpu-affinity")) {
 				this.affinity = prop.getProperty("cpu-affinity");
 			}
+			
 			if (prop.containsKey("login")) {
 				this.login = prop.getProperty("login");
 			}
