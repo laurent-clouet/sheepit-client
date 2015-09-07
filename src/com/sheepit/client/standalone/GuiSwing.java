@@ -52,8 +52,7 @@ public class GuiSwing extends JFrame implements Gui {
 		WORKING, SETTINGS
 	}
 	
-	private static final SystemTray TRAY = SystemTray.getSystemTray();
-	
+	private SystemTray sysTray;
 	private JPanel panel;
 	private Working activityWorking;
 	private Settings activitySettings;
@@ -79,6 +78,13 @@ public class GuiSwing extends JFrame implements Gui {
 		}
 		catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e1) {
 			e1.printStackTrace();
+		}
+		
+		try {
+			sysTray = SystemTray.getSystemTray();
+		}
+		catch (UnsupportedOperationException e) {
+			sysTray = null;
 		}
 		
 		URL iconUrl = getClass().getResource("/icon.png");
@@ -214,14 +220,14 @@ public class GuiSwing extends JFrame implements Gui {
 	}
 	
 	public void hideToTray() {
-		if (SystemTray.isSupported() == false) {
+		if (sysTray == null || SystemTray.isSupported() == false) {
 			System.out.println("GuiSwing::hideToTray SystemTray not supported!");
 			return;
 		}
 		
 		try {
 			trayIcon = getTrayIcon();
-			TRAY.add(trayIcon);
+			sysTray.add(trayIcon);
 		}
 		catch (AWTException e) {
 			System.out.println("GuiSwing::hideToTray an error occured while trying to add system tray icon (exception: " + e + ")");
@@ -233,8 +239,10 @@ public class GuiSwing extends JFrame implements Gui {
 	}
 	
 	public void restoreFromTray() {
-		TRAY.remove(trayIcon);
-		setVisible(true);
+		if (sysTray != null && SystemTray.isSupported()) {
+			sysTray.remove(trayIcon);
+			setVisible(true);
+		}
 	}
 	
 	public TrayIcon getTrayIcon() {
