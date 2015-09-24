@@ -432,9 +432,14 @@ public class Job {
 			if (element.isEmpty() == false && element.charAt(0) == ' ') {
 				int end = element.indexOf(')');
 				if (end > 0) {
-					long mem = Utils.parseNumber(element.substring(1, end).trim());
-					if (mem > getProcessRender().getMemoryUsed()) {
-						getProcessRender().setMemoryUsed(mem);
+					try {
+						long mem = Utils.parseNumber(element.substring(1, end).trim());
+						if (mem > getProcessRender().getMemoryUsed()) {
+							getProcessRender().setMemoryUsed(mem);
+						}
+					}
+					catch (IllegalStateException e) {
+						// failed to parseNumber
 					}
 				}
 			}
@@ -442,9 +447,14 @@ public class Job {
 				if (element.isEmpty() == false && element.charAt(0) == ':') {
 					int end = element.indexOf('|');
 					if (end > 0) {
-						long mem = Utils.parseNumber(element.substring(1, end).trim());
-						if (mem > getProcessRender().getMemoryUsed()) {
-							getProcessRender().setMemoryUsed(mem);
+						try {
+							long mem = Utils.parseNumber(element.substring(1, end).trim());
+							if (mem > getProcessRender().getMemoryUsed()) {
+								getProcessRender().setMemoryUsed(mem);
+							}
+						}
+						catch (IllegalStateException e) {
+							// failed to parseNumber
 						}
 					}
 				}
