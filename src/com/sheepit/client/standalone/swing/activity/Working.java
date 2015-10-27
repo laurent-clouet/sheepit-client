@@ -134,15 +134,6 @@ public class Working implements Activity {
 		parent.getContentPane().add(pauseButton, constraints);
 		
 		++currentRow;
-		//Add hide button if os supports it
-		if (SystemTray.isSupported()) {
-			JButton hideButton = new JButton("Hide window");
-			hideButton.addActionListener(new HideAction());
-			constraints.gridx = 1;
-			constraints.gridy = currentRow;
-			parent.getContentPane().add(hideButton, constraints);
-		}
-		
 		exitAfterFrame = new JButton("Exit after this frame");
 		constraints.gridx = 2;
 		constraints.gridy = currentRow;
@@ -230,15 +221,6 @@ public class Working implements Activity {
 		}
 	}
 	
-	class HideAction implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (parent != null) {
-				parent.hideToTray();
-			}
-		}
-	}
-        
 	class ExitAfterAction implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {

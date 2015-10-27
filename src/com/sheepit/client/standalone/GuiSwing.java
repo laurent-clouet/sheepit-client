@@ -30,6 +30,8 @@ import java.awt.Toolkit;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowStateListener;
 import java.net.URL;
 
 import javax.swing.ImageIcon;
@@ -82,6 +84,15 @@ public class GuiSwing extends JFrame implements Gui {
 		
 		try {
 			sysTray = SystemTray.getSystemTray();
+			if (SystemTray.isSupported()) {
+				addWindowStateListener(new WindowStateListener() {
+					public void windowStateChanged(WindowEvent e) {
+						if (e.getNewState() == ICONIFIED) {
+							hideToTray();
+						}
+					}
+				});
+			}
 		}
 		catch (UnsupportedOperationException e) {
 			sysTray = null;
@@ -242,6 +253,9 @@ public class GuiSwing extends JFrame implements Gui {
 		if (sysTray != null && SystemTray.isSupported()) {
 			sysTray.remove(trayIcon);
 			setVisible(true);
+			setExtendedState(getExtendedState() & ~JFrame.ICONIFIED & JFrame.NORMAL); // for toFront and requestFocus to actually work
+			toFront();
+			requestFocus();
 		}
 	}
 	
