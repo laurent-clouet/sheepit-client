@@ -436,7 +436,7 @@ public class Client {
 			// no exception should be raised to actual launcher (applet or standalone)
 		}
 		
-		if (error != null && error == Error.Type.RENDERER_CRASHED) {
+		if (error != null && (error == Error.Type.RENDERER_CRASHED || error == Error.Type.RENDERER_KILLED_BY_USER)) {
 			// do nothing, we can ask for a job right away
 		}
 		else {

@@ -60,6 +60,7 @@ public class Job {
 	private boolean synchronousUpload;
 	private RenderProcess render;
 	private boolean askForRendererKill;
+	private boolean userBlockJob;
 	private Gui gui;
 	private Configuration config;
 	private Log log;
@@ -81,6 +82,7 @@ public class Job {
 		script = script_;
 		updateRenderingStatusMethod = update_method_;
 		askForRendererKill = false;
+		userBlockJob = false;
 		log = log_;
 		render = new RenderProcess();
 	}
@@ -131,6 +133,14 @@ public class Job {
 	
 	public boolean getAskForRendererKill() {
 		return askForRendererKill;
+	}
+	
+	public void setUserBlockJob(boolean val) {
+		userBlockJob = val;
+	}
+	
+	public boolean getUserBlockJob() {
+		return userBlockJob;
 	}
 	
 	public String getRenderCommand() {
@@ -328,6 +338,9 @@ public class Job {
 			
 			if (getAskForRendererKill()) {
 				log.debug("Client::runRenderer renderer didn't generate any frame but died due to a kill request");
+				if (getUserBlockJob()) {
+					return Error.Type.RENDERER_KILLED_BY_USER;
+				}
 				return Error.Type.RENDERER_KILLED;
 			}
 			

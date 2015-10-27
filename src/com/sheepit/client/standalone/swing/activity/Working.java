@@ -16,6 +16,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import com.sheepit.client.Client;
 import com.sheepit.client.Server;
+import com.sheepit.client.os.OS;
 import com.sheepit.client.standalone.GuiSwing;
 import com.sheepit.client.standalone.GuiSwing.ActivityType;
 
@@ -134,6 +135,12 @@ public class Working implements Activity {
 		parent.getContentPane().add(pauseButton, constraints);
 		
 		++currentRow;
+		JButton blockJob = new JButton("Block this project");
+		constraints.gridx = 1;
+		constraints.gridy = currentRow;
+		blockJob.addActionListener(new blockJobAction());
+		parent.getContentPane().add(blockJob, constraints);
+		
 		exitAfterFrame = new JButton("Exit after this frame");
 		constraints.gridx = 2;
 		constraints.gridy = currentRow;
@@ -234,6 +241,18 @@ public class Working implements Activity {
 					exitAfterFrame.setText("Exit after this frame");
 					client.cancelStop();
 				}
+			}
+		}
+	}
+	
+	class blockJobAction implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			Client client = parent.getClient();
+			if (client != null) {
+				client.getRenderingJob().setAskForRendererKill(true);
+				client.getRenderingJob().setUserBlockJob(true);
+				OS.getOS().kill(client.getRenderingJob().getProcessRender().getProcess());
 			}
 		}
 	}
