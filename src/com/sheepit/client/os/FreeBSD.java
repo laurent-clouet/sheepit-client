@@ -68,7 +68,7 @@ public class FreeBSD extends OS {
 
         if(line.contains("Family=") && line.contains("Model=")){
           String buf[] = line.split(" ");
-          for(int i=0; i<buf.length(); i++){
+          for(int i=0; i<buf.length; i++){
             if(buf[i].contains("Family")){
               String family=buf[i].split("=")[1];
               ret.setFamily(family.split("x")[1]);
