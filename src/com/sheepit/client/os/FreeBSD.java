@@ -83,8 +83,8 @@ public class FreeBSD extends OS {
 
         break;
       }
-      return ret;
       b.close();
+      return ret;
 		}
 		catch (java.lang.NoClassDefFoundError e) {
 			System.err.println("OS.FreeBSD::getCPU error " + e + " mostly because Scanner class was introduced by Java 5 and you are running a lower version");
