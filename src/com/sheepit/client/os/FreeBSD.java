@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 import com.sheepit.client.Log;
 import com.sheepit.client.hardware.cpu.CPU;
@@ -52,7 +54,7 @@ public class FreeBSD extends OS {
 		try {
       Runtime r=Runtime.getRuntime();
       Process p = r.exec("dmesg");
-      p.waitfor();
+      p.waitFor();
       BufferedReader b = new BufferedReader(new InputStreamReader(p.getInputStream()));
       String line="";
 
