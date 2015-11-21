@@ -62,7 +62,7 @@ public class FreeBSD extends OS {
         if(line.startsWith("CPU:")){
           String buf[] = line.split(":");
           if(buf.length > 1) {
-            System.out.printf(buf[1].trim(1));
+            System.out.printf(buf[1].trim());
             ret.setName(buf[1].trim());
           }
         }
