@@ -52,6 +52,7 @@ public class FreeBSD extends OS {
 	public CPU getCPU() {
 		CPU ret = new CPU();
 		try {
+      System.out.println("getCPU()");
       Runtime r=Runtime.getRuntime();
       Process p = r.exec("dmesg");
       p.waitFor();
