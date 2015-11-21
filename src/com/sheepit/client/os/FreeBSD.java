@@ -58,7 +58,7 @@ public class FreeBSD extends OS {
       BufferedReader b = new BufferedReader(new InputStreamReader(p.getInputStream()));
       String line="";
 
-      while ((line = b.readline()) != null) {
+      while ((line = b.readLine()) != null) {
         System.out.println(line);
       }
 
