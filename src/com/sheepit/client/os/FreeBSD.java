@@ -107,7 +107,7 @@ public class FreeBSD extends OS {
           String buf[] = line.split(" ");
           if(buf.length > 4) {
             Long mem_byte = Long.parseLong(buf[3].trim());
-            Integer mem = Integer(mem_byte / Long.valueOf(1024));
+            Integer mem = (mem_byte / Long.valueOf(1024).intValue();
             return mem;
           }
         }
