@@ -60,11 +60,8 @@ public class FreeBSD extends OS {
       String line="";
 
       while ((line = b.readLine()) != null) {
-        System.out.printf(line);
         if(line.startsWith("CPU:")){
-          System.out.printf("CPU: found");
           String buf[] = line.split(":");
-          System.out.printf("%s", buf[1]);
           if(buf.length > 1) {
             System.out.printf(buf[1].trim());
             ret.setName(buf[1].trim());
