@@ -71,11 +71,13 @@ public class FreeBSD extends OS {
           for(int i=0; i<buf.length; i++){
             if(buf[i].contains("Family")){
               String family=buf[i].split("=")[1];
+              System.out.printf(family.split("x")[1];
               ret.setFamily(family.split("x")[1]);
             }
 
             if(buf[i].contains("Model")){
               String model=buf[i].split("=")[1];
+              System.out.printf(model.split("x")[1];
               ret.setModel(model.split("x")[1]);
             }
           }
