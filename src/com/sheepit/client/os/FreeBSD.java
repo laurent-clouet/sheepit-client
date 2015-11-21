@@ -87,8 +87,6 @@ public class FreeBSD extends OS {
             }
           }
         }
-
-        break;
       }
       b.close();
       return ret;
