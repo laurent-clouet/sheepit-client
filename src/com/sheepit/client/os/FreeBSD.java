@@ -52,7 +52,6 @@ public class FreeBSD extends OS {
 	public CPU getCPU() {
 		CPU ret = new CPU();
 		try {
-      System.out.println("getCPU()");
       Runtime r=Runtime.getRuntime();
       Process p = r.exec("dmesg");
       p.waitFor();
@@ -63,7 +62,6 @@ public class FreeBSD extends OS {
         if(line.startsWith("CPU:")){
           String buf[] = line.split(":");
           if(buf.length > 1) {
-            System.out.printf(buf[1].trim());
             ret.setName(buf[1].trim());
           }
         }
@@ -73,13 +71,11 @@ public class FreeBSD extends OS {
           for(int i=0; i<buf.length; i++){
             if(buf[i].contains("Family")){
               String family=buf[i].split("=")[1];
-              System.out.printf(family.split("x")[1]);
               ret.setFamily(family.split("x")[1]);
             }
 
             if(buf[i].contains("Model")){
               String model=buf[i].split("=")[1];
-              System.out.printf(model.split("x")[1]);
               ret.setModel(model.split("x")[1]);
             }
           }
@@ -110,6 +106,7 @@ public class FreeBSD extends OS {
         if(line.startsWith("avail memory")){
           String buf[] = line.split(" ");
           if(buf.length > 4) {
+            System.out.printf(buf[3].trim());
             return Integer.parseInt(buf[3].trim());
           }
         }
