@@ -70,12 +70,12 @@ public class FreeBSD extends OS {
           String buf[] = line.split(" ");
           for(int i=0; i<buf.length(); i++){
             if(buf[i].contains("Family")){
-              family=buf[i].split("=")[1];
+              String family=buf[i].split("=")[1];
               ret.setFamily(family.split("x")[1]);
             }
 
             if(buf[i].contains("Model")){
-              model=buf[i].split("=")[1];
+              String model=buf[i].split("=")[1];
               ret.setModel(model.split("x")[1]);
             }
           }
@@ -108,7 +108,7 @@ public class FreeBSD extends OS {
         if(line.startsWith("avail memory")){
           String buf[] = line.split(" ");
           if(buf.length > 4) {
-            return buf[3].trim();
+            return Integer.parseInt(buf[3].trim());
           }
         }
       }
