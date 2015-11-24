@@ -65,6 +65,9 @@ public abstract class OS {
 		else if (os.contains("nix") || os.contains("nux")) {
 			return new Linux();
 		}
+		else if(os.contains("freebsd")){
+			return new FreeBSD();
+		}
 		else {
 			return null;
 		}
