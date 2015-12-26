@@ -577,6 +577,19 @@ public class Job {
 			// Blender quit
 			return Type.GPU_NOT_SUPPORTED;
 		}
+		else if (line.indexOf("terminate called after throwing an instance of 'boost::filesystem::filesystem_error'") != -1) {
+			// Fra:2103 Mem:29.54M (0.00M, Peak 29.54M) | Time:00:00.24 | Mem:1.64M, Peak:1.64M | Scene, RenderLayer | Updating Mesh | Computing attributes
+			// Fra:2103 Mem:29.54M (0.00M, Peak 29.54M) | Time:00:00.24 | Mem:1.64M, Peak:1.64M | Scene, RenderLayer | Updating Mesh | Copying Attributes to device
+			// Fra:2103 Mem:29.54M (0.00M, Peak 29.54M) | Time:00:00.24 | Mem:1.97M, Peak:1.97M | Scene, RenderLayer | Updating Scene BVH | Building
+			// Fra:2103 Mem:29.54M (0.00M, Peak 29.54M) | Time:00:00.24 | Mem:1.97M, Peak:1.97M | Scene, RenderLayer | Updating Scene BVH | Building BVH
+			// Fra:2103 Mem:29.54M (0.00M, Peak 29.54M) | Time:00:00.24 | Mem:1.97M, Peak:1.97M | Scene, RenderLayer | Updating Scene BVH | Looking in BVH cache
+			// Fra:2103 Mem:29.54M (0.00M, Peak 29.54M) | Time:00:00.27 | Mem:1.97M, Peak:1.97M | Scene, RenderLayer | Updating Scene BVH | Packing BVH triangles and strands
+			// Fra:2103 Mem:29.54M (0.00M, Peak 29.54M) | Time:00:00.27 | Mem:1.97M, Peak:1.97M | Scene, RenderLayer | Updating Scene BVH | Packing BVH nodes
+			// Fra:2103 Mem:29.54M (0.00M, Peak 29.54M) | Time:00:00.27 | Mem:1.97M, Peak:1.97M | Scene, RenderLayer | Updating Scene BVH | Writing BVH cache
+			// terminate called after throwing an instance of 'boost::filesystem::filesystem_error'
+			//   what():  boost::filesystem::create_directory: Permission denied: "/var/local/cache"
+			return Error.Type.NOOUTPUTFILE;
+		}
 		return Type.OK;
 	}
 	
