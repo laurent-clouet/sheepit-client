@@ -1,26 +1,19 @@
 # SheepIt Render Farm Client
 
-## Website
-
-[SheepIt RenderFarm](https://www.sheepit-renderfarm.com)
-
 ## Overview
 
-SheepIt Render Farm Client is an *Open Source* client for the distributed render farm "Sheep It".
-
-
-
+SheepIt Render Farm Client is an *Open Source* client for the distributed render farm [**SheepIt**](https://www.sheepit-renderfarm.com).
 
 ## Compilation
 
-You need Java 1.7, OpenJDK or Oracle are supported.
-You also need ant.
-To create the jar file, simply type "ant".
+You need Java 1.7. OpenJDK and Oracle are both supported.
+You also need [ant](http://ant.apache.org/).
+To create the jar file, simply type `ant` in the project's root directory.
 
 ## Usage
 
-Once you have a jar file you look at the usage by doing:
+Once you have a jar file, you can view the usage by running:
 
     java -jar bin/sheepit-client.jar --help
 
-When you are doing your development you can use a mirror of the main site who is specially made for demo/dev, it is located at **http://www-demo.sheepit-renderfarm.com**
+When you are doing development work, you can use a mirror of the main site specially made for demo/dev. The mirror is located at **http://www-demo.sheepit-renderfarm.com**, and you can use it by passing `-server http://www-demo.sheepit-renderfarm.com` to your invocation of the client.
