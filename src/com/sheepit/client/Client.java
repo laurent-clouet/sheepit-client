@@ -533,15 +533,16 @@ public class Client {
 	}
 	
 	protected int downloadSceneFile(Job ajob_) {
-		return this.downloadFile(ajob_, ajob_.getSceneArchivePath(), ajob_.getSceneMD5(), String.format("%s?type=job&job=%s&revision=%s", this.server.getPage("download-archive"), ajob_.getId(), ajob_.getRevision()), "Downloading project %s %%", "project");
+		return this.downloadFile(ajob_, ajob_.getSceneArchivePath(), ajob_.getSceneMD5(), String.format("%s?type=job&job=%s&revision=%s", this.server.getPage("download-archive"), ajob_.getId(), ajob_.getRevision()), "project");
 	}
 	
 	protected int downloadExecutable(Job ajob) {
-		return this.downloadFile(ajob, ajob.getRendererArchivePath(), ajob.getRenderMd5(), String.format("%s?type=binary&job=%s", this.server.getPage("download-archive"), ajob.getId()), "Downloading renderer %s %%", "renderer");
+		return this.downloadFile(ajob, ajob.getRendererArchivePath(), ajob.getRenderMd5(), String.format("%s?type=binary&job=%s", this.server.getPage("download-archive"), ajob.getId()), "renderer");
 	}
 	
-	private int downloadFile(Job ajob, String local_path, String md5_server, String url, String update_ui, String download_type) {
+	private int downloadFile(Job ajob, String local_path, String md5_server, String url, String download_type) {
 		File local_path_file = new File(local_path);
+		String update_ui = "Downloading " + download_type + " %s %%";
 		
 		if (local_path_file.exists() == true) {
 			this.gui.status("Reusing cached "+download_type);
