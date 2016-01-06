@@ -545,11 +545,11 @@ public class Client {
 		String update_ui = "Downloading " + download_type + " %s %%";
 		
 		if (local_path_file.exists() == true) {
-			this.gui.status("Reusing cached "+download_type);
+			this.gui.status("Reusing cached " + download_type);
 			return 0;
 		}
 		
-		this.gui.status("Downloading "+download_type);
+		this.gui.status("Downloading " + download_type);
 		
 		// must download the archive
 		int ret = this.server.HTTPGetFile(url, local_path, this.gui, update_ui);
