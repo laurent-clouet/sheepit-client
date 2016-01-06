@@ -360,7 +360,7 @@ public class Settings implements Activity {
 					config.setCacheDir(cacheDir);
 				}
 				else {
-					System.out.println("Activity::Settings::handle do not dir since it did not change (dir: " + cacheDir + ")");
+					// do nothing because the directory is the same as before
 				}
 			}
 			
