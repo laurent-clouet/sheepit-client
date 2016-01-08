@@ -55,6 +55,7 @@ public class Job {
 	private String rendererCommand;
 	private String script;
 	private boolean useGPU;
+	private String name;
 	private String extras;
 	private String updateRenderingStatusMethod;
 	private boolean synchronousUpload;
@@ -65,7 +66,7 @@ public class Job {
 	private Configuration config;
 	private Log log;
 	
-	public Job(Configuration config_, Gui gui_, Log log_, String id_, String frame_, String revision_, String path_, boolean use_gpu, String command_, String script_, String sceneMd5_, String rendererMd5_, String extras_, boolean synchronous_upload_, String update_method_) {
+	public Job(Configuration config_, Gui gui_, Log log_, String id_, String frame_, String revision_, String path_, boolean use_gpu, String command_, String script_, String sceneMd5_, String rendererMd5_, String name_, String extras_, boolean synchronous_upload_, String update_method_) {
 		config = config_;
 		id = id_;
 		numFrame = frame_;
@@ -75,6 +76,7 @@ public class Job {
 		rendererCommand = command_;
 		sceneMD5 = sceneMd5_;
 		rendererMD5 = rendererMd5_;
+		name = name_;
 		extras = extras_;
 		synchronousUpload = synchronous_upload_;
 		gui = gui_;
@@ -92,7 +94,7 @@ public class Job {
 	}
 	
 	public String toString() {
-		return String.format("Job (numFrame '%s' sceneMD5 '%s' rendererMD5 '%s' ID '%s' revision '%s' pictureFilename '%s' jobPath '%s' gpu %s extras '%s' updateRenderingStatusMethod '%s' render %s)", numFrame, sceneMD5, rendererMD5, id, revision, pictureFilename, path, useGPU, extras, updateRenderingStatusMethod, render);
+		return String.format("Job (numFrame '%s' sceneMD5 '%s' rendererMD5 '%s' ID '%s' revision '%s' pictureFilename '%s' jobPath '%s' gpu %s name '%s' extras '%s' updateRenderingStatusMethod '%s' render %s)", numFrame, sceneMD5, rendererMD5, id, revision, pictureFilename, path, useGPU, name, extras, updateRenderingStatusMethod, render);
 	}
 	
 	public String getId() {
@@ -196,7 +198,7 @@ public class Job {
 	}
 	
 	public Error.Type render() {
-		gui.status("Rendering");
+		gui.status("Rendering " + this.name);
 		RenderProcess process = getProcessRender();
 		String core_script = "import bpy\n" + "bpy.context.user_preferences.system.compute_device_type = \"%s\"\n" + "bpy.context.scene.cycles.device = \"%s\"\n" + "bpy.context.user_preferences.system.compute_device = \"%s\"\n";
 		if (getUseGPU() && config.getGPUDevice() != null) {
