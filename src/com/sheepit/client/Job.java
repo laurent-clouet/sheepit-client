@@ -65,6 +65,7 @@ public class Job {
 	private Gui gui;
 	private Configuration config;
 	private Log log;
+	private StringBuilder rendererLog;
 	
 	public Job(Configuration config_, Gui gui_, Log log_, String id_, String frame_, String revision_, String path_, boolean use_gpu, String command_, String script_, String sceneMd5_, String rendererMd5_, String name_, String extras_, boolean synchronous_upload_, String update_method_) {
 		config = config_;
@@ -87,6 +88,7 @@ public class Job {
 		userBlockJob = false;
 		log = log_;
 		render = new RenderProcess();
+		rendererLog = new StringBuilder(64*1024);
 	}
 	
 	public RenderProcess getProcessRender() {
@@ -284,6 +286,7 @@ public class Job {
 			log.debug("renderer output");
 			try {
 				while ((line = input.readLine()) != null) {
+					rendererLog.append(line + "\n");
 					updateRenderingMemoryPeak(line);
 					
 					log.debug(line);
@@ -295,6 +298,15 @@ public class Job {
 					if (error != Error.Type.OK) {
 						if (script_file != null) {
 							script_file.delete();
+						}
+						try {
+							log.info("Error detected while rendering; dumping log to " + config.workingDirectory + "/renderer.log");
+							PrintWriter out = new PrintWriter(config.workingDirectory + "/renderer.log");
+							out.write(rendererLog.toString());
+							out.close();
+						}
+						catch (Exception e) {
+							log.error("Error while writing renderer log - disk full?");
 						}
 						return error;
 					}
