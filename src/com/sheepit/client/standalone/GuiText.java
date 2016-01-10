@@ -45,22 +45,25 @@ public class GuiText implements Gui {
 	public void start() {
 		if (client != null) {
 
-			Signal.handle(new Signal("INT"), signal -> {
-				sigIntCount++;
+			Signal.handle(new Signal("INT"), new SignalHandler() {
+				@Override
+				public void handle(Signal signal) {
+					sigIntCount++;
 
-				if (sigIntCount == 4) {
-					// This is only for ugly issues that might occur
-					System.out.println("WARNING: Hitting Ctrl-C again will force close the application.");
-				} else if (sigIntCount == 5) {
-					Signal.raise(new Signal("INT"));
-					Runtime.getRuntime().halt(0);
-				} else if (client.isRunning() && !client.isSuspended()) {
-                    client.askForStop();
-                    System.out.println("Will exit after current frame... Press Ctrl+C again to exit now.");
-                } else {
-					client.stop();
+					if (sigIntCount == 4) {
+						// This is only for ugly issues that might occur
+						System.out.println("WARNING: Hitting Ctrl-C again will force close the application.");
+					} else if (sigIntCount == 5) {
+						Signal.raise(new Signal("INT"));
+						Runtime.getRuntime().halt(0);
+					} else if (client.isRunning() && !client.isSuspended()) {
+						client.askForStop();
+						System.out.println("Will exit after current frame... Press Ctrl+C again to exit now.");
+					} else {
+						client.stop();
+					}
 				}
-            });
+			});
 
 			client.run();
 			client.stop();

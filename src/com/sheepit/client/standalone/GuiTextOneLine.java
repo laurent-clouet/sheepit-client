@@ -3,6 +3,7 @@ package com.sheepit.client.standalone;
 import com.sheepit.client.Client;
 import com.sheepit.client.Gui;
 import sun.misc.Signal;
+import sun.misc.SignalHandler;
 
 public class GuiTextOneLine implements Gui {
 	public static final String type = "oneLine";
@@ -29,17 +30,20 @@ public class GuiTextOneLine implements Gui {
 	public void start() {
 		if (client != null) {
 
-			Signal.handle(new Signal("INT"), signal -> {
-				sigIntCount++;
+			Signal.handle(new Signal("INT"), new SignalHandler() {
+				@Override
+				public void handle(Signal signal) {
+					sigIntCount++;
 
-				if (sigIntCount == 5) {
-					Signal.raise(new Signal("INT"));
-					Runtime.getRuntime().halt(0);
-				} else if (client.isRunning() && !client.isSuspended()) {
-					client.askForStop();
-					exiting = true;
-				} else {
-					client.stop();
+					if (sigIntCount == 5) {
+						Signal.raise(new Signal("INT"));
+						Runtime.getRuntime().halt(0);
+					} else if (client.isRunning() && !client.isSuspended()) {
+						client.askForStop();
+						exiting = true;
+					} else {
+						client.stop();
+					}
 				}
 			});
 
