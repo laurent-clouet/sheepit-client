@@ -22,11 +22,16 @@ package com.sheepit.client.standalone;
 import com.sheepit.client.Client;
 import com.sheepit.client.Gui;
 import com.sheepit.client.Log;
+import sun.misc.Signal;
+import sun.misc.SignalHandler;
 
 public class GuiText implements Gui {
 	public static final String type = "text";
 	
 	private int framesRendered;
+
+	private int sigIntCount = 0;
+
 	private Log log;
 	
 	private Client client;
@@ -39,6 +44,24 @@ public class GuiText implements Gui {
 	@Override
 	public void start() {
 		if (client != null) {
+
+			Signal.handle(new Signal("INT"), signal -> {
+				sigIntCount++;
+
+				if (sigIntCount == 4) {
+					// This is only for ugly issues that might occur
+					System.out.println("WARNING: Hitting Ctrl-C again will force close the application.");
+				} else if (sigIntCount == 5) {
+					Signal.raise(new Signal("INT"));
+					Runtime.getRuntime().halt(0);
+				} else if (client.isRunning() && !client.isSuspended()) {
+                    client.askForStop();
+                    System.out.println("Will exit after current frame... Press Ctrl+C again to exit now.");
+                } else {
+					client.stop();
+				}
+            });
+
 			client.run();
 			client.stop();
 		}
@@ -46,6 +69,7 @@ public class GuiText implements Gui {
 	
 	@Override
 	public void stop() {
+		Runtime.getRuntime().halt(0);
 	}
 	
 	@Override
@@ -63,13 +87,13 @@ public class GuiText implements Gui {
 	@Override
 	public void AddFrameRendered() {
 		this.framesRendered += 1;
-		System.out.println("frame rendered: " + this.framesRendered);
+		System.out.println("Frames rendered: " + this.framesRendered);
 		
 	}
 	
 	@Override
 	public void framesRemaining(int n_) {
-		System.out.println("frame remaining: " + n_);
+		System.out.println("Frames remaining: " + n_);
 	}
 	
 	@Override
