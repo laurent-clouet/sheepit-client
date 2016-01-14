@@ -611,6 +611,7 @@ public class Client {
 			// Directory already exists -> do nothing
 		}
 		else {
+			this.gui.status("Extracting renderer");
 			// we create the directory
 			renderer_path_file.mkdir();
 			
@@ -630,6 +631,7 @@ public class Client {
 			// Directory already exists -> do nothing
 		}
 		else {
+			this.gui.status("Extracting project");
 			// we create the directory
 			scene_path_file.mkdir();
 			
