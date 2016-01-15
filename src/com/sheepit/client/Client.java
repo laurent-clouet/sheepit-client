@@ -209,7 +209,7 @@ public class Client {
 				catch (FermeServerDown e) {
 					int wait = 15;
 					int time_sleep = 1000 * 60 * wait;
-					this.gui.status(String.format("Can not connect to server. Please check your connectivity. Will retry in %s minutes", 15));
+					this.gui.status(String.format("Can not connect to server. Please check your connectivity. Will retry in %s minutes", wait));
 					try {
 						Thread.sleep(time_sleep);
 					}
