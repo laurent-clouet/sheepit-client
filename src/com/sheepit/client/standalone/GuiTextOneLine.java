@@ -70,7 +70,10 @@ public class GuiTextOneLine implements Gui {
 		int charToRemove = line.length();
 		
 		System.out.print("\r");
-		line = String.format("Frames rendered: %d remaining: %d | %s", rendered, remaining, status);
+
+		String creditsEarned = client.getServer().getCreditEarnedOnCurrentSession();
+
+		line = String.format("Frames rendered: %d (Credits earned: %s) remaining: %d | %s", rendered, creditsEarned != null ? creditsEarned : "unknown", remaining, status);
 		System.out.print(line);
 		for (int i = line.length(); i <= charToRemove; i++) {
 			System.out.print(" ");
