@@ -233,6 +233,7 @@ public class Client {
 					Date wakeup_time = new Date(new Date().getTime() + time_sleep);
 					this.gui.status(String.format("No job available. Sleeping for 15 minutes (will wake up at ~%tR)", wakeup_time));
 					this.gui.framesRemaining(0);
+					this.suspended = true;
 					int time_slept = 0;
 					while (time_slept < time_sleep && this.running == true) {
 						try {
@@ -243,6 +244,7 @@ public class Client {
 						}
 						time_slept += 5000;
 					}
+					this.suspended = false;
 					continue; // go back to ask job
 				}
 				
@@ -342,6 +344,8 @@ public class Client {
 		}
 		
 		this.server = null;
+
+		this.gui.stop();
 		
 		return 0;
 	}
