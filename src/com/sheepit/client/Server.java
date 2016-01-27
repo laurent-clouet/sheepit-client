@@ -796,9 +796,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			return new String(ret);
 		}
 		catch (Exception e) {
-			System.err.println("Server::getCreditEarnedOnCurrentSession exception " + e);
-			e.printStackTrace();
-			
+			this.log.error("Server::getCreditEarnedOnCurrentSession exception " + e);
 		}
 		return null;
 	}

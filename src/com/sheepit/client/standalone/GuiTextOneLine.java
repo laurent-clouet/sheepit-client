@@ -94,10 +94,12 @@ public class GuiTextOneLine implements Gui {
 	}
 	
 	private void updateLine() {
+		String creditsEarned = client.getServer().getCreditEarnedOnCurrentSession();
+		
 		int charToRemove = line.length();
 		
 		System.out.print("\r");
-		line = String.format("Frames rendered: %d remaining: %d | %s", rendered, remaining, status) + (exiting ? " (Exiting after this frame)" : "");
+		line = String.format("Frames rendered: %d remaining: %d credits earned: %s| %s", rendered, remaining, creditsEarned != null ? creditsEarned : "unknown", status + (exiting ? " (Exiting after this frame)" : ""));
 		System.out.print(line);
 		for (int i = line.length(); i <= charToRemove; i++) {
 			System.out.print(" ");
