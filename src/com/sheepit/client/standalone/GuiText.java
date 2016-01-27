@@ -94,7 +94,8 @@ public class GuiText implements Gui {
 	public void AddFrameRendered() {
 		this.framesRendered += 1;
 		System.out.println("Frames rendered: " + this.framesRendered);
-		
+		String creditsEarned = this.client.getServer().getCreditEarnedOnCurrentSession();
+		System.out.println("Credits earned: " + (creditsEarned != null ? creditsEarned : "unknown"));
 	}
 	
 	@Override
