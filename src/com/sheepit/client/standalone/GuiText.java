@@ -93,13 +93,13 @@ public class GuiText implements Gui {
 	@Override
 	public void AddFrameRendered() {
 		this.framesRendered += 1;
-		System.out.println("frame rendered: " + this.framesRendered);
+		System.out.println("Frames rendered: " + this.framesRendered);
 		
 	}
 	
 	@Override
 	public void framesRemaining(int n_) {
-		System.out.println("frame remaining: " + n_);
+		System.out.println("Frames remaining: " + n_);
 	}
 	
 	@Override
