@@ -2,14 +2,20 @@ package com.sheepit.client.standalone;
 
 import com.sheepit.client.Client;
 import com.sheepit.client.Gui;
+import sun.misc.Signal;
+import sun.misc.SignalHandler;
 
 public class GuiTextOneLine implements Gui {
 	public static final String type = "oneLine";
 	
 	private int rendered;
 	private int remaining;
+	private int sigIntCount = 0;
+
 	private String status;
 	private String line;
+
+	private boolean exiting = false;
 	
 	private Client client;
 	
@@ -23,6 +29,26 @@ public class GuiTextOneLine implements Gui {
 	@Override
 	public void start() {
 		if (client != null) {
+
+			Signal.handle(new Signal("INT"), new SignalHandler() {
+				@Override
+				public void handle(Signal signal) {
+					sigIntCount++;
+
+					if (sigIntCount == 5) {
+						Signal.raise(new Signal("INT"));
+						Runtime.getRuntime().halt(0);
+					}
+					else if (client.isRunning() && client.isSuspended() == false) {
+						client.askForStop();
+						exiting = true;
+					}
+					else {
+						client.stop();
+					}
+				}
+			});
+
 			client.run();
 			client.stop();
 		}
@@ -30,6 +56,7 @@ public class GuiTextOneLine implements Gui {
 	
 	@Override
 	public void stop() {
+		Runtime.getRuntime().halt(0);
 	}
 	
 	@Override
@@ -70,7 +97,7 @@ public class GuiTextOneLine implements Gui {
 		int charToRemove = line.length();
 		
 		System.out.print("\r");
-		line = String.format("Frames rendered: %d remaining: %d | %s", rendered, remaining, status);
+		line = String.format("Frames rendered: %d remaining: %d | %s", rendered, remaining, status) + (exiting ? " (Exiting after this frame)" : "");
 		System.out.print(line);
 		for (int i = line.length(); i <= charToRemove; i++) {
 			System.out.print(" ");

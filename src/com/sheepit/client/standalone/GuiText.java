@@ -22,11 +22,16 @@ package com.sheepit.client.standalone;
 import com.sheepit.client.Client;
 import com.sheepit.client.Gui;
 import com.sheepit.client.Log;
+import sun.misc.Signal;
+import sun.misc.SignalHandler;
 
 public class GuiText implements Gui {
 	public static final String type = "text";
 	
 	private int framesRendered;
+
+	private int sigIntCount = 0;
+
 	private Log log;
 	
 	private Client client;
@@ -39,6 +44,30 @@ public class GuiText implements Gui {
 	@Override
 	public void start() {
 		if (client != null) {
+
+			Signal.handle(new Signal("INT"), new SignalHandler() {
+				@Override
+				public void handle(Signal signal) {
+					sigIntCount++;
+
+					if (sigIntCount == 4) {
+						// This is only for ugly issues that might occur
+						System.out.println("WARNING: Hitting Ctrl-C again will force close the application.");
+					}
+					else if (sigIntCount == 5) {
+						Signal.raise(new Signal("INT"));
+						Runtime.getRuntime().halt(0);
+					}
+					else if (client.isRunning() && client.isSuspended() == false) {
+						client.askForStop();
+						System.out.println("Will exit after current frame... Press Ctrl+C again to exit now.");
+					}
+					else {
+						client.stop();
+					}
+				}
+			});
+
 			client.run();
 			client.stop();
 		}
@@ -46,6 +75,7 @@ public class GuiText implements Gui {
 	
 	@Override
 	public void stop() {
+		Runtime.getRuntime().halt(0);
 	}
 	
 	@Override
