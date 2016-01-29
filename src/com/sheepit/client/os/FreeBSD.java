@@ -53,7 +53,6 @@ public class FreeBSD extends OS {
 		try {
 			Runtime r = Runtime.getRuntime();
 			Process p = r.exec("dmesg");
-			p.waitFor();
 			BufferedReader b = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			String line = "";
 			
@@ -94,7 +93,6 @@ public class FreeBSD extends OS {
 		try {
 			Runtime r = Runtime.getRuntime();
 			Process p = r.exec("dmesg");
-			p.waitFor();
 			BufferedReader b = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			String line = "";
 			
