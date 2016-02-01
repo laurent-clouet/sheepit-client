@@ -124,7 +124,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 						}
 					}
 					
-					HttpURLConnection connection = this.HTTPRequest(this.base_url + this.getPage("keepmealive") + args);
+					HttpURLConnection connection = this.HTTPRequest(this.getPage("keepmealive") + args);
 					
 					if (connection.getResponseCode() == HttpURLConnection.HTTP_OK && connection.getContentType().startsWith("text/xml")) {
 						DataInputStream in = new DataInputStream(connection.getInputStream());
