@@ -139,9 +139,25 @@ public class FreeBSD extends OS {
 				b.close();
 				if (! ret.haveData()) {
 					Log.getInstance(null).debug("Error while determining CPU info; consider installing cpuID; setting dummy data!");
-					ret.setName("0");
 					ret.setModel("0");
 					ret.setFamily("0");
+					try {
+						Runtime run = Runtime.getRuntime();
+						Process sysctl = run.exec("sysctl -n hw.model");
+						BufferedReader buf = new BufferedReader(new InputStreamReader(sysctl.getInputStream()));
+						String name = "";
+						
+						name = buf.readLine();
+						buf.close();
+						if (line == "") {
+							ret.setName("0");
+						} else {
+							ret.setName(name);
+						}
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 				return ret;
 			}
