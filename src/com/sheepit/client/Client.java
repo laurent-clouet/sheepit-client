@@ -64,7 +64,7 @@ public class Client {
 		this.isValidatingJob = false;
 		
 		this.disableErrorSending = false;
-		this.running = true;
+		this.running = false;
 		this.suspended = false;
 	}
 	
@@ -102,6 +102,8 @@ public class Client {
 			this.gui.error(Error.humanString(Error.Type.CPU_NOT_SUPPORTED));
 			return -4;
 		}
+		
+		this.running = true;
 		
 		int step;
 		try {
