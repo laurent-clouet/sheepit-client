@@ -262,7 +262,14 @@ public class Settings implements Activity {
 		parent.addPadding(1, ++currentRow, columns - 2, 1);
 		++currentRow;
 		
-		saveButton = new JButton("Start");
+		String buttonText = "Start";
+		if (parent.getClient() != null) {
+			if (parent.getClient().isRunning()) {
+				buttonText = "Save";
+			}
+		}
+		
+		saveButton = new JButton(buttonText);
 		checkDisplaySaveButton();
 		saveButton.addActionListener(new SaveAction());
 		constraints.gridwidth = columns - 2;
