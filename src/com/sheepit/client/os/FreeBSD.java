@@ -57,19 +57,20 @@ public class FreeBSD extends OS {
 			this.checkCpuIDAvailability();
 		}
 		
-		if (this.hasCpuIDBinary == true) {
+		if (this.hasCpuIDBinary) {
 			try {
 				Runtime r = Runtime.getRuntime();
 				Process p = r.exec(CPUID_BINARY_PATH);
 				BufferedReader b = new BufferedReader(new InputStreamReader(p.getInputStream()));
 				String line = "";
-
+				
 				while ((line = b.readLine()) != null) {
 					if (line.startsWith("Family")) {
 						String buf[] = line.split(" ");
 						if (buf.length > 1) {
 							ret.setFamily(buf[1].trim());
-						} else {
+						}
+						else {
 							Log.getInstance(null).debug("Error while determining CPU family using cpuID, falling back to dmesg!");
 							this.hasCpuIDBinary = false;
 						}
@@ -78,7 +79,8 @@ public class FreeBSD extends OS {
 						String buf[] = line.split(" ");
 						if (buf.length > 1) {
 							ret.setModel(buf[1].trim());
-						} else {
+						}
+						else {
 							Log.getInstance(null).debug("Error while determining CPU model using cpuID, falling back to dmesg!");
 							this.hasCpuIDBinary = false;
 						}
@@ -87,14 +89,15 @@ public class FreeBSD extends OS {
 						String buf[] = line.split("\"");
 						if (buf.length > 1) {
 							ret.setName(buf[1].trim());
-						} else {
+						}
+						else {
 							Log.getInstance(null).debug("Error while determining CPU name using cpuID, falling back to dmesg!");
 							this.hasCpuIDBinary = false;
 						}
 					}
 				}
 				b.close();
-				if (! ret.haveData()) {
+				if (!ret.haveData()) {
 					Log.getInstance(null).debug("Error while determining CPU info using cpuID, falling back to dmesg!");
 					this.hasCpuIDBinary = false;
 				}
@@ -106,7 +109,8 @@ public class FreeBSD extends OS {
 			catch (Exception e) {
 				e.printStackTrace();
 			}
-		} else {
+		}
+		else {
 			try {
 				Runtime r = Runtime.getRuntime();
 				Process p = r.exec("dmesg");
@@ -137,7 +141,7 @@ public class FreeBSD extends OS {
 					}
 				}
 				b.close();
-				if (! ret.haveData()) {
+				if (!ret.haveData()) {
 					Log.getInstance(null).debug("Error while determining CPU info; consider installing cpuID; setting dummy data!");
 					ret.setModel("0");
 					ret.setFamily("0");
@@ -149,9 +153,10 @@ public class FreeBSD extends OS {
 						
 						name = buf.readLine();
 						buf.close();
-						if (line == "") {
+						if (name == "") {
 							ret.setName("0");
-						} else {
+						}
+						else {
 							ret.setName(name);
 						}
 					}
@@ -165,7 +170,7 @@ public class FreeBSD extends OS {
 				e.printStackTrace();
 			}
 		}
-		return null;
+		return ret;
 	}
 	
 	@Override
@@ -256,7 +261,7 @@ public class FreeBSD extends OS {
 			}
 		}
 	}
-
+	
 	private void checkCpuIDAvailability() {
 		ProcessBuilder builder = new ProcessBuilder();
 		builder.command(CPUID_BINARY_PATH);
