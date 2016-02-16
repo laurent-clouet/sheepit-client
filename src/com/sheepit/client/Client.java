@@ -346,8 +346,6 @@ public class Client {
 		}
 		
 		this.server = null;
-
-		this.gui.stop();
 		
 		return 0;
 	}

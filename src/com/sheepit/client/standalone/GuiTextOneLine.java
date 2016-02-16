@@ -45,6 +45,7 @@ public class GuiTextOneLine implements Gui {
 					}
 					else {
 						client.stop();
+						GuiTextOneLine.this.stop();
 					}
 				}
 			});
