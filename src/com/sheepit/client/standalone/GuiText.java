@@ -64,6 +64,7 @@ public class GuiText implements Gui {
 					}
 					else {
 						client.stop();
+						GuiText.this.stop();
 					}
 				}
 			});
