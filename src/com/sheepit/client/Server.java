@@ -252,6 +252,10 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			this.log.error("Server::getConfiguration error ConnectException " + e);
 			return Error.Type.NETWORK_ISSUE;
 		}
+		catch (UnsupportedEncodingException e) {
+			this.log.error("Server::getConfiguration: exception UnsupportedEncodingException " + e);
+			return Error.Type.UNKNOWN;
+		}
 		catch (UnknownHostException e) {
 			this.log.error("Server::getConfiguration error UnknownHostException " + e);
 			return Error.Type.NETWORK_ISSUE;
@@ -260,9 +264,8 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			this.log.error("Server::getConfiguration error NoRouteToHost " + e);
 			return Error.Type.NETWORK_ISSUE;
 		}
-		catch (Exception e) {
-			this.log.error("Server::getConfiguration: exception 02R " + e);
-			e.printStackTrace();
+		catch (IOException e) {
+			this.log.error("Server::getConfiguration: exception IOException " + e);
 			return Error.Type.UNKNOWN;
 		}
 		finally {
