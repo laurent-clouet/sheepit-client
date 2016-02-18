@@ -50,6 +50,7 @@ public class FreeBSD extends OS {
 	@Override
 	public CPU getCPU() {
 		CPU ret = new CPU();
+		
 		try {
 			Runtime r = Runtime.getRuntime();
 			Process p = r.exec("dmesg");
@@ -80,7 +81,29 @@ public class FreeBSD extends OS {
 				}
 			}
 			b.close();
-			return ret;
+			if (!ret.haveData()) {
+				Log.getInstance(null).debug("Error while determining CPU info; setting dummy data!");
+				ret.setModel("0");
+				ret.setFamily("0");
+				try {
+					Runtime run = Runtime.getRuntime();
+					Process sysctl = run.exec("sysctl -n hw.model");
+					BufferedReader buf = new BufferedReader(new InputStreamReader(sysctl.getInputStream()));
+					String name = "";
+					
+					name = buf.readLine();
+					buf.close();
+					if (name == "") {
+						ret.setName("0");
+					}
+					else {
+						ret.setName(name);
+					}
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -92,20 +115,17 @@ public class FreeBSD extends OS {
 	public int getMemory() {
 		try {
 			Runtime r = Runtime.getRuntime();
-			Process p = r.exec("dmesg");
+			Process p = r.exec("sysctl -n hw.usermem");
 			BufferedReader b = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			String line = "";
 			
-			while ((line = b.readLine()) != null) {
-				if (line.startsWith("avail memory")) {
-					String buf[] = line.split(" ");
-					if (buf.length > 4) {
-						Long mem_byte = Long.parseLong(buf[3].trim());
-						return (int) (mem_byte / Long.valueOf(1024));
-					}
-				}
-			}
+			line = b.readLine();
 			b.close();
+			if (line == "") {
+				return 0;
+			}
+			Long mem_byte = Long.parseLong(line.trim());
+			return (int) (mem_byte / Long.valueOf(1024));
 		}
 		catch (Exception e) {
 			e.printStackTrace();
