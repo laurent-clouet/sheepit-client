@@ -173,6 +173,14 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 		OS os = OS.getOS();
 		HttpURLConnection connection = null;
 		try {
+			String hostname;
+			try {
+				hostname = InetAddress.getLocalHost().getHostName();
+			}
+			catch (UnknownHostException e) {
+				this.log.error("Server::getConfiguration failed to get hostname (exception: " + e + ")");
+				hostname = "";
+			}
 			String url_contents = String.format("%s%s?login=%s&password=%s&cpu_family=%s&cpu_model=%s&cpu_model_name=%s&cpu_cores=%s&os=%s&ram=%s&bits=%s&version=%s&hostname=%s&extras=%s", 
 				this.base_url,
 				"/server/config.php",
@@ -186,7 +194,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				os.getMemory(),
 				os.getCPU().arch(),
 				this.user_config.getJarVersion(),
-				URLEncoder.encode(InetAddress.getLocalHost().getHostName(), "UTF-8"),
+				URLEncoder.encode(hostname, "UTF-8"),
 				this.user_config.getExtras());
 			this.log.debug("Server::getConfiguration url " + url_contents);
 			
@@ -255,14 +263,6 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 		catch (UnsupportedEncodingException e) {
 			this.log.error("Server::getConfiguration: exception UnsupportedEncodingException " + e);
 			return Error.Type.UNKNOWN;
-		}
-		catch (UnknownHostException e) {
-			this.log.error("Server::getConfiguration error UnknownHostException " + e);
-			return Error.Type.NETWORK_ISSUE;
-		}
-		catch (NoRouteToHostException e) {
-			this.log.error("Server::getConfiguration error NoRouteToHost " + e);
-			return Error.Type.NETWORK_ISSUE;
 		}
 		catch (IOException e) {
 			this.log.error("Server::getConfiguration: exception IOException " + e);
