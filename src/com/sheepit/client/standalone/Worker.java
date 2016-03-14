@@ -43,8 +43,8 @@ import com.sheepit.client.hardware.gpu.GPUDevice;
 import com.sheepit.client.network.Proxy;
 
 public class Worker {
-	@Option(name = "-server", usage = "Render-farm server, default https://www.sheepit-renderfarm.com", metaVar = "URL", required = false)
-	private String server = "https://www.sheepit-renderfarm.com";
+	@Option(name = "-server", usage = "Render-farm server, default https://client.sheepit-renderfarm.com", metaVar = "URL", required = false)
+	private String server = "https://client.sheepit-renderfarm.com";
 	
 	@Option(name = "-login", usage = "User's login", metaVar = "LOGIN", required = false)
 	private String login = "";
