@@ -35,6 +35,8 @@ import com.sheepit.client.Error.Type;
 import com.sheepit.client.exception.FermeException;
 import com.sheepit.client.exception.FermeExceptionNoRightToRender;
 import com.sheepit.client.exception.FermeExceptionNoSession;
+import com.sheepit.client.exception.FermeExceptionServerInMaintenance;
+import com.sheepit.client.exception.FermeExceptionServerOverloaded;
 import com.sheepit.client.exception.FermeExceptionSessionDisabled;
 import com.sheepit.client.exception.FermeServerDown;
 import com.sheepit.client.os.OS;
@@ -212,6 +214,30 @@ public class Client {
 					int wait = 15;
 					int time_sleep = 1000 * 60 * wait;
 					this.gui.status(String.format("Can not connect to server. Please check your connectivity. Will retry in %s minutes", wait));
+					try {
+						Thread.sleep(time_sleep);
+					}
+					catch (InterruptedException e1) {
+						return -3;
+					}
+					continue; // go back to ask job
+				}
+				catch (FermeExceptionServerOverloaded e) {
+					int wait = 15;
+					int time_sleep = 1000 * 60 * wait;
+					this.gui.status(String.format("Server is overloaded and cannot give frame to render. Will retry in %s minutes", wait));
+					try {
+						Thread.sleep(time_sleep);
+					}
+					catch (InterruptedException e1) {
+						return -3;
+					}
+					continue; // go back to ask job
+				}
+				catch (FermeExceptionServerInMaintenance e) {
+					int wait = 15;
+					int time_sleep = 1000 * 60 * wait;
+					this.gui.status(String.format("Server is in maintenance and cannot give frame to render. Will retry in %s minutes", wait));
 					try {
 						Thread.sleep(time_sleep);
 					}
