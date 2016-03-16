@@ -77,6 +77,8 @@ import com.sheepit.client.Error.ServerCode;
 import com.sheepit.client.exception.FermeException;
 import com.sheepit.client.exception.FermeExceptionNoRightToRender;
 import com.sheepit.client.exception.FermeExceptionNoSession;
+import com.sheepit.client.exception.FermeExceptionServerInMaintenance;
+import com.sheepit.client.exception.FermeExceptionServerOverloaded;
 import com.sheepit.client.exception.FermeExceptionSessionDisabled;
 import com.sheepit.client.exception.FermeServerDown;
 import com.sheepit.client.os.OS;
@@ -329,6 +331,12 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 					}
 					else if (ret == ServerCode.JOB_REQUEST_ERROR_SESSION_DISABLED) {
 						throw new FermeExceptionSessionDisabled();
+					}
+					else if (ret == ServerCode.JOB_REQUEST_SERVER_IN_MAINTENANCE) {
+						throw new FermeExceptionServerInMaintenance();
+					}
+					else if (ret == ServerCode.JOB_REQUEST_SERVER_OVERLOADED) {
+						throw new FermeExceptionServerOverloaded();
 					}
 					this.log.error("Server::requestJob: Utils.statusIsOK(document, 'jobrequest') -> ret " + ret);
 					throw new FermeException("error requestJob: status is not ok (it's " + ret + ")");
