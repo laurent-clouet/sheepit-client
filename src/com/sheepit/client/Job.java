@@ -592,6 +592,17 @@ public class Job {
 			//   what():  boost::filesystem::create_directory: Permission denied: "/var/local/cache"
 			return Error.Type.NOOUTPUTFILE;
 		}
+		else if (line.indexOf("terminate called after throwing an instance of 'std::bad_alloc'") != -1) {
+			// Fra:80 Mem:1333.02M (0.00M, Peak 1651.23M) | Mem:780.37M, Peak:780.37M | Scene, RenderLayer | Updating Mesh BVH Plane.083 171/2 | Building BVH
+			// Fra:80 Mem:1333.02M (0.00M, Peak 1651.23M) | Mem:780.37M, Peak:780.37M | Scene, RenderLayer | Updating Mesh BVH Mesh 172/2 | Building BVH
+			// Fra:80 Mem:1333.02M (0.00M, Peak 1651.23M) | Mem:780.37M, Peak:780.37M | Scene, RenderLayer | Updating Mesh BVH Mesh 172/2 | Packing BVH triangles and strands
+			// Fra:80 Mem:1333.02M (0.00M, Peak 1651.23M) | Mem:780.37M, Peak:780.37M | Scene, RenderLayer | Updating Mesh BVH Mesh 172/2 | Packing BVH nodes
+			// Fra:80 Mem:1333.02M (0.00M, Peak 1651.23M) | Mem:780.37M, Peak:780.37M | Scene, RenderLayer | Updating Scene BVH | Building
+			// Fra:80 Mem:1333.02M (0.00M, Peak 1651.23M) | Mem:780.37M, Peak:780.37M | Scene, RenderLayer | Updating Scene BVH | Building BVH
+			// terminate called after throwing an instance of 'std::bad_alloc'
+			//   what():  std::bad_alloc
+			return Error.Type.RENDERER_OUT_OF_MEMORY;
+		}
 		return Type.OK;
 	}
 	
