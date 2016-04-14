@@ -133,6 +133,7 @@ public class Windows extends OS {
 		Process p = builder.start();
 		WinProcess wproc = new WinProcess(p);
 		wproc.setPriority(WinProcess.PRIORITY_BELOW_NORMAL);
+		wproc.SetProcessAffinity(env);
 		return p;
 	}
 	

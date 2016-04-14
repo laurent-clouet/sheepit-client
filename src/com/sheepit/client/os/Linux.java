@@ -27,6 +27,7 @@ import java.util.Scanner;
 
 import com.sheepit.client.Log;
 import com.sheepit.client.hardware.cpu.CPU;
+import com.sheepit.client.os.linux.LinuxProcess;
 
 public class Linux extends OS {
 	private final String NICE_BINARY_PATH = "nice";
@@ -159,7 +160,13 @@ public class Linux extends OS {
 		if (env_overight != null) {
 			env.putAll(env_overight);
 		}
-		return builder.start();
+		Process retProc = builder.start();
+		if (env.containsKey("PROCESS_CORE_AFFINITY") == false)
+			return retProc;
+		long coreaffinity = Long.valueOf(env.get("PROCESS_CORE_AFFINITY"));
+		int pidOfProc = LinuxProcess.getPid(retProc);
+		LinuxProcess.setAffinity(pidOfProc, coreaffinity);
+		return retProc;
 	}
 	
 	protected void checkNiceAvailability() {

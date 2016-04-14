@@ -47,6 +47,7 @@ public class Configuration {
 	private String proxy;
 	private int maxUploadingJob;
 	private int nbCores;
+	private long coreAffinity;
 	private ComputeType computeMethod;
 	private GPUDevice GPUDevice;
 	private boolean printLog;
@@ -73,6 +74,7 @@ public class Configuration {
 		this.extras = "";
 		this.autoSignIn = false;
 		this.UIType = null;
+		this.coreAffinity = 0;
 	}
 	
 	public String toString() {
@@ -121,6 +123,14 @@ public class Configuration {
 	
 	public int getNbCores() {
 		return this.nbCores;
+	}
+	
+	public long getCoreAffinity() {
+		return coreAffinity;
+	}
+
+	public void setCoreAffinity(long coreAffinity) {
+		this.coreAffinity = coreAffinity;
 	}
 	
 	public void setPrintLog(boolean val) {

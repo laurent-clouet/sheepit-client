@@ -27,6 +27,7 @@ public class SettingsLoader {
 	private String computeMethod;
 	private String gpu;
 	private String cores;
+	private String affinity;
 	private String cacheDir;
 	private String autoSignIn;
 	private String ui;
@@ -39,7 +40,7 @@ public class SettingsLoader {
 		path = path_;
 	}
 	
-	public SettingsLoader(String login_, String password_, String proxy_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, String cacheDir_, boolean autoSignIn_, String ui_) {
+	public SettingsLoader(String login_, String password_, String proxy_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, long affinity_, String cacheDir_, boolean autoSignIn_, String ui_) {
 		path = getDefaultFilePath();
 		login = login_;
 		password = password_;
@@ -50,7 +51,7 @@ public class SettingsLoader {
 		if (cores_ > 0) {
 			cores = String.valueOf(cores_);
 		}
-		
+		affinity = String.valueOf(affinity_);
 		if (computeMethod_ != null) {
 			try {
 				computeMethod = computeMethod_.name();
@@ -92,6 +93,10 @@ public class SettingsLoader {
 			
 			if (cores != null) {
 				prop.setProperty("cpu-cores", cores);
+			}
+			
+			if (affinity != null) {
+				prop.setProperty("cpu-affinity", affinity);
 			}
 			
 			if (login != null) {
@@ -182,6 +187,10 @@ public class SettingsLoader {
 				this.cores = prop.getProperty("cpu-cores");
 			}
 			
+			if (prop.containsKey("cpu-affinity")) {
+				this.affinity = prop.getProperty("cpu-affinity");
+			}
+			
 			if (prop.containsKey("login")) {
 				this.login = prop.getProperty("login");
 			}
@@ -257,6 +266,11 @@ public class SettingsLoader {
 		if (config.getNbCores() == -1  && cores != null) {
 			config.setUseNbCores(Integer.valueOf(cores));
 		}
+		
+		if (config.getCoreAffinity() == 0 && affinity != null) {
+			config.setCoreAffinity(Long.valueOf(affinity));
+		}
+		
 		if (config.getUserSpecifiedACacheDir() == false && cacheDir != null && new File(cacheDir).exists()) {
 			config.setCacheDir(new File(cacheDir));
 		}

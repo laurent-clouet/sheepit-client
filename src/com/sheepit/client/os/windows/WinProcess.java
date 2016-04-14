@@ -23,9 +23,11 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
+import com.sun.jna.platform.win32.BaseTSD.DWORD_PTR;
 import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.Kernel32Util;
 import com.sun.jna.platform.win32.WinDef.DWORD;
@@ -82,11 +84,11 @@ public class WinProcess {
 	public WinProcess(int pid_) throws IOException {
 		this();
 		this.handle = Kernel32.INSTANCE.OpenProcess(0x0400 | // PROCESS_QUERY_INFORMATION
-													0x0800 | // PROCESS_SUSPEND_RESUME
-													0x0001 | // PROCESS_TERMINATE
-													0x0200 | // PROCESS_SET_INFORMATION
-													0x00100000, // SYNCHRONIZE
-													false, pid_);
+				0x0800 | // PROCESS_SUSPEND_RESUME
+				0x0001 | // PROCESS_TERMINATE
+				0x0200 | // PROCESS_SET_INFORMATION
+				0x00100000, // SYNCHRONIZE
+				false, pid_);
 		if (this.handle == null) {
 			throw new IOException("OpenProcess failed: " + Kernel32Util.formatMessageFromLastErrorCode(Kernel32.INSTANCE.GetLastError()) + " (pid: " + pid_ + ")");
 		}
@@ -119,6 +121,22 @@ public class WinProcess {
 	
 	public boolean setPriority(int priority) {
 		return this.kernel32lib.SetPriorityClass(this.handle, priority);
+	}
+	
+	public boolean SetProcessAffinity(Map<String, String> env) {
+		if (env == null)
+			return false;
+		try {
+			if (env.containsKey("PROCESS_CORE_AFFINITY") == false)
+				return false;
+			long coreaffinity = Long.valueOf(env.get("PROCESS_CORE_AFFINITY"));
+			if (coreaffinity == 0)
+				return false;
+			return this.kernel32lib.SetProcessAffinityMask(this.handle, new DWORD_PTR(coreaffinity));
+		}
+		catch (Exception e) {
+			return false;
+		}
 	}
 	
 	private void terminate() {
