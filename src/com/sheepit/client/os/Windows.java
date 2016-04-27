@@ -133,6 +133,10 @@ public class Windows extends OS {
 		Process p = builder.start();
 		WinProcess wproc = new WinProcess(p);
 		wproc.setPriority(WinProcess.PRIORITY_BELOW_NORMAL);
+		if (env != null) {
+			String cores = env.get("CORES");
+			wproc.setAffinity(Integer.parseInt(cores));
+		}
 		return p;
 	}
 	
