@@ -59,6 +59,7 @@ public class GuiSwing extends JFrame implements Gui {
 	private Working activityWorking;
 	private Settings activitySettings;
 	private TrayIcon trayIcon;
+	private boolean useSysTray;
 	
 	private int framesRendered;
 	
@@ -67,9 +68,9 @@ public class GuiSwing extends JFrame implements Gui {
 	
 	private ThreadClient threadClient;
 	
-	public GuiSwing() {
+	public GuiSwing(boolean useSysTray_) {
 		framesRendered = 0;
-		
+		useSysTray = useSysTray_;
 		waitingForAuthentication = true;
 	}
 	
@@ -82,21 +83,24 @@ public class GuiSwing extends JFrame implements Gui {
 			e1.printStackTrace();
 		}
 		
-		try {
-			sysTray = SystemTray.getSystemTray();
-			if (SystemTray.isSupported()) {
-				addWindowStateListener(new WindowStateListener() {
-					public void windowStateChanged(WindowEvent e) {
-						if (e.getNewState() == ICONIFIED) {
-							hideToTray();
+		if (useSysTray) {
+			try {
+				sysTray = SystemTray.getSystemTray();
+				if (SystemTray.isSupported()) {
+					addWindowStateListener(new WindowStateListener() {
+						public void windowStateChanged(WindowEvent e) {
+							if (e.getNewState() == ICONIFIED) {
+								hideToTray();
+							}
 						}
-					}
-				});
+					});
+				}
+			}
+			catch (UnsupportedOperationException e) {
+				sysTray = null;
 			}
 		}
-		catch (UnsupportedOperationException e) {
-			sysTray = null;
-		}
+		
 		
 		URL iconUrl = getClass().getResource("/icon.png");
 		if (iconUrl != null) {

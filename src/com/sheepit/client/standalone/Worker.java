@@ -88,6 +88,9 @@ public class Worker {
 	@Option(name = "--version", usage = "Display application version", required = false, handler = VersionParameterHandler.class)
 	private VersionParameterHandler versionHandler;
 	
+	@Option(name = "--no-systray", usage = "Don't use systray", required = false)
+	private boolean no_systray = false;
+	
 	public static void main(String[] args) {
 		new Worker().doMain(args);
 	}
@@ -279,7 +282,7 @@ public class Worker {
 					System.out.println("You should set a DISPLAY or use a text ui (with -ui " + GuiTextOneLine.type + " or -ui " + GuiText.type + ").");
 					System.exit(3);
 				}
-				gui = new GuiSwing();
+				gui = new GuiSwing(no_systray == false);
 				break;
 		}
 		Client cli = new Client(gui, config, server);
