@@ -604,6 +604,29 @@ public class Job {
 			//   what():  std::bad_alloc
 			return Error.Type.RENDERER_OUT_OF_MEMORY;
 		}
+		else if (line.indexOf("what(): std::bad_alloc") != -1) {
+			// Fra:7 Mem:1247.01M (0.00M, Peak 1247.01M) | Time:00:28.84 | Mem:207.63M, Peak:207.63M | Scene, RenderLayer | Updating Scene BVH | Building BVH 93%, duplicates 0%terminate called recursively
+			// terminate called after throwing an instance of 'St9bad_alloc'
+			// what(): std::bad_alloc
+			// scandir: Cannot allocate memory
+			return Error.Type.RENDERER_OUT_OF_MEMORY;
+		}
+		else if (line.indexOf("Calloc returns null") != -1) {
+			// Fra:1 Mem:976.60M (0.00M, Peak 1000.54M) | Time:00:01.34 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Left
+			// Calloc returns null: len=7186416 in CDMLoopUV, total 2145859048
+			// Calloc returns null: len=7186416 in CDMLoopUV, total 2145859048
+			// Malloc returns null: len=3190672 in CDMTexPoly, total 2149293176
+			// Writing: /home/user/.sheepit/LEFT packed.crash.txt
+			return Error.Type.RENDERER_OUT_OF_MEMORY;
+		}
+		else if (line.indexOf("Malloc returns null") != -1) {
+			// Fra:1 Mem:976.60M (0.00M, Peak 1000.54M) | Time:00:01.34 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Left
+			// Calloc returns null: len=7186416 in CDMLoopUV, total 2145859048
+			// Calloc returns null: len=7186416 in CDMLoopUV, total 2145859048
+			// Malloc returns null: len=3190672 in CDMTexPoly, total 2149293176
+			// Writing: /home/user/.sheepit/LEFT packed.crash.txt
+			return Error.Type.RENDERER_OUT_OF_MEMORY;
+		}
 		return Type.OK;
 	}
 	
