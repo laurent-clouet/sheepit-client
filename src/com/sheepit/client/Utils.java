@@ -44,9 +44,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import com.sheepit.client.Error.ServerCode;
+import com.sheepit.client.exception.FermeExceptionNoSpaceLeftOnDevice;
 
 public class Utils {
-	public static int unzipFileIntoDirectory(String zipFileName_, String jiniHomeParentDirName_) {
+	public static int unzipFileIntoDirectory(String zipFileName_, String jiniHomeParentDirName_) throws FermeExceptionNoSpaceLeftOnDevice {
 		File rootdir = new File(jiniHomeParentDirName_);
 		try {
 			ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFileName_));
@@ -78,6 +79,15 @@ public class Utils {
 					}
 					fos.close();
 				}
+				catch (IOException e) {
+					File f = new File(jiniHomeParentDirName_);
+					if (f.getUsableSpace() == 0) {
+						throw new FermeExceptionNoSpaceLeftOnDevice();
+					}
+					Log logger = Log.getInstance(null); // might not print the log since the config is null
+					logger.error("Utils::unzipFileIntoDirectory(" + zipFileName_ + "," + jiniHomeParentDirName_ + ") exception " + e);
+					return -3;
+				}
 				catch (Exception e1) {
 					e1.printStackTrace();
 				}
@@ -90,6 +100,9 @@ public class Utils {
 				}
 				zis.closeEntry();
 			}
+		}
+		catch (FermeExceptionNoSpaceLeftOnDevice e) {
+			throw e;
 		}
 		catch (IllegalArgumentException e) {
 			Log logger = Log.getInstance(null); // might not print the log since the config is null

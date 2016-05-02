@@ -44,7 +44,10 @@ public class Error {
 		FAILED_TO_EXECUTE(16),
 		OS_NOT_SUPPORTED(17),
 		CPU_NOT_SUPPORTED(18),
-		GPU_NOT_SUPPORTED(19);
+		GPU_NOT_SUPPORTED(19),
+		
+		NO_SPACE_LEFT_ON_DEVICE(100),
+		;
 		
 		private final int id;
 		
@@ -166,6 +169,8 @@ public class Error {
 				return "Operating System not supported.";
 			case CPU_NOT_SUPPORTED:
 				return "CPU not supported.";
+			case NO_SPACE_LEFT_ON_DEVICE:
+				return "No space left on hard disk";
 			default:
 				return in.toString();
 		}

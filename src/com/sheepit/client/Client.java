@@ -35,6 +35,7 @@ import com.sheepit.client.Error.Type;
 import com.sheepit.client.exception.FermeException;
 import com.sheepit.client.exception.FermeExceptionNoRightToRender;
 import com.sheepit.client.exception.FermeExceptionNoSession;
+import com.sheepit.client.exception.FermeExceptionNoSpaceLeftOnDevice;
 import com.sheepit.client.exception.FermeExceptionServerInMaintenance;
 import com.sheepit.client.exception.FermeExceptionServerOverloaded;
 import com.sheepit.client.exception.FermeExceptionSessionDisabled;
@@ -284,6 +285,15 @@ public class Client {
 					continue;
 				}
 				
+				if (ret == Error.Type.NO_SPACE_LEFT_ON_DEVICE) {
+					Job frame_to_reset = this.renderingJob; // copy it because the sendError will take ~5min to execute
+					this.renderingJob = null;
+					this.gui.error(Error.humanString(ret));
+					this.sendError(step, frame_to_reset, ret);
+					this.log.removeCheckPoint(step);
+					return -50;
+				}
+				
 				if (ret != Error.Type.OK) {
 					Job frame_to_reset = this.renderingJob; // copy it because the sendError will take ~5min to execute
 					this.renderingJob = null;
@@ -522,22 +532,27 @@ public class Client {
 	public Error.Type work(Job ajob) {
 		int ret;
 		
-		ret = this.downloadExecutable(ajob);
-		if (ret != 0) {
-			this.log.error("Client::work problem with downloadExecutable (ret " + ret + ")");
-			return Error.Type.DOWNLOAD_FILE;
+		try {
+			ret = this.downloadExecutable(ajob);
+			if (ret != 0) {
+				this.log.error("Client::work problem with downloadExecutable (ret " + ret + ")");
+				return Error.Type.DOWNLOAD_FILE;
+			}
+			
+			ret = this.downloadSceneFile(ajob);
+			if (ret != 0) {
+				this.log.error("Client::work problem with downloadSceneFile (ret " + ret + ")");
+				return Error.Type.DOWNLOAD_FILE;
+			}
+			
+			ret = this.prepareWorkingDirectory(ajob); // decompress renderer and scene archives
+			if (ret != 0) {
+				this.log.error("Client::work problem with this.prepareWorkingDirectory (ret " + ret + ")");
+				return Error.Type.CAN_NOT_CREATE_DIRECTORY;
+			}
 		}
-		
-		ret = this.downloadSceneFile(ajob);
-		if (ret != 0) {
-			this.log.error("Client::work problem with downloadSceneFile (ret " + ret + ")");
-			return Error.Type.DOWNLOAD_FILE;
-		}
-		
-		ret = this.prepareWorkingDirectory(ajob); // decompress renderer and scene archives
-		if (ret != 0) {
-			this.log.error("Client::work problem with this.prepareWorkingDirectory (ret " + ret + ")");
-			return Error.Type.CAN_NOT_CREATE_DIRECTORY;
+		catch (FermeExceptionNoSpaceLeftOnDevice e) {
+			return Error.Type.NO_SPACE_LEFT_ON_DEVICE;
 		}
 		
 		File scene_file = new File(ajob.getScenePath());
@@ -631,7 +646,7 @@ public class Client {
 		return true;
 	}
 	
-	protected int prepareWorkingDirectory(Job ajob) {
+	protected int prepareWorkingDirectory(Job ajob) throws FermeExceptionNoSpaceLeftOnDevice {
 		int ret;
 		String renderer_archive = ajob.getRendererArchivePath();
 		String renderer_path = ajob.getRendererDirectory();
