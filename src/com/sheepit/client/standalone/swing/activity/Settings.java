@@ -57,6 +57,14 @@ public class Settings implements Activity {
 	
 	private boolean haveAutoStarted;
 	
+	private JLabel tileSizePadding;
+	private JLabel tileSizePaddingB;
+	private JTextField tileSizeX;
+	private JTextField tileSizeY;
+	private JLabel tileLabelX;
+	private JLabel tileLabelY;
+	private JCheckBox customTileSize;
+
 	public Settings(GuiSwing parent_) {
 		parent = parent_;
 		cacheDir = null;
@@ -245,6 +253,49 @@ public class Settings implements Activity {
 			++currentRow;
 		}
 		
+		customTileSize = new JCheckBox("Custom render tile size");
+		constraints.gridx = 2;
+		constraints.gridy = currentRow;
+		parent.getContentPane().add(customTileSize, constraints);
+		customTileSize.addActionListener(new TileSizeChange());
+		
+		tileSizePadding = parent.addPaddingReturn(1, ++currentRow, columns - 2, 1);
+		parent.getContentPane().add(tileSizePadding, 
+			parent.addPaddingConstraints(1, ++currentRow, columns - 2, 1));
+		++currentRow;
+		
+		tileLabelX = new JLabel("Tile Size X:");
+		constraints.gridwidth = columns - 3;
+		constraints.gridx = 1;
+		constraints.gridy = currentRow;
+		parent.getContentPane().add(tileLabelX, constraints);
+
+		tileSizeX = new JTextField("");
+		tileSizeX.setText(config.getTileX());
+		constraints.gridx = 2;
+		constraints.gridy = currentRow;
+		parent.getContentPane().add(tileSizeX, constraints);
+		
+		parent.addPadding(1, ++currentRow, columns - 2, 1);
+		++currentRow;
+		
+		tileLabelY = new JLabel("Tile Size Y:");
+		constraints.gridwidth = columns - 3;
+		constraints.gridx = 1;
+		constraints.gridy = currentRow;
+		parent.getContentPane().add(tileLabelY, constraints);
+		
+		tileSizeY = new JTextField("");
+		tileSizeY.setText(config.getTileY());
+		constraints.gridx = 2;
+		constraints.gridy = currentRow;
+		parent.getContentPane().add(tileSizeY, constraints);
+		
+		tileSizePaddingB = parent.addPaddingReturn(1, ++currentRow, columns - 2, 1);
+		parent.getContentPane().add(tileSizePaddingB, 
+			parent.addPaddingConstraints(1, ++currentRow, columns - 2, 1));
+		++currentRow;
+
 		saveFile = new JCheckBox("Save settings", true);
 		constraints.gridwidth = columns - 3;
 		constraints.gridx = 2;
@@ -286,6 +337,18 @@ public class Settings implements Activity {
 			// auto start
 			haveAutoStarted = true;
 			new SaveAction().actionPerformed(null);
+		}
+	}
+	
+	public void hideCustomTileSize(boolean hidden) {
+		tileSizePadding.setVisible(hidden);
+		tileSizePaddingB.setVisible(hidden);
+		tileSizeX.setVisible(hidden);
+		tileSizeY.setVisible(hidden);
+		tileLabelX.setVisible(hidden);
+		tileLabelY.setVisible(hidden);
+		if (customTileSize.isSelected() == true){
+			JOptionPane.showMessageDialog(parent.getContentPane(), "<html>These settings should only be changed if you are an advanced user.<br /> Improper settings may lead to invalid and slower renders!</html>", "Warning: Advanced Users Only!", JOptionPane.WARNING_MESSAGE);
 		}
 	}
 	
@@ -346,6 +409,15 @@ public class Settings implements Activity {
 				saveFile.setSelected(true);
 			}
 		}
+	}
+	
+	class TileSizeChange implements ActionListener {
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			boolean custom = customTileSize.isSelected();
+			hideCustomTileSize(custom);
+		}	
 	}
 	
 	class SaveAction implements ActionListener {
@@ -415,6 +487,15 @@ public class Settings implements Activity {
 					System.exit(2);
 				}
 			}
+			String tileX = null;
+			String tileY = null;
+			if (tileSizeX != null) {
+				tileX = tileSizeX.getText();
+			}
+			
+			if (tileSizeY != null) {
+				tileY = tileSizeY.getText();
+			}
 			
 			parent.setCredentials(login.getText(), new String(password.getPassword()));
 			
@@ -423,8 +504,10 @@ public class Settings implements Activity {
 				cachePath = config.getStorageDir().getAbsolutePath();
 			}
 			
+			
+			
 			if (saveFile.isSelected()) {
-				new SettingsLoader(login.getText(), new String(password.getPassword()), proxyText, method, selected_gpu, cpu_cores, cachePath, autoSignIn.isSelected(), GuiSwing.type).saveFile();
+				new SettingsLoader(login.getText(), new String(password.getPassword()), proxyText, method, selected_gpu, cpu_cores, cachePath, autoSignIn.isSelected(), GuiSwing.type, tileX, tileY).saveFile();
 			}
 			else {
 				try {

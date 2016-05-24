@@ -30,6 +30,8 @@ public class SettingsLoader {
 	private String cacheDir;
 	private String autoSignIn;
 	private String ui;
+	private String tileX;
+	private String tileY;
 	
 	public SettingsLoader() {
 		path = getDefaultFilePath();
@@ -39,7 +41,7 @@ public class SettingsLoader {
 		path = path_;
 	}
 	
-	public SettingsLoader(String login_, String password_, String proxy_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, String cacheDir_, boolean autoSignIn_, String ui_) {
+	public SettingsLoader(String login_, String password_, String proxy_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, String cacheDir_, boolean autoSignIn_, String ui_, String tileX_, String tileY_) {
 		path = getDefaultFilePath();
 		login = login_;
 		password = password_;
@@ -47,6 +49,8 @@ public class SettingsLoader {
 		cacheDir = cacheDir_;
 		autoSignIn = String.valueOf(autoSignIn_);
 		ui = ui_;
+		tileX = tileX_;
+		tileY = tileY_;
 		if (cores_ > 0) {
 			cores = String.valueOf(cores_);
 		}
@@ -114,6 +118,14 @@ public class SettingsLoader {
 				prop.setProperty("ui", ui);
 			}
 			
+			if (tileX != null) {
+				prop.setProperty("tileX", tileX);
+			}
+			
+			if (tileY != null) {
+				prop.setProperty("tileY", tileY);
+			}
+			
 			prop.store(output, null);
 		}
 		catch (IOException io) {
@@ -155,6 +167,8 @@ public class SettingsLoader {
 		this.cacheDir = null;
 		this.autoSignIn = null;
 		this.ui = null;
+		this.tileX = null;
+		this.tileY = null;
 		
 		if (new File(path).exists() == false) {
 			return;
@@ -200,6 +214,14 @@ public class SettingsLoader {
 			
 			if (prop.containsKey("ui")) {
 				this.ui = prop.getProperty("ui");
+			}
+			
+			if (prop.containsKey("tileX")) {
+				this.tileX = prop.getProperty("tileX");
+			}
+			
+			if (prop.containsKey("tileY")) {
+				this.tileY = prop.getProperty("tileY");
 			}
 		}
 		catch (IOException io) {
@@ -263,6 +285,14 @@ public class SettingsLoader {
 		
 		if (config.getUIType() == null && ui != null) {
 			config.setUIType(ui);
+		}
+		
+		if (config.getTileX() == null && tileX != null) {
+			config.setTileX(tileX);
+		}
+		
+		if (config.getTileY() == null && tileY != null) {
+			config.setTileY(tileY);
 		}
 		
 		config.setAutoSignIn(Boolean.valueOf(autoSignIn));

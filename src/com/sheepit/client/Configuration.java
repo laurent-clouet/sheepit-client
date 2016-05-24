@@ -54,6 +54,8 @@ public class Configuration {
 	private String extras;
 	private boolean autoSignIn;
 	private String UIType;
+	private String tileX;
+	private String tileY;
 	
 	public Configuration(File cache_dir_, String login_, String password_) {
 		this.login = login_;
@@ -73,6 +75,8 @@ public class Configuration {
 		this.extras = "";
 		this.autoSignIn = false;
 		this.UIType = null;
+		this.tileX = null;
+		this.tileY = null;
 	}
 	
 	public String toString() {
@@ -213,6 +217,22 @@ public class Configuration {
 	
 	public String getUIType() {
 		return this.UIType;
+	}
+	
+	public void setTileX(String sizeX) {
+		this.tileX = sizeX;
+	}
+	
+	public void setTileY(String sizeY) {
+		this.tileY = sizeY;
+	}
+	
+	public String getTileX() {
+		return tileX;
+	}
+	
+	public String getTileY() {
+		return tileY;
 	}
 	
 	public void cleanWorkingDirectory() {
