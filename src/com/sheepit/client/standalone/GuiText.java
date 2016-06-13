@@ -113,5 +113,15 @@ public class GuiText implements Gui {
 	public Client getClient() {
 		return client;
 	}
-	
+
+	@Override
+	public void setJobPercentage(int percent) {
+
+	}
+
+	@Override
+	public void frameDone() {
+
+	}
+
 }

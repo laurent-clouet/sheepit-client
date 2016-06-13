@@ -93,7 +93,17 @@ public class GuiTextOneLine implements Gui {
 	public Client getClient() {
 		return client;
 	}
-	
+
+	@Override
+	public void setJobPercentage(int percent) {
+
+	}
+
+	@Override
+	public void frameDone() {
+
+	}
+
 	private void updateLine() {
 		String creditsEarned = client.getServer().getCreditEarnedOnCurrentSession();
 		

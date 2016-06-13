@@ -19,28 +19,17 @@
 
 package com.sheepit.client;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import com.sheepit.client.Error.ServerCode;
+import com.sheepit.client.Error.Type;
+import com.sheepit.client.exception.*;
+import com.sheepit.client.os.OS;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-
-import com.sheepit.client.Error.ServerCode;
-import com.sheepit.client.Error.Type;
-import com.sheepit.client.exception.FermeException;
-import com.sheepit.client.exception.FermeExceptionNoRightToRender;
-import com.sheepit.client.exception.FermeExceptionNoSession;
-import com.sheepit.client.exception.FermeExceptionNoSpaceLeftOnDevice;
-import com.sheepit.client.exception.FermeExceptionServerInMaintenance;
-import com.sheepit.client.exception.FermeExceptionServerOverloaded;
-import com.sheepit.client.exception.FermeExceptionSessionDisabled;
-import com.sheepit.client.exception.FermeServerDown;
-import com.sheepit.client.os.OS;
 
 public class Client {
 	private Gui gui;
@@ -50,13 +39,13 @@ public class Client {
 	private Job renderingJob;
 	private BlockingQueue<Job> jobsToValidate;
 	private boolean isValidatingJob;
-	
+
 	private boolean disableErrorSending;
 	private boolean running;
 	private boolean suspended;
-	
+
 	private int maxDownloadFileAttempts = 5;
-	
+
 	public Client(Gui gui_, Configuration config, String url_) {
 		this.config = config;
 		this.server = new Server(url_, this.config, this);
@@ -65,59 +54,59 @@ public class Client {
 		this.renderingJob = null;
 		this.jobsToValidate = new ArrayBlockingQueue<Job>(1024);
 		this.isValidatingJob = false;
-		
+
 		this.disableErrorSending = false;
 		this.running = false;
 		this.suspended = false;
 	}
-	
+
 	public String toString() {
 		return String.format("Client (config %s, server %s)", this.config, this.server);
 	}
-	
+
 	public Job getRenderingJob() {
 		return this.renderingJob;
 	}
-	
+
 	public Gui getGui() {
 		return this.gui;
 	}
-	
+
 	public Configuration getConfiguration() {
 		return this.config;
 	}
-	
+
 	public Server getServer() {
 		return this.server;
 	}
-	
+
 	public Log getLog() {
 		return this.log;
 	}
-	
+
 	public int run() {
 		if (!this.config.checkOSisSupported()) {
 			this.gui.error(Error.humanString(Error.Type.OS_NOT_SUPPORTED));
 			return -3;
 		}
-		
+
 		if (!this.config.checkCPUisSupported()) {
 			this.gui.error(Error.humanString(Error.Type.CPU_NOT_SUPPORTED));
 			return -4;
 		}
-		
+
 		this.running = true;
-		
+
 		int step;
 		try {
 			step = this.log.newCheckPoint();
 			this.gui.status("Starting");
-			
+
 			this.config.cleanWorkingDirectory();
-			
+
 			Error.Type ret;
 			ret = this.server.getConfiguration();
-			
+
 			if (ret != Error.Type.OK) {
 				this.gui.error(Error.humanString(ret));
 				if (ret != Error.Type.AUTHENTICATION_FAILED) {
@@ -125,9 +114,9 @@ public class Client {
 				}
 				return -1;
 			}
-			
+
 			this.server.start(); // for staying alive
-			
+
 			// create a thread which will send the frame
 			Runnable runnable_sender = new Runnable() {
 				public void run() {
@@ -136,7 +125,7 @@ public class Client {
 			};
 			Thread thread_sender = new Thread(runnable_sender);
 			thread_sender.start();
-			
+
 			while (this.running) {
 				this.renderingJob = null;
 				synchronized (this) {
@@ -155,7 +144,7 @@ public class Client {
 							Thread.sleep(next_request.getTimeInMillis() - now.getTime());
 						}
 						catch (InterruptedException e3) {
-							
+
 						}
 						catch (IllegalArgumentException e3) {
 							this.log.error("Client::run sleepA failed " + e3);
@@ -175,7 +164,7 @@ public class Client {
 				}
 				catch (FermeExceptionNoSession e) {
 					// User has no session need to re-authenticate
-					
+
 					ret = this.server.getConfiguration();
 					if (ret != Error.Type.OK) {
 						this.renderingJob = null;
@@ -191,7 +180,7 @@ public class Client {
 									Thread.sleep(next_request.getTimeInMillis() - now.getTime());
 								}
 								catch (InterruptedException e3) {
-									
+
 								}
 								catch (IllegalArgumentException e3) {
 									this.log.error("Client::run sleepB failed " + e3);
@@ -250,7 +239,7 @@ public class Client {
 					this.sendError(step);
 					continue;
 				}
-				
+
 				if (this.renderingJob == null) { // no job
 					int time_sleep = 1000 * 60 * 15;
 					Date wakeup_time = new Date(new Date().getTime() + time_sleep);
@@ -270,15 +259,15 @@ public class Client {
 					this.suspended = false;
 					continue; // go back to ask job
 				}
-				
+
 				this.log.debug("Got work to do id: " + this.renderingJob.getId() + " frame: " + this.renderingJob.getFrameNumber());
-				
+
 				ret = this.work(this.renderingJob);
 				if (ret == Error.Type.RENDERER_KILLED) {
 					this.log.removeCheckPoint(step);
 					continue;
 				}
-				
+
 				if (ret == Error.Type.NO_SPACE_LEFT_ON_DEVICE) {
 					Job frame_to_reset = this.renderingJob; // copy it because the sendError will take ~5min to execute
 					this.renderingJob = null;
@@ -287,7 +276,7 @@ public class Client {
 					this.log.removeCheckPoint(step);
 					return -50;
 				}
-				
+
 				if (ret != Error.Type.OK) {
 					Job frame_to_reset = this.renderingJob; // copy it because the sendError will take ~5min to execute
 					this.renderingJob = null;
@@ -296,7 +285,7 @@ public class Client {
 					this.log.removeCheckPoint(step);
 					continue;
 				}
-				
+
 				if (!this.renderingJob.simultaneousUploadIsAllowed()) { // power or compute_method job, need to upload right away
 					ret = confirmJob(this.renderingJob);
 					if (ret != Error.Type.OK) {
@@ -311,7 +300,7 @@ public class Client {
 					this.jobsToValidate.add(this.renderingJob);
 					this.renderingJob = null;
 				}
-				
+
 				while (this.shouldWaitBeforeRender()) {
 					try {
 						Thread.sleep(4000); // wait a little bit
@@ -321,7 +310,7 @@ public class Client {
 				}
 				this.log.removeCheckPoint(step);
 			}
-			
+
 			// not running but maybe still sending frame
 			while (!this.jobsToValidate.isEmpty()) {
 				try {
@@ -337,31 +326,31 @@ public class Client {
 			PrintWriter pw = new PrintWriter(sw);
 			e1.printStackTrace(pw);
 			this.log.debug("Client::run exception(D) " + e1 + " stacktrace: " + sw.toString());
-			return -99; // the this.stop will be done after the return of this.run()
+			return -99; // the this.stop will be frameDone after the return of this.run()
 		}
-		
+
 		this.gui.stop();
 		return 0;
 	}
-	
+
 	public synchronized int stop() {
 		this.running = false;
 		this.disableErrorSending = true;
-		
+
 		if (this.renderingJob != null) {
 			if (this.renderingJob.getProcessRender().getProcess() != null) {
 				OS.getOS().kill(this.renderingJob.getProcessRender().getProcess());
 				this.renderingJob.setAskForRendererKill(true);
 			}
 		}
-		
+
 		// 		this.config.workingDirectory.delete();
 		this.config.removeWorkingDirectory();
-		
+
 		if (this.server == null) {
 			return 0;
 		}
-		
+
 		try {
 			this.server.HTTPRequest(this.server.getPage("logout"));
 		}
@@ -374,16 +363,16 @@ public class Client {
 		}
 		catch (InterruptedException e) {
 		}
-		
+
 		this.server = null;
-		
+
 		return 0;
 	}
-	
+
 	public boolean isSuspended() {
 		return this.suspended;
 	}
-	
+
 	public void suspend() {
 		suspended = true;
 	}

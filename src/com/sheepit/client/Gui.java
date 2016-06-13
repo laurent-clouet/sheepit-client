@@ -35,4 +35,8 @@ public interface Gui {
 	void setClient(Client cli);
 	
 	Client getClient();
+
+    void setJobPercentage(int percent);
+
+    void frameDone();
 }
