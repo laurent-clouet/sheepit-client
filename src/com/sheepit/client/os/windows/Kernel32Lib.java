@@ -28,7 +28,7 @@ import com.sun.jna.platform.win32.WinNT;
 import com.sun.jna.platform.win32.WinNT.HANDLE;
 
 public interface Kernel32Lib extends Library {
-	public static final String path = "kernel32";
+	String path = "kernel32";
 	
 	/**
 	 * Includes all heaps of the process specified in th32ProcessID in the snapshot. To enumerate the heaps, see
@@ -78,7 +78,7 @@ public interface Kernel32Lib extends Library {
 	/**
 	 * Describes an entry from a list of the processes residing in the system address space when a snapshot was taken.
 	 */
-	public static class PROCESSENTRY32 extends Structure {
+	class PROCESSENTRY32 extends Structure {
 		
 		public static class ByReference extends PROCESSENTRY32 implements Structure.ByReference {
 			public ByReference() {
@@ -154,7 +154,7 @@ public interface Kernel32Lib extends Library {
 		
 		@Override
 		protected List getFieldOrder() {
-			return Arrays.asList(new String[] { "dwSize", "cntUsage", "th32ProcessID", "th32DefaultHeapID", "th32ModuleID", "cntThreads", "th32ParentProcessID", "pcPriClassBase", "dwFlags", "szExeFile" });
+			return Arrays.asList("dwSize", "cntUsage", "th32ProcessID", "th32DefaultHeapID", "th32ModuleID", "cntThreads", "th32ParentProcessID", "pcPriClassBase", "dwFlags", "szExeFile");
 		}
 	}
 	
@@ -177,7 +177,7 @@ public interface Kernel32Lib extends Library {
 	 * If the function fails, it returns INVALID_HANDLE_VALUE. To get extended error information, call GetLastError.
 	 * Possible error codes include ERROR_BAD_LENGTH.
 	 */
-	public WinNT.HANDLE CreateToolhelp32Snapshot(WinDef.DWORD dwFlags, WinDef.DWORD th32ProcessID);
+	WinNT.HANDLE CreateToolhelp32Snapshot(WinDef.DWORD dwFlags, WinDef.DWORD th32ProcessID);
 	
 	/**
 	 * Retrieves information about the first process encountered in a system snapshot.
@@ -189,7 +189,7 @@ public interface Kernel32Lib extends Library {
 	 * ERROR_NO_MORE_FILES error value is returned by the GetLastError function if no processes exist or the snapshot
 	 * does not contain process information.
 	 */
-	public boolean Process32First(WinNT.HANDLE hSnapshot, Kernel32Lib.PROCESSENTRY32.ByReference lppe);
+	boolean Process32First(WinNT.HANDLE hSnapshot, Kernel32Lib.PROCESSENTRY32.ByReference lppe);
 	
 	/**
 	 * Retrieves information about the next process recorded in a system snapshot.
@@ -200,9 +200,9 @@ public interface Kernel32Lib extends Library {
 	 * ERROR_NO_MORE_FILES error value is returned by the GetLastError function if no processes exist or the snapshot
 	 * does not contain process information.
 	 */
-	public boolean Process32Next(WinNT.HANDLE hSnapshot, Kernel32Lib.PROCESSENTRY32.ByReference lppe);
+	boolean Process32Next(WinNT.HANDLE hSnapshot, Kernel32Lib.PROCESSENTRY32.ByReference lppe);
 	
-	public boolean SetPriorityClass(HANDLE hProcess, int dwPriorityClass);
+	boolean SetPriorityClass(HANDLE hProcess, int dwPriorityClass);
 	
 	/**
 	 * Controls whether the system will handle the specified types of serious errors or whether the process will handle them.
@@ -210,7 +210,7 @@ public interface Kernel32Lib extends Library {
 	 *
 	 * @param uMode The process error mode. This parameter can be one or more of the following values.
 	 */
-	public int SetErrorMode(DWORD uMode);
+	int SetErrorMode(DWORD uMode);
 	
 	/**
 	 * See : https://msdn.microsoft.com/en-us/library/windows/desktop/ms686247%28v=vs.85%29.aspx
@@ -219,6 +219,6 @@ public interface Kernel32Lib extends Library {
 	 * @param dwThreadAffinityMask
 	 * @return If the function succeeds, the return value is the thread's previous affinity mask.
 	 */
-	public boolean SetProcessAffinityMask(HANDLE hProcess, DWORD_PTR dwProcessAffinityMask);
+	boolean SetProcessAffinityMask(HANDLE hProcess, DWORD_PTR dwProcessAffinityMask);
 
 }

@@ -61,7 +61,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -117,7 +116,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 					String args = "";
 					if (this.client != null && this.client.getRenderingJob() != null) {
 						args = "?frame=" + this.client.getRenderingJob().getFrameNumber() + "&job=" + this.client.getRenderingJob().getId();
-						if (this.client.getRenderingJob().getExtras() != null && this.client.getRenderingJob().getExtras().isEmpty() == false) {
+						if (this.client.getRenderingJob().getExtras() != null && !this.client.getRenderingJob().getExtras().isEmpty()) {
 							args += "&extras=" + this.client.getRenderingJob().getExtras();
 						}
 						if (this.client.getRenderingJob().getProcessRender() != null) {
@@ -142,9 +141,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 								}
 							}
 						}
-						catch (SAXException e) {
-						}
-						catch (ParserConfigurationException e) {
+						catch (SAXException | ParserConfigurationException e) {
 						}
 					}
 				}
@@ -157,11 +154,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			}
 			try {
 				Thread.sleep(60 * 1000); // 1min
-			}
-			catch (InterruptedException e) {
-				return;
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				return;
 			}
 		}
@@ -386,13 +379,13 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				String[] renderer_node_require_attribute = { "md5", "commandline" };
 				
 				for (String e : job_node_require_attribute) {
-					if (job_node.hasAttribute(e) == false) {
+					if (!job_node.hasAttribute(e)) {
 						throw new FermeException("error requestJob: parseXML failed, job_node have to attribute '" + e + "'");
 					}
 				}
 				
 				for (String e : renderer_node_require_attribute) {
-					if (renderer_node.hasAttribute(e) == false) {
+					if (!renderer_node.hasAttribute(e)) {
 						throw new FermeException("error requestJob: parseXML failed, renderer_node have to attribute '" + e + "'");
 					}
 				}
@@ -594,7 +587,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 		
 		int bytesRead, bytesAvailable, bufferSize;
 		byte[] buffer;
-		int maxBufferSize = 1 * 1024 * 1024;
+		int maxBufferSize = 1024 * 1024;
 		
 		String urlString = surl;
 		
@@ -828,7 +821,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				rootElement.appendChild(node_file);
 				try {
 					String extension = local_file.getName().substring(local_file.getName().lastIndexOf('.')).toLowerCase();
-					String name = local_file.getName().substring(0, local_file.getName().length() - 1 * extension.length());
+					String name = local_file.getName().substring(0, local_file.getName().length() - extension.length());
 					if (extension.equals(".zip")) {
 						node_file.setAttribute("md5", name);
 					}
@@ -844,16 +837,10 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			transformer.transform(new DOMSource(document_cache), new StreamResult(writer));
 			xml_str = writer.getBuffer().toString();
 		}
-		catch (TransformerConfigurationException e) {
+		catch (ParserConfigurationException | TransformerException e) {
 			this.log.debug("Server::generateXMLForMD5cache " + e);
 		}
-		catch (TransformerException e) {
-			this.log.debug("Server::generateXMLForMD5cache " + e);
-		}
-		catch (ParserConfigurationException e) {
-			this.log.debug("Server::generateXMLForMD5cache " + e);
-		}
-		
+
 		return xml_str;
 	}
 	

@@ -39,7 +39,7 @@ public class GuiTextOneLine implements Gui {
 						Signal.raise(new Signal("INT"));
 						Runtime.getRuntime().halt(0);
 					}
-					else if (client.isRunning() && client.isSuspended() == false) {
+					else if (client.isRunning() && !client.isSuspended()) {
 						client.askForStop();
 						exiting = true;
 					}
@@ -93,7 +93,17 @@ public class GuiTextOneLine implements Gui {
 	public Client getClient() {
 		return client;
 	}
-	
+
+	@Override
+	public void setJobPercentage(int percent) {
+
+	}
+
+	@Override
+	public void frameDone() {
+
+	}
+
 	private void updateLine() {
 		String creditsEarned = client.getServer().getCreditEarnedOnCurrentSession();
 		

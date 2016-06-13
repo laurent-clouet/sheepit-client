@@ -58,7 +58,7 @@ public class GuiText implements Gui {
 						Signal.raise(new Signal("INT"));
 						Runtime.getRuntime().halt(0);
 					}
-					else if (client.isRunning() && client.isSuspended() == false) {
+					else if (client.isRunning() && !client.isSuspended()) {
 						client.askForStop();
 						System.out.println("Will exit after current frame... Press Ctrl+C again to exit now.");
 					}
@@ -113,5 +113,15 @@ public class GuiText implements Gui {
 	public Client getClient() {
 		return client;
 	}
-	
+
+	@Override
+	public void setJobPercentage(int percent) {
+
+	}
+
+	@Override
+	public void frameDone() {
+
+	}
+
 }

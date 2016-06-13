@@ -104,12 +104,7 @@ public class RenderProcess {
 		}
 		try {
 			value = process.exitValue();
-		}
-		catch (IllegalThreadStateException e) {
-			// the process is not finished yet
-			value = 0;
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			// actually is for java.io.IOException: GetExitCodeProcess error=6, The handle is invalid
 			// it was not declared throwable
 			

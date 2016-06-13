@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Objects;
 
 import com.sheepit.client.Log;
 import com.sheepit.client.hardware.cpu.CPU;
@@ -71,7 +72,7 @@ public class FreeBSD extends OS {
 							String family = buf[i].split("=")[1];
 							ret.setFamily(family.split("x")[1]);
 						}
-						
+
 						if (buf[i].contains("Model")) {
 							String model = buf[i].split("=")[1];
 							ret.setModel(model.split("x")[1]);
@@ -84,7 +85,7 @@ public class FreeBSD extends OS {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		if (ret.haveData() == false) {
+		if (!ret.haveData()) {
 			Log.getInstance(null).debug("OS::FreeBSD::getCPU failed to get CPU from dmesg, using partia sysctl");
 			ret.setModel("0");
 			ret.setFamily("0");
@@ -96,7 +97,7 @@ public class FreeBSD extends OS {
 				
 				name = buf.readLine();
 				buf.close();
-				if (name == "") {
+				if (Objects.equals(name, "")) {
 					ret.setName("0");
 				}
 				else {
@@ -124,7 +125,7 @@ public class FreeBSD extends OS {
 				return 0;
 			}
 			Long mem_byte = Long.parseLong(line.trim());
-			return (int) (mem_byte / Long.valueOf(1024));
+			return (int) (mem_byte / 1024L);
 		}
 		catch (IOException e) {
 			Log.getInstance(null).debug("OS::FreeBSD::getMemory exception " + e);
@@ -148,7 +149,7 @@ public class FreeBSD extends OS {
 		Boolean has_ld_library_path = new_env.containsKey("LD_LIBRARY_PATH");
 		
 		String lib_dir = (new File(command.get(0))).getParent() + File.separator + "lib";
-		if (has_ld_library_path == false) {
+		if (!has_ld_library_path) {
 			new_env.put("LD_LIBRARY_PATH", lib_dir);
 		}
 		else {
@@ -159,7 +160,7 @@ public class FreeBSD extends OS {
 		if (this.hasNiceBinary == null) {
 			this.checkNiceAvailability();
 		}
-		if (this.hasNiceBinary.booleanValue()) {
+		if (this.hasNiceBinary) {
 			// launch the process in lowest priority
 			actual_command.add(0, "19");
 			actual_command.add(0, "-n");

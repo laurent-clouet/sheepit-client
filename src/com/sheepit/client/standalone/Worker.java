@@ -130,7 +130,7 @@ public class Worker {
 		
 		if (gpu_device != null) {
 			String cuda_str = "CUDA_";
-			if (gpu_device.startsWith(cuda_str) == false) {
+			if (!gpu_device.startsWith(cuda_str)) {
 				System.err.println("CUDA_DEVICE should look like 'CUDA_X' where X is a number");
 				return;
 			}
@@ -249,7 +249,7 @@ public class Worker {
 		}
 		
 		if (config_file != null) {
-			if (new File(config_file).exists() == false) {
+			if (!new File(config_file).exists()) {
 				System.err.println("Configuration file not found.");
 				System.err.println("Aborting");
 				System.exit(2);
@@ -282,7 +282,7 @@ public class Worker {
 					System.out.println("You should set a DISPLAY or use a text ui (with -ui " + GuiTextOneLine.type + " or -ui " + GuiText.type + ").");
 					System.exit(3);
 				}
-				gui = new GuiSwing(no_systray == false);
+				gui = new GuiSwing(!no_systray);
 				break;
 		}
 		Client cli = new Client(gui, config, server);

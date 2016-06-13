@@ -19,32 +19,20 @@
 
 package com.sheepit.client;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
-
 import com.sheepit.client.Error.Type;
 import com.sheepit.client.hardware.gpu.GPUDevice;
 import com.sheepit.client.os.OS;
 
+import java.io.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
 public class Job {
 	public static final String UPDATE_METHOD_BY_REMAINING_TIME = "remainingtime";
 	public static final String UPDATE_METHOD_BLENDER_INTERNAL_BY_PART = "blenderinternal";
-	
+
 	private String numFrame;
 	private String sceneMD5;
 	private String rendererMD5;
@@ -65,7 +53,7 @@ public class Job {
 	private Gui gui;
 	private Configuration config;
 	private Log log;
-	
+
 	public Job(Configuration config_, Gui gui_, Log log_, String id_, String frame_, String revision_, String path_, boolean use_gpu, String command_, String script_, String sceneMd5_, String rendererMd5_, String name_, String extras_, boolean synchronous_upload_, String update_method_) {
 		config = config_;
 		id = id_;
@@ -88,116 +76,116 @@ public class Job {
 		log = log_;
 		render = new RenderProcess();
 	}
-	
+
 	public RenderProcess getProcessRender() {
 		return render;
 	}
-	
+
 	public String toString() {
 		return String.format("Job (numFrame '%s' sceneMD5 '%s' rendererMD5 '%s' ID '%s' revision '%s' pictureFilename '%s' jobPath '%s' gpu %s name '%s' extras '%s' updateRenderingStatusMethod '%s' render %s)", numFrame, sceneMD5, rendererMD5, id, revision, pictureFilename, path, useGPU, name, extras, updateRenderingStatusMethod, render);
 	}
-	
-	public String getId() {
+
+    public String getId() {
 		return id;
 	}
-	
-	public String getFrameNumber() {
+
+    public String getFrameNumber() {
 		return numFrame;
 	}
-	
-	public String getExtras() {
+
+    public String getExtras() {
 		return extras;
 	}
-	
-	public String getScript() {
+
+    public String getScript() {
 		return script;
 	}
-	
-	public String getSceneMD5() {
+
+    public String getSceneMD5() {
 		return sceneMD5;
 	}
-	
-	public String getRenderMd5() {
+
+    public String getRenderMd5() {
 		return rendererMD5;
 	}
-	
-	public String getPath() {
+
+    public String getPath() {
 		return path;
 	}
-	
-	public String getUpdateRenderingStatusMethod() {
+
+    public String getUpdateRenderingStatusMethod() {
 		return updateRenderingStatusMethod;
 	}
-	
-	public void setAskForRendererKill(boolean val) {
+
+    public void setAskForRendererKill(boolean val) {
 		askForRendererKill = val;
 	}
-	
-	public boolean getAskForRendererKill() {
+
+    public boolean getAskForRendererKill() {
 		return askForRendererKill;
 	}
-	
-	public void setUserBlockJob(boolean val) {
+
+    public void setUserBlockJob(boolean val) {
 		userBlockJob = val;
 	}
-	
-	public boolean getUserBlockJob() {
+
+    public boolean getUserBlockJob() {
 		return userBlockJob;
 	}
-	
-	public String getRenderCommand() {
+
+    public String getRenderCommand() {
 		return rendererCommand;
 	}
-	
-	public boolean getUseGPU() {
+
+    public boolean getUseGPU() {
 		return useGPU;
 	}
-	
-	public String getRevision() {
+
+    public String getRevision() {
 		return revision;
 	}
-	
-	public void setOutputImagePath(String path) {
+
+    public void setOutputImagePath(String path) {
 		pictureFilename = path;
 	}
-	
-	public String getOutputImagePath() {
+
+    public String getOutputImagePath() {
 		return pictureFilename;
 	}
-	
-	public String getPrefixOutputImage() {
+
+    public String getPrefixOutputImage() {
 		return id + "_";
 	}
-	
-	public String getRendererDirectory() {
+
+    public String getRendererDirectory() {
 		return config.workingDirectory.getAbsolutePath() + File.separator + rendererMD5;
 	}
-	
-	public String getRendererPath() {
+
+    public String getRendererPath() {
 		return getRendererDirectory() + File.separator + OS.getOS().getRenderBinaryPath();
 	}
-	
-	public String getRendererArchivePath() {
+
+    public String getRendererArchivePath() {
 		return config.getStorageDir().getAbsolutePath() + File.separator + rendererMD5 + ".zip";
 	}
-	
-	public String getSceneDirectory() {
+
+    public String getSceneDirectory() {
 		return config.workingDirectory.getAbsolutePath() + File.separator + sceneMD5;
 	}
-	
-	public String getScenePath() {
+
+    public String getScenePath() {
 		return getSceneDirectory() + File.separator + this.path;
 	}
-	
-	public String getSceneArchivePath() {
+
+    public String getSceneArchivePath() {
 		return config.workingDirectory.getAbsolutePath() + File.separator + sceneMD5 + ".zip";
 	}
-	
-	public boolean simultaneousUploadIsAllowed() {
+
+    public boolean simultaneousUploadIsAllowed() {
 		return synchronousUpload;
 	}
-	
-	public Error.Type render() {
+
+    public Error.Type render() {
 		gui.status("Rendering project \"" + this.name + "\"");
 		RenderProcess process = getProcessRender();
 		String core_script = "import bpy\n" + "bpy.context.user_preferences.system.compute_device_type = \"%s\"\n" + "bpy.context.scene.cycles.device = \"%s\"\n" + "bpy.context.user_preferences.system.compute_device = \"%s\"\n";
@@ -211,38 +199,38 @@ public class Job {
 		File script_file = null;
 		String command1[] = getRenderCommand().split(" ");
 		int size_command = command1.length + 2; // + 2 for script
-		
-		if (config.getNbCores() > 0) { // user has specified something
+
+        if (config.getNbCores() > 0) { // user has specified something
 			size_command += 2;
 		}
-		
-		List<String> command = new ArrayList<String>(size_command);
-		
-		Map<String, String> new_env = new HashMap<String, String>();
-		
-		new_env.put("BLENDER_USER_CONFIG", config.workingDirectory.getAbsolutePath().replace("\\", "\\\\"));
+
+        List<String> command = new ArrayList<String>(size_command);
+
+        Map<String, String> new_env = new HashMap<String, String>();
+
+        new_env.put("BLENDER_USER_CONFIG", config.workingDirectory.getAbsolutePath().replace("\\", "\\\\"));
 		new_env.put("CORES", Integer.toString(config.getNbCores()));
-		
-		for (String arg : command1) {
+
+        for (String arg : command1) {
 			switch (arg) {
 				case ".c":
 					command.add(getScenePath());
 					command.add("-P");
-					
-					try {
+
+                    try {
 						script_file = File.createTempFile("script_", "", config.workingDirectory);
 						File file = new File(script_file.getAbsolutePath());
 						FileWriter txt;
 						txt = new FileWriter(file);
-						
-						PrintWriter out = new PrintWriter(txt);
+
+                        PrintWriter out = new PrintWriter(txt);
 						out.write(getScript());
 						out.write("\n");
 						out.write(core_script); // GPU part
 						out.write("\n"); // GPU part
 						out.close();
-						
-						command.add(script_file.getAbsolutePath());
+
+                        command.add(script_file.getAbsolutePath());
 					}
 					catch (IOException e) {
 						StringWriter sw = new StringWriter();
@@ -271,8 +259,8 @@ public class Job {
 					break;
 			}
 		}
-		
-		try {
+
+        try {
 			String line;
 			log.debug(command.toString());
 			OS os = OS.getOS();
@@ -280,14 +268,14 @@ public class Job {
 			process.start();
 			getProcessRender().setProcess(os.exec(command, new_env));
 			BufferedReader input = new BufferedReader(new InputStreamReader(getProcessRender().getProcess().getInputStream()));
-			
-			long last_update_status = 0;
+
+            long last_update_status = 0;
 			log.debug("renderer output");
 			try {
 				while ((line = input.readLine()) != null) {
 					updateRenderingMemoryPeak(line);
-					
-					log.debug(line);
+
+                    log.debug(line);
 					if ((new Date().getTime() - last_update_status) > 2000) { // only call the update every two seconds
 						updateRenderingStatus(line);
 						last_update_status = new Date().getTime();
@@ -317,37 +305,37 @@ public class Job {
 			log.error("Client:runRenderer exception(A) " + err + " stacktrace " + sw.toString());
 			return Error.Type.FAILED_TO_EXECUTE;
 		}
-		
-		int exit_value = process.exitValue();
+
+        int exit_value = process.exitValue();
 		process.finish();
-		
-		if (script_file != null) {
+
+        if (script_file != null) {
 			script_file.delete();
 		}
-		
-		// find the picture file
+
+        // find the picture file
 		final String filename_without_extension = getPrefixOutputImage() + getFrameNumber();
-		
-		FilenameFilter textFilter = new FilenameFilter() {
+
+        FilenameFilter textFilter = new FilenameFilter() {
 			public boolean accept(File dir, String name) {
 				return name.startsWith(filename_without_extension);
 			}
 		};
-		
-		File[] files = config.workingDirectory.listFiles(textFilter);
-		
-		if (files.length == 0) {
+
+        File[] files = config.workingDirectory.listFiles(textFilter);
+
+        if (files.length == 0) {
 			log.error("Client::runRenderer no picture file found (after finished render (filename_without_extension " + filename_without_extension + ")");
-			
-			if (getAskForRendererKill()) {
+
+            if (getAskForRendererKill()) {
 				log.debug("Client::runRenderer renderer didn't generate any frame but died due to a kill request");
 				if (getUserBlockJob()) {
 					return Error.Type.RENDERER_KILLED_BY_USER;
 				}
 				return Error.Type.RENDERER_KILLED;
 			}
-			
-			String basename = "";
+
+            String basename = "";
 			try {
 				basename = getPath().substring(0, getPath().lastIndexOf('.'));
 			}
@@ -360,31 +348,31 @@ public class Job {
 				crash_file.delete();
 				return Error.Type.RENDERER_CRASHED;
 			}
-			
-			if (exit_value == 127 && process.getDuration() < 10) {
+
+            if (exit_value == 127 && process.getDuration() < 10) {
 				log.error("Client::runRenderer renderer returned 127 and took " + process.getDuration() + "s, some libraries may be missing");
 				return Error.Type.RENDERER_MISSING_LIBRARIES;
 			}
-			
-			return Error.Type.NOOUTPUTFILE;
+
+            return Error.Type.NOOUTPUTFILE;
 		}
 		else {
 			setOutputImagePath(files[0].getAbsolutePath());
 			log.debug("Client::runRenderer pictureFilename: '" + getOutputImagePath() + "'");
 		}
-		
-		File scene_dir = new File(getSceneDirectory());
+
+        File scene_dir = new File(getSceneDirectory());
 		long date_modification_scene_directory = (long) Utils.lastModificationTime(scene_dir);
 		if (date_modification_scene_directory > process.getStartTime()) {
 			scene_dir.delete();
 		}
-		
-		gui.status(String.format("Frame rendered in %dmin%ds", process.getDuration() / 60, process.getDuration() % 60));
-		
-		return Error.Type.OK;
+
+        gui.status(String.format("Frame rendered in %dmin%ds", process.getDuration() / 60, process.getDuration() % 60));
+        gui.frameDone();
+        return Error.Type.OK;
 	}
-	
-	private void updateRenderingStatus(String line) {
+
+    private void updateRenderingStatus(String line) {
 		if (getUpdateRenderingStatusMethod() != null && getUpdateRenderingStatusMethod().equals(Job.UPDATE_METHOD_BLENDER_INTERNAL_BY_PART)) {
 			String search = " Part ";
 			int index = line.lastIndexOf(search);
@@ -396,32 +384,32 @@ public class Job {
 						int current = Integer.parseInt(parts[0]);
 						int total = Integer.parseInt(parts[1]);
 						if (total != 0) {
-							gui.status(String.format("Rendering %s %%", (int) (100.0 * current / total)));
-							return;
-						}
+                            gui.status(String.format("Rendering %s @ %s%%", this.name, (int) (100.0 * current / total)));
+                            gui.setJobPercentage((int) (100.0 * current / total));
+                            return;
+                        }
 					}
 					catch (NumberFormatException e) {
 						System.out.println("Exception 92: " + e);
 					}
 				}
 			}
-			gui.status("Rendering");
-		}
-		else if (getUpdateRenderingStatusMethod() == null || getUpdateRenderingStatusMethod().equals(Job.UPDATE_METHOD_BY_REMAINING_TIME)) {
+            gui.status(String.format("Rendering %s", this.name));
+        } else if (getUpdateRenderingStatusMethod() == null || getUpdateRenderingStatusMethod().equals(Job.UPDATE_METHOD_BY_REMAINING_TIME)) {
 			String search_remaining = "remaining:";
 			int index = line.toLowerCase().indexOf(search_remaining);
 			if (index != -1) {
 				String buf1 = line.substring(index + search_remaining.length());
 				index = buf1.indexOf(" ");
-				
-				if (index != -1) {
+
+                if (index != -1) {
 					String remaining_time = buf1.substring(0, index).trim();
 					int last_index = remaining_time.lastIndexOf('.'); //format 00:00:00.00 (hr:min:sec)
 					if (last_index > 0) {
 						remaining_time = remaining_time.substring(0, last_index);
 					}
-					
-					try {
+
+                    try {
 						DateFormat date_parse_minute = new SimpleDateFormat("m:s");
 						DateFormat date_parse_hour = new SimpleDateFormat("h:m:s");
 						DateFormat date_parse = date_parse_minute;
@@ -430,9 +418,9 @@ public class Job {
 						}
 						date_parse.setTimeZone(TimeZone.getTimeZone("GMT"));
 						Date date = date_parse.parse(remaining_time);
-						gui.status(String.format("Rendering (remaining %s)", Utils.humanDuration(date)));
-						getProcessRender().setRemainingDuration((int) (date.getTime() / 1000));
-					}
+                        gui.status(String.format("Rendering %s (remaining %s)", this.name, Utils.humanDuration(date)));
+                        getProcessRender().setRemainingDuration((int) (date.getTime() / 1000));
+                    }
 					catch (ParseException err) {
 						log.error("Client::updateRenderingStatus ParseException " + err);
 					}
@@ -445,7 +433,7 @@ public class Job {
 		String[] elements = line.toLowerCase().split("(peak)");
 		
 		for (String element : elements) {
-			if (element.isEmpty() == false && element.charAt(0) == ' ') {
+			if (!element.isEmpty() && element.charAt(0) == ' ') {
 				int end = element.indexOf(')');
 				if (end > 0) {
 					try {
@@ -460,7 +448,7 @@ public class Job {
 				}
 			}
 			else {
-				if (element.isEmpty() == false && element.charAt(0) == ':') {
+				if (!element.isEmpty() && element.charAt(0) == ':') {
 					int end = element.indexOf('|');
 					if (end > 0) {
 						try {
@@ -480,7 +468,7 @@ public class Job {
 	
 	private Type detectError(String line) {
 		
-		if (line.indexOf("CUDA error: Out of memory") != -1) {
+		if (line.contains("CUDA error: Out of memory")) {
 			// Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Mem:470.26M, Peak:470.26M | Scene, RenderLayer | Updating Device | Writing constant memory
 			// Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Mem:470.26M, Peak:470.26M | Scene, RenderLayer | Path Tracing Tile 0/135, Sample 0/200
 			// Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Mem:470.82M, Peak:470.82M | Scene, RenderLayer | Path Tracing Tile 1/135, Sample 0/200
@@ -499,7 +487,7 @@ public class Job {
 			// Blender quit
 			return Type.RENDERER_OUT_OF_VIDEO_MEMORY;
 		}
-		else if (line.indexOf("CUDA error: Launch exceeded timeout in") != -1) {
+		else if (line.contains("CUDA error: Launch exceeded timeout in")) {
 			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:01:08.44 | Mem:176.04M, Peak:199.23M | Scene, RenderLayer | Path Tracing Tile 2/24, Sample 10/14
 			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:01:07.08 | Mem:175.48M, Peak:199.23M | Scene, RenderLayer | Path Tracing Tile 2/24, Sample 14/14
 			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:01:07.11 | Mem:176.04M, Peak:199.23M | Scene, RenderLayer | Path Tracing Tile 3/24, Sample 0/14
@@ -559,7 +547,7 @@ public class Job {
 			// end of rendering
 			return Type.RENDERER_OUT_OF_VIDEO_MEMORY;
 		}
-		else if (line.indexOf("CUDA device supported only with compute capability") != -1) {
+		else if (line.contains("CUDA device supported only with compute capability")) {
 			// found bundled python: /tmp/xx/2.73/python
 			// read blend: /tmp/xx/compute-method.blend
 			// Fra:340 Mem:7.64M (0.00M, Peak 8.23M) | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Sun
@@ -580,7 +568,7 @@ public class Job {
 			// Blender quit
 			return Type.GPU_NOT_SUPPORTED;
 		}
-		else if (line.indexOf("terminate called after throwing an instance of 'boost::filesystem::filesystem_error'") != -1) {
+		else if (line.contains("terminate called after throwing an instance of 'boost::filesystem::filesystem_error'")) {
 			// Fra:2103 Mem:29.54M (0.00M, Peak 29.54M) | Time:00:00.24 | Mem:1.64M, Peak:1.64M | Scene, RenderLayer | Updating Mesh | Computing attributes
 			// Fra:2103 Mem:29.54M (0.00M, Peak 29.54M) | Time:00:00.24 | Mem:1.64M, Peak:1.64M | Scene, RenderLayer | Updating Mesh | Copying Attributes to device
 			// Fra:2103 Mem:29.54M (0.00M, Peak 29.54M) | Time:00:00.24 | Mem:1.97M, Peak:1.97M | Scene, RenderLayer | Updating Scene BVH | Building
@@ -593,7 +581,7 @@ public class Job {
 			//   what():  boost::filesystem::create_directory: Permission denied: "/var/local/cache"
 			return Error.Type.NOOUTPUTFILE;
 		}
-		else if (line.indexOf("terminate called after throwing an instance of 'std::bad_alloc'") != -1) {
+		else if (line.contains("terminate called after throwing an instance of 'std::bad_alloc'")) {
 			// Fra:80 Mem:1333.02M (0.00M, Peak 1651.23M) | Mem:780.37M, Peak:780.37M | Scene, RenderLayer | Updating Mesh BVH Plane.083 171/2 | Building BVH
 			// Fra:80 Mem:1333.02M (0.00M, Peak 1651.23M) | Mem:780.37M, Peak:780.37M | Scene, RenderLayer | Updating Mesh BVH Mesh 172/2 | Building BVH
 			// Fra:80 Mem:1333.02M (0.00M, Peak 1651.23M) | Mem:780.37M, Peak:780.37M | Scene, RenderLayer | Updating Mesh BVH Mesh 172/2 | Packing BVH triangles and strands
@@ -604,14 +592,14 @@ public class Job {
 			//   what():  std::bad_alloc
 			return Error.Type.RENDERER_OUT_OF_MEMORY;
 		}
-		else if (line.indexOf("what(): std::bad_alloc") != -1) {
+		else if (line.contains("what(): std::bad_alloc")) {
 			// Fra:7 Mem:1247.01M (0.00M, Peak 1247.01M) | Time:00:28.84 | Mem:207.63M, Peak:207.63M | Scene, RenderLayer | Updating Scene BVH | Building BVH 93%, duplicates 0%terminate called recursively
 			// terminate called after throwing an instance of 'St9bad_alloc'
 			// what(): std::bad_alloc
 			// scandir: Cannot allocate memory
 			return Error.Type.RENDERER_OUT_OF_MEMORY;
 		}
-		else if (line.indexOf("Calloc returns null") != -1) {
+		else if (line.contains("Calloc returns null")) {
 			// Fra:1 Mem:976.60M (0.00M, Peak 1000.54M) | Time:00:01.34 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Left
 			// Calloc returns null: len=7186416 in CDMLoopUV, total 2145859048
 			// Calloc returns null: len=7186416 in CDMLoopUV, total 2145859048
@@ -619,7 +607,7 @@ public class Job {
 			// Writing: /home/user/.sheepit/LEFT packed.crash.txt
 			return Error.Type.RENDERER_OUT_OF_MEMORY;
 		}
-		else if (line.indexOf("Malloc returns null") != -1) {
+		else if (line.contains("Malloc returns null")) {
 			// Fra:1 Mem:976.60M (0.00M, Peak 1000.54M) | Time:00:01.34 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Left
 			// Calloc returns null: len=7186416 in CDMLoopUV, total 2145859048
 			// Calloc returns null: len=7186416 in CDMLoopUV, total 2145859048

@@ -19,34 +19,20 @@
 
 package com.sheepit.client.standalone;
 
-import java.awt.AWTException;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Image;
-import java.awt.MenuItem;
-import java.awt.PopupMenu;
-import java.awt.SystemTray;
-import java.awt.Toolkit;
-import java.awt.TrayIcon;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowStateListener;
-import java.net.URL;
-
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.border.EmptyBorder;
-
 import com.sheepit.client.Client;
 import com.sheepit.client.Configuration;
 import com.sheepit.client.Gui;
 import com.sheepit.client.standalone.swing.activity.Settings;
 import com.sheepit.client.standalone.swing.activity.Working;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowStateListener;
+import java.net.URL;
 
 public class GuiSwing extends JFrame implements Gui {
 	public static final String type = "swing";
@@ -178,7 +164,17 @@ public class GuiSwing extends JFrame implements Gui {
 	public Client getClient() {
 		return client;
 	}
-	
+
+	@Override
+	public void setJobPercentage(int percent) {
+		setTitle(String.format("SheepIt Render Farm [%s]", percent));
+	}
+
+	@Override
+	public void frameDone() {
+		setTitle("SheepIt Render Farm");
+	}
+
 	@Override
 	public void setClient(Client cli) {
 		client = cli;
@@ -210,7 +206,7 @@ public class GuiSwing extends JFrame implements Gui {
 			notifyAll();
 		}
 		
-		if (threadClient == null || threadClient.isAlive() == false) {
+		if (threadClient == null || !threadClient.isAlive()) {
 			threadClient = new ThreadClient();
 			threadClient.start();
 		}
@@ -234,7 +230,7 @@ public class GuiSwing extends JFrame implements Gui {
 	}
 	
 	public void hideToTray() {
-		if (sysTray == null || SystemTray.isSupported() == false) {
+		if (sysTray == null || !SystemTray.isSupported()) {
 			System.out.println("GuiSwing::hideToTray SystemTray not supported!");
 			return;
 		}
