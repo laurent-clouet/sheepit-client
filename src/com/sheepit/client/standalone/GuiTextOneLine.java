@@ -39,7 +39,7 @@ public class GuiTextOneLine implements Gui {
 						Signal.raise(new Signal("INT"));
 						Runtime.getRuntime().halt(0);
 					}
-					else if (client.isRunning() && client.isSuspended() == false) {
+					else if (client.isRunning() && !client.isSuspended()) {
 						client.askForStop();
 						exiting = true;
 					}

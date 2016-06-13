@@ -210,7 +210,7 @@ public class GuiSwing extends JFrame implements Gui {
 			notifyAll();
 		}
 		
-		if (threadClient == null || threadClient.isAlive() == false) {
+		if (threadClient == null || !threadClient.isAlive()) {
 			threadClient = new ThreadClient();
 			threadClient.start();
 		}
@@ -234,7 +234,7 @@ public class GuiSwing extends JFrame implements Gui {
 	}
 	
 	public void hideToTray() {
-		if (sysTray == null || SystemTray.isSupported() == false) {
+		if (sysTray == null || !SystemTray.isSupported()) {
 			System.out.println("GuiSwing::hideToTray SystemTray not supported!");
 			return;
 		}

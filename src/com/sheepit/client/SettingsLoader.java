@@ -156,7 +156,7 @@ public class SettingsLoader {
 		this.autoSignIn = null;
 		this.ui = null;
 		
-		if (new File(path).exists() == false) {
+		if (!new File(path).exists()) {
 			return;
 		}
 		
@@ -257,7 +257,7 @@ public class SettingsLoader {
 		if (config.getNbCores() == -1  && cores != null) {
 			config.setUseNbCores(Integer.valueOf(cores));
 		}
-		if (config.getUserSpecifiedACacheDir() == false && cacheDir != null && new File(cacheDir).exists()) {
+		if (!config.getUserSpecifiedACacheDir() && cacheDir != null && new File(cacheDir).exists()) {
 			config.setCacheDir(new File(cacheDir));
 		}
 		

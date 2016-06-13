@@ -171,7 +171,7 @@ public class Configuration {
 	
 	public void setStorageDir(File dir) {
 		if (dir != null) {
-			if (dir.exists() == false) {
+			if (!dir.exists()) {
 				dir.mkdir();
 			}
 			this.storageDirectory = dir;
@@ -234,12 +234,12 @@ public class Configuration {
 				else {
 					try {
 						String extension = file.getName().substring(file.getName().lastIndexOf('.')).toLowerCase();
-						String name = file.getName().substring(0, file.getName().length() - 1 * extension.length());
+						String name = file.getName().substring(0, file.getName().length() - extension.length());
 						if (extension.equals(".zip")) {
 							// check if the md5 of the file is ok
 							String md5_local = Utils.md5(file.getAbsolutePath());
 							
-							if (md5_local.equals(name) == false) {
+							if (!md5_local.equals(name)) {
 								file.delete();
 							}
 							
@@ -259,7 +259,7 @@ public class Configuration {
 	}
 	
 	public void removeWorkingDirectory() {
-		if (this.userSpecifiedACacheDir == true) {
+		if (this.userSpecifiedACacheDir) {
 			this.cleanWorkingDirectory();
 		}
 		else {
@@ -281,7 +281,7 @@ public class Configuration {
 			if (file.isFile()) {
 				try {
 					String extension = file.getName().substring(file.getName().lastIndexOf('.')).toLowerCase();
-					String name = file.getName().substring(0, file.getName().length() - 1 * extension.length());
+					String name = file.getName().substring(0, file.getName().length() - extension.length());
 					if (extension.equals(".zip")) {
 						// check if the md5 of the file is ok
 						String md5_local = Utils.md5(file.getAbsolutePath());

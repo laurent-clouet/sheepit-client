@@ -51,13 +51,7 @@ public class WinProcess {
 		try {
 			this.kernel32lib = (Kernel32Lib) Native.loadLibrary(Kernel32Lib.path, Kernel32Lib.class);
 		}
-		catch (java.lang.UnsatisfiedLinkError e) {
-			System.out.println("WinProcess::construct " + e);
-		}
-		catch (java.lang.ExceptionInInitializerError e) {
-			System.out.println("WinProcess::construct " + e);
-		}
-		catch (Exception e) {
+		catch (UnsatisfiedLinkError | Exception | ExceptionInInitializerError e) {
 			System.out.println("WinProcess::construct " + e);
 		}
 	}
@@ -72,11 +66,7 @@ public class WinProcess {
 			this.handle.setPointer(Pointer.createConstant(val));
 			this.pid = Kernel32.INSTANCE.GetProcessId(this.handle);
 		}
-		catch (NoSuchFieldException e) {
-		}
-		catch (IllegalArgumentException e) {
-		}
-		catch (IllegalAccessException e) {
+		catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException e) {
 		}
 	}
 	

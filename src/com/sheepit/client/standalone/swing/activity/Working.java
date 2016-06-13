@@ -48,7 +48,7 @@ public class Working implements Activity {
 		parent.addPadding(1, ++currentRow, 2, 1);
 		++currentRow;
 		
-		ImageIcon image = new ImageIcon(getClass().getResource("/title.png"));
+		ImageIcon image = Constants.getIcon();
 		JLabel labelImage = new JLabel(image);
 		constraints.fill = GridBagConstraints.BOTH;
 		constraints.weightx = 1.0;

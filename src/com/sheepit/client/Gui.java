@@ -20,19 +20,19 @@
 package com.sheepit.client;
 
 public interface Gui {
-	public abstract void start();
+	void start();
 	
-	public abstract void stop();
+	void stop();
 	
-	public abstract void status(String msg_);
+	void status(String msg_);
 	
-	public void error(String err_);
+	void error(String err_);
 	
-	public void AddFrameRendered();
+	void AddFrameRendered();
 	
-	public void framesRemaining(int nb_);
+	void framesRemaining(int nb_);
 	
-	public void setClient(Client cli);
+	void setClient(Client cli);
 	
-	public Client getClient();
+	Client getClient();
 }

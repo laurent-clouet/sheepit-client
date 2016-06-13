@@ -445,7 +445,7 @@ public class Job {
 		String[] elements = line.toLowerCase().split("(peak)");
 		
 		for (String element : elements) {
-			if (element.isEmpty() == false && element.charAt(0) == ' ') {
+			if (!element.isEmpty() && element.charAt(0) == ' ') {
 				int end = element.indexOf(')');
 				if (end > 0) {
 					try {
@@ -460,7 +460,7 @@ public class Job {
 				}
 			}
 			else {
-				if (element.isEmpty() == false && element.charAt(0) == ':') {
+				if (!element.isEmpty() && element.charAt(0) == ':') {
 					int end = element.indexOf('|');
 					if (end > 0) {
 						try {
@@ -480,7 +480,7 @@ public class Job {
 	
 	private Type detectError(String line) {
 		
-		if (line.indexOf("CUDA error: Out of memory") != -1) {
+		if (line.contains("CUDA error: Out of memory")) {
 			// Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Mem:470.26M, Peak:470.26M | Scene, RenderLayer | Updating Device | Writing constant memory
 			// Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Mem:470.26M, Peak:470.26M | Scene, RenderLayer | Path Tracing Tile 0/135, Sample 0/200
 			// Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Mem:470.82M, Peak:470.82M | Scene, RenderLayer | Path Tracing Tile 1/135, Sample 0/200
@@ -499,7 +499,7 @@ public class Job {
 			// Blender quit
 			return Type.RENDERER_OUT_OF_VIDEO_MEMORY;
 		}
-		else if (line.indexOf("CUDA error: Launch exceeded timeout in") != -1) {
+		else if (line.contains("CUDA error: Launch exceeded timeout in")) {
 			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:01:08.44 | Mem:176.04M, Peak:199.23M | Scene, RenderLayer | Path Tracing Tile 2/24, Sample 10/14
 			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:01:07.08 | Mem:175.48M, Peak:199.23M | Scene, RenderLayer | Path Tracing Tile 2/24, Sample 14/14
 			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:01:07.11 | Mem:176.04M, Peak:199.23M | Scene, RenderLayer | Path Tracing Tile 3/24, Sample 0/14
@@ -559,7 +559,7 @@ public class Job {
 			// end of rendering
 			return Type.RENDERER_OUT_OF_VIDEO_MEMORY;
 		}
-		else if (line.indexOf("CUDA device supported only with compute capability") != -1) {
+		else if (line.contains("CUDA device supported only with compute capability")) {
 			// found bundled python: /tmp/xx/2.73/python
 			// read blend: /tmp/xx/compute-method.blend
 			// Fra:340 Mem:7.64M (0.00M, Peak 8.23M) | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Sun
@@ -580,7 +580,7 @@ public class Job {
 			// Blender quit
 			return Type.GPU_NOT_SUPPORTED;
 		}
-		else if (line.indexOf("terminate called after throwing an instance of 'boost::filesystem::filesystem_error'") != -1) {
+		else if (line.contains("terminate called after throwing an instance of 'boost::filesystem::filesystem_error'")) {
 			// Fra:2103 Mem:29.54M (0.00M, Peak 29.54M) | Time:00:00.24 | Mem:1.64M, Peak:1.64M | Scene, RenderLayer | Updating Mesh | Computing attributes
 			// Fra:2103 Mem:29.54M (0.00M, Peak 29.54M) | Time:00:00.24 | Mem:1.64M, Peak:1.64M | Scene, RenderLayer | Updating Mesh | Copying Attributes to device
 			// Fra:2103 Mem:29.54M (0.00M, Peak 29.54M) | Time:00:00.24 | Mem:1.97M, Peak:1.97M | Scene, RenderLayer | Updating Scene BVH | Building
@@ -593,7 +593,7 @@ public class Job {
 			//   what():  boost::filesystem::create_directory: Permission denied: "/var/local/cache"
 			return Error.Type.NOOUTPUTFILE;
 		}
-		else if (line.indexOf("terminate called after throwing an instance of 'std::bad_alloc'") != -1) {
+		else if (line.contains("terminate called after throwing an instance of 'std::bad_alloc'")) {
 			// Fra:80 Mem:1333.02M (0.00M, Peak 1651.23M) | Mem:780.37M, Peak:780.37M | Scene, RenderLayer | Updating Mesh BVH Plane.083 171/2 | Building BVH
 			// Fra:80 Mem:1333.02M (0.00M, Peak 1651.23M) | Mem:780.37M, Peak:780.37M | Scene, RenderLayer | Updating Mesh BVH Mesh 172/2 | Building BVH
 			// Fra:80 Mem:1333.02M (0.00M, Peak 1651.23M) | Mem:780.37M, Peak:780.37M | Scene, RenderLayer | Updating Mesh BVH Mesh 172/2 | Packing BVH triangles and strands
@@ -604,14 +604,14 @@ public class Job {
 			//   what():  std::bad_alloc
 			return Error.Type.RENDERER_OUT_OF_MEMORY;
 		}
-		else if (line.indexOf("what(): std::bad_alloc") != -1) {
+		else if (line.contains("what(): std::bad_alloc")) {
 			// Fra:7 Mem:1247.01M (0.00M, Peak 1247.01M) | Time:00:28.84 | Mem:207.63M, Peak:207.63M | Scene, RenderLayer | Updating Scene BVH | Building BVH 93%, duplicates 0%terminate called recursively
 			// terminate called after throwing an instance of 'St9bad_alloc'
 			// what(): std::bad_alloc
 			// scandir: Cannot allocate memory
 			return Error.Type.RENDERER_OUT_OF_MEMORY;
 		}
-		else if (line.indexOf("Calloc returns null") != -1) {
+		else if (line.contains("Calloc returns null")) {
 			// Fra:1 Mem:976.60M (0.00M, Peak 1000.54M) | Time:00:01.34 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Left
 			// Calloc returns null: len=7186416 in CDMLoopUV, total 2145859048
 			// Calloc returns null: len=7186416 in CDMLoopUV, total 2145859048
@@ -619,7 +619,7 @@ public class Job {
 			// Writing: /home/user/.sheepit/LEFT packed.crash.txt
 			return Error.Type.RENDERER_OUT_OF_MEMORY;
 		}
-		else if (line.indexOf("Malloc returns null") != -1) {
+		else if (line.contains("Malloc returns null")) {
 			// Fra:1 Mem:976.60M (0.00M, Peak 1000.54M) | Time:00:01.34 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Left
 			// Calloc returns null: len=7186416 in CDMLoopUV, total 2145859048
 			// Calloc returns null: len=7186416 in CDMLoopUV, total 2145859048

@@ -1,32 +1,5 @@
 package com.sheepit.client.standalone.swing.activity;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.io.File;
-import java.net.MalformedURLException;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JSlider;
-import javax.swing.JTextField;
 import com.sheepit.client.Configuration;
 import com.sheepit.client.Configuration.ComputeType;
 import com.sheepit.client.SettingsLoader;
@@ -35,6 +8,17 @@ import com.sheepit.client.hardware.gpu.GPU;
 import com.sheepit.client.hardware.gpu.GPUDevice;
 import com.sheepit.client.network.Proxy;
 import com.sheepit.client.standalone.GuiSwing;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Settings implements Activity {
 	private static final String DUMMY_CACHE_DIR = "Auto detected";
@@ -77,8 +61,7 @@ public class Settings implements Activity {
 		
 		parent.addPadding(1, ++currentRow, columns - 2, 1);
 		++currentRow;
-		
-		ImageIcon image = new ImageIcon(getClass().getResource("/title.png"));
+		ImageIcon image = Constants.getIcon();
 		JLabel labelImage = new JLabel(image);
 		constraints.fill = GridBagConstraints.BOTH;
 		constraints.weightx = 1.0;
@@ -153,7 +136,7 @@ public class Settings implements Activity {
 		
 		String destination = DUMMY_CACHE_DIR;
 		if (config.getUserSpecifiedACacheDir()) {
-			destination = config.getStorageDir().getName();
+			destination = config.getStorageDir().getAbsolutePath();
 		}
 		
 		JPanel cacheDirWrapper = new JPanel();
@@ -282,7 +265,7 @@ public class Settings implements Activity {
 		parent.addPadding(columns - 1, 0, 1, currentRow + 1);
 		
 		
-		if (haveAutoStarted == false && config.getAutoSignIn() && checkDisplaySaveButton()) {
+		if (!haveAutoStarted && config.getAutoSignIn() && checkDisplaySaveButton()) {
 			// auto start
 			haveAutoStarted = true;
 			new SaveAction().actionPerformed(null);
@@ -296,7 +279,7 @@ public class Settings implements Activity {
 				selected = true;
 			}
 		}
-		if (login.getText().isEmpty() || password.getPassword().length == 0 || Proxy.isValidURL(proxy.getText()) == false) {
+		if (login.getText().isEmpty() || password.getPassword().length == 0 || !Proxy.isValidURL(proxy.getText())) {
 			selected = false;
 		}
 		saveButton.setEnabled(selected);
@@ -330,7 +313,7 @@ public class Settings implements Activity {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			for (JCheckBox box : useGPUs) {
-				if (box.equals(e.getSource()) == false) {
+				if (!box.equals(e.getSource())) {
 					box.setSelected(false);
 				}
 			}
@@ -363,11 +346,8 @@ public class Settings implements Activity {
 			
 			if (cacheDir != null) {
 				File fromConfig = config.getStorageDir();
-				if (fromConfig != null && fromConfig.getAbsolutePath().equals(cacheDir.getAbsolutePath()) == false) {
+				if (fromConfig != null && !fromConfig.getAbsolutePath().equals(cacheDir.getAbsolutePath())) {
 					config.setCacheDir(cacheDir);
-				}
-				else {
-					// do nothing because the directory is the same as before
 				}
 			}
 			
@@ -382,7 +362,7 @@ public class Settings implements Activity {
 			if (useCPU.isSelected() && selected_gpu == null) {
 				method = ComputeType.CPU;
 			}
-			else if (useCPU.isSelected() == false && selected_gpu != null) {
+			else if (!useCPU.isSelected() && selected_gpu != null) {
 				method = ComputeType.GPU;
 			}
 			else if (useCPU.isSelected() && selected_gpu != null) {

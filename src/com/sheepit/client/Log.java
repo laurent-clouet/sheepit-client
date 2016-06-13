@@ -55,12 +55,12 @@ public class Log {
 	}
 	
 	private void append(String level_, String msg_) {
-		if (msg_.equals("") == false) {
+		if (!msg_.equals("")) {
 			String line = this.dateFormat.format(new java.util.Date()) + " (" + level_ + ") " + msg_;
 			if (this.checkpoints.containsKey(this.lastCheckPoint)) {
 				this.checkpoints.get(this.lastCheckPoint).add(line);
 			}
-			if (this.printStdOut == true) {
+			if (this.printStdOut) {
 				System.out.println(line);
 			}
 		}

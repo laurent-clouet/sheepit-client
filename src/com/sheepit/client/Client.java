@@ -96,12 +96,12 @@ public class Client {
 	}
 	
 	public int run() {
-		if (this.config.checkOSisSupported() == false) {
+		if (!this.config.checkOSisSupported()) {
 			this.gui.error(Error.humanString(Error.Type.OS_NOT_SUPPORTED));
 			return -3;
 		}
 		
-		if (this.config.checkCPUisSupported() == false) {
+		if (!this.config.checkCPUisSupported()) {
 			this.gui.error(Error.humanString(Error.Type.CPU_NOT_SUPPORTED));
 			return -4;
 		}
@@ -137,7 +137,7 @@ public class Client {
 			Thread thread_sender = new Thread(runnable_sender);
 			thread_sender.start();
 			
-			while (this.running == true) {
+			while (this.running) {
 				this.renderingJob = null;
 				synchronized (this) {
 					while (this.suspended) {
@@ -171,13 +171,7 @@ public class Client {
 				catch (FermeExceptionSessionDisabled e) {
 					this.gui.error(Error.humanString(Error.Type.SESSION_DISABLED));
 					// should wait forever to actually display the message to the user
-					while (true) {
-						try {
-							Thread.sleep(100000);
-						}
-						catch (InterruptedException e1) {
-						}
-					}
+					return -10;
 				}
 				catch (FermeExceptionNoSession e) {
 					// User has no session need to re-authenticate
@@ -264,7 +258,7 @@ public class Client {
 					this.gui.framesRemaining(0);
 					this.suspended = true;
 					int time_slept = 0;
-					while (time_slept < time_sleep && this.running == true) {
+					while (time_slept < time_sleep && this.running) {
 						try {
 							Thread.sleep(5000);
 						}
@@ -303,7 +297,7 @@ public class Client {
 					continue;
 				}
 				
-				if (this.renderingJob.simultaneousUploadIsAllowed() == false) { // power or compute_method job, need to upload right away
+				if (!this.renderingJob.simultaneousUploadIsAllowed()) { // power or compute_method job, need to upload right away
 					ret = confirmJob(this.renderingJob);
 					if (ret != Error.Type.OK) {
 						gui.error("Client::renderingManagement problem with confirmJob (returned " + ret + ")");
@@ -318,7 +312,7 @@ public class Client {
 					this.renderingJob = null;
 				}
 				
-				while (this.shouldWaitBeforeRender() == true) {
+				while (this.shouldWaitBeforeRender()) {
 					try {
 						Thread.sleep(4000); // wait a little bit
 					}
@@ -329,7 +323,7 @@ public class Client {
 			}
 			
 			// not running but maybe still sending frame
-			while (this.jobsToValidate.isEmpty() == false) {
+			while (!this.jobsToValidate.isEmpty()) {
 				try {
 					Thread.sleep(2300); // wait a little bit
 				}
@@ -464,7 +458,7 @@ public class Client {
 			String args = "?type=" + (error == null ? "" : error.getValue());
 			if (job_to_reset_ != null) {
 				args += "&frame=" + job_to_reset_.getFrameNumber() + "&job=" + job_to_reset_.getId() + "&render_time=" + job_to_reset_.getProcessRender().getDuration();
-				if (job_to_reset_.getExtras() != null && job_to_reset_.getExtras().isEmpty() == false) {
+				if (job_to_reset_.getExtras() != null && !job_to_reset_.getExtras().isEmpty()) {
 					args += "&extras=" + job_to_reset_.getExtras();
 				}
 			}
@@ -476,10 +470,7 @@ public class Client {
 			// no exception should be raised to actual launcher (applet or standalone)
 		}
 		
-		if (error != null && (error == Error.Type.RENDERER_CRASHED || error == Error.Type.RENDERER_KILLED_BY_USER)) {
-			// do nothing, we can ask for a job right away
-		}
-		else {
+		if (!(error != null && (error == Error.Type.RENDERER_CRASHED || error == Error.Type.RENDERER_KILLED_BY_USER))) {
 			try {
 				Thread.sleep(300000); // sleeping for 5min
 			}
@@ -502,7 +493,7 @@ public class Client {
 			for (Pair<Calendar, Calendar> interval : this.config.requestTime) {
 				Calendar start = (Calendar) now.clone();
 				Calendar end = (Calendar) now.clone();
-				start.set(Calendar.SECOND, 00);
+				start.set(Calendar.SECOND, 0);
 				start.set(Calendar.MINUTE, interval.first.get(Calendar.MINUTE));
 				start.set(Calendar.HOUR_OF_DAY, interval.first.get(Calendar.HOUR_OF_DAY));
 				
@@ -558,12 +549,12 @@ public class Client {
 		File scene_file = new File(ajob.getScenePath());
 		File renderer_file = new File(ajob.getRendererPath());
 		
-		if (scene_file.exists() == false) {
+		if (!scene_file.exists()) {
 			this.log.error("Client::work job preparation failed (scene file '" + scene_file.getAbsolutePath() + "' does not exist)");
 			return Error.Type.MISSING_SCENE;
 		}
 		
-		if (renderer_file.exists() == false) {
+		if (!renderer_file.exists()) {
 			this.log.error("Client::work job preparation failed (renderer file '" + renderer_file.getAbsolutePath() + "' does not exist)");
 			return Error.Type.MISSING_RENDER;
 		}
@@ -589,7 +580,7 @@ public class Client {
 		File local_path_file = new File(local_path);
 		String update_ui = "Downloading " + download_type + " %s %%";
 		
-		if (local_path_file.exists() == true) {
+		if (local_path_file.exists()) {
 			this.gui.status("Reusing cached " + download_type);
 			return 0;
 		}
@@ -601,12 +592,12 @@ public class Client {
 		boolean md5_check = this.checkFile(ajob, local_path, md5_server);
 		int attempts = 1;
 		
-		while ((ret != 0 || md5_check == false) && attempts < this.maxDownloadFileAttempts) {
+		while ((ret != 0 || !md5_check) && attempts < this.maxDownloadFileAttempts) {
 			if (ret != 0) {
 				this.gui.error("Client::downloadFile problem with Utils.HTTPGetFile returned " + ret);
 				this.log.debug("Client::downloadFile problem with Utils.HTTPGetFile (return: " + ret + ") removing local file (path: " + local_path + ")");
 			}
-			else if (md5_check == false) {
+			else if (!md5_check) {
 				this.gui.error("Client::downloadFile problem with Client::checkFile mismatch on md5");
 				this.log.debug("Client::downloadFile problem with Client::checkFile mismatch on md5, removing local file (path: " + local_path + ")");
 			}
@@ -618,7 +609,7 @@ public class Client {
 			md5_check = this.checkFile(ajob, local_path, md5_server);
 			attempts++;
 			
-			if ((ret != 0 || md5_check == false) && attempts >= this.maxDownloadFileAttempts) {
+			if ((ret != 0 || !md5_check) && attempts >= this.maxDownloadFileAttempts) {
 				this.log.debug("Client::downloadFile failed after " + this.maxDownloadFileAttempts + " attempts, removing local file (path: " + local_path + "), stopping...");
 				local_path_file.delete();
 				return -9;
@@ -631,14 +622,14 @@ public class Client {
 	private boolean checkFile(Job ajob, String local_path, String md5_server) {
 		File local_path_file = new File(local_path);
 		
-		if (local_path_file.exists() == false) {
+		if (!local_path_file.exists()) {
 			this.log.error("Client::checkFile cannot check md5 on a nonexistent file (path: " + local_path + ")");
 			return false;
 		}
 		
 		String md5_local = Utils.md5(local_path);
 		
-		if (md5_local.equals(md5_server) == false) {
+		if (!md5_local.equals(md5_server)) {
 			this.log.error("Client::checkFile mismatch on md5 local: '" + md5_local + "' server: '" + md5_server + "' (local size: " + new File(local_path).length() + ")");
 			return false;
 		}
@@ -652,10 +643,7 @@ public class Client {
 		String renderer_path = ajob.getRendererDirectory();
 		File renderer_path_file = new File(renderer_path);
 		
-		if (renderer_path_file.exists()) {
-			// Directory already exists -> do nothing
-		}
-		else {
+		if (!renderer_path_file.exists()) {
 			this.gui.status("Extracting renderer");
 			// we create the directory
 			renderer_path_file.mkdir();
@@ -672,10 +660,7 @@ public class Client {
 		String scene_path = ajob.getSceneDirectory();
 		File scene_path_file = new File(scene_path);
 		
-		if (scene_path_file.exists()) {
-			// Directory already exists -> do nothing
-		}
-		else {
+		if (!scene_path_file.exists()) {
 			this.gui.status("Extracting project");
 			// we create the directory
 			scene_path_file.mkdir();

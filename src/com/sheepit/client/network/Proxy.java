@@ -22,7 +22,7 @@ package com.sheepit.client.network;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.Authenticator;
-import com.sheepit.client.network.Proxy;
+
 import com.sheepit.client.network.ProxyAuthenticator;
 
 public class Proxy {

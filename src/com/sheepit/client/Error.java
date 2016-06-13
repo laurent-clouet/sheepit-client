@@ -51,7 +51,7 @@ public class Error {
 		
 		private final int id;
 		
-		private Type(int id) {
+		Type(int id) {
 			this.id = id;
 		}
 		
@@ -93,7 +93,7 @@ public class Error {
 		
 		private final int id;
 		
-		private ServerCode(int id) {
+		ServerCode(int id) {
 			this.id = id;
 		}
 		
