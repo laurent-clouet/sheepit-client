@@ -77,6 +77,7 @@ import com.sheepit.client.Error.ServerCode;
 import com.sheepit.client.exception.FermeException;
 import com.sheepit.client.exception.FermeExceptionNoRightToRender;
 import com.sheepit.client.exception.FermeExceptionNoSession;
+import com.sheepit.client.exception.FermeExceptionNoSpaceLeftOnDevice;
 import com.sheepit.client.exception.FermeExceptionServerInMaintenance;
 import com.sheepit.client.exception.FermeExceptionServerOverloaded;
 import com.sheepit.client.exception.FermeExceptionSessionDisabled;
@@ -536,7 +537,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 		return connection;
 	}
 	
-	public int HTTPGetFile(String url_, String destination_, Gui gui_, String status_) {
+	public int HTTPGetFile(String url_, String destination_, Gui gui_, String status_) throws FermeExceptionNoSpaceLeftOnDevice {
 		// the destination_ parent directory must exist
 		try {
 			HttpURLConnection httpCon = this.HTTPRequest(url_);
@@ -570,6 +571,10 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			return 0;
 		}
 		catch (Exception e) {
+			if (Utils.noFreeSpaceOnDisk(destination_)) {
+				throw new FermeExceptionNoSpaceLeftOnDevice();
+			}
+			
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
 			this.log.error("Server::HTTPGetFile exception " + e + " stacktrace " + sw.toString());

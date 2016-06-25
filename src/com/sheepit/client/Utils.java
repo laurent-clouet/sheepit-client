@@ -80,10 +80,10 @@ public class Utils {
 					fos.close();
 				}
 				catch (IOException e) {
-					File f = new File(jiniHomeParentDirName_);
-					if (f.getUsableSpace() == 0) {
+					if (noFreeSpaceOnDisk(jiniHomeParentDirName_)) {
 						throw new FermeExceptionNoSpaceLeftOnDevice();
 					}
+					
 					Log logger = Log.getInstance(null); // might not print the log since the config is null
 					logger.error("Utils::unzipFileIntoDirectory(" + zipFileName_ + "," + jiniHomeParentDirName_ + ") exception " + e);
 					return -3;
@@ -238,5 +238,16 @@ public class Utils {
 			output += seconds + "s";
 		}
 		return output;
+	}
+	
+	public static boolean noFreeSpaceOnDisk(String destination_) {
+		try {
+			File file = new File(destination_);
+			return (file.getUsableSpace() < 512 * 1024); // at least the same amount as Server.HTTPGetFile
+		}
+		catch (SecurityException e) {
+		}
+		
+		return false;
 	}
 }
