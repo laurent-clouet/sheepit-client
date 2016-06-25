@@ -577,15 +577,15 @@ public class Client {
 		return Error.Type.OK;
 	}
 	
-	protected int downloadSceneFile(Job ajob_) {
+	protected int downloadSceneFile(Job ajob_) throws FermeExceptionNoSpaceLeftOnDevice {
 		return this.downloadFile(ajob_, ajob_.getSceneArchivePath(), ajob_.getSceneMD5(), String.format("%s?type=job&job=%s&revision=%s", this.server.getPage("download-archive"), ajob_.getId(), ajob_.getRevision()), "project");
 	}
 	
-	protected int downloadExecutable(Job ajob) {
+	protected int downloadExecutable(Job ajob) throws FermeExceptionNoSpaceLeftOnDevice {
 		return this.downloadFile(ajob, ajob.getRendererArchivePath(), ajob.getRenderMd5(), String.format("%s?type=binary&job=%s", this.server.getPage("download-archive"), ajob.getId()), "renderer");
 	}
 	
-	private int downloadFile(Job ajob, String local_path, String md5_server, String url, String download_type) {
+	private int downloadFile(Job ajob, String local_path, String md5_server, String url, String download_type) throws FermeExceptionNoSpaceLeftOnDevice {
 		File local_path_file = new File(local_path);
 		String update_ui = "Downloading " + download_type + " %s %%";
 		
