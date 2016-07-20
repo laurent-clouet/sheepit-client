@@ -24,6 +24,8 @@ import java.util.List;
 
 import com.sheepit.client.os.OS;
 import com.sun.jna.Native;
+import com.sun.jna.ptr.IntByReference;
+import com.sun.jna.ptr.LongByReference;
 
 public class GPU {
 	public static List<GPUDevice> devices = null;
@@ -69,7 +71,7 @@ public class GPU {
 			return false;
 		}
 		
-		int[] count = new int[1];
+		IntByReference count = new IntByReference();
 		result = cudalib.cuDeviceGetCount(count);
 		
 		if (result != CUresult.CUDA_SUCCESS) {
@@ -79,7 +81,7 @@ public class GPU {
 		
 		devices = new LinkedList<GPUDevice>();
 		
-		for (int num = 0; num < count[0]; num++) {
+		for (int num = 0; num < count.getValue(); num++) {
 			byte name[] = new byte[256];
 			
 			result = cudalib.cuDeviceGetName(name, 256, num);
@@ -88,7 +90,7 @@ public class GPU {
 				continue;
 			}
 			
-			long[] ram = new long[1];
+			LongByReference ram = new LongByReference();
 			result = cudalib.cuDeviceTotalMem(ram, num);
 			
 			if (result != CUresult.CUDA_SUCCESS) {
@@ -96,7 +98,7 @@ public class GPU {
 				return false;
 			}
 			
-			devices.add(new GPUDevice(new String(name).trim(), ram[0], "CUDA_" + Integer.toString(num)));
+			devices.add(new GPUDevice(new String(name).trim(), ram.getValue(), "CUDA_" + Integer.toString(num)));
 		}
 		return true;
 	}
