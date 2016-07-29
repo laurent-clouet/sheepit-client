@@ -603,8 +603,8 @@ public class Client {
 		
 		while ((ret != 0 || md5_check == false) && attempts < this.maxDownloadFileAttempts) {
 			if (ret != 0) {
-				this.gui.error("Client::downloadFile problem with Utils.HTTPGetFile returned " + ret);
-				this.log.debug("Client::downloadFile problem with Utils.HTTPGetFile (return: " + ret + ") removing local file (path: " + local_path + ")");
+				this.gui.error("Client::downloadFile problem with Server.HTTPGetFile returned " + ret);
+				this.log.debug("Client::downloadFile problem with Server.HTTPGetFile (return: " + ret + ") removing local file (path: " + local_path + ")");
 			}
 			else if (md5_check == false) {
 				this.gui.error("Client::downloadFile problem with Client::checkFile mismatch on md5");
