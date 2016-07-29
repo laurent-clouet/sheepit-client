@@ -10,6 +10,7 @@ public class GuiTextOneLine implements Gui {
 	
 	private int rendered;
 	private int remaining;
+	private String creditsEarned;
 	private int sigIntCount = 0;
 
 	private String status;
@@ -22,6 +23,7 @@ public class GuiTextOneLine implements Gui {
 	public GuiTextOneLine() {
 		rendered = 0;
 		remaining = 0;
+		creditsEarned = null;
 		status = "";
 		line = "";
 	}
@@ -75,6 +77,7 @@ public class GuiTextOneLine implements Gui {
 	@Override
 	public void AddFrameRendered() {
 		rendered += 1;
+		creditsEarned = client.getServer().getCreditEarnedOnCurrentSession();
 		updateLine();
 	}
 	
@@ -95,8 +98,6 @@ public class GuiTextOneLine implements Gui {
 	}
 	
 	private void updateLine() {
-		String creditsEarned = client.getServer().getCreditEarnedOnCurrentSession();
-		
 		int charToRemove = line.length();
 		
 		System.out.print("\r");
