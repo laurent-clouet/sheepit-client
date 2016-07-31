@@ -13,6 +13,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import com.sheepit.client.Client;
+import com.sheepit.client.Job;
+import com.sheepit.client.RenderProcess;
 import com.sheepit.client.Server;
 import com.sheepit.client.os.OS;
 import com.sheepit.client.standalone.GuiSwing;
@@ -248,9 +250,15 @@ public class Working implements Activity {
 		public void actionPerformed(ActionEvent e) {
 			Client client = parent.getClient();
 			if (client != null) {
-				client.getRenderingJob().setAskForRendererKill(true);
-				client.getRenderingJob().setUserBlockJob(true);
-				OS.getOS().kill(client.getRenderingJob().getProcessRender().getProcess());
+				Job job = client.getRenderingJob();
+				if (job != null) {
+					job.setAskForRendererKill(true);
+					job.setUserBlockJob(true);
+					RenderProcess process = job.getProcessRender();
+					if (process != null) {
+						OS.getOS().kill(process.getProcess());
+					}
+				}
 			}
 		}
 	}
