@@ -41,36 +41,6 @@ public class GPU {
 			devices.addAll(gpus);
 		}
 		
-		gpus = OpenCL.getGpus();
-		if (gpus != null) {
-			devices.addAll(gpus);
-		}
-		
-		for (int num = 0; num < count.getValue(); num++) {
-			byte name[] = new byte[256];
-			
-			result = cudalib.cuDeviceGetName(name, 256, num);
-			if (result != CUresult.CUDA_SUCCESS) {
-				System.out.println("GPU::generate cuDeviceGetName failed (ret: " + CUresult.stringFor(result) + ")");
-				continue;
-			}
-			
-			LongByReference ram = new LongByReference();
-			try {
-				result = cudalib.cuDeviceTotalMem_v2(ram, num);
-			}
-			catch (UnsatisfiedLinkError e) {
-				// fall back to old function
-				result = cudalib.cuDeviceTotalMem(ram, num);
-			}
-			
-			if (result != CUresult.CUDA_SUCCESS) {
-				System.out.println("GPU::generate cuDeviceTotalMem failed (ret: " + CUresult.stringFor(result) + ")");
-				return false;
-			}
-			
-			devices.add(new GPUDevice(new String(name).trim(), ram.getValue(), "CUDA_" + Integer.toString(num)));
-		}
 		return true;
 	}
 	

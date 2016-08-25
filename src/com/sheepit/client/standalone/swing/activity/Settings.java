@@ -196,6 +196,7 @@ public class Settings implements Activity {
 			gpuChecked = true;
 		}
 		useCPU.addActionListener(new CpuChangeAction());
+		
 		compute_devices_constraints.gridx = 1;
 		compute_devices_constraints.gridy = 0;
 		compute_devices_constraints.fill = GridBagConstraints.BOTH;
@@ -212,21 +213,6 @@ public class Settings implements Activity {
 				GPUDevice config_gpu = config.getGPUDevice();
 				if (config_gpu != null && config_gpu.getId().equals(gpu.getId())) {
 					gpuCheckBox.setSelected(gpuChecked);
-		constraints.gridwidth = Math.max(1, columns - (gpus != null ? gpus.size() : 0) - 3);
-		constraints.gridx = 2;
-		parent.getContentPane().add(useCPU, constraints);
-		
-		constraints.gridwidth = 1;
-		if (gpus != null) {
-			for (int i=0; i < gpus.size(); i++) {
-				GPUDevice gpu = gpus.get(i);
-				JCheckBoxGPU gpuCheckBox = new JCheckBoxGPU(gpu);
-				gpuCheckBox.setToolTipText(gpu.getId());
-				if (gpuChecked) {
-					GPUDevice config_gpu = config.getGPUDevice();
-					if (config_gpu != null && config_gpu.getId().equals(gpu.getId())) {
-						gpuCheckBox.setSelected(gpuChecked);
-					}
 				}
 			}
 			gpuCheckBox.addActionListener(new GpuChangeAction());
