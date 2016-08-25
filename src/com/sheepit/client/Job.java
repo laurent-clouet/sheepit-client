@@ -47,6 +47,7 @@ import com.sheepit.client.os.OS;
 public class Job {
 	public static final String UPDATE_METHOD_BY_REMAINING_TIME = "remainingtime";
 	public static final String UPDATE_METHOD_BLENDER_INTERNAL_BY_PART = "blenderinternal";
+	public static final String UPDATE_METHOD_BY_TILE = "by_tile";
 	
 	private String numFrame;
 	private String sceneMD5;
@@ -224,13 +225,12 @@ public class Job {
 	}
 	
 	public Error.Type render() {
-		gui.status("Rendering");
+		gui.status("Rendering project \"" + this.name + "\"");
 		RenderProcess process = getProcessRender();
 		Timer timerOfMaxRenderTime = null;
-		String core_script = "";
-		if (getUseGPU() && config.getGPUDevice() != null && config.getComputeMethod() != ComputeType.CPU) {
-			core_script = "sheepit_set_compute_device(\"CUDA\", \"GPU\", \"" + config.getGPUDevice().getCudaName() + "\")\n";
-			gui.setComputeMethod("GPU");
+		String core_script = "import bpy\n" + "bpy.context.user_preferences.system.compute_device_type = \"%s\"\n" + "bpy.context.scene.cycles.device = \"%s\"\n" + "bpy.context.user_preferences.system.compute_device = \"%s\"\n";
+		if (getUseGPU() && config.getGPUDevice() != null) {
+			core_script = String.format(core_script,  config.getGPUDevice().getType(), "GPU", config.getGPUDevice().getId());
 		}
 		else {
 			core_script = "sheepit_set_compute_device(\"NONE\", \"CPU\", \"CPU\")\n";
@@ -251,7 +251,10 @@ public class Job {
 		
 		new_env.put("BLENDER_USER_CONFIG", config.workingDirectory.getAbsolutePath().replace("\\", "\\\\"));
 		new_env.put("CORES", Integer.toString(config.getNbCores()));
-		new_env.put("PRIORITY", Integer.toString(config.getPriority()));
+		if ("OPENCL".equals(config.getGPUDevice().getType())) {
+			new_env.put("CYCLES_OPENCL_SPLIT_KERNEL_TEST", "1");
+			this.updateRenderingStatusMethod = UPDATE_METHOD_BY_TILE; // don't display remaining time
+		}
 		
 		for (String arg : command1) {
 			switch (arg) {
@@ -513,6 +516,28 @@ public class Job {
 					}
 				}
 			}
+		}
+		else if (getUpdateRenderingStatusMethod() == null || getUpdateRenderingStatusMethod().equals(Job.UPDATE_METHOD_BY_TILE)) {
+			String search = " Tile ";
+			int index = line.lastIndexOf(search);
+			if (index != -1) {
+				String buf = line.substring(index + search.length());
+				String[] parts = buf.split("/");
+				if (parts != null && parts.length == 2) {
+					try {
+						int current = Integer.parseInt(parts[0]);
+						int total = Integer.parseInt(parts[1]);
+						if (total != 0) {
+							gui.status(String.format("Rendering %s %%", (int) (100.0 * current / total)));
+							return;
+						}
+					}
+					catch (NumberFormatException e) {
+						System.out.println("Exception 94: " + e);
+					}
+				}
+			}
+			gui.status("Rendering");
 		}
 	}
 	

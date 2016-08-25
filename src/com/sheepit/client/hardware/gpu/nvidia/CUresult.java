@@ -26,7 +26,7 @@
  */
 
 //package jcuda.driver;
-package com.sheepit.client.hardware.gpu;
+package com.sheepit.client.hardware.gpu.nvidia;
 
 /**
  * Error codes.<br />
