@@ -31,43 +31,12 @@ public class GPU {
 	public static boolean generate() {
 		devices = new LinkedList<GPUDevice>();
 		
-		OS os = OS.getOS();
-		String path = os.getCUDALib();
-		if (path == null) {
-			System.out.println("GPU::generate no CUDA lib path found");
-			return false;
-		}
-		CUDA cudalib = null;
-		try {
-			cudalib = (CUDA) Native.loadLibrary(path, CUDA.class);
-		}
-		catch (java.lang.UnsatisfiedLinkError e) {
-			System.out.println("GPU::generate failed to load CUDA lib (path: " + path + ")");
-			return false;
-		}
-		catch (java.lang.ExceptionInInitializerError e) {
-			System.out.println("GPU::generate ExceptionInInitializerError " + e);
-			return false;
-		}
-		catch (Exception e) {
-			System.out.println("GPU::generate generic exception " + e);
-			return false;
-		}
-		
-		int result = CUresult.CUDA_ERROR_UNKNOWN;
-		
-		result = cudalib.cuInit(0);
-		if (result != CUresult.CUDA_SUCCESS) {
-			System.out.println("GPU::generate cuInit failed (ret: " + result + ")");
-			if (result == CUresult.CUDA_ERROR_UNKNOWN) {
-				System.out.println("If you are running Linux, this error is usually due to nvidia kernel module 'nvidia_uvm' not loaded.");
-				System.out.println("Relaunch the application as root or load the module.");
-				System.out.println("Most of time it does fix the issue.");
-			}
-			return false;
-		}
-		
 		List<GPUDevice> gpus = Nvidia.getGpus();
+		if (gpus != null) {
+			devices.addAll(gpus);
+		}
+		
+		gpus = OpenCL.getGpus();
 		if (gpus != null) {
 			devices.addAll(gpus);
 		}

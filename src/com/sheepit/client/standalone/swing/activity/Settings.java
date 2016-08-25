@@ -207,10 +207,10 @@ public class Settings implements Activity {
 		
 		for (GPUDevice gpu : gpus) {
 			JCheckBoxGPU gpuCheckBox = new JCheckBoxGPU(gpu);
-			gpuCheckBox.setToolTipText(gpu.getCudaName());
+			gpuCheckBox.setToolTipText(gpu.getId());
 			if (gpuChecked) {
 				GPUDevice config_gpu = config.getGPUDevice();
-				if (config_gpu != null && config_gpu.getCudaName().equals(gpu.getCudaName())) {
+				if (config_gpu != null && config_gpu.getId().equals(gpu.getId())) {
 					gpuCheckBox.setSelected(gpuChecked);
 		constraints.gridwidth = Math.max(1, columns - (gpus != null ? gpus.size() : 0) - 3);
 		constraints.gridx = 2;
