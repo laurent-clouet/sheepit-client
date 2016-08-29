@@ -336,16 +336,19 @@ public class Job {
 		
 		File[] files = config.workingDirectory.listFiles(textFilter);
 		
+		if (getAskForRendererKill()) {
+			log.debug("Job::render been asked to end render");
+			if (files.length != 0) {
+				new File(files[0].getAbsolutePath()).delete();
+			}
+			if (getUserBlockJob()) {
+				return Error.Type.RENDERER_KILLED_BY_USER;
+			}
+			return Error.Type.RENDERER_KILLED;
+		}
+		
 		if (files.length == 0) {
 			log.error("Job::render no picture file found (after finished render (filename_without_extension " + filename_without_extension + ")");
-			
-			if (getAskForRendererKill()) {
-				log.debug("Job::render renderer didn't generate any frame but died due to a kill request");
-				if (getUserBlockJob()) {
-					return Error.Type.RENDERER_KILLED_BY_USER;
-				}
-				return Error.Type.RENDERER_KILLED;
-			}
 			
 			String basename = "";
 			try {
