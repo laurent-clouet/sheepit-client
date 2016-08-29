@@ -247,7 +247,7 @@ public class Job {
 					catch (IOException e) {
 						StringWriter sw = new StringWriter();
 						e.printStackTrace(new PrintWriter(sw));
-						log.error("Client:runRenderer exception on script generation, will return UNKNOWN " + e + " stacktrace " + sw.toString());
+						log.error("Job::render exception on script generation, will return UNKNOWN " + e + " stacktrace " + sw.toString());
 						return Error.Type.UNKNOWN;
 					}
 					script_file.deleteOnExit();
@@ -304,7 +304,7 @@ public class Job {
 			}
 			catch (IOException err1) { // for the input.readline
 				// most likely The handle is invalid
-				log.error("Client:runRenderer exception(B) (silent error) " + err1);
+				log.error("Job::render exception(B) (silent error) " + err1);
 			}
 			log.debug("end of rendering");
 		}
@@ -314,7 +314,7 @@ public class Job {
 			}
 			StringWriter sw = new StringWriter();
 			err.printStackTrace(new PrintWriter(sw));
-			log.error("Client:runRenderer exception(A) " + err + " stacktrace " + sw.toString());
+			log.error("Job::render exception(A) " + err + " stacktrace " + sw.toString());
 			return Error.Type.FAILED_TO_EXECUTE;
 		}
 		
@@ -337,10 +337,10 @@ public class Job {
 		File[] files = config.workingDirectory.listFiles(textFilter);
 		
 		if (files.length == 0) {
-			log.error("Client::runRenderer no picture file found (after finished render (filename_without_extension " + filename_without_extension + ")");
+			log.error("Job::render no picture file found (after finished render (filename_without_extension " + filename_without_extension + ")");
 			
 			if (getAskForRendererKill()) {
-				log.debug("Client::runRenderer renderer didn't generate any frame but died due to a kill request");
+				log.debug("Job::render renderer didn't generate any frame but died due to a kill request");
 				if (getUserBlockJob()) {
 					return Error.Type.RENDERER_KILLED_BY_USER;
 				}
@@ -356,13 +356,13 @@ public class Job {
 			}
 			File crash_file = new File(config.workingDirectory + File.separator + basename + ".crash.txt");
 			if (crash_file.exists()) {
-				log.error("Client::runRenderer crash file found => the renderer crashed");
+				log.error("Job::render crash file found => the renderer crashed");
 				crash_file.delete();
 				return Error.Type.RENDERER_CRASHED;
 			}
 			
 			if (exit_value == 127 && process.getDuration() < 10) {
-				log.error("Client::runRenderer renderer returned 127 and took " + process.getDuration() + "s, some libraries may be missing");
+				log.error("Job::render renderer returned 127 and took " + process.getDuration() + "s, some libraries may be missing");
 				return Error.Type.RENDERER_MISSING_LIBRARIES;
 			}
 			
@@ -370,7 +370,7 @@ public class Job {
 		}
 		else {
 			setOutputImagePath(files[0].getAbsolutePath());
-			log.debug("Client::runRenderer pictureFilename: '" + getOutputImagePath() + "'");
+			log.debug("Job::render pictureFilename: '" + getOutputImagePath() + "'");
 		}
 		
 		File scene_dir = new File(getSceneDirectory());
