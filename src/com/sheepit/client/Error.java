@@ -153,6 +153,8 @@ public class Error {
 				return "Renderer has crashed. It's usually due to a bad project or not enough memory. There is nothing you can do about it. Will try another project in a few minutes.";
 			case RENDERER_OUT_OF_VIDEO_MEMORY:
 				return "Renderer has crashed, due to not enough video memory (vram). There is nothing you can do about it. Will try another project in a few minutes.";
+			case RENDERER_OUT_OF_MEMORY:
+				return "No more memory available. There is nothing you can do about it. Will try another project in a few minutes.";
 			case GPU_NOT_SUPPORTED:
 				return "Rendering have failed due to a GPU not supported (please check the CUDA version)";
 			case RENDERER_MISSING_LIBRARIES:
