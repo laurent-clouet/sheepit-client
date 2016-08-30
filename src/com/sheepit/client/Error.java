@@ -141,6 +141,8 @@ public class Error {
 	
 	public static String humanString(Type in) {
 		switch (in) {
+			case NETWORK_ISSUE:
+				return "Could not connect to the server, please check if you have connectivity issue";
 			case TOO_OLD_CLIENT:
 				return "This client is too old, you need to update it";
 			case AUTHENTICATION_FAILED:
