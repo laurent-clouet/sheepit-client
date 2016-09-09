@@ -32,6 +32,7 @@ public class SettingsLoader {
 	private String ui;
 	private String tileX;
 	private String tileY;
+	private String customTileSize;
 	
 	public SettingsLoader() {
 		path = getDefaultFilePath();
@@ -41,7 +42,7 @@ public class SettingsLoader {
 		path = path_;
 	}
 	
-	public SettingsLoader(String login_, String password_, String proxy_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, String cacheDir_, boolean autoSignIn_, String ui_, String tileX_, String tileY_) {
+	public SettingsLoader(String login_, String password_, String proxy_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, String cacheDir_, boolean autoSignIn_, String ui_, String tileX_, String tileY_, boolean customTileSize_) {
 		path = getDefaultFilePath();
 		login = login_;
 		password = password_;
@@ -51,6 +52,7 @@ public class SettingsLoader {
 		ui = ui_;
 		tileX = tileX_;
 		tileY = tileY_;
+		customTileSize = String.valueOf(customTileSize_);
 		if (cores_ > 0) {
 			cores = String.valueOf(cores_);
 		}
@@ -126,6 +128,10 @@ public class SettingsLoader {
 				prop.setProperty("tileY", tileY);
 			}
 			
+			if (customTileSize != null) {
+				prop.setProperty("customTileSize", customTileSize);
+			}
+			
 			prop.store(output, null);
 		}
 		catch (IOException io) {
@@ -169,6 +175,7 @@ public class SettingsLoader {
 		this.ui = null;
 		this.tileX = null;
 		this.tileY = null;
+		this.customTileSize = null;
 		
 		if (new File(path).exists() == false) {
 			return;
@@ -222,6 +229,10 @@ public class SettingsLoader {
 			
 			if (prop.containsKey("tileY")) {
 				this.tileY = prop.getProperty("tileY");
+			}
+			
+			if (prop.containsKey("customTileSize")) {
+				this.customTileSize = prop.getProperty("customTileSize");
 			}
 		}
 		catch (IOException io) {
@@ -296,6 +307,7 @@ public class SettingsLoader {
 		}
 		
 		config.setAutoSignIn(Boolean.valueOf(autoSignIn));
+		config.setCustomTileEnabled(Boolean.valueOf(customTileSize));
 	}
 	
 	@Override

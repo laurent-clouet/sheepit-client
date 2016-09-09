@@ -35,6 +35,7 @@ import com.sheepit.client.hardware.gpu.GPU;
 import com.sheepit.client.hardware.gpu.GPUDevice;
 import com.sheepit.client.network.Proxy;
 import com.sheepit.client.standalone.GuiSwing;
+import javax.swing.JFormattedTextField;
 
 public class Settings implements Activity {
 	private static final String DUMMY_CACHE_DIR = "Auto detected";
@@ -59,8 +60,8 @@ public class Settings implements Activity {
 	
 	private JLabel tileSizePadding;
 	private JLabel tileSizePaddingB;
-	private JTextField tileSizeX;
-	private JTextField tileSizeY;
+	private JFormattedTextField tileSizeX;
+	private JFormattedTextField tileSizeY;
 	private JLabel tileLabelX;
 	private JLabel tileLabelY;
 	private JCheckBox customTileSize;
@@ -253,7 +254,8 @@ public class Settings implements Activity {
 			++currentRow;
 		}
 		
-		customTileSize = new JCheckBox("Custom render tile size");
+		// TODO: Have the tile sizes already collapsed if the JCheckBox isn't checked
+		customTileSize = new JCheckBox("Custom render tile size", config.getCustomTileEnabled());
 		constraints.gridx = 2;
 		constraints.gridy = currentRow;
 		parent.getContentPane().add(customTileSize, constraints);
@@ -270,8 +272,9 @@ public class Settings implements Activity {
 		constraints.gridy = currentRow;
 		parent.getContentPane().add(tileLabelX, constraints);
 
-		tileSizeX = new JTextField("");
-		tileSizeX.setText(config.getTileX());
+		tileSizeX = new JFormattedTextField();
+		tileSizeX.setValue(new Integer (config.getTileXInt()));
+		//tileSizeX.addPropertyChangeListener("value", this);
 		constraints.gridx = 2;
 		constraints.gridy = currentRow;
 		parent.getContentPane().add(tileSizeX, constraints);
@@ -285,8 +288,9 @@ public class Settings implements Activity {
 		constraints.gridy = currentRow;
 		parent.getContentPane().add(tileLabelY, constraints);
 		
-		tileSizeY = new JTextField("");
-		tileSizeY.setText(config.getTileY());
+		tileSizeY = new JFormattedTextField();
+		tileSizeY.setValue(new Integer(config.getTileYInt()));
+		//tileSizeY.addPropertyChangeListener("value", this);
 		constraints.gridx = 2;
 		constraints.gridy = currentRow;
 		parent.getContentPane().add(tileSizeY, constraints);
@@ -295,7 +299,9 @@ public class Settings implements Activity {
 		parent.getContentPane().add(tileSizePaddingB, 
 			parent.addPaddingConstraints(1, ++currentRow, columns - 2, 1));
 		++currentRow;
-
+                
+                hideCustomTileSize(config.getCustomTileEnabled(), false);
+                
 		saveFile = new JCheckBox("Save settings", true);
 		constraints.gridwidth = columns - 3;
 		constraints.gridx = 2;
@@ -340,14 +346,14 @@ public class Settings implements Activity {
 		}
 	}
 	
-	public void hideCustomTileSize(boolean hidden) {
+	public void hideCustomTileSize(boolean hidden, boolean displayWarning) {
 		tileSizePadding.setVisible(hidden);
 		tileSizePaddingB.setVisible(hidden);
 		tileSizeX.setVisible(hidden);
 		tileSizeY.setVisible(hidden);
 		tileLabelX.setVisible(hidden);
 		tileLabelY.setVisible(hidden);
-		if (customTileSize.isSelected() == true){
+		if (customTileSize.isSelected() == true && displayWarning){
 			JOptionPane.showMessageDialog(parent.getContentPane(), "<html>These settings should only be changed if you are an advanced user.<br /> Improper settings may lead to invalid and slower renders!</html>", "Warning: Advanced Users Only!", JOptionPane.WARNING_MESSAGE);
 		}
 	}
@@ -361,6 +367,14 @@ public class Settings implements Activity {
 		}
 		if (login.getText().isEmpty() || password.getPassword().length == 0 || Proxy.isValidURL(proxy.getText()) == false) {
 			selected = false;
+		}
+		
+		if (customTileSize.isSelected()) {
+			try{
+   				Integer.parseInt(tileSizeX.getText().replaceAll(",", ""));
+			}catch(NumberFormatException e){
+				selected = false;
+			}
 		}
 		saveButton.setEnabled(selected);
 		return selected;
@@ -416,7 +430,7 @@ public class Settings implements Activity {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			boolean custom = customTileSize.isSelected();
-			hideCustomTileSize(custom);
+			hideCustomTileSize(custom, true);
 		}	
 	}
 	
@@ -490,13 +504,18 @@ public class Settings implements Activity {
 			String tileX = null;
 			String tileY = null;
 			if (tileSizeX != null) {
-				tileX = tileSizeX.getText();
+				tileX = tileSizeX.getText().replaceAll(",", "");
 			}
 			
 			if (tileSizeY != null) {
-				tileY = tileSizeY.getText();
+				tileY = tileSizeY.getText().replaceAll(",", "");
 			}
 			
+			boolean customTile = false;
+			if (customTileSize != null) {
+				customTile = customTileSize.isSelected();
+			}
+                        
 			parent.setCredentials(login.getText(), new String(password.getPassword()));
 			
 			String cachePath = null;
@@ -507,7 +526,7 @@ public class Settings implements Activity {
 			
 			
 			if (saveFile.isSelected()) {
-				new SettingsLoader(login.getText(), new String(password.getPassword()), proxyText, method, selected_gpu, cpu_cores, cachePath, autoSignIn.isSelected(), GuiSwing.type, tileX, tileY).saveFile();
+				new SettingsLoader(login.getText(), new String(password.getPassword()), proxyText, method, selected_gpu, cpu_cores, cachePath, autoSignIn.isSelected(), GuiSwing.type, tileX, tileY, customTile).saveFile();
 			}
 			else {
 				try {

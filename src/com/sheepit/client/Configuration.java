@@ -56,6 +56,7 @@ public class Configuration {
 	private String UIType;
 	private String tileX;
 	private String tileY;
+	private boolean customEnabled;
 	
 	public Configuration(File cache_dir_, String login_, String password_) {
 		this.login = login_;
@@ -77,6 +78,7 @@ public class Configuration {
 		this.UIType = null;
 		this.tileX = null;
 		this.tileY = null;
+		this.customEnabled = false;
 	}
 	
 	public String toString() {
@@ -220,11 +222,11 @@ public class Configuration {
 	}
 	
 	public void setTileX(String sizeX) {
-		this.tileX = sizeX;
+		this.tileX = sizeX.replaceAll(",", "");
 	}
 	
 	public void setTileY(String sizeY) {
-		this.tileY = sizeY;
+		this.tileY = sizeY.replaceAll(",", "");
 	}
 	
 	public String getTileX() {
@@ -235,6 +237,22 @@ public class Configuration {
 		return tileY;
 	}
 	
+	public int getTileXInt() {
+		return Integer.parseInt(tileX.replaceAll(",", ""));
+	}
+
+	public int getTileYInt() {
+		return Integer.parseInt(tileY.replaceAll(",", ""));
+	}
+	
+	public boolean getCustomTileEnabled() {
+		return customEnabled;
+	}
+	
+	public void setCustomTileEnabled(boolean enabled) {
+		customEnabled = enabled;
+	}
+
 	public void cleanWorkingDirectory() {
 		this.cleanDirectory(this.workingDirectory);
 		this.cleanDirectory(this.storageDirectory);

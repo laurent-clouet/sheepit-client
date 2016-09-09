@@ -207,7 +207,9 @@ public class Job {
 		else {
 			core_script = String.format(core_script, "NONE", "CPU", "CPU");
 		}
-		core_script += String.format("bpy.context.scene.render.tile_x = %1$d\nbpy.context.scene.render.tile_y = %1$d\n", getTileSize());
+		core_script += String.format("bpy.context.scene.render.tile_x = %1$d\nbpy.context.scene.render.tile_y = %2$d\n", getTileSizeX(), getTileSizeY());
+                System.out.println(String.format("TEST LOOK HERE: bpy.context.scene.render.tile_x = %1$d\nbpy.context.scene.render.tile_y = %2$d\n", getTileSizeX(), getTileSizeY()));
+                
 		File script_file = null;
 		String command1[] = getRenderCommand().split(" ");
 		int size_command = command1.length + 2; // + 2 for script
@@ -630,14 +632,32 @@ public class Job {
 		return Type.OK;
 	}
 	
-	private int getTileSize() {
-		int size = 32; // CPU
-		GPUDevice gpu = this.config.getGPUDevice();
-		if (getUseGPU() && this.config.getGPUDevice() != null) {
-			// GPU
-			// if the vram is lower than 1G reduce the size of tile to avoid black output
-			size = (gpu.getMemory() > 1073741824L) ? 256 : 128;
-		}
+	private int getTileSizeX() {
+		if (config.getCustomTileEnabled() == false){
+			int size = 32; // CPU
+			GPUDevice gpu = this.config.getGPUDevice();
+			if (getUseGPU() && this.config.getGPUDevice() != null) {
+				// GPU
+				// if the vram is lower than 1G reduce the size of tile to avoid black output
+				size = (gpu.getMemory() > 1073741824L) ? 256 : 128;
+			}
 		return size;
+		}else{
+			return config.getTileXInt();
+		}
+	}
+	private int getTileSizeY() {
+		if (config.getCustomTileEnabled() == false) {
+			int size = 32; // CPU
+			GPUDevice gpu = this.config.getGPUDevice();
+			if (getUseGPU() && this.config.getGPUDevice() != null) {
+				// GPU
+				// if the vram is lower than 1G reduce the size of tile to avoid black output
+				size = (gpu.getMemory() > 1073741824L) ? 256 : 128;
+			}
+		return size;
+		}else{
+			return config.getTileYInt();
+		}
 	}
 }
