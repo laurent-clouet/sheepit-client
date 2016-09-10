@@ -77,7 +77,6 @@ public class Configuration {
 		this.autoSignIn = false;
 		this.UIType = null;
 		this.tileX = "32";
-		this.tileY = "32";
 		this.customEnabled = false;
 	}
 	
@@ -225,24 +224,12 @@ public class Configuration {
 		this.tileX = sizeX.replaceAll(",", "");
 	}
 	
-	public void setTileY(String sizeY) {
-		this.tileY = sizeY.replaceAll(",", "");
-	}
-	
 	public String getTileX() {
 		return tileX;
 	}
 	
-	public String getTileY() {
-		return tileY;
-	}
-	
 	public int getTileXInt() {
 		return Integer.parseInt(tileX.replaceAll(",", ""));
-	}
-	
-	public int getTileYInt() {
-		return Integer.parseInt(tileY.replaceAll(",", ""));
 	}
 	
 	public boolean getCustomTileEnabled() {
