@@ -104,7 +104,7 @@ public class Configuration {
 	public String getProxy() {
 		return this.proxy;
 	}
-
+	
 	public void setProxy(String url) {
 		this.proxy = url;
 	}
@@ -240,7 +240,7 @@ public class Configuration {
 	public int getTileXInt() {
 		return Integer.parseInt(tileX.replaceAll(",", ""));
 	}
-
+	
 	public int getTileYInt() {
 		return Integer.parseInt(tileY.replaceAll(",", ""));
 	}
@@ -252,7 +252,7 @@ public class Configuration {
 	public void setCustomTileEnabled(boolean enabled) {
 		customEnabled = enabled;
 	}
-
+	
 	public void cleanWorkingDirectory() {
 		this.cleanDirectory(this.workingDirectory);
 		this.cleanDirectory(this.storageDirectory);
@@ -287,7 +287,11 @@ public class Configuration {
 							file.delete();
 						}
 					}
-					catch (StringIndexOutOfBoundsException e) { // because the file does not have an . in his path
+					catch (StringIndexOutOfBoundsException e) { // because the
+																	// file does
+																// not have
+																// an . in
+																// his path
 						file.delete();
 					}
 				}
@@ -329,7 +333,10 @@ public class Configuration {
 						}
 					}
 				}
-				catch (StringIndexOutOfBoundsException e) { // because the file does not have an . his path
+				catch (StringIndexOutOfBoundsException e) { // because the
+																// file does not
+															// have an . his
+															// path
 				}
 			}
 		}

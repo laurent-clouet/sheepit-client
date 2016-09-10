@@ -11,10 +11,10 @@ public class GuiTextOneLine implements Gui {
 	private int rendered;
 	private int remaining;
 	private int sigIntCount = 0;
-
+	
 	private String status;
 	private String line;
-
+	
 	private boolean exiting = false;
 	
 	private Client client;
@@ -29,12 +29,12 @@ public class GuiTextOneLine implements Gui {
 	@Override
 	public void start() {
 		if (client != null) {
-
+			
 			Signal.handle(new Signal("INT"), new SignalHandler() {
 				@Override
 				public void handle(Signal signal) {
 					sigIntCount++;
-
+					
 					if (sigIntCount == 5) {
 						Signal.raise(new Signal("INT"));
 						Runtime.getRuntime().halt(0);
@@ -49,7 +49,7 @@ public class GuiTextOneLine implements Gui {
 					}
 				}
 			});
-
+			
 			client.run();
 			client.stop();
 		}

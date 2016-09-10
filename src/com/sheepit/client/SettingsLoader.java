@@ -251,8 +251,8 @@ public class SettingsLoader {
 	}
 	
 	/**
-	 * Merge the Settings file with the Configuration.
-	 * The Configuration will have high priority.
+	 * Merge the Settings file with the Configuration. The Configuration will
+	 * have high priority.
 	 */
 	public void merge(Configuration config) {
 		if (config == null) {
@@ -287,7 +287,7 @@ public class SettingsLoader {
 				config.setUseGPU(device);
 			}
 		}
-		if (config.getNbCores() == -1  && cores != null) {
+		if (config.getNbCores() == -1 && cores != null) {
 			config.setUseNbCores(Integer.valueOf(cores));
 		}
 		if (config.getUserSpecifiedACacheDir() == false && cacheDir != null && new File(cacheDir).exists()) {

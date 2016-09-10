@@ -50,6 +50,7 @@ import com.sheepit.client.standalone.swing.activity.Working;
 
 public class GuiSwing extends JFrame implements Gui {
 	public static final String type = "swing";
+	
 	public enum ActivityType {
 		WORKING, SETTINGS
 	}
@@ -100,7 +101,6 @@ public class GuiSwing extends JFrame implements Gui {
 				sysTray = null;
 			}
 		}
-		
 		
 		URL iconUrl = getClass().getResource("/icon.png");
 		if (iconUrl != null) {
@@ -274,7 +274,13 @@ public class GuiSwing extends JFrame implements Gui {
 		if (sysTray != null && SystemTray.isSupported()) {
 			sysTray.remove(trayIcon);
 			setVisible(true);
-			setExtendedState(getExtendedState() & ~JFrame.ICONIFIED & JFrame.NORMAL); // for toFront and requestFocus to actually work
+			setExtendedState(getExtendedState() & ~JFrame.ICONIFIED & JFrame.NORMAL); // for
+																						// toFront
+																						// and
+																						// requestFocus
+																						// to
+																						// actually
+																						// work
 			toFront();
 			requestFocus();
 		}

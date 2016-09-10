@@ -403,12 +403,12 @@ public class Client {
 		this.log.debug("Client::askForStop");
 		this.running = false;
 	}
-        
+	
 	public void cancelStop() {
 		this.log.debug("Client::cancelStop");
 		this.running = true;
 	}
-        
+	
 	public boolean isRunning() {
 		return this.running;
 	}
@@ -715,11 +715,11 @@ public class Client {
 				case JOB_VALIDATION_ERROR_SESSION_DISABLED:
 				case JOB_VALIDATION_ERROR_BROKEN_MACHINE:
 					return Type.SESSION_DISABLED;
-					
+				
 				case JOB_VALIDATION_ERROR_MISSING_PARAMETER:
 					// no point to retry the request
 					return Error.Type.UNKNOWN;
-					
+				
 				default:
 					// do nothing, try to do a request on the next loop
 					break;

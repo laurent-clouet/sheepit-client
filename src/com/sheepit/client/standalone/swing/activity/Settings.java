@@ -65,7 +65,7 @@ public class Settings implements Activity {
 	private JLabel tileLabelX;
 	private JLabel tileLabelY;
 	private JCheckBox customTileSize;
-
+	
 	public Settings(GuiSwing parent_) {
 		parent = parent_;
 		cacheDir = null;
@@ -214,7 +214,7 @@ public class Settings implements Activity {
 		
 		constraints.gridwidth = 1;
 		if (gpus != null) {
-			for (int i=0; i < gpus.size(); i++) {
+			for (int i = 0; i < gpus.size(); i++) {
 				GPUDevice gpu = gpus.get(i);
 				JCheckBoxGPU gpuCheckBox = new JCheckBoxGPU(gpu);
 				gpuCheckBox.setToolTipText(gpu.getCudaName());
@@ -235,7 +235,8 @@ public class Settings implements Activity {
 		++currentRow;
 		
 		CPU cpu = new CPU();
-		if (cpu.cores() > 1) { // if only one core is available, no need to show the choice
+		if (cpu.cores() > 1) { // if only one core is available, no need to show
+									// the choice
 			cpuCores = new JSlider(1, cpu.cores());
 			cpuCores.setMajorTickSpacing(1);
 			cpuCores.setMinorTickSpacing(1);
@@ -254,7 +255,8 @@ public class Settings implements Activity {
 			++currentRow;
 		}
 		
-		// TODO: Have the tile sizes already collapsed if the JCheckBox isn't checked
+		// TODO: Have the tile sizes already collapsed if the JCheckBox isn't
+		// checked
 		customTileSize = new JCheckBox("Custom render tile size", config.getCustomTileEnabled());
 		constraints.gridx = 2;
 		constraints.gridy = currentRow;
@@ -262,8 +264,7 @@ public class Settings implements Activity {
 		customTileSize.addActionListener(new TileSizeChange());
 		
 		tileSizePadding = parent.addPaddingReturn(1, ++currentRow, columns - 2, 1);
-		parent.getContentPane().add(tileSizePadding, 
-			parent.addPaddingConstraints(1, ++currentRow, columns - 2, 1));
+		parent.getContentPane().add(tileSizePadding, parent.addPaddingConstraints(1, ++currentRow, columns - 2, 1));
 		++currentRow;
 		
 		tileLabelX = new JLabel("Tile Size X:");
@@ -271,10 +272,10 @@ public class Settings implements Activity {
 		constraints.gridx = 1;
 		constraints.gridy = currentRow;
 		parent.getContentPane().add(tileLabelX, constraints);
-
+		
 		tileSizeX = new JFormattedTextField();
-		tileSizeX.setValue(new Integer (config.getTileXInt()));
-		//tileSizeX.addPropertyChangeListener("value", this);
+		tileSizeX.setValue(new Integer(config.getTileXInt()));
+		// tileSizeX.addPropertyChangeListener("value", this);
 		constraints.gridx = 2;
 		constraints.gridy = currentRow;
 		parent.getContentPane().add(tileSizeX, constraints);
@@ -290,18 +291,17 @@ public class Settings implements Activity {
 		
 		tileSizeY = new JFormattedTextField();
 		tileSizeY.setValue(new Integer(config.getTileYInt()));
-		//tileSizeY.addPropertyChangeListener("value", this);
+		// tileSizeY.addPropertyChangeListener("value", this);
 		constraints.gridx = 2;
 		constraints.gridy = currentRow;
 		parent.getContentPane().add(tileSizeY, constraints);
 		
 		tileSizePaddingB = parent.addPaddingReturn(1, ++currentRow, columns - 2, 1);
-		parent.getContentPane().add(tileSizePaddingB, 
-			parent.addPaddingConstraints(1, ++currentRow, columns - 2, 1));
+		parent.getContentPane().add(tileSizePaddingB, parent.addPaddingConstraints(1, ++currentRow, columns - 2, 1));
 		++currentRow;
-                
-                hideCustomTileSize(config.getCustomTileEnabled(), false);
-                
+		
+		hideCustomTileSize(config.getCustomTileEnabled(), false);
+		
 		saveFile = new JCheckBox("Save settings", true);
 		constraints.gridwidth = columns - 3;
 		constraints.gridx = 2;
@@ -338,7 +338,6 @@ public class Settings implements Activity {
 		parent.addPadding(0, 0, 1, currentRow + 1);
 		parent.addPadding(columns - 1, 0, 1, currentRow + 1);
 		
-		
 		if (haveAutoStarted == false && config.getAutoSignIn() && checkDisplaySaveButton()) {
 			// auto start
 			haveAutoStarted = true;
@@ -353,7 +352,7 @@ public class Settings implements Activity {
 		tileSizeY.setVisible(hidden);
 		tileLabelX.setVisible(hidden);
 		tileLabelY.setVisible(hidden);
-		if (customTileSize.isSelected() == true && displayWarning){
+		if (customTileSize.isSelected() == true && displayWarning) {
 			JOptionPane.showMessageDialog(parent.getContentPane(), "<html>These settings should only be changed if you are an advanced user.<br /> Improper settings may lead to invalid and slower renders!</html>", "Warning: Advanced Users Only!", JOptionPane.WARNING_MESSAGE);
 		}
 	}
@@ -370,9 +369,10 @@ public class Settings implements Activity {
 		}
 		
 		if (customTileSize.isSelected()) {
-			try{
-   				Integer.parseInt(tileSizeX.getText().replaceAll(",", ""));
-			}catch(NumberFormatException e){
+			try {
+				Integer.parseInt(tileSizeX.getText().replaceAll(",", ""));
+			}
+			catch (NumberFormatException e) {
 				selected = false;
 			}
 		}
@@ -431,7 +431,7 @@ public class Settings implements Activity {
 		public void actionPerformed(ActionEvent e) {
 			boolean custom = customTileSize.isSelected();
 			hideCustomTileSize(custom, true);
-		}	
+		}
 	}
 	
 	class SaveAction implements ActionListener {
@@ -515,15 +515,13 @@ public class Settings implements Activity {
 			if (customTileSize != null) {
 				customTile = customTileSize.isSelected();
 			}
-                        
+			
 			parent.setCredentials(login.getText(), new String(password.getPassword()));
 			
 			String cachePath = null;
 			if (config.getUserSpecifiedACacheDir() && config.getStorageDir() != null) {
 				cachePath = config.getStorageDir().getAbsolutePath();
 			}
-			
-			
 			
 			if (saveFile.isSelected()) {
 				new SettingsLoader(login.getText(), new String(password.getPassword()), proxyText, method, selected_gpu, cpu_cores, cachePath, autoSignIn.isSelected(), GuiSwing.type, tileX, tileY, customTile).saveFile();
