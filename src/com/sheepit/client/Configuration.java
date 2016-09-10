@@ -76,8 +76,8 @@ public class Configuration {
 		this.extras = "";
 		this.autoSignIn = false;
 		this.UIType = null;
-		this.tileX = null;
-		this.tileY = null;
+		this.tileX = "32";
+		this.tileY = "32";
 		this.customEnabled = false;
 	}
 	

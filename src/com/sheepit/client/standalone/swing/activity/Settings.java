@@ -274,7 +274,7 @@ public class Settings implements Activity {
 		parent.getContentPane().add(tileLabelX, constraints);
 		
 		tileSizeX = new JFormattedTextField();
-		tileSizeX.setValue(new Integer(config.getTileXInt()));
+		tileSizeX.setValue(new Integer(parent.getConfiguration().getTileXInt()));
 		// tileSizeX.addPropertyChangeListener("value", this);
 		constraints.gridx = 2;
 		constraints.gridy = currentRow;
