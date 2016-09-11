@@ -75,6 +75,7 @@ import org.xml.sax.SAXException;
 import com.sheepit.client.Configuration.ComputeType;
 import com.sheepit.client.Error.ServerCode;
 import com.sheepit.client.exception.FermeException;
+import com.sheepit.client.exception.FermeExceptionBadResponseFromServer;
 import com.sheepit.client.exception.FermeExceptionNoRightToRender;
 import com.sheepit.client.exception.FermeExceptionNoSession;
 import com.sheepit.client.exception.FermeExceptionNoSpaceLeftOnDevice;
@@ -253,6 +254,9 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 						}
 					}
 				}
+			}
+			else if (r == HttpURLConnection.HTTP_OK && contentType.startsWith("text/html")) {
+				return Error.Type.ERROR_BAD_RESPONSE;
 			}
 			else {
 				this.log.error("Server::getConfiguration: Invalid response " + contentType + " " + r);
@@ -442,6 +446,9 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				if (r == HttpURLConnection.HTTP_UNAVAILABLE) {
 					// most likely varnish is up but apache down
 					throw new FermeServerDown();
+				}
+				else if (r == HttpURLConnection.HTTP_OK && contentType.startsWith("text/html")) {
+					throw new FermeExceptionBadResponseFromServer();
 				}
 				InputStream in = connection.getInputStream();
 				String line;
@@ -731,6 +738,9 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				return ret1;
 			}
 			return ServerCode.OK;
+		}
+		else if (r == HttpURLConnection.HTTP_OK && contentType.startsWith("text/html")) {
+			return ServerCode.ERROR_BAD_RESPONSE;
 		}
 		else {
 			try {
