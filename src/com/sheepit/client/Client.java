@@ -33,6 +33,7 @@ import java.util.concurrent.BlockingQueue;
 import com.sheepit.client.Error.ServerCode;
 import com.sheepit.client.Error.Type;
 import com.sheepit.client.exception.FermeException;
+import com.sheepit.client.exception.FermeExceptionBadResponseFromServer;
 import com.sheepit.client.exception.FermeExceptionNoRightToRender;
 import com.sheepit.client.exception.FermeExceptionNoSession;
 import com.sheepit.client.exception.FermeExceptionNoSpaceLeftOnDevice;
@@ -239,6 +240,18 @@ public class Client {
 					int wait = 15;
 					int time_sleep = 1000 * 60 * wait;
 					this.gui.status(String.format("Server is in maintenance and cannot give frame to render. Will retry in %s minutes", wait));
+					try {
+						Thread.sleep(time_sleep);
+					}
+					catch (InterruptedException e1) {
+						return -3;
+					}
+					continue; // go back to ask job
+				}
+				catch (FermeExceptionBadResponseFromServer e) {
+					int wait = 15;
+					int time_sleep = 1000 * 60 * wait;
+					this.gui.status(String.format("Bad answer from server. Will retry in %s minutes", wait));
 					try {
 						Thread.sleep(time_sleep);
 					}

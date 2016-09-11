@@ -46,7 +46,9 @@ public class Error {
 		CPU_NOT_SUPPORTED(18),
 		GPU_NOT_SUPPORTED(19),
 		
+		// internal error handling
 		NO_SPACE_LEFT_ON_DEVICE(100),
+		ERROR_BAD_RESPONSE(101),
 		;
 		
 		private final int id;
@@ -89,6 +91,7 @@ public class Error {
 		
 		// internal error handling
 		ERROR_NO_ROOT(2),
+		ERROR_BAD_RESPONSE(3),
 		ERROR_REQUEST_FAILED(5);
 		
 		private final int id;
@@ -141,6 +144,8 @@ public class Error {
 	
 	public static String humanString(Type in) {
 		switch (in) {
+			case ERROR_BAD_RESPONSE:
+				return "Bad answer from server. It's a server side error, wait a bit an retry later.";
 			case NETWORK_ISSUE:
 				return "Could not connect to the server, please check if you have connectivity issue";
 			case TOO_OLD_CLIENT:
