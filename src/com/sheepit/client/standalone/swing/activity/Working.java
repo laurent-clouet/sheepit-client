@@ -176,7 +176,9 @@ public class Working implements Activity {
 					InputStream is = new ByteArrayInputStream(data);
 					try {
 						BufferedImage image = ImageIO.read(is);
-						lastRender.setIcon(new ImageIcon(image));
+						if (image != null) {
+							lastRender.setIcon(new ImageIcon(image));
+						}
 					}
 					catch (IOException e) {
 						System.out.println("Working::showLastRender() exception " + e);
