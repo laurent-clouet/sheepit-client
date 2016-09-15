@@ -279,12 +279,12 @@ public class Client {
 					int time_slept = 0;
 					while (time_slept < time_sleep && this.running == true) {
 						try {
-							Thread.sleep(5000);
+							Thread.sleep(250);
 						}
 						catch (InterruptedException e) {
 							return -3;
 						}
-						time_slept += 5000;
+						time_slept += 250;
 					}
 					this.suspended = false;
 					continue; // go back to ask job
