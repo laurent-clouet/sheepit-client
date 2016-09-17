@@ -54,6 +54,9 @@ public class Configuration {
 	private String extras;
 	private boolean autoSignIn;
 	private String UIType;
+	private String tileX;
+	private String tileY;
+	private boolean customEnabled;
 	
 	public Configuration(File cache_dir_, String login_, String password_) {
 		this.login = login_;
@@ -73,6 +76,8 @@ public class Configuration {
 		this.extras = "";
 		this.autoSignIn = false;
 		this.UIType = null;
+		this.tileX = "32";
+		this.customEnabled = false;
 	}
 	
 	public String toString() {
@@ -98,7 +103,7 @@ public class Configuration {
 	public String getProxy() {
 		return this.proxy;
 	}
-
+	
 	public void setProxy(String url) {
 		this.proxy = url;
 	}
@@ -215,6 +220,26 @@ public class Configuration {
 		return this.UIType;
 	}
 	
+	public void setTileX(String sizeX) {
+		this.tileX = sizeX.replaceAll(",", "");
+	}
+	
+	public String getTileX() {
+		return tileX;
+	}
+	
+	public int getTileXInt() {
+		return Integer.parseInt(tileX.replaceAll(",", ""));
+	}
+	
+	public boolean getCustomTileEnabled() {
+		return customEnabled;
+	}
+	
+	public void setCustomTileEnabled(boolean enabled) {
+		customEnabled = enabled;
+	}
+	
 	public void cleanWorkingDirectory() {
 		this.cleanDirectory(this.workingDirectory);
 		this.cleanDirectory(this.storageDirectory);
@@ -249,7 +274,11 @@ public class Configuration {
 							file.delete();
 						}
 					}
-					catch (StringIndexOutOfBoundsException e) { // because the file does not have an . in his path
+					catch (StringIndexOutOfBoundsException e) { // because the
+																	// file does
+																// not have
+																// an . in
+																// his path
 						file.delete();
 					}
 				}
@@ -291,7 +320,10 @@ public class Configuration {
 						}
 					}
 				}
-				catch (StringIndexOutOfBoundsException e) { // because the file does not have an . his path
+				catch (StringIndexOutOfBoundsException e) { // because the
+																// file does not
+															// have an . his
+															// path
 				}
 			}
 		}

@@ -207,7 +207,8 @@ public class Job {
 		else {
 			core_script = String.format(core_script, "NONE", "CPU", "CPU");
 		}
-		core_script += String.format("bpy.context.scene.render.tile_x = %1$d\nbpy.context.scene.render.tile_y = %1$d\n", getTileSize());
+		core_script += String.format("bpy.context.scene.render.tile_x = %1$d\nbpy.context.scene.render.tile_y = %1$d\n", getTileSizeX());
+		
 		File script_file = null;
 		String command1[] = getRenderCommand().split(" ");
 		int size_command = command1.length + 2; // + 2 for script
@@ -254,7 +255,8 @@ public class Job {
 					break;
 				case ".e":
 					command.add(getRendererPath());
-					// the number of cores has to be put after the binary and before the scene arg
+					// the number of cores has to be put after the binary and before
+					// the scene arg
 					if (config.getNbCores() > 0) {
 						command.add("-t");
 						command.add(Integer.toString(config.getNbCores()));
@@ -288,7 +290,13 @@ public class Job {
 					updateRenderingMemoryPeak(line);
 					
 					log.debug(line);
-					if ((new Date().getTime() - last_update_status) > 2000) { // only call the update every two seconds
+					if ((new Date().getTime() - last_update_status) > 2000) { // only
+																					// call
+																				// the
+																				// update
+																				// every
+																				// two
+																				// seconds
 						updateRenderingStatus(line);
 						last_update_status = new Date().getTime();
 					}
@@ -419,7 +427,9 @@ public class Job {
 				
 				if (index != -1) {
 					String remaining_time = buf1.substring(0, index).trim();
-					int last_index = remaining_time.lastIndexOf('.'); //format 00:00:00.00 (hr:min:sec)
+					int last_index = remaining_time.lastIndexOf('.'); // format
+																		// 00:00:00.00
+																		// (hr:min:sec)
 					if (last_index > 0) {
 						remaining_time = remaining_time.substring(0, last_index);
 					}
@@ -484,79 +494,165 @@ public class Job {
 	private Type detectError(String line) {
 		
 		if (line.indexOf("CUDA error: Out of memory") != -1) {
-			// Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Mem:470.26M, Peak:470.26M | Scene, RenderLayer | Updating Device | Writing constant memory
-			// Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Mem:470.26M, Peak:470.26M | Scene, RenderLayer | Path Tracing Tile 0/135, Sample 0/200
-			// Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Mem:470.82M, Peak:470.82M | Scene, RenderLayer | Path Tracing Tile 1/135, Sample 0/200
-			// CUDA error: Out of memory in cuLaunchKernel(cuPathTrace, xblocks , yblocks, 1, xthreads, ythreads, 1, 0, 0, args, 0)
-			// Refer to the Cycles GPU rendering documentation for possible solutions:
+			// Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Mem:470.26M,
+			// Peak:470.26M | Scene, RenderLayer | Updating Device | Writing
+			// constant memory
+			// Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Mem:470.26M,
+			// Peak:470.26M | Scene, RenderLayer | Path Tracing Tile 0/135,
+			// Sample 0/200
+			// Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Mem:470.82M,
+			// Peak:470.82M | Scene, RenderLayer | Path Tracing Tile 1/135,
+			// Sample 0/200
+			// CUDA error: Out of memory in cuLaunchKernel(cuPathTrace, xblocks
+			// , yblocks, 1, xthreads, ythreads, 1, 0, 0, args, 0)
+			// Refer to the Cycles GPU rendering documentation for possible
+			// solutions:
 			// http://www.blender.org/manual/render/cycles/gpu_rendering.html
-			// Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Remaining:09:26.57 | Mem:470.26M, Peak:470.82M | Scene, RenderLayer | Path Tracing Tile 1/135, Sample 200/200
-			// Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Remaining:00:00.06 | Mem:470.50M, Peak:470.82M | Scene, RenderLayer | Path Tracing Tile 134/135, Sample 0/200
-			// Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Remaining:00:00.03 | Mem:470.26M, Peak:470.82M | Scene, RenderLayer | Path Tracing Tile 134/135, Sample 200/200
-			// Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Remaining:00:00.03 | Mem:470.50M, Peak:470.82M | Scene, RenderLayer | Path Tracing Tile 135/135, Sample 0/200
-			// Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Mem:470.26M, Peak:470.82M | Scene, RenderLayer | Path Tracing Tile 135/135, Sample 200/200
-			// Error: CUDA error: Out of memory in cuLaunchKernel(cuPathTrace, xblocks , yblocks, 1, xthreads, ythreads, 1, 0, 0, args, 0)
-			// Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Mem:470.26M, Peak:470.82M | Scene, RenderLayer | Cancel | CUDA error: Out of memory in cuLaunchKernel(cuPathTrace, xblocks , yblocks, 1, xthreads, ythreads, 1, 0, 0, args, 0)
-			// Fra:151 Mem:405.89M (0.00M, Peak 633.81M) Sce: Scene Ve:0 Fa:0 La:0
+			// Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Remaining:09:26.57 |
+			// Mem:470.26M, Peak:470.82M | Scene, RenderLayer | Path Tracing
+			// Tile 1/135, Sample 200/200
+			// Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Remaining:00:00.06 |
+			// Mem:470.50M, Peak:470.82M | Scene, RenderLayer | Path Tracing
+			// Tile 134/135, Sample 0/200
+			// Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Remaining:00:00.03 |
+			// Mem:470.26M, Peak:470.82M | Scene, RenderLayer | Path Tracing
+			// Tile 134/135, Sample 200/200
+			// Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Remaining:00:00.03 |
+			// Mem:470.50M, Peak:470.82M | Scene, RenderLayer | Path Tracing
+			// Tile 135/135, Sample 0/200
+			// Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Mem:470.26M,
+			// Peak:470.82M | Scene, RenderLayer | Path Tracing Tile 135/135,
+			// Sample 200/200
+			// Error: CUDA error: Out of memory in cuLaunchKernel(cuPathTrace,
+			// xblocks , yblocks, 1, xthreads, ythreads, 1, 0, 0, args, 0)
+			// Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Mem:470.26M,
+			// Peak:470.82M | Scene, RenderLayer | Cancel | CUDA error: Out of
+			// memory in cuLaunchKernel(cuPathTrace, xblocks , yblocks, 1,
+			// xthreads, ythreads, 1, 0, 0, args, 0)
+			// Fra:151 Mem:405.89M (0.00M, Peak 633.81M) Sce: Scene Ve:0 Fa:0
+			// La:0
 			// Saved: /tmp/xx/26885_0151.png Time: 00:04.67 (Saving: 00:00.22)
 			// Blender quit
 			return Type.RENDERER_OUT_OF_VIDEO_MEMORY;
 		}
 		else if (line.indexOf("CUDA error: Launch exceeded timeout in") != -1) {
-			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:01:08.44 | Mem:176.04M, Peak:199.23M | Scene, RenderLayer | Path Tracing Tile 2/24, Sample 10/14
-			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:01:07.08 | Mem:175.48M, Peak:199.23M | Scene, RenderLayer | Path Tracing Tile 2/24, Sample 14/14
-			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:01:07.11 | Mem:176.04M, Peak:199.23M | Scene, RenderLayer | Path Tracing Tile 3/24, Sample 0/14
+			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:01:08.44 |
+			// Mem:176.04M, Peak:199.23M | Scene, RenderLayer | Path Tracing
+			// Tile 2/24, Sample 10/14
+			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:01:07.08 |
+			// Mem:175.48M, Peak:199.23M | Scene, RenderLayer | Path Tracing
+			// Tile 2/24, Sample 14/14
+			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:01:07.11 |
+			// Mem:176.04M, Peak:199.23M | Scene, RenderLayer | Path Tracing
+			// Tile 3/24, Sample 0/14
 			// CUDA error: Launch exceeded timeout in cuCtxSynchronize()
-			// Refer to the Cycles GPU rendering documentation for possible solutions:
+			// Refer to the Cycles GPU rendering documentation for possible
+			// solutions:
 			// http://www.blender.org/manual/render/cycles/gpu_rendering.html
-			// CUDA error: Launch exceeded timeout in cuMemcpyDtoH((uchar*)mem.data_pointer + offset, (CUdeviceptr)(mem.device_pointer + offset), size)
-			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:03:04.30 | Mem:176.04M, Peak:199.23M | Scene, RenderLayer | Path Tracing Tile 3/24, Sample 1/14
-			// CUDA error: Launch exceeded timeout in cuMemcpyDtoH((uchar*)mem.data_pointer + offset, (CUdeviceptr)(mem.device_pointer + offset), size)
-			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
-			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
-			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:02:01.87 | Mem:175.48M, Peak:199.23M | Scene, RenderLayer | Path Tracing Tile 3/24, Sample 14/14
-			// CUDA error: Launch exceeded timeout in cuMemAlloc(&device_pointer, size)
-			// CUDA error: Launch exceeded timeout in cuMemAlloc(&device_pointer, size)
-			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:02:01.87 | Mem:176.04M, Peak:199.23M | Scene, RenderLayer | Path Tracing Tile 4/24, Sample 0/14
-			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:01:27.05 | Mem:176.04M, Peak:199.23M | Scene, RenderLayer | Path Tracing Tile 4/24, Sample 14/14
-			// CUDA error: Launch exceeded timeout in cuMemAlloc(&device_pointer, size)
-			// CUDA error: Launch exceeded timeout in cuMemAlloc(&device_pointer, size)
-			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:00:00.75 | Mem:185.66M, Peak:199.23M | Scene, RenderLayer | Path Tracing Tile 24/24, Sample 0/14
-			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Mem:185.66M, Peak:199.23M | Scene, RenderLayer | Path Tracing Tile 24/24, Sample 14/14
+			// CUDA error: Launch exceeded timeout in
+			// cuMemcpyDtoH((uchar*)mem.data_pointer + offset,
+			// (CUdeviceptr)(mem.device_pointer + offset), size)
+			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:03:04.30 |
+			// Mem:176.04M, Peak:199.23M | Scene, RenderLayer | Path Tracing
+			// Tile 3/24, Sample 1/14
+			// CUDA error: Launch exceeded timeout in
+			// cuMemcpyDtoH((uchar*)mem.data_pointer + offset,
+			// (CUdeviceptr)(mem.device_pointer + offset), size)
+			// CUDA error: Launch exceeded timeout in
+			// cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in
+			// cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:02:01.87 |
+			// Mem:175.48M, Peak:199.23M | Scene, RenderLayer | Path Tracing
+			// Tile 3/24, Sample 14/14
+			// CUDA error: Launch exceeded timeout in
+			// cuMemAlloc(&device_pointer, size)
+			// CUDA error: Launch exceeded timeout in
+			// cuMemAlloc(&device_pointer, size)
+			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:02:01.87 |
+			// Mem:176.04M, Peak:199.23M | Scene, RenderLayer | Path Tracing
+			// Tile 4/24, Sample 0/14
+			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:01:27.05 |
+			// Mem:176.04M, Peak:199.23M | Scene, RenderLayer | Path Tracing
+			// Tile 4/24, Sample 14/14
+			// CUDA error: Launch exceeded timeout in
+			// cuMemAlloc(&device_pointer, size)
+			// CUDA error: Launch exceeded timeout in
+			// cuMemAlloc(&device_pointer, size)
+			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:00:00.75 |
+			// Mem:185.66M, Peak:199.23M | Scene, RenderLayer | Path Tracing
+			// Tile 24/24, Sample 0/14
+			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Mem:185.66M,
+			// Peak:199.23M | Scene, RenderLayer | Path Tracing Tile 24/24,
+			// Sample 14/14
 			// Error: CUDA error: Launch exceeded timeout in cuCtxSynchronize()
-			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Mem:185.66M, Peak:199.23M | Scene, RenderLayer | Cancel | CUDA error: Launch exceeded timeout in cuCtxSynchronize()
-			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
-			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
-			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
-			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
-			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
-			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
-			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
-			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
-			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
-			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
-			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
-			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
-			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
-			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
-			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
-			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
-			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
-			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
-			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
-			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
-			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
-			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
-			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
-			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
-			// CUDA error: Launch exceeded timeout in cuMemFree(cuda_device_ptr(mem.device_pointer))
-			// Mem:109.00M (0.00M, Peak 215.18M) | Elapsed 00:00.00 | Tree Compositing Nodetree, Tile 1-6
-			// Mem:109.00M (0.00M, Peak 215.18M) | Elapsed 00:00.00 | Tree Compositing Nodetree, Tile 2-6
-			// Mem:109.00M (0.00M, Peak 215.18M) | Elapsed 00:00.00 | Tree Compositing Nodetree, Tile 3-6
-			// Mem:109.00M (0.00M, Peak 215.18M) | Elapsed 00:00.00 | Tree Compositing Nodetree, Tile 4-6
-			// Mem:109.00M (0.00M, Peak 215.18M) | Elapsed 00:00.00 | Tree Compositing Nodetree, Tile 5-6
-			// Mem:109.00M (0.00M, Peak 215.18M) | Elapsed 00:00.00 | Tree Compositing Nodetree, Tile 6-6
-			// Fra:420 Mem:109.00M (0.00M, Peak 215.18M) Sce: Scene Ve:0 Fa:0 La:0
+			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Mem:185.66M,
+			// Peak:199.23M | Scene, RenderLayer | Cancel | CUDA error: Launch
+			// exceeded timeout in cuCtxSynchronize()
+			// CUDA error: Launch exceeded timeout in
+			// cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in
+			// cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in
+			// cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in
+			// cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in
+			// cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in
+			// cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in
+			// cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in
+			// cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in
+			// cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in
+			// cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in
+			// cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in
+			// cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in
+			// cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in
+			// cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in
+			// cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in
+			// cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in
+			// cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in
+			// cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in
+			// cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in
+			// cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in
+			// cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in
+			// cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in
+			// cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in
+			// cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// CUDA error: Launch exceeded timeout in
+			// cuMemFree(cuda_device_ptr(mem.device_pointer))
+			// Mem:109.00M (0.00M, Peak 215.18M) | Elapsed 00:00.00 | Tree
+			// Compositing Nodetree, Tile 1-6
+			// Mem:109.00M (0.00M, Peak 215.18M) | Elapsed 00:00.00 | Tree
+			// Compositing Nodetree, Tile 2-6
+			// Mem:109.00M (0.00M, Peak 215.18M) | Elapsed 00:00.00 | Tree
+			// Compositing Nodetree, Tile 3-6
+			// Mem:109.00M (0.00M, Peak 215.18M) | Elapsed 00:00.00 | Tree
+			// Compositing Nodetree, Tile 4-6
+			// Mem:109.00M (0.00M, Peak 215.18M) | Elapsed 00:00.00 | Tree
+			// Compositing Nodetree, Tile 5-6
+			// Mem:109.00M (0.00M, Peak 215.18M) | Elapsed 00:00.00 | Tree
+			// Compositing Nodetree, Tile 6-6
+			// Fra:420 Mem:109.00M (0.00M, Peak 215.18M) Sce: Scene Ve:0 Fa:0
+			// La:0
 			// Saved: /tmp/xx/1234_0420.bmp Time: 00:18.29 (Saving: 00:00.06)
 			// Blender quit
 			// end of rendering
@@ -565,57 +661,105 @@ public class Job {
 		else if (line.indexOf("CUDA device supported only with compute capability") != -1) {
 			// found bundled python: /tmp/xx/2.73/python
 			// read blend: /tmp/xx/compute-method.blend
-			// Fra:340 Mem:7.64M (0.00M, Peak 8.23M) | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Sun
-			// Fra:340 Mem:7.64M (0.00M, Peak 8.23M) | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Plane
-			// Fra:340 Mem:7.64M (0.00M, Peak 8.23M) | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Cube
-			// Fra:340 Mem:7.64M (0.00M, Peak 8.23M) | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Camera
-			// Fra:340 Mem:7.64M (0.00M, Peak 8.23M) | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Initializing
-			// Fra:340 Mem:7.64M (0.00M, Peak 8.23M) | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Loading render kernels (may take a few minutes the first time)
-			// CUDA device supported only with compute capability 2.0 or up, found 1.2.
-			// Refer to the Cycles GPU rendering documentation for possible solutions:
+			// Fra:340 Mem:7.64M (0.00M, Peak 8.23M) | Mem:0.00M, Peak:0.00M |
+			// Scene, RenderLayer | Synchronizing object | Sun
+			// Fra:340 Mem:7.64M (0.00M, Peak 8.23M) | Mem:0.00M, Peak:0.00M |
+			// Scene, RenderLayer | Synchronizing object | Plane
+			// Fra:340 Mem:7.64M (0.00M, Peak 8.23M) | Mem:0.00M, Peak:0.00M |
+			// Scene, RenderLayer | Synchronizing object | Cube
+			// Fra:340 Mem:7.64M (0.00M, Peak 8.23M) | Mem:0.00M, Peak:0.00M |
+			// Scene, RenderLayer | Synchronizing object | Camera
+			// Fra:340 Mem:7.64M (0.00M, Peak 8.23M) | Mem:0.00M, Peak:0.00M |
+			// Scene, RenderLayer | Initializing
+			// Fra:340 Mem:7.64M (0.00M, Peak 8.23M) | Mem:0.00M, Peak:0.00M |
+			// Scene, RenderLayer | Loading render kernels (may take a few
+			// minutes the first time)
+			// CUDA device supported only with compute capability 2.0 or up,
+			// found 1.2.
+			// Refer to the Cycles GPU rendering documentation for possible
+			// solutions:
 			// http://www.blender.org/manual/render/cycles/gpu_rendering.html
-			// Fra:340 Mem:7.64M (0.00M, Peak 8.23M) | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Error | CUDA device supported only with compute capability 2.0 or up, found 1.2.
-			// Error: CUDA device supported only with compute capability 2.0 or up, found 1.2.
-			// Fra:340 Mem:7.64M (0.00M, Peak 8.23M) | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Waiting for render to start
-			// Fra:340 Mem:7.64M (0.00M, Peak 8.23M) | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Cancel | CUDA device supported only with compute capability 2.0 or up, found 1.2.
+			// Fra:340 Mem:7.64M (0.00M, Peak 8.23M) | Mem:0.00M, Peak:0.00M |
+			// Scene, RenderLayer | Error | CUDA device supported only with
+			// compute capability 2.0 or up, found 1.2.
+			// Error: CUDA device supported only with compute capability 2.0 or
+			// up, found 1.2.
+			// Fra:340 Mem:7.64M (0.00M, Peak 8.23M) | Mem:0.00M, Peak:0.00M |
+			// Scene, RenderLayer | Waiting for render to start
+			// Fra:340 Mem:7.64M (0.00M, Peak 8.23M) | Mem:0.00M, Peak:0.00M |
+			// Scene, RenderLayer | Cancel | CUDA device supported only with
+			// compute capability 2.0 or up, found 1.2.
 			// Fra:340 Mem:7.64M (0.00M, Peak 8.23M) Sce: Scene Ve:0 Fa:0 La:0
 			// Saved: /tmp/xx/0_0340.png Time: 00:00.12 (Saving: 00:00.03)
 			// Blender quit
 			return Type.GPU_NOT_SUPPORTED;
 		}
 		else if (line.indexOf("terminate called after throwing an instance of 'boost::filesystem::filesystem_error'") != -1) {
-			// Fra:2103 Mem:29.54M (0.00M, Peak 29.54M) | Time:00:00.24 | Mem:1.64M, Peak:1.64M | Scene, RenderLayer | Updating Mesh | Computing attributes
-			// Fra:2103 Mem:29.54M (0.00M, Peak 29.54M) | Time:00:00.24 | Mem:1.64M, Peak:1.64M | Scene, RenderLayer | Updating Mesh | Copying Attributes to device
-			// Fra:2103 Mem:29.54M (0.00M, Peak 29.54M) | Time:00:00.24 | Mem:1.97M, Peak:1.97M | Scene, RenderLayer | Updating Scene BVH | Building
-			// Fra:2103 Mem:29.54M (0.00M, Peak 29.54M) | Time:00:00.24 | Mem:1.97M, Peak:1.97M | Scene, RenderLayer | Updating Scene BVH | Building BVH
-			// Fra:2103 Mem:29.54M (0.00M, Peak 29.54M) | Time:00:00.24 | Mem:1.97M, Peak:1.97M | Scene, RenderLayer | Updating Scene BVH | Looking in BVH cache
-			// Fra:2103 Mem:29.54M (0.00M, Peak 29.54M) | Time:00:00.27 | Mem:1.97M, Peak:1.97M | Scene, RenderLayer | Updating Scene BVH | Packing BVH triangles and strands
-			// Fra:2103 Mem:29.54M (0.00M, Peak 29.54M) | Time:00:00.27 | Mem:1.97M, Peak:1.97M | Scene, RenderLayer | Updating Scene BVH | Packing BVH nodes
-			// Fra:2103 Mem:29.54M (0.00M, Peak 29.54M) | Time:00:00.27 | Mem:1.97M, Peak:1.97M | Scene, RenderLayer | Updating Scene BVH | Writing BVH cache
-			// terminate called after throwing an instance of 'boost::filesystem::filesystem_error'
-			//   what():  boost::filesystem::create_directory: Permission denied: "/var/local/cache"
+			// Fra:2103 Mem:29.54M (0.00M, Peak 29.54M) | Time:00:00.24 |
+			// Mem:1.64M, Peak:1.64M | Scene, RenderLayer | Updating Mesh |
+			// Computing attributes
+			// Fra:2103 Mem:29.54M (0.00M, Peak 29.54M) | Time:00:00.24 |
+			// Mem:1.64M, Peak:1.64M | Scene, RenderLayer | Updating Mesh |
+			// Copying Attributes to device
+			// Fra:2103 Mem:29.54M (0.00M, Peak 29.54M) | Time:00:00.24 |
+			// Mem:1.97M, Peak:1.97M | Scene, RenderLayer | Updating Scene BVH |
+			// Building
+			// Fra:2103 Mem:29.54M (0.00M, Peak 29.54M) | Time:00:00.24 |
+			// Mem:1.97M, Peak:1.97M | Scene, RenderLayer | Updating Scene BVH |
+			// Building BVH
+			// Fra:2103 Mem:29.54M (0.00M, Peak 29.54M) | Time:00:00.24 |
+			// Mem:1.97M, Peak:1.97M | Scene, RenderLayer | Updating Scene BVH |
+			// Looking in BVH cache
+			// Fra:2103 Mem:29.54M (0.00M, Peak 29.54M) | Time:00:00.27 |
+			// Mem:1.97M, Peak:1.97M | Scene, RenderLayer | Updating Scene BVH |
+			// Packing BVH triangles and strands
+			// Fra:2103 Mem:29.54M (0.00M, Peak 29.54M) | Time:00:00.27 |
+			// Mem:1.97M, Peak:1.97M | Scene, RenderLayer | Updating Scene BVH |
+			// Packing BVH nodes
+			// Fra:2103 Mem:29.54M (0.00M, Peak 29.54M) | Time:00:00.27 |
+			// Mem:1.97M, Peak:1.97M | Scene, RenderLayer | Updating Scene BVH |
+			// Writing BVH cache
+			// terminate called after throwing an instance of
+			// 'boost::filesystem::filesystem_error'
+			// what(): boost::filesystem::create_directory: Permission denied:
+			// "/var/local/cache"
 			return Error.Type.NOOUTPUTFILE;
 		}
 		else if (line.indexOf("terminate called after throwing an instance of 'std::bad_alloc'") != -1) {
-			// Fra:80 Mem:1333.02M (0.00M, Peak 1651.23M) | Mem:780.37M, Peak:780.37M | Scene, RenderLayer | Updating Mesh BVH Plane.083 171/2 | Building BVH
-			// Fra:80 Mem:1333.02M (0.00M, Peak 1651.23M) | Mem:780.37M, Peak:780.37M | Scene, RenderLayer | Updating Mesh BVH Mesh 172/2 | Building BVH
-			// Fra:80 Mem:1333.02M (0.00M, Peak 1651.23M) | Mem:780.37M, Peak:780.37M | Scene, RenderLayer | Updating Mesh BVH Mesh 172/2 | Packing BVH triangles and strands
-			// Fra:80 Mem:1333.02M (0.00M, Peak 1651.23M) | Mem:780.37M, Peak:780.37M | Scene, RenderLayer | Updating Mesh BVH Mesh 172/2 | Packing BVH nodes
-			// Fra:80 Mem:1333.02M (0.00M, Peak 1651.23M) | Mem:780.37M, Peak:780.37M | Scene, RenderLayer | Updating Scene BVH | Building
-			// Fra:80 Mem:1333.02M (0.00M, Peak 1651.23M) | Mem:780.37M, Peak:780.37M | Scene, RenderLayer | Updating Scene BVH | Building BVH
+			// Fra:80 Mem:1333.02M (0.00M, Peak 1651.23M) | Mem:780.37M,
+			// Peak:780.37M | Scene, RenderLayer | Updating Mesh BVH Plane.083
+			// 171/2 | Building BVH
+			// Fra:80 Mem:1333.02M (0.00M, Peak 1651.23M) | Mem:780.37M,
+			// Peak:780.37M | Scene, RenderLayer | Updating Mesh BVH Mesh 172/2
+			// | Building BVH
+			// Fra:80 Mem:1333.02M (0.00M, Peak 1651.23M) | Mem:780.37M,
+			// Peak:780.37M | Scene, RenderLayer | Updating Mesh BVH Mesh 172/2
+			// | Packing BVH triangles and strands
+			// Fra:80 Mem:1333.02M (0.00M, Peak 1651.23M) | Mem:780.37M,
+			// Peak:780.37M | Scene, RenderLayer | Updating Mesh BVH Mesh 172/2
+			// | Packing BVH nodes
+			// Fra:80 Mem:1333.02M (0.00M, Peak 1651.23M) | Mem:780.37M,
+			// Peak:780.37M | Scene, RenderLayer | Updating Scene BVH | Building
+			// Fra:80 Mem:1333.02M (0.00M, Peak 1651.23M) | Mem:780.37M,
+			// Peak:780.37M | Scene, RenderLayer | Updating Scene BVH | Building
+			// BVH
 			// terminate called after throwing an instance of 'std::bad_alloc'
-			//   what():  std::bad_alloc
+			// what(): std::bad_alloc
 			return Error.Type.RENDERER_OUT_OF_MEMORY;
 		}
 		else if (line.indexOf("what(): std::bad_alloc") != -1) {
-			// Fra:7 Mem:1247.01M (0.00M, Peak 1247.01M) | Time:00:28.84 | Mem:207.63M, Peak:207.63M | Scene, RenderLayer | Updating Scene BVH | Building BVH 93%, duplicates 0%terminate called recursively
+			// Fra:7 Mem:1247.01M (0.00M, Peak 1247.01M) | Time:00:28.84 |
+			// Mem:207.63M, Peak:207.63M | Scene, RenderLayer | Updating Scene
+			// BVH | Building BVH 93%, duplicates 0%terminate called recursively
 			// terminate called after throwing an instance of 'St9bad_alloc'
 			// what(): std::bad_alloc
 			// scandir: Cannot allocate memory
 			return Error.Type.RENDERER_OUT_OF_MEMORY;
 		}
 		else if (line.indexOf("Calloc returns null") != -1) {
-			// Fra:1 Mem:976.60M (0.00M, Peak 1000.54M) | Time:00:01.34 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Left
+			// Fra:1 Mem:976.60M (0.00M, Peak 1000.54M) | Time:00:01.34 |
+			// Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object
+			// | Left
 			// Calloc returns null: len=7186416 in CDMLoopUV, total 2145859048
 			// Calloc returns null: len=7186416 in CDMLoopUV, total 2145859048
 			// Malloc returns null: len=3190672 in CDMTexPoly, total 2149293176
@@ -623,7 +767,9 @@ public class Job {
 			return Error.Type.RENDERER_OUT_OF_MEMORY;
 		}
 		else if (line.indexOf("Malloc returns null") != -1) {
-			// Fra:1 Mem:976.60M (0.00M, Peak 1000.54M) | Time:00:01.34 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Left
+			// Fra:1 Mem:976.60M (0.00M, Peak 1000.54M) | Time:00:01.34 |
+			// Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object
+			// | Left
 			// Calloc returns null: len=7186416 in CDMLoopUV, total 2145859048
 			// Calloc returns null: len=7186416 in CDMLoopUV, total 2145859048
 			// Malloc returns null: len=3190672 in CDMTexPoly, total 2149293176
@@ -633,14 +779,21 @@ public class Job {
 		return Type.OK;
 	}
 	
-	private int getTileSize() {
-		int size = 32; // CPU
-		GPUDevice gpu = this.config.getGPUDevice();
-		if (getUseGPU() && this.config.getGPUDevice() != null) {
-			// GPU
-			// if the vram is lower than 1G reduce the size of tile to avoid black output
-			size = (gpu.getMemory() > 1073741824L) ? 256 : 128;
+	private int getTileSizeX() {
+		if (config.getCustomTileEnabled() == false) {
+			int size = 32; // CPU
+			GPUDevice gpu = this.config.getGPUDevice();
+			if (getUseGPU() && this.config.getGPUDevice() != null) {
+				// GPU
+				// if the vram is lower than 1G reduce the size of tile to avoid
+				// black output
+				size = (gpu.getMemory() > 1073741824L) ? 256 : 128;
+			}
+			return size;
 		}
-		return size;
+		else {
+			return config.getTileXInt();
+		}
 	}
+	
 }

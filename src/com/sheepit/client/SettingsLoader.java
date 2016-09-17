@@ -30,6 +30,8 @@ public class SettingsLoader {
 	private String cacheDir;
 	private String autoSignIn;
 	private String ui;
+	private String tileX;
+	private String customTileSize;
 	
 	public SettingsLoader() {
 		path = getDefaultFilePath();
@@ -39,7 +41,7 @@ public class SettingsLoader {
 		path = path_;
 	}
 	
-	public SettingsLoader(String login_, String password_, String proxy_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, String cacheDir_, boolean autoSignIn_, String ui_) {
+	public SettingsLoader(String login_, String password_, String proxy_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, String cacheDir_, boolean autoSignIn_, String ui_, String tileX_, boolean customTileSize_) {
 		path = getDefaultFilePath();
 		login = login_;
 		password = password_;
@@ -47,6 +49,8 @@ public class SettingsLoader {
 		cacheDir = cacheDir_;
 		autoSignIn = String.valueOf(autoSignIn_);
 		ui = ui_;
+		tileX = tileX_;
+		customTileSize = String.valueOf(customTileSize_);
 		if (cores_ > 0) {
 			cores = String.valueOf(cores_);
 		}
@@ -114,6 +118,14 @@ public class SettingsLoader {
 				prop.setProperty("ui", ui);
 			}
 			
+			if (tileX != null) {
+				prop.setProperty("tileX", tileX);
+			}
+			
+			if (customTileSize != null) {
+				prop.setProperty("customTileSize", customTileSize);
+			}
+			
 			prop.store(output, null);
 		}
 		catch (IOException io) {
@@ -155,6 +167,8 @@ public class SettingsLoader {
 		this.cacheDir = null;
 		this.autoSignIn = null;
 		this.ui = null;
+		this.tileX = null;
+		this.customTileSize = null;
 		
 		if (new File(path).exists() == false) {
 			return;
@@ -201,6 +215,14 @@ public class SettingsLoader {
 			if (prop.containsKey("ui")) {
 				this.ui = prop.getProperty("ui");
 			}
+			
+			if (prop.containsKey("tileX")) {
+				this.tileX = prop.getProperty("tileX");
+			}
+			
+			if (prop.containsKey("customTileSize")) {
+				this.customTileSize = prop.getProperty("customTileSize");
+			}
 		}
 		catch (IOException io) {
 			io.printStackTrace();
@@ -218,8 +240,8 @@ public class SettingsLoader {
 	}
 	
 	/**
-	 * Merge the Settings file with the Configuration.
-	 * The Configuration will have high priority.
+	 * Merge the Settings file with the Configuration. The Configuration will
+	 * have high priority.
 	 */
 	public void merge(Configuration config) {
 		if (config == null) {
@@ -254,7 +276,7 @@ public class SettingsLoader {
 				config.setUseGPU(device);
 			}
 		}
-		if (config.getNbCores() == -1  && cores != null) {
+		if (config.getNbCores() == -1 && cores != null) {
 			config.setUseNbCores(Integer.valueOf(cores));
 		}
 		if (config.getUserSpecifiedACacheDir() == false && cacheDir != null && new File(cacheDir).exists()) {
@@ -265,7 +287,12 @@ public class SettingsLoader {
 			config.setUIType(ui);
 		}
 		
+		if (config.getTileX() == null && tileX != null) {
+			config.setTileX(tileX);
+		}
+		
 		config.setAutoSignIn(Boolean.valueOf(autoSignIn));
+		config.setCustomTileEnabled(Boolean.valueOf(customTileSize));
 	}
 	
 	@Override

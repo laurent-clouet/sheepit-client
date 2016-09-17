@@ -50,6 +50,7 @@ import com.sheepit.client.standalone.swing.activity.Working;
 
 public class GuiSwing extends JFrame implements Gui {
 	public static final String type = "swing";
+	
 	public enum ActivityType {
 		WORKING, SETTINGS
 	}
@@ -100,7 +101,6 @@ public class GuiSwing extends JFrame implements Gui {
 				sysTray = null;
 			}
 		}
-		
 		
 		URL iconUrl = getClass().getResource("/icon.png");
 		if (iconUrl != null) {
@@ -184,6 +184,24 @@ public class GuiSwing extends JFrame implements Gui {
 		client = cli;
 	}
 	
+	public JLabel addPaddingReturn(int x, int y, int width, int height) {
+		GridBagConstraints constraints = new GridBagConstraints();
+		JLabel label = new JLabel("");
+		return label;
+	}
+	
+	public GridBagConstraints addPaddingConstraints(int x, int y, int width, int height) {
+		GridBagConstraints constraints = new GridBagConstraints();
+		constraints.fill = GridBagConstraints.BOTH;
+		constraints.weightx = 1.0;
+		constraints.weighty = 1.0;
+		constraints.gridwidth = width;
+		constraints.gridheight = height;
+		constraints.gridx = x;
+		constraints.gridy = y;
+		return constraints;
+	}
+	
 	public void addPadding(int x, int y, int width, int height) {
 		GridBagConstraints constraints = new GridBagConstraints();
 		JLabel label = new JLabel("");
@@ -256,7 +274,13 @@ public class GuiSwing extends JFrame implements Gui {
 		if (sysTray != null && SystemTray.isSupported()) {
 			sysTray.remove(trayIcon);
 			setVisible(true);
-			setExtendedState(getExtendedState() & ~JFrame.ICONIFIED & JFrame.NORMAL); // for toFront and requestFocus to actually work
+			setExtendedState(getExtendedState() & ~JFrame.ICONIFIED & JFrame.NORMAL); // for
+																						// toFront
+																						// and
+																						// requestFocus
+																						// to
+																						// actually
+																						// work
 			toFront();
 			requestFocus();
 		}
