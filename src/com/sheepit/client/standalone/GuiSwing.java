@@ -184,6 +184,24 @@ public class GuiSwing extends JFrame implements Gui {
 		client = cli;
 	}
 	
+	public JLabel addPaddingReturn(int x, int y, int width, int height) {
+		GridBagConstraints constraints = new GridBagConstraints();
+		JLabel label = new JLabel("");
+		return label;
+	}
+	
+	public GridBagConstraints addPaddingConstraints(int x, int y, int width, int height) {
+		GridBagConstraints constraints = new GridBagConstraints();
+		constraints.fill = GridBagConstraints.BOTH;
+		constraints.weightx = 1.0;
+		constraints.weighty = 1.0;
+		constraints.gridwidth = width;
+		constraints.gridheight = height;
+		constraints.gridx = x;
+		constraints.gridy = y;
+		return constraints;
+	}
+	
 	public void addPadding(int x, int y, int width, int height) {
 		GridBagConstraints constraints = new GridBagConstraints();
 		JLabel label = new JLabel("");

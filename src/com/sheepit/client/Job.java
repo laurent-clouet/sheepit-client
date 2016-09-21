@@ -633,14 +633,17 @@ public class Job {
 		return Type.OK;
 	}
 	
-	private int getTileSize() {
-		int size = 32; // CPU
-		GPUDevice gpu = this.config.getGPUDevice();
-		if (getUseGPU() && this.config.getGPUDevice() != null) {
-			// GPU
-			// if the vram is lower than 1G reduce the size of tile to avoid black output
-			size = (gpu.getMemory() > 1073741824L) ? 256 : 128;
+	public int getTileSize() {
+		if (config.getTileSize() == -1) { // not set
+			int size = 32; // CPU
+			GPUDevice gpu = this.config.getGPUDevice();
+			if (getUseGPU() && gpu != null) {
+				return gpu.getRecommandedTileSize();
+			}
+			return size;
 		}
-		return size;
+		else {
+			return config.getTileSize();
+		}
 	}
 }
