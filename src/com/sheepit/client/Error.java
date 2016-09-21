@@ -163,7 +163,7 @@ public class Error {
 			case RENDERER_OUT_OF_MEMORY:
 				return "No more memory available. There is nothing you can do about it. Will try another project in a few minutes.";
 			case GPU_NOT_SUPPORTED:
-				return "Rendering have failed due to a GPU not supported (please check the CUDA version)";
+				return "Rendering have failed because your GPU is not supported";
 			case RENDERER_MISSING_LIBRARIES:
 				return "Failed to launch renderer. Please check if you have necessary libraries installed and if you have enough free space in your working directory.";
 			case RENDERER_KILLED:
