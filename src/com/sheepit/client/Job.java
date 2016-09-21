@@ -630,6 +630,25 @@ public class Job {
 			// Writing: /home/user/.sheepit/LEFT packed.crash.txt
 			return Error.Type.RENDERER_OUT_OF_MEMORY;
 		}
+		else if (line.indexOf("CUDA kernel compilation failed") != -1) {
+			// Fra:1 Mem:200.70M (0.00M, Peak 378.15M) | Time:00:01.02 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Sun.001
+			// Fra:1 Mem:200.70M (0.00M, Peak 378.15M) | Time:00:01.02 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Sun.002
+			// Fra:1 Mem:200.70M (0.00M, Peak 378.15M) | Time:00:01.02 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Initializing
+			// Fra:1 Mem:200.70M (0.00M, Peak 378.15M) | Time:00:01.02 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Loading render kernels (may take a few minutes the first time)
+			// nvcc fatal   : Value 'sm_61' is not defined for option 'gpu-architecture'
+			// CUDA kernel compilation failed, see console for details.
+			// Refer to the Cycles GPU rendering documentation for possible solutions:
+			// http://www.blender.org/manual/render/cycles/gpu_rendering.html
+			// Compiling CUDA kernel ...
+			// "nvcc" -arch=sm_61 -m64 --cubin "/tmp/cache/c36db40aa5e59f5ea4ff139180353dbc/2.77/scripts/addons/cycles/kernel/kernels/cuda/kernel.cu" -o "/tmp/cache/cycles_kernel_sm61_079195D400571E023CC499D037AB6EE5.cubin" --ptxas-options="-v" --use_fast_math -I"/tmp/cache/c36db40aa5e59f5ea4ff139180353dbc/2.77/scripts/addons/cycles/kernel" -DNVCC -D__KERNEL_CUDA_VERSION__=75
+			// Fra:1 Mem:200.70M (0.00M, Peak 378.15M) | Time:00:01.08 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Error | CUDA kernel compilation failed, see console for details.
+			// Error: CUDA kernel compilation failed, see console for details.
+			// Fra:1 Mem:200.70M (0.00M, Peak 378.15M) | Time:00:01.08 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Waiting for render to start
+			// Fra:1 Mem:200.70M (0.00M, Peak 378.15M) | Time:00:01.08 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Cancel | CUDA kernel compilation failed, see console for details.
+			// Fra:1 Mem:147.74M (0.00M, Peak 378.15M) | Time:00:01.12 | Sce: Scene Ve:0 Fa:0 La:0
+			// Saved: '/tmp/cache/8_0001.png'
+			return Error.Type.GPU_NOT_SUPPORTED;
+		}
 		return Type.OK;
 	}
 	
