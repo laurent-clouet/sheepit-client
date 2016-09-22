@@ -399,7 +399,7 @@ public class Job {
 						int current = Integer.parseInt(parts[0]);
 						int total = Integer.parseInt(parts[1]);
 						if (total != 0) {
-							gui.status(String.format("Rendering %s %%", (int) (100.0 * current / total)));
+							gui.status(String.format("Rendering project \"" + this.name + "\" %s %%", (int) (100.0 * current / total)));
 							return;
 						}
 					}
@@ -433,7 +433,7 @@ public class Job {
 						}
 						date_parse.setTimeZone(TimeZone.getTimeZone("GMT"));
 						Date date = date_parse.parse(remaining_time);
-						gui.status(String.format("Rendering (remaining %s)", Utils.humanDuration(date)));
+						gui.status(String.format("Rendering project \"" + this.name + "\" (remaining %s)", Utils.humanDuration(date)));
 						getProcessRender().setRemainingDuration((int) (date.getTime() / 1000));
 					}
 					catch (ParseException err) {
