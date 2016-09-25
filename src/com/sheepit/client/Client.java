@@ -273,7 +273,7 @@ public class Client {
 				if (this.renderingJob == null) { // no job
 					int time_sleep = 1000 * 60 * 15;
 					Date wakeup_time = new Date(new Date().getTime() + time_sleep);
-					this.gui.status(String.format("No job available. Sleeping for 15 minutes (will wake up at ~%tR)", wakeup_time));
+					this.gui.status(String.format("No job available. Sleeping for 15 minutes (will wake up at %tR)", wakeup_time));
 					this.gui.framesRemaining(0);
 					this.suspended = true;
 					int time_slept = 0;
