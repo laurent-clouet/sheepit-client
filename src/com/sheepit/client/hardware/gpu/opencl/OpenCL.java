@@ -43,15 +43,15 @@ public class OpenCL implements GPULister {
 			lib = (OpenCLLib) Native.loadLibrary(path, OpenCLLib.class);
 		}
 		catch (java.lang.UnsatisfiedLinkError e) {
-			System.out.println("OpenCL::getGpus failed to load OpenCL lib (path: " + path + ")");
+			System.out.println("OpenCL::getGpus failed(A) to load OpenCL lib (path: " + path + ")");
 			return null;
 		}
 		catch (java.lang.ExceptionInInitializerError e) {
-			System.out.println("OpenCL::getGpus ExceptionInInitializerError " + e);
+			System.out.println("OpenCL::getGpus failed(B) ExceptionInInitializerError " + e);
 			return null;
 		}
 		catch (Exception e) {
-			System.out.println("OpenCL::getGpus generic exception " + e);
+			System.out.println("OpenCL::getGpus failed(C) generic exception " + e);
 			return null;
 		}
 		
@@ -62,7 +62,7 @@ public class OpenCL implements GPULister {
 		
 		status = lib.clGetPlatformIDs(0, null, number_platforms);
 		if (status != OpenCLLib.CL_SUCCESS) {
-			System.out.println("GPU::generate failed(A) status: " + status);
+			System.out.println("OpenCL::getGpus failed(D) status: " + status);
 			return null;
 		}
 		
@@ -73,7 +73,7 @@ public class OpenCL implements GPULister {
 		
 		status = lib.clGetPlatformIDs(number_platforms.getValue(), plateforms, null);
 		if (status != OpenCLLib.CL_SUCCESS) {
-			System.out.println("GPU::generate failed(B) status: " + status);
+			System.out.println("OpenCL::getGpus failed(E) status: " + status);
 			return null;
 		}
 		
@@ -86,7 +86,7 @@ public class OpenCL implements GPULister {
 			
 			status = lib.clGetDeviceIDs(plateforms[i], OpenCLLib.CL_DEVICE_TYPE_ALL, 0, null, device_count);
 			if (status != OpenCLLib.CL_SUCCESS) {
-				System.out.println("GPU::generate failed(E) status: " + status);
+				System.out.println("OpenCL::getGpus failed(F) status: " + status);
 				return null;
 			}
 			
@@ -96,7 +96,7 @@ public class OpenCL implements GPULister {
 			
 			status = lib.clGetDeviceIDs(plateforms[i], OpenCLLib.CL_DEVICE_TYPE_ALL, device_count.getValue(), devices, null);
 			if (status != OpenCLLib.CL_SUCCESS) {
-				System.out.println("GPU::generate failed(F) status: " + status);
+				System.out.println("OpenCL::getGpus failed(G) status: " + status);
 				return null;
 			}
 			
@@ -121,7 +121,7 @@ public class OpenCL implements GPULister {
 		
 		int status = lib.clGetDeviceInfo(device, type, 256, name, null);
 		if (status != OpenCLLib.CL_SUCCESS) {
-			System.out.println("OpenCL::getInfodevice failed(T) status: " + status + " type: " + type);
+			System.out.println("OpenCL::getInfodeviceString failed(H) status: " + status + " type: " + type);
 			return null;
 		}
 		
@@ -133,7 +133,7 @@ public class OpenCL implements GPULister {
 		
 		int status = lib.clGetDeviceInfo(device, type, 256, name, null);
 		if (status != OpenCLLib.CL_SUCCESS) {
-			System.out.println("OpenCL::getInfodevice failed(T) status: " + status + " type: " + type);
+			System.out.println("OpenCL::getInfodeviceLong failed(I) status: " + status + " type: " + type);
 			return -1;
 		}
 		
@@ -148,7 +148,7 @@ public class OpenCL implements GPULister {
 		
 		int status = lib.clGetPlatformInfo(platform, type, 256, name, null);
 		if (status != OpenCLLib.CL_SUCCESS) {
-			System.out.println("GPU::getInfoPlatform failed(K) status: " + status + " type: " + type);
+			System.out.println("GPU::getInfoPlatform failed(J) status: " + status + " type: " + type);
 			return null;
 		}
 		
