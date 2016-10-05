@@ -34,10 +34,11 @@ import java.util.Date;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import javax.xml.bind.DatatypeConverter;
+
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -47,71 +48,17 @@ import com.sheepit.client.Error.ServerCode;
 import com.sheepit.client.exception.FermeExceptionNoSpaceLeftOnDevice;
 
 public class Utils {
-	public static int unzipFileIntoDirectory(String zipFileName_, String jiniHomeParentDirName_) throws FermeExceptionNoSpaceLeftOnDevice {
-		File rootdir = new File(jiniHomeParentDirName_);
+	public static int unzipFileIntoDirectory(String zipFileName_, String destinationDirectory, String password) throws FermeExceptionNoSpaceLeftOnDevice {
 		try {
-			ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFileName_));
-			byte[] buffer = new byte[4096];
-			ZipEntry ze;
-			while ((ze = zis.getNextEntry()) != null) {
-				FileOutputStream fos = null;
-				try {
-					File f = new File(rootdir.getAbsolutePath() + File.separator + ze.getName());
-					if (ze.isDirectory()) {
-						f.mkdirs();
-						continue;
-					}
-					else {
-						f.getParentFile().mkdirs();
-						f.createNewFile();
-						try {
-							f.setExecutable(true);
-						}
-						catch (NoSuchMethodError e2) {
-							// do nothing it's related to the filesystem
-						}
-					}
-					
-					fos = new FileOutputStream(f);
-					int numBytes;
-					while ((numBytes = zis.read(buffer, 0, buffer.length)) != -1) {
-						fos.write(buffer, 0, numBytes);
-					}
-					fos.close();
-				}
-				catch (IOException e) {
-					if (noFreeSpaceOnDisk(jiniHomeParentDirName_)) {
-						throw new FermeExceptionNoSpaceLeftOnDevice();
-					}
-					
-					Log logger = Log.getInstance(null); // might not print the log since the config is null
-					logger.error("Utils::unzipFileIntoDirectory(" + zipFileName_ + "," + jiniHomeParentDirName_ + ") exception " + e);
-					return -3;
-				}
-				catch (Exception e1) {
-					e1.printStackTrace();
-				}
-				if (fos != null) {
-					try {
-						fos.close();
-					}
-					catch (IOException e) {
-					}
-				}
-				zis.closeEntry();
+			ZipFile zipFile = new ZipFile(zipFileName_);
+			
+			if (password != null && zipFile.isEncrypted()) {
+				zipFile.setPassword(password);
 			}
+			zipFile.extractAll(destinationDirectory);
 		}
-		catch (FermeExceptionNoSpaceLeftOnDevice e) {
-			throw e;
-		}
-		catch (IllegalArgumentException e) {
-			Log logger = Log.getInstance(null); // might not print the log since the config is null
-			logger.error("Utils::unzipFileIntoDirectory(" + zipFileName_ + "," + jiniHomeParentDirName_ + ") exception " + e);
-			return -2;
-		}
-		catch (Exception e) {
-			Log logger = Log.getInstance(null); // might not print the log since the config is null
-			logger.error("Utils::unzipFileIntoDirectory(" + zipFileName_ + "," + jiniHomeParentDirName_ + ") exception " + e);
+		catch (ZipException e) {
+			e.printStackTrace();
 			return -1;
 		}
 		return 0;
