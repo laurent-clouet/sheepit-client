@@ -387,7 +387,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 					e.printStackTrace();
 				}
 				
-				String[] job_node_require_attribute = { "id", "archive_md5", "path", "revision", "use_gpu", "frame", "name", "extras" };
+				String[] job_node_require_attribute = { "id", "archive_md5", "path", "revision", "use_gpu", "frame", "name", "extras", "password" };
 				String[] renderer_node_require_attribute = { "md5", "commandline" };
 				
 				for (String e : job_node_require_attribute) {
@@ -432,6 +432,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 						job_node.getAttribute("archive_md5"),
 						renderer_node.getAttribute("md5"),
 						job_node.getAttribute("name"),
+						job_node.getAttribute("password"),
 						frame_extras,
 						synchronous_upload,
 						update_method
