@@ -145,7 +145,7 @@ public class Error {
 	public static String humanString(Type in) {
 		switch (in) {
 			case ERROR_BAD_RESPONSE:
-				return "Bad answer from server. It's a server side error, wait a bit an retry later.";
+				return "Bad answer from server. It's a server side error, wait a bit and retry later.";
 			case NETWORK_ISSUE:
 				return "Could not connect to the server, please check if you have connectivity issue";
 			case TOO_OLD_CLIENT:
