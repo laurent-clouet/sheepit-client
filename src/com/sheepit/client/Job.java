@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import com.sheepit.client.Configuration.ComputeType;
 import com.sheepit.client.Error.Type;
 import com.sheepit.client.hardware.gpu.GPUDevice;
 import com.sheepit.client.os.OS;
@@ -207,7 +208,7 @@ public class Job {
 		gui.status("Rendering project \"" + this.name + "\"");
 		RenderProcess process = getProcessRender();
 		String core_script = "import bpy\n" + "bpy.context.user_preferences.system.compute_device_type = \"%s\"\n" + "bpy.context.scene.cycles.device = \"%s\"\n" + "bpy.context.user_preferences.system.compute_device = \"%s\"\n";
-		if (getUseGPU() && config.getGPUDevice() != null) {
+		if (getUseGPU() && config.getGPUDevice() != null && config.getComputeMethod() != ComputeType.CPU) {
 			core_script = String.format(core_script, "CUDA", "GPU", config.getGPUDevice().getCudaName());
 		}
 		else {
