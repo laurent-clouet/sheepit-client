@@ -21,12 +21,15 @@ package com.sheepit.client.standalone;
 
 import com.sheepit.client.Client;
 import com.sheepit.client.Gui;
+import com.sheepit.client.Stats;
+
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
 public class GuiTextOneLine implements Gui {
 	public static final String type = "oneLine";
 	
+	private String project;
 	private int rendered;
 	private int remaining;
 	private String creditsEarned;
@@ -40,6 +43,7 @@ public class GuiTextOneLine implements Gui {
 	private Client client;
 	
 	public GuiTextOneLine() {
+		project = "";
 		rendered = 0;
 		remaining = 0;
 		creditsEarned = null;
@@ -88,6 +92,17 @@ public class GuiTextOneLine implements Gui {
 	}
 	
 	@Override
+	public void setRenderingProjectName(String name_) {
+		if (name_ == null || name_.isEmpty()) {
+			project = "";
+		}
+		else {
+			project = "Project \"" + name_ + "\" |";
+		}
+		updateLine();
+	}
+	
+	@Override
 	public void error(String msg_) {
 		status = "Error " + msg_;
 		updateLine();
@@ -96,13 +111,25 @@ public class GuiTextOneLine implements Gui {
 	@Override
 	public void AddFrameRendered() {
 		rendered += 1;
-		creditsEarned = client.getServer().getCreditEarnedOnCurrentSession();
 		updateLine();
 	}
 	
 	@Override
-	public void framesRemaining(int n_) {
-		remaining = n_;
+	public void displayStats(Stats stats) {
+		remaining = stats.getRemainingFrame();
+		creditsEarned = String.valueOf(stats.getCreditsEarnedDuringSession());
+		updateLine();
+	}
+	
+	@Override
+	public void setRemainingTime(String time_) {
+		status = "Rendering " + time_;
+		updateLine();
+	}
+	
+	@Override
+	public void setRenderingTime(String time_) {
+		status = "Rendering (remaining " + time_ + ")";
 		updateLine();
 	}
 	
@@ -120,7 +147,7 @@ public class GuiTextOneLine implements Gui {
 		int charToRemove = line.length();
 		
 		System.out.print("\r");
-		line = String.format("Frames rendered: %d remaining: %d Credits earned: %s | %s", rendered, remaining, creditsEarned != null ? creditsEarned : "unknown", status + (exiting ? " (Exiting after this frame)" : ""));
+		line = String.format("Frames rendered: %d remaining: %d Credits earned: %s | %s %s", rendered, remaining, creditsEarned != null ? creditsEarned : "unknown", project, status + (exiting ? " (Exiting after this frame)" : ""));
 		System.out.print(line);
 		for (int i = line.length(); i <= charToRemove; i++) {
 			System.out.print(" ");

@@ -51,6 +51,7 @@ public class Client {
 	private Job renderingJob;
 	private BlockingQueue<Job> jobsToValidate;
 	private boolean isValidatingJob;
+	private long start_time;
 	
 	private boolean disableErrorSending;
 	private boolean running;
@@ -96,6 +97,10 @@ public class Client {
 		return this.log;
 	}
 	
+	public long getStartTime() {
+		return this.start_time;
+	}
+	
 	public int run() {
 		if (this.config.checkOSisSupported() == false) {
 			this.gui.error(Error.humanString(Error.Type.OS_NOT_SUPPORTED));
@@ -127,6 +132,7 @@ public class Client {
 				return -1;
 			}
 			
+			this.start_time = new Date().getTime();
 			this.server.start(); // for staying alive
 			
 			// create a thread which will send the frame
@@ -182,12 +188,12 @@ public class Client {
 				}
 				catch (FermeExceptionNoSession e) {
 					// User has no session need to re-authenticate
-					
 					ret = this.server.getConfiguration();
 					if (ret != Error.Type.OK) {
 						this.renderingJob = null;
 					}
 					else {
+						this.start_time = new Date().getTime(); // reset start session time because the server did it
 						try {
 							Calendar next_request = this.nextJobRequest();
 							if (next_request != null) {
@@ -274,7 +280,7 @@ public class Client {
 					int time_sleep = 1000 * 60 * 15;
 					Date wakeup_time = new Date(new Date().getTime() + time_sleep);
 					this.gui.status(String.format("No job available. Sleeping for 15 minutes (will wake up at %tR)", wakeup_time));
-					this.gui.framesRemaining(0);
+					this.gui.displayStats(new Stats());
 					this.suspended = true;
 					int time_slept = 0;
 					while (time_slept < time_sleep && this.running == true) {
@@ -545,26 +551,32 @@ public class Client {
 	public Error.Type work(Job ajob) {
 		int ret;
 		
+		gui.setRenderingProjectName(ajob.getName());
+		
 		try {
 			ret = this.downloadExecutable(ajob);
 			if (ret != 0) {
+				gui.setRenderingProjectName("");
 				this.log.error("Client::work problem with downloadExecutable (ret " + ret + ")");
 				return Error.Type.DOWNLOAD_FILE;
 			}
 			
 			ret = this.downloadSceneFile(ajob);
 			if (ret != 0) {
+				gui.setRenderingProjectName("");
 				this.log.error("Client::work problem with downloadSceneFile (ret " + ret + ")");
 				return Error.Type.DOWNLOAD_FILE;
 			}
 			
 			ret = this.prepareWorkingDirectory(ajob); // decompress renderer and scene archives
 			if (ret != 0) {
+				gui.setRenderingProjectName("");
 				this.log.error("Client::work problem with this.prepareWorkingDirectory (ret " + ret + ")");
 				return Error.Type.CAN_NOT_CREATE_DIRECTORY;
 			}
 		}
 		catch (FermeExceptionNoSpaceLeftOnDevice e) {
+			gui.setRenderingProjectName("");
 			return Error.Type.NO_SPACE_LEFT_ON_DEVICE;
 		}
 		
@@ -572,16 +584,21 @@ public class Client {
 		File renderer_file = new File(ajob.getRendererPath());
 		
 		if (scene_file.exists() == false) {
+			gui.setRenderingProjectName("");
 			this.log.error("Client::work job preparation failed (scene file '" + scene_file.getAbsolutePath() + "' does not exist)");
 			return Error.Type.MISSING_SCENE;
 		}
 		
 		if (renderer_file.exists() == false) {
+			gui.setRenderingProjectName("");
 			this.log.error("Client::work job preparation failed (renderer file '" + renderer_file.getAbsolutePath() + "' does not exist)");
 			return Error.Type.MISSING_RENDER;
 		}
 		
 		Error.Type err = ajob.render();
+		gui.setRenderingProjectName("");
+		gui.setRemainingTime("");
+		gui.setRenderingTime("");
 		if (err != Error.Type.OK) {
 			this.log.error("Client::work problem with runRenderer (ret " + err + ")");
 			return err;
@@ -591,7 +608,7 @@ public class Client {
 	}
 	
 	protected int downloadSceneFile(Job ajob_) throws FermeExceptionNoSpaceLeftOnDevice {
-		return this.downloadFile(ajob_, ajob_.getSceneArchivePath(), ajob_.getSceneMD5(), String.format("%s?type=job&job=%s&revision=%s", this.server.getPage("download-archive"), ajob_.getId(), ajob_.getRevision()), "project");
+		return this.downloadFile(ajob_, ajob_.getSceneArchivePath(), ajob_.getSceneMD5(), String.format("%s?type=job&job=%s", this.server.getPage("download-archive"), ajob_.getId()), "project");
 	}
 	
 	protected int downloadExecutable(Job ajob) throws FermeExceptionNoSpaceLeftOnDevice {
@@ -718,7 +735,7 @@ public class Client {
 			extras_config = "&cores=" + process.getCoresUsed();
 		}
 		
-		String url_real = String.format("%s?job=%s&frame=%s&rendertime=%d&revision=%s&memoryused=%s&extras=%s%s", this.server.getPage("validate-job"), ajob.getId(), ajob.getFrameNumber(), ajob.getProcessRender().getDuration(), ajob.getRevision(), ajob.getProcessRender().getMemoryUsed(), ajob.getExtras(), extras_config);
+		String url_real = String.format("%s?job=%s&frame=%s&rendertime=%d&memoryused=%s&extras=%s%s", this.server.getPage("validate-job"), ajob.getId(), ajob.getFrameNumber(), ajob.getProcessRender().getDuration(), ajob.getProcessRender().getMemoryUsed(), ajob.getExtras(), extras_config);
 		
 		this.isValidatingJob = true;
 		int nb_try = 1;

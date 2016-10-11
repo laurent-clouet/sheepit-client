@@ -16,24 +16,38 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+
 package com.sheepit.client.standalone.swing.activity;
 
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DecimalFormat;
+import java.util.Date;
 
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.Spring;
+import javax.swing.SpringLayout;
+
 import com.sheepit.client.Client;
 import com.sheepit.client.Job;
 import com.sheepit.client.RenderProcess;
 import com.sheepit.client.Server;
+import com.sheepit.client.Stats;
+import com.sheepit.client.Utils;
 import com.sheepit.client.os.OS;
 import com.sheepit.client.standalone.GuiSwing;
 import com.sheepit.client.standalone.GuiSwing.ActivityType;
@@ -48,139 +62,184 @@ public class Working implements Activity {
 	JLabel creditEarned;
 	JButton pauseButton;
 	JButton exitAfterFrame;
+	JLabel current_project_name_value;
+	JLabel current_project_duration_value;
+	JLabel currrent_project_progression_value;
+	JLabel user_info_points_total_value;
+	JLabel waiting_projects_value;
+	JLabel connected_machines_value;
+	JLabel user_info_total_rendertime_this_session_value;
 	
 	public Working(GuiSwing parent_) {
 		parent = parent_;
 		
 		statusContent = new JLabel("Init");
-		renderedFrameContent = new JLabel("0");
-		remainingFrameContent = new JLabel("0");
+		renderedFrameContent = new JLabel("");
+		remainingFrameContent = new JLabel("");
 		creditEarned = new JLabel("");
-		
-		lastRender = new JLabel();
+		current_project_name_value = new JLabel("");
+		current_project_duration_value = new JLabel("");
+		currrent_project_progression_value = new JLabel("");
+		user_info_points_total_value = new JLabel("");
+		waiting_projects_value = new JLabel("");
+		connected_machines_value = new JLabel("");
+		user_info_total_rendertime_this_session_value = new JLabel("");
+		lastRender = new JLabel("");
 	}
 	
 	@Override
 	public void show() {
-		GridBagConstraints constraints = new GridBagConstraints();
-		int currentRow = 0;
+		// current project
+		JPanel current_project_panel = new JPanel(new SpringLayout());
+		current_project_panel.setBorder(BorderFactory.createTitledBorder("Project"));
 		
-		parent.addPadding(1, ++currentRow, 2, 1);
-		++currentRow;
+		JLabel current_project_status = new JLabel("Status : ", JLabel.TRAILING);
+		JLabel current_project_name = new JLabel("Name : ", JLabel.TRAILING);
+		JLabel current_project_duration = new JLabel("Rendering for : ", JLabel.TRAILING);
+		JLabel current_project_progression = new JLabel("Remaining : ", JLabel.TRAILING);
+		
+		current_project_panel.add(current_project_status);
+		current_project_panel.add(statusContent);
+		
+		current_project_panel.add(current_project_name);
+		current_project_panel.add(current_project_name_value);
+		
+		current_project_panel.add(current_project_duration);
+		current_project_panel.add(current_project_duration_value);
+		
+		current_project_panel.add(current_project_progression);
+		current_project_panel.add(currrent_project_progression_value);
+		
+		// user info
+		JPanel session_info_panel = new JPanel(new SpringLayout());
+		session_info_panel.setBorder(BorderFactory.createTitledBorder("Session infos"));
+		
+		JLabel user_info_credits_this_session = new JLabel("Points earned : ", JLabel.TRAILING);
+		JLabel user_info_total_rendertime_this_session = new JLabel("Duration : ", JLabel.TRAILING);
+		JLabel user_info_rendered_frame_this_session = new JLabel("Rendered frames : ", JLabel.TRAILING);
+		
+		session_info_panel.add(user_info_credits_this_session);
+		session_info_panel.add(creditEarned);
+		
+		session_info_panel.add(user_info_rendered_frame_this_session);
+		session_info_panel.add(renderedFrameContent);
+		
+		session_info_panel.add(user_info_total_rendertime_this_session);
+		session_info_panel.add(user_info_total_rendertime_this_session_value);
+		
+		// global stats
+		JPanel global_stats_panel = new JPanel(new SpringLayout());
+		global_stats_panel.setBorder(BorderFactory.createTitledBorder("Global stats"));
+		
+		JLabel global_stats_machine_connected = new JLabel("Machine connected : ", JLabel.TRAILING);
+		JLabel global_stats_remaining_frame = new JLabel("Remaining frames : ", JLabel.TRAILING);
+		JLabel global_stats_waiting_project = new JLabel("Waiting project : ", JLabel.TRAILING);
+		JLabel global_stats_user_points = new JLabel("User points : ", JLabel.TRAILING);
+		
+		global_stats_panel.add(global_stats_waiting_project);
+		global_stats_panel.add(waiting_projects_value);
+		
+		global_stats_panel.add(global_stats_machine_connected);
+		global_stats_panel.add(connected_machines_value);
+		
+		global_stats_panel.add(global_stats_remaining_frame);
+		global_stats_panel.add(remainingFrameContent);
+		
+		global_stats_panel.add(global_stats_user_points);
+		global_stats_panel.add(user_info_points_total_value);
+		
+		// last frame
+		JPanel last_frame_panel = new JPanel();
+		last_frame_panel.setBorder(BorderFactory.createTitledBorder("Last rendered frame"));
+		lastRender.setIcon(new ImageIcon(new BufferedImage(200, 120, BufferedImage.TYPE_INT_ARGB)));
+		last_frame_panel.add(lastRender);
 		
 		ImageIcon image = new ImageIcon(getClass().getResource("/title.png"));
 		JLabel labelImage = new JLabel(image);
-		constraints.fill = GridBagConstraints.BOTH;
-		constraints.weightx = 1.0;
-		constraints.weighty = 3.0;
-		constraints.gridwidth = 2;
-		constraints.gridx = 1;
-		constraints.gridy = currentRow;
-		parent.getContentPane().add(labelImage, constraints);
+		labelImage.setAlignmentX(Component.CENTER_ALIGNMENT);
+		parent.getContentPane().add(labelImage);
 		
-		parent.addPadding(1, ++currentRow, 2, 1);
-		++currentRow;
-		
-		JLabel statusLabel = new JLabel("Status:");
-		constraints.fill = GridBagConstraints.HORIZONTAL;
-		constraints.weighty = 0.0;
-		constraints.gridwidth = 1;
-		constraints.gridy = currentRow;
-		parent.getContentPane().add(statusLabel, constraints);
-		
-		statusContent.setVerticalAlignment(JLabel.TOP);
-		statusContent.setVerticalTextPosition(JLabel.TOP);
-		constraints.gridx = 2;
-		parent.getContentPane().add(statusContent, constraints);
-		
-		parent.addPadding(1, ++currentRow, 2, 1);
-		++currentRow;
-		
-		JLabel creditsEarnedLabel = new JLabel("Credits earned:");
-		constraints.gridx = 1;
-		constraints.gridy = currentRow;
-		parent.getContentPane().add(creditsEarnedLabel, constraints);
-		
-		constraints.gridx = 2;
-		parent.getContentPane().add(creditEarned, constraints);
-		
-		parent.addPadding(1, ++currentRow, 2, 1);
-		++currentRow;
-		
-		JLabel renderedFrameLabel = new JLabel("Rendered frames:");
-		constraints.gridx = 1;
-		constraints.gridy = currentRow;
-		parent.getContentPane().add(renderedFrameLabel, constraints);
-		
-		constraints.gridx = 2;
-		parent.getContentPane().add(renderedFrameContent, constraints);
-		
-		parent.addPadding(1, ++currentRow, 2, 1);
-		++currentRow;
-		
-		JLabel remainingFrameLabel = new JLabel("Remaining frames:");
-		constraints.gridx = 1;
-		constraints.gridy = currentRow;
-		parent.getContentPane().add(remainingFrameLabel, constraints);
-		
-		constraints.gridx = 2;
-		parent.getContentPane().add(remainingFrameContent, constraints);
-		
-		parent.addPadding(1, ++currentRow, 2, 1);
-		++currentRow;
-		
-		JLabel lastRenderedFrameLabel = new JLabel("Last rendered frame:");
-		constraints.gridx = 1;
-		constraints.gridy = currentRow;
-		parent.getContentPane().add(lastRenderedFrameLabel, constraints);
-		
-		constraints.gridx = 2;
-		parent.getContentPane().add(lastRender, constraints);
-		
-		parent.addPadding(1, ++currentRow, 2, 1);
-		++currentRow;
+		JPanel buttonsPanel = new JPanel(new GridLayout(2, 2));
 		
 		JButton settingsButton = new JButton("Settings");
 		settingsButton.addActionListener(new SettingsAction());
-		constraints.gridx = 1;
-		constraints.gridy = currentRow;
-		parent.getContentPane().add(settingsButton, constraints);
 		
 		pauseButton = new JButton("Pause");
 		pauseButton.addActionListener(new PauseAction());
-		constraints.gridx = 2;
-		constraints.gridy = currentRow;
-		parent.getContentPane().add(pauseButton, constraints);
 		
-		++currentRow;
 		JButton blockJob = new JButton("Block this project");
-		constraints.gridx = 1;
-		constraints.gridy = currentRow;
 		blockJob.addActionListener(new blockJobAction());
-		parent.getContentPane().add(blockJob, constraints);
 		
 		exitAfterFrame = new JButton("Exit after this frame");
-		constraints.gridx = 2;
-		constraints.gridy = currentRow;
 		exitAfterFrame.addActionListener(new ExitAfterAction());
-		parent.getContentPane().add(exitAfterFrame, constraints);
 		
-		parent.addPadding(1, ++currentRow, 2, 1);
-		parent.addPadding(0, 0, 1, currentRow + 1);
-		parent.addPadding(3, 0, 1, currentRow + 1);
+		buttonsPanel.add(settingsButton);
+		buttonsPanel.add(pauseButton);
+		buttonsPanel.add(blockJob);
+		buttonsPanel.add(exitAfterFrame);
+		
+		
+		parent.getContentPane().setLayout(new GridBagLayout());
+		GridBagConstraints global_constraints = new GridBagConstraints();
+		global_constraints.fill = GridBagConstraints.HORIZONTAL;
+		global_constraints.weightx = 1;
+		global_constraints.gridx = 0;
+		
+		parent.getContentPane().add(current_project_panel, global_constraints);
+		parent.getContentPane().add(global_stats_panel, global_constraints);
+		parent.getContentPane().add(session_info_panel, global_constraints);
+		parent.getContentPane().add(last_frame_panel, global_constraints);
+		parent.getContentPane().add(buttonsPanel, global_constraints);
+		
+		Spring widthLeftColumn = getBestWidth(current_project_panel, 4, 2);
+		widthLeftColumn = Spring.max(widthLeftColumn, getBestWidth(global_stats_panel, 4, 2));
+		widthLeftColumn = Spring.max(widthLeftColumn, getBestWidth(session_info_panel, 3, 2));
+		alignPanel(current_project_panel, 4, 2, widthLeftColumn);
+		alignPanel(global_stats_panel, 4, 2, widthLeftColumn);
+		alignPanel(session_info_panel, 3, 2, widthLeftColumn);
 	}
 	
 	public void setStatus(String msg_) {
-		statusContent.setText("<html>" + msg_ + "</html>"); // html for the text wrapping
+		statusContent.setText("<html>" + msg_ + "</html>");
 	}
 	
-	public void setRemainingFrame(int n) {
-		remainingFrameContent.setText(String.valueOf(n));
+	public void setRenderingProjectName(String msg_) {
+		current_project_name_value.setText("<html>" + (msg_.length() > 26 ? msg_.substring(0, 26) : msg_) + "</html>");
+	}
+	
+	public void setRemainingTime(String time_) {
+		currrent_project_progression_value.setText("<html>" + time_ + "</html>");
+	}
+	
+	public void setRenderingTime(String time_) {
+		current_project_duration_value.setText("<html>" + time_ + "</html>");
+	}
+	
+	public void displayStats(Stats stats) {
+		DecimalFormat df = new DecimalFormat("##,##,##,##,##,##,##0");
+		remainingFrameContent.setText(df.format(stats.getRemainingFrame()));
+		creditEarned.setText(df.format(stats.getCreditsEarnedDuringSession()));
+		user_info_points_total_value.setText(df.format(stats.getCreditsEarned()));
+		waiting_projects_value.setText(df.format(stats.getWaitingProject()));
+		connected_machines_value.setText(df.format(stats.getConnectedMachine()));
+		updateTime();
+	}
+	
+	public void updateTime() {
+		if (this.parent.getClient().getStartTime() != 0) {
+			user_info_total_rendertime_this_session_value.setText(Utils.humanDuration(new Date((new Date().getTime() - this.parent.getClient().getStartTime()))));
+		}
+		Job job = this.parent.getClient().getRenderingJob();
+		if (job != null && job.getProcessRender() != null && job.getProcessRender().getStartTime() > 0) {
+			current_project_duration_value.setText("<html>" + Utils.humanDuration(new Date((new Date().getTime() - job.getProcessRender().getStartTime()))) + "</html>");
+		}
+		else {
+			current_project_duration_value.setText("");
+		}
 	}
 	
 	public void setRenderedFrame(int n) {
 		renderedFrameContent.setText(String.valueOf(n));
-		showCreditEarned();
 		showLastRender();
 	}
 	
@@ -208,17 +267,62 @@ public class Working implements Activity {
 		
 	}
 	
-	public void showCreditEarned() {
-		Client client = parent.getClient();
-		if (client != null) {
-			Server server = client.getServer();
-			if (server != null) {
-				String data = server.getCreditEarnedOnCurrentSession();
-				if (data != null) {
-					creditEarned.setText(data);
-				}
+	private void alignPanel(Container parent, int rows, int cols, Spring width) {
+		SpringLayout layout;
+		try {
+			layout = (SpringLayout) parent.getLayout();
+		}
+		catch (ClassCastException exc) {
+			System.err.println("The first argument to makeCompactGrid must use SpringLayout.");
+			return;
+		}
+		
+		Spring x = Spring.constant(0);
+		for (int c = 0; c < cols; c++) {
+			for (int r = 0; r < rows; r++) {
+				SpringLayout.Constraints constraints = getConstraintsForCell(r, c, parent, cols);
+				constraints.setX(x);
+				constraints.setWidth(width);
+			}
+			x = Spring.sum(x, width);
+		}
+		
+		Spring y = Spring.constant(0);
+		for (int r = 0; r < rows; r++) {
+			Spring height = Spring.constant(0);
+			for (int c = 0; c < cols; c++) {
+				height = Spring.max(height, getConstraintsForCell(r, c, parent, cols).getHeight());
+			}
+			for (int c = 0; c < cols; c++) {
+				SpringLayout.Constraints constraints = getConstraintsForCell(r, c, parent, cols);
+				constraints.setY(y);
+				constraints.setHeight(height);
+			}
+			y = Spring.sum(y, height);
+		}
+		
+		SpringLayout.Constraints pCons = layout.getConstraints(parent);
+		pCons.setConstraint(SpringLayout.SOUTH, y);
+		pCons.setConstraint(SpringLayout.EAST, x);
+		
+	}
+	
+	private Spring getBestWidth(Container parent, int rows, int cols) {
+		Spring x = Spring.constant(0);
+		Spring width = Spring.constant(0);
+		for (int c = 0; c < cols; c++) {
+			
+			for (int r = 0; r < rows; r++) {
+				width = Spring.max(width, getConstraintsForCell(r, c, parent, cols).getWidth());
 			}
 		}
+		return width;
+	}
+	
+	private SpringLayout.Constraints getConstraintsForCell(int row, int col, Container parent, int cols) {
+		SpringLayout layout = (SpringLayout) parent.getLayout();
+		Component c = parent.getComponent(row * cols + col);
+		return layout.getConstraints(c);
 	}
 	
 	class PauseAction implements ActionListener {

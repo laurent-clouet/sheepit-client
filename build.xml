@@ -5,7 +5,7 @@
     <property name="compile.deprecation" value="true"/>
     <property name="compile.optimize" value="true"/>
     <property name="compile.version" value="1.7"/>
-    <property name="compile.release" value="3.3.2"/>
+    <property name="compile.release" value="5.0.0"/>
     
     <target name="precompile">
         <antcall target="clean" />
