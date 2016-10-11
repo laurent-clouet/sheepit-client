@@ -196,8 +196,6 @@ public class Settings implements Activity {
 			gpuChecked = true;
 		}
 		useCPU.addActionListener(new CpuChangeAction());
-<<<<<<< c1683eb02c5a088a9768c57efb7eb3f2cee765ee
-		
 		compute_devices_constraints.gridx = 1;
 		compute_devices_constraints.gridy = 0;
 		compute_devices_constraints.fill = GridBagConstraints.BOTH;
@@ -214,7 +212,6 @@ public class Settings implements Activity {
 				GPUDevice config_gpu = config.getGPUDevice();
 				if (config_gpu != null && config_gpu.getCudaName().equals(gpu.getCudaName())) {
 					gpuCheckBox.setSelected(gpuChecked);
-=======
 		constraints.gridwidth = Math.max(1, columns - (gpus != null ? gpus.size() : 0) - 3);
 		constraints.gridx = 2;
 		parent.getContentPane().add(useCPU, constraints);
@@ -230,7 +227,6 @@ public class Settings implements Activity {
 					if (config_gpu != null && config_gpu.getId().equals(gpu.getId())) {
 						gpuCheckBox.setSelected(gpuChecked);
 					}
->>>>>>> Add support of OpenCL
 				}
 			}
 			gpuCheckBox.addActionListener(new GpuChangeAction());
@@ -318,16 +314,6 @@ public class Settings implements Activity {
 		priority.setValue(config.getPriority());
 		JLabel priorityLabel = new JLabel(high_priority_support ? "Priority (High <-> Low):" : "Priority (Normal <-> Low):" );
 		
-		compute_devices_constraints.weightx = 1.0 / gpus.size();
-		compute_devices_constraints.gridx = 0;
-		compute_devices_constraints.gridy++;
-		
-		gridbag.setConstraints(priorityLabel, compute_devices_constraints);
-		compute_devices_panel.add(priorityLabel);
-		
-		compute_devices_constraints.gridx = 1;
-		compute_devices_constraints.weightx = 1.0;
-		
 		gridbag.setConstraints(priority, compute_devices_constraints);
 		compute_devices_panel.add(priority);
 		
@@ -369,6 +355,9 @@ public class Settings implements Activity {
 		advanced_panel.add(renderTime);
 		
 		JLabel customTileSizeLabel = new JLabel("Custom render tile size:");
+=======
+		JLabel customTileSizeLabel = new JLabel("Custom render tile size");
+>>>>>>> * Better ui with more infos
 		customTileSize = new JCheckBox("", config.getTileSize() != -1);
 		advanced_panel.add(customTileSizeLabel);
 		advanced_panel.add(customTileSize);
