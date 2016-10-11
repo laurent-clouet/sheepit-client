@@ -31,6 +31,8 @@ public class GPU {
 	public static List<GPUDevice> devices = null;
 	
 	public static boolean generate() {
+		devices = new LinkedList<GPUDevice>();
+		
 		OS os = OS.getOS();
 		String path = os.getCUDALib();
 		if (path == null) {
@@ -79,8 +81,6 @@ public class GPU {
 			return false;
 		}
 		
-		devices = new LinkedList<GPUDevice>();
-		
 		for (int num = 0; num < count.getValue(); num++) {
 			byte name[] = new byte[256];
 			
@@ -107,9 +107,6 @@ public class GPU {
 		if (devices == null) {
 			generate();
 		}
-		if (devices == null) {
-			return null;
-		}
 		
 		List<String> devs = new LinkedList<String>();
 		for (GPUDevice dev : devices) {
@@ -121,9 +118,6 @@ public class GPU {
 	public static List<GPUDevice> listDevices() {
 		if (devices == null) {
 			generate();
-		}
-		if (devices == null) {
-			return null;
 		}
 		
 		return devices;
