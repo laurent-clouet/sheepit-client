@@ -20,7 +20,6 @@
 package com.sheepit.client.standalone;
 
 import java.awt.AWTException;
-import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.MenuItem;
@@ -33,10 +32,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowStateListener;
 import java.net.URL;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -45,11 +45,13 @@ import javax.swing.border.EmptyBorder;
 import com.sheepit.client.Client;
 import com.sheepit.client.Configuration;
 import com.sheepit.client.Gui;
+import com.sheepit.client.Stats;
 import com.sheepit.client.standalone.swing.activity.Settings;
 import com.sheepit.client.standalone.swing.activity.Working;
 
 public class GuiSwing extends JFrame implements Gui {
 	public static final String type = "swing";
+	
 	public enum ActivityType {
 		WORKING, SETTINGS
 	}
@@ -72,6 +74,15 @@ public class GuiSwing extends JFrame implements Gui {
 		framesRendered = 0;
 		useSysTray = useSysTray_;
 		waitingForAuthentication = true;
+		
+		new Timer().scheduleAtFixedRate(new TimerTask() {
+			@Override
+			public void run() {
+				if (activityWorking != null) {
+					activityWorking.updateTime();
+				}
+			}
+		}, 2 * 1000, 2 * 1000);
 	}
 	
 	@Override
@@ -101,7 +112,6 @@ public class GuiSwing extends JFrame implements Gui {
 			}
 		}
 		
-		
 		URL iconUrl = getClass().getResource("/icon.png");
 		if (iconUrl != null) {
 			ImageIcon img = new ImageIcon(iconUrl);
@@ -109,14 +119,14 @@ public class GuiSwing extends JFrame implements Gui {
 		}
 		
 		setTitle("SheepIt Render Farm");
-		setSize(600, 600);
+		setSize(520, 640);
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		panel = new JPanel();
 		panel.setLayout(new GridBagLayout());
 		setContentPane(this.panel);
-		panel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		panel.setBorder(new EmptyBorder(20, 20, 20, 20));
 		
 		activityWorking = new Working(this);
 		activitySettings = new Settings(this);
@@ -148,8 +158,29 @@ public class GuiSwing extends JFrame implements Gui {
 	}
 	
 	@Override
+	public void setRenderingProjectName(String name_) {
+		if (activityWorking != null) {
+			this.activityWorking.setRenderingProjectName(name_);
+		}
+	}
+	
+	@Override
 	public void error(String msg_) {
 		status(msg_);
+	}
+	
+	@Override
+	public void setRemainingTime(String time_) {
+		if (activityWorking != null) {
+			this.activityWorking.setRemainingTime(time_);
+		}
+	}
+	
+	@Override
+	public void setRenderingTime(String time_) {
+		if (activityWorking != null) {
+			this.activityWorking.setRenderingTime(time_);
+		}
 	}
 	
 	@Override
@@ -165,12 +196,9 @@ public class GuiSwing extends JFrame implements Gui {
 	}
 	
 	@Override
-	public void framesRemaining(int n) {
+	public void displayStats(Stats stats) {
 		if (activityWorking != null) {
-			this.activityWorking.setRemainingFrame(n);
-		}
-		else {
-			System.out.println("GuiSwing::framesRemaining(" + n + ") error: no working activity");
+			this.activityWorking.displayStats(stats);
 		}
 	}
 	
@@ -182,37 +210,6 @@ public class GuiSwing extends JFrame implements Gui {
 	@Override
 	public void setClient(Client cli) {
 		client = cli;
-	}
-	
-	public JLabel addPaddingReturn(int x, int y, int width, int height) {
-		GridBagConstraints constraints = new GridBagConstraints();
-		JLabel label = new JLabel("");
-		return label;
-	}
-	
-	public GridBagConstraints addPaddingConstraints(int x, int y, int width, int height) {
-		GridBagConstraints constraints = new GridBagConstraints();
-		constraints.fill = GridBagConstraints.BOTH;
-		constraints.weightx = 1.0;
-		constraints.weighty = 1.0;
-		constraints.gridwidth = width;
-		constraints.gridheight = height;
-		constraints.gridx = x;
-		constraints.gridy = y;
-		return constraints;
-	}
-	
-	public void addPadding(int x, int y, int width, int height) {
-		GridBagConstraints constraints = new GridBagConstraints();
-		JLabel label = new JLabel("");
-		constraints.fill = GridBagConstraints.BOTH;
-		constraints.weightx = 1.0;
-		constraints.weighty = 1.0;
-		constraints.gridwidth = width;
-		constraints.gridheight = height;
-		constraints.gridx = x;
-		constraints.gridy = y;
-		getContentPane().add(label, constraints);
 	}
 	
 	public Configuration getConfiguration() {

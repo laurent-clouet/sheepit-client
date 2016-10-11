@@ -50,7 +50,6 @@ public class Job {
 	private String sceneMD5;
 	private String rendererMD5;
 	private String id;
-	private String revision;
 	private String pictureFilename;
 	private String path; // path inside of the archive
 	private String rendererCommand;
@@ -68,11 +67,10 @@ public class Job {
 	private Configuration config;
 	private Log log;
 	
-	public Job(Configuration config_, Gui gui_, Log log_, String id_, String frame_, String revision_, String path_, boolean use_gpu, String command_, String script_, String sceneMd5_, String rendererMd5_, String name_, String password_, String extras_, boolean synchronous_upload_, String update_method_) {
+	public Job(Configuration config_, Gui gui_, Log log_, String id_, String frame_, String path_, boolean use_gpu, String command_, String script_, String sceneMd5_, String rendererMd5_, String name_, String password_, String extras_, boolean synchronous_upload_, String update_method_) {
 		config = config_;
 		id = id_;
 		numFrame = frame_;
-		revision = revision_;
 		path = path_;
 		useGPU = use_gpu;
 		rendererCommand = command_;
@@ -97,7 +95,7 @@ public class Job {
 	}
 	
 	public String toString() {
-		return String.format("Job (numFrame '%s' sceneMD5 '%s' rendererMD5 '%s' ID '%s' revision '%s' pictureFilename '%s' jobPath '%s' gpu %s name '%s' extras '%s' updateRenderingStatusMethod '%s' render %s)", numFrame, sceneMD5, rendererMD5, id, revision, pictureFilename, path, useGPU, name, extras, updateRenderingStatusMethod, render);
+		return String.format("Job (numFrame '%s' sceneMD5 '%s' rendererMD5 '%s' ID '%s' pictureFilename '%s' jobPath '%s' gpu %s name '%s' extras '%s' updateRenderingStatusMethod '%s' render %s)", numFrame, sceneMD5, rendererMD5, id, pictureFilename, path, useGPU, name, extras, updateRenderingStatusMethod, render);
 	}
 	
 	public String getId() {
@@ -156,8 +154,8 @@ public class Job {
 		return useGPU;
 	}
 	
-	public String getRevision() {
-		return revision;
+	public String getName() {
+		return name;
 	}
 	
 	public void setOutputImagePath(String path) {
@@ -205,7 +203,7 @@ public class Job {
 	}
 	
 	public Error.Type render() {
-		gui.status("Rendering project \"" + this.name + "\"");
+		gui.status("Rendering");
 		RenderProcess process = getProcessRender();
 		String core_script = "import bpy\n" + "bpy.context.user_preferences.system.compute_device_type = \"%s\"\n" + "bpy.context.scene.cycles.device = \"%s\"\n" + "bpy.context.user_preferences.system.compute_device = \"%s\"\n";
 		if (getUseGPU() && config.getGPUDevice() != null && config.getComputeMethod() != ComputeType.CPU) {
@@ -406,7 +404,9 @@ public class Job {
 						int current = Integer.parseInt(parts[0]);
 						int total = Integer.parseInt(parts[1]);
 						if (total != 0) {
-							gui.status(String.format("Rendering %s %%", (int) (100.0 * current / total)));
+							long end_render = (new Date().getTime() - this.render.getStartTime()) * total / current;
+							Date date = new Date(end_render);
+							gui.setRemainingTime(String.format("%s %% (%s)", (int) (100.0 - 100.0 * current / total), Utils.humanDuration(date)));
 							return;
 						}
 					}
@@ -440,7 +440,7 @@ public class Job {
 						}
 						date_parse.setTimeZone(TimeZone.getTimeZone("GMT"));
 						Date date = date_parse.parse(remaining_time);
-						gui.status(String.format("Rendering (remaining %s)", Utils.humanDuration(date)));
+						gui.setRemainingTime(Utils.humanDuration(date));
 						getProcessRender().setRemainingDuration((int) (date.getTime() / 1000));
 					}
 					catch (ParseException err) {

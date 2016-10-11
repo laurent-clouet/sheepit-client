@@ -20,17 +20,23 @@
 package com.sheepit.client;
 
 public interface Gui {
-	public abstract void start();
+	public void start();
 	
-	public abstract void stop();
+	public void stop();
 	
-	public abstract void status(String msg_);
+	public void status(String msg_);
+	
+	public void setRenderingProjectName(String name_);
+	
+	public void setRemainingTime(String time_);
+	
+	public void setRenderingTime(String time_);
+	
+	public void displayStats(Stats stats);
 	
 	public void error(String err_);
 	
 	public void AddFrameRendered();
-	
-	public void framesRemaining(int nb_);
 	
 	public void setClient(Client cli);
 	

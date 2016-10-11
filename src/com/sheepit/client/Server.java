@@ -352,15 +352,23 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				Element a_node = null;
 				NodeList ns = null;
 				
-				ns = document.getElementsByTagName("frames");
+				ns = document.getElementsByTagName("stats");
 				if (ns.getLength() == 0) {
 					throw new FermeException("error requestJob: parseXML failed, no 'frame' node");
 				}
 				a_node = (Element) ns.item(0);
 				
-				int remaining_frames = -1;
-				if (a_node.hasAttribute("remaining")) {
-					remaining_frames = Integer.parseInt(a_node.getAttribute("remaining"));
+				int remaining_frames = 0;
+				int credits_earned = 0;
+				int credits_earned_session = 0;
+				int waiting_project = 0;
+				int connected_machine = 0;
+				if (a_node.hasAttribute("frame_remaining") && a_node.hasAttribute("credits_total") && a_node.hasAttribute("credits_session") && a_node.hasAttribute("waiting_project") && a_node.hasAttribute("connected_machine")) {
+					remaining_frames = Integer.parseInt(a_node.getAttribute("frame_remaining"));
+					credits_earned = Integer.parseInt(a_node.getAttribute("credits_total"));
+					credits_earned_session = Integer.parseInt(a_node.getAttribute("credits_session"));
+					waiting_project = Integer.parseInt(a_node.getAttribute("waiting_project"));
+					connected_machine = Integer.parseInt(a_node.getAttribute("connected_machine"));
 				}
 				
 				ns = document.getElementsByTagName("job");
@@ -387,7 +395,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 					e.printStackTrace();
 				}
 				
-				String[] job_node_require_attribute = { "id", "archive_md5", "path", "revision", "use_gpu", "frame", "name", "extras", "password" };
+				String[] job_node_require_attribute = { "id", "archive_md5", "path", "use_gpu", "frame", "name", "extras", "password" };
 				String[] renderer_node_require_attribute = { "md5", "commandline" };
 				
 				for (String e : job_node_require_attribute) {
@@ -424,7 +432,6 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 						this.client.getLog(),
 						job_node.getAttribute("id"),
 						job_node.getAttribute("frame"),
-						job_node.getAttribute("revision"),
 						job_node.getAttribute("path").replace("/", File.separator),
 						use_gpu,
 						renderer_node.getAttribute("commandline"),
@@ -438,7 +445,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 						update_method
 						);
 				
-				this.client.getGui().framesRemaining(remaining_frames);
+				this.client.getGui().displayStats(new Stats(remaining_frames, credits_earned, credits_earned_session, waiting_project, connected_machine));
 				
 				return a_job;
 			}
@@ -791,39 +798,6 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			System.err.println("Server::getLastRender exception " + e);
 			e.printStackTrace();
 			
-		}
-		return null;
-	}
-	
-	public String getCreditEarnedOnCurrentSession() {
-		try {
-			HttpURLConnection httpCon = this.HTTPRequest(this.getPage("credits-earned"));
-			
-			InputStream inStrm = httpCon.getInputStream();
-			if (httpCon.getResponseCode() != HttpURLConnection.HTTP_OK) {
-				this.log.debug("Server::getCreditEarnedOnCurrentSession code not ok " + httpCon.getResponseCode());
-				return null;
-			}
-			int size = httpCon.getContentLength();
-			
-			if (size == 0) {
-				this.log.debug("Server::getLastRender size is 0");
-				return null;
-			}
-			
-			byte[] ret = new byte[size];
-			byte[] ch = new byte[1024];
-			int n = 0;
-			int i = 0;
-			while ((n = inStrm.read(ch)) != -1) {
-				System.arraycopy(ch, 0, ret, i, n);
-				i += n;
-			}
-			inStrm.close();
-			return new String(ret);
-		}
-		catch (Exception e) {
-			this.log.error("Server::getCreditEarnedOnCurrentSession exception " + e);
 		}
 		return null;
 	}

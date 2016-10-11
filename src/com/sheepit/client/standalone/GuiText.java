@@ -22,6 +22,8 @@ package com.sheepit.client.standalone;
 import com.sheepit.client.Client;
 import com.sheepit.client.Gui;
 import com.sheepit.client.Log;
+import com.sheepit.client.Stats;
+
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
@@ -95,13 +97,29 @@ public class GuiText implements Gui {
 	public void AddFrameRendered() {
 		this.framesRendered += 1;
 		System.out.println("Frames rendered: " + this.framesRendered);
-		String creditsEarned = this.client.getServer().getCreditEarnedOnCurrentSession();
-		System.out.println("Credits earned: " + (creditsEarned != null ? creditsEarned : "unknown"));
 	}
 	
 	@Override
-	public void framesRemaining(int n_) {
-		System.out.println("Frames remaining: " + n_);
+	public void displayStats(Stats stats) {
+		System.out.println("Frames remaining: " + stats.getRemainingFrame());
+		System.out.println("Credits earned: " + stats.getCreditsEarnedDuringSession());
+	}
+	
+	@Override
+	public void setRenderingProjectName(String name_) {
+		if (name_ != null && name_.isEmpty() == false) {
+			System.out.println("Rendering project \"" + name_ + "\"");
+		}
+	}
+	
+	@Override
+	public void setRemainingTime(String time_) {
+		System.out.println("Rendering " + time_);
+	}
+	
+	@Override
+	public void setRenderingTime(String time_) {
+		System.out.println("Rendering (remaining " + time_ + ")");
 	}
 	
 	@Override
