@@ -112,7 +112,7 @@ public class Working implements Activity {
 		
 		// user info
 		JPanel session_info_panel = new JPanel(new SpringLayout());
-		session_info_panel.setBorder(BorderFactory.createTitledBorder("Session infos"));
+		session_info_panel.setBorder(BorderFactory.createTitledBorder("Session info"));
 		
 		JLabel user_info_credits_this_session = new JLabel("Points earned : ", JLabel.TRAILING);
 		JLabel user_info_total_rendertime_this_session = new JLabel("Duration : ", JLabel.TRAILING);
@@ -131,10 +131,10 @@ public class Working implements Activity {
 		JPanel global_stats_panel = new JPanel(new SpringLayout());
 		global_stats_panel.setBorder(BorderFactory.createTitledBorder("Global stats"));
 		
-		JLabel global_stats_machine_connected = new JLabel("Machine connected : ", JLabel.TRAILING);
+		JLabel global_stats_machine_connected = new JLabel("Machines connected : ", JLabel.TRAILING);
 		JLabel global_stats_remaining_frame = new JLabel("Remaining frames : ", JLabel.TRAILING);
-		JLabel global_stats_waiting_project = new JLabel("Waiting project : ", JLabel.TRAILING);
-		JLabel global_stats_user_points = new JLabel("User points : ", JLabel.TRAILING);
+		JLabel global_stats_waiting_project = new JLabel("Project waiting : ", JLabel.TRAILING);
+		JLabel global_stats_user_points = new JLabel("User's points : ", JLabel.TRAILING);
 		
 		global_stats_panel.add(global_stats_waiting_project);
 		global_stats_panel.add(waiting_projects_value);
@@ -155,6 +155,7 @@ public class Working implements Activity {
 		last_frame_panel.add(lastRender);
 		
 		ImageIcon image = new ImageIcon(getClass().getResource("/title.png"));
+		
 		JLabel labelImage = new JLabel(image);
 		labelImage.setAlignmentX(Component.CENTER_ALIGNMENT);
 		parent.getContentPane().add(labelImage);
@@ -168,7 +169,7 @@ public class Working implements Activity {
 		pauseButton.addActionListener(new PauseAction());
 		
 		JButton blockJob = new JButton("Block this project");
-		blockJob.addActionListener(new blockJobAction());
+		blockJob.addActionListener(new BlockJobAction());
 		
 		exitAfterFrame = new JButton("Exit after this frame");
 		exitAfterFrame.addActionListener(new ExitAfterAction());
@@ -368,7 +369,7 @@ public class Working implements Activity {
 		}
 	}
 	
-	class blockJobAction implements ActionListener {
+	class BlockJobAction implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			Client client = parent.getClient();

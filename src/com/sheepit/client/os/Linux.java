@@ -106,14 +106,12 @@ public class Linux extends OS {
 				}
 			}
 		}
-		catch (java.lang.NoClassDefFoundError e) {
-			System.err.println("Machine::type error " + e + " mostly because Scanner class was introducted by Java 5 and you are running a lower version");
-		}
 		catch (Exception e) {
 			e.printStackTrace();
-		} finally {
+		}
+		finally {
 			if (scanner != null)
-			scanner.close();
+				scanner.close();
 		}
 		
 		return 0;
