@@ -400,12 +400,14 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				
 				for (String e : job_node_require_attribute) {
 					if (job_node.hasAttribute(e) == false) {
+						in.close();
 						throw new FermeException("error requestJob: parseXML failed, job_node have to attribute '" + e + "'");
 					}
 				}
 				
 				for (String e : renderer_node_require_attribute) {
 					if (renderer_node.hasAttribute(e) == false) {
+						in.close();
 						throw new FermeException("error requestJob: parseXML failed, renderer_node have to attribute '" + e + "'");
 					}
 				}
@@ -465,6 +467,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 					System.out.print(line);
 				}
 				System.out.println("");
+				reader.close();
 			}
 		}
 		catch (FermeException e) {
@@ -477,7 +480,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
 			e.printStackTrace(pw);
-			throw new FermeException("error requestJob: unknow exception " + e + " stacktrace: " + sw.toString());
+			throw new FermeException("error requestJob: unknown exception " + e + " stacktrace: " + sw.toString());
 		}
 		finally {
 			if (connection != null) {
@@ -560,6 +563,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			InputStream inStrm = httpCon.getInputStream();
 			if (httpCon.getResponseCode() != HttpURLConnection.HTTP_OK) {
 				this.log.error("Server::HTTPGetFile(" + url_ + ", ...) HTTP code is not " + HttpURLConnection.HTTP_OK + " it's " + httpCon.getResponseCode());
+				inStrm.close();
 				return -1;
 			}
 			int size = httpCon.getContentLength();
@@ -774,12 +778,14 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			InputStream inStrm = httpCon.getInputStream();
 			if (httpCon.getResponseCode() != HttpURLConnection.HTTP_OK) {
 				this.log.debug("Server::getLastRender code not ok " + httpCon.getResponseCode());
+				inStrm.close();
 				return null;
 			}
 			int size = httpCon.getContentLength();
 			
 			if (size == 0) {
 				this.log.debug("Server::getLastRender size is 0");
+				inStrm.close();
 				return null;
 			}
 			

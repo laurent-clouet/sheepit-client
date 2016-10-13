@@ -86,7 +86,7 @@ public class Worker {
 	private String config_file = null;
 	
 	@Option(name = "--version", usage = "Display application version", required = false, handler = VersionParameterHandler.class)
-	private VersionParameterHandler versionHandler;
+	private VersionParameterHandler<?> versionHandler;
 	
 	@Option(name = "--no-systray", usage = "Don't use systray", required = false)
 	private boolean no_systray = false;

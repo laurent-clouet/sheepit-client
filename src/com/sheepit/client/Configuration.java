@@ -316,16 +316,21 @@ public class Configuration {
 			System.err.println("Configuration::getJarVersion Failed to get version file");
 			return "";
 		}
-		
+		InputStreamReader reader = null;
 		try {
-			InputStreamReader reader = new InputStreamReader(versionStream);
+			reader = new InputStreamReader(versionStream);
 			BufferedReader in = new BufferedReader(reader);
 			String version = in.readLine();
-			
+			reader.close();
 			return version;
 		}
 		catch (IOException ex) {
 			System.err.println("Configuration::getJarVersion error while reading manifest file (" + versionPath + "): " + ex.getMessage());
+			try {
+				reader.close();
+			}
+			catch (IOException e) {
+			}
 			return "";
 		}
 	}

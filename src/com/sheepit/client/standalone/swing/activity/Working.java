@@ -308,7 +308,6 @@ public class Working implements Activity {
 	}
 	
 	private Spring getBestWidth(Container parent, int rows, int cols) {
-		Spring x = Spring.constant(0);
 		Spring width = Spring.constant(0);
 		for (int c = 0; c < cols; c++) {
 			

@@ -89,9 +89,10 @@ public class Linux extends OS {
 	
 	@Override
 	public int getMemory() {
+		Scanner scanner = null;
 		try {
 			String filePath = "/proc/meminfo";
-			Scanner scanner = new Scanner(new File(filePath));
+			scanner = new Scanner(new File(filePath));
 			
 			while (scanner.hasNextLine()) {
 				String line = scanner.nextLine();
@@ -104,13 +105,15 @@ public class Linux extends OS {
 					}
 				}
 			}
-			scanner.close();
 		}
 		catch (java.lang.NoClassDefFoundError e) {
 			System.err.println("Machine::type error " + e + " mostly because Scanner class was introducted by Java 5 and you are running a lower version");
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			if (scanner != null)
+			scanner.close();
 		}
 		
 		return 0;
