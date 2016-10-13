@@ -280,7 +280,7 @@ public class GuiSwing extends JFrame implements Gui {
 	public TrayIcon getTrayIcon() {
 		final PopupMenu trayMenu = new PopupMenu();
 		
-		URL iconUrl = getClass().getResource("/icon.png");
+		URL iconUrl = getClass().getResource("/taskbar-icon.png");
 		Image img = Toolkit.getDefaultToolkit().getImage(iconUrl);
 		final TrayIcon icon = new TrayIcon(img);
 		
