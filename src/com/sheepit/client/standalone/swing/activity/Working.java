@@ -93,10 +93,10 @@ public class Working implements Activity {
 		JPanel current_project_panel = new JPanel(new SpringLayout());
 		current_project_panel.setBorder(BorderFactory.createTitledBorder("Project"));
 		
-		JLabel current_project_status = new JLabel("Status : ", JLabel.TRAILING);
-		JLabel current_project_name = new JLabel("Name : ", JLabel.TRAILING);
-		JLabel current_project_duration = new JLabel("Rendering for : ", JLabel.TRAILING);
-		JLabel current_project_progression = new JLabel("Remaining : ", JLabel.TRAILING);
+		JLabel current_project_status = new JLabel("Status: ", JLabel.TRAILING);
+		JLabel current_project_name = new JLabel("Name: ", JLabel.TRAILING);
+		JLabel current_project_duration = new JLabel("Rendering for: ", JLabel.TRAILING);
+		JLabel current_project_progression = new JLabel("Remaining time: ", JLabel.TRAILING);
 		
 		current_project_panel.add(current_project_status);
 		current_project_panel.add(statusContent);
@@ -114,9 +114,9 @@ public class Working implements Activity {
 		JPanel session_info_panel = new JPanel(new SpringLayout());
 		session_info_panel.setBorder(BorderFactory.createTitledBorder("Session info"));
 		
-		JLabel user_info_credits_this_session = new JLabel("Points earned : ", JLabel.TRAILING);
-		JLabel user_info_total_rendertime_this_session = new JLabel("Duration : ", JLabel.TRAILING);
-		JLabel user_info_rendered_frame_this_session = new JLabel("Rendered frames : ", JLabel.TRAILING);
+		JLabel user_info_credits_this_session = new JLabel("Points earned: ", JLabel.TRAILING);
+		JLabel user_info_total_rendertime_this_session = new JLabel("Duration: ", JLabel.TRAILING);
+		JLabel user_info_rendered_frame_this_session = new JLabel("Rendered frames: ", JLabel.TRAILING);
 		
 		session_info_panel.add(user_info_credits_this_session);
 		session_info_panel.add(creditEarned);
@@ -131,10 +131,10 @@ public class Working implements Activity {
 		JPanel global_stats_panel = new JPanel(new SpringLayout());
 		global_stats_panel.setBorder(BorderFactory.createTitledBorder("Global stats"));
 		
-		JLabel global_stats_machine_connected = new JLabel("Machines connected : ", JLabel.TRAILING);
-		JLabel global_stats_remaining_frame = new JLabel("Remaining frames : ", JLabel.TRAILING);
-		JLabel global_stats_waiting_project = new JLabel("Project waiting : ", JLabel.TRAILING);
-		JLabel global_stats_user_points = new JLabel("User's points : ", JLabel.TRAILING);
+		JLabel global_stats_machine_connected = new JLabel("Machines connected: ", JLabel.TRAILING);
+		JLabel global_stats_remaining_frame = new JLabel("Remaining frames: ", JLabel.TRAILING);
+		JLabel global_stats_waiting_project = new JLabel("Projects waiting to be rendered: ", JLabel.TRAILING);
+		JLabel global_stats_user_points = new JLabel("User's points: ", JLabel.TRAILING);
 		
 		global_stats_panel.add(global_stats_waiting_project);
 		global_stats_panel.add(waiting_projects_value);
@@ -178,7 +178,6 @@ public class Working implements Activity {
 		buttonsPanel.add(pauseButton);
 		buttonsPanel.add(blockJob);
 		buttonsPanel.add(exitAfterFrame);
-		
 		
 		parent.getContentPane().setLayout(new GridBagLayout());
 		GridBagConstraints global_constraints = new GridBagConstraints();

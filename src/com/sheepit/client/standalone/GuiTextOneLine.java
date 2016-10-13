@@ -146,7 +146,7 @@ public class GuiTextOneLine implements Gui {
 	private void updateLine() {
 		int charToRemove = line.length();
 		
-		System.out.print("\r");
+		System.out.print('\r');
 		line = String.format("Frames rendered: %d remaining: %d Credits earned: %s | %s %s", rendered, remaining, creditsEarned != null ? creditsEarned : "unknown", project, status + (exiting ? " (Exiting after this frame)" : ""));
 		System.out.print(line);
 		for (int i = line.length(); i <= charToRemove; i++) {
