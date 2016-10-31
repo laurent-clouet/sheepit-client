@@ -49,6 +49,7 @@ public class Client {
 	private Configuration config;
 	private Log log;
 	private Job renderingJob;
+	private Job previousJob;
 	private BlockingQueue<Job> jobsToValidate;
 	private boolean isValidatingJob;
 	private long start_time;
@@ -65,6 +66,7 @@ public class Client {
 		this.log = Log.getInstance(this.config);
 		this.gui = gui_;
 		this.renderingJob = null;
+		this.previousJob = null;
 		this.jobsToValidate = new ArrayBlockingQueue<Job>(1024);
 		this.isValidatingJob = false;
 		
@@ -781,7 +783,12 @@ public class Client {
 		ajob.setOutputImagePath(null);
 		
 		this.isValidatingJob = false;
+		this.previousJob = ajob;
 		return Error.Type.OK;
+	}
+	
+	public Job getPreviousJob() {
+		return this.previousJob;
 	}
 	
 	protected boolean shouldWaitBeforeRender() {
