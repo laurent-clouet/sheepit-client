@@ -35,6 +35,7 @@ import java.util.Date;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -58,6 +59,7 @@ public class Working implements Activity {
 	JLabel statusContent;
 	JLabel renderedFrameContent;
 	JLabel remainingFrameContent;
+	JLabel lastRenderTime;
 	JLabel lastRender;
 	JLabel creditEarned;
 	JButton pauseButton;
@@ -84,6 +86,7 @@ public class Working implements Activity {
 		waiting_projects_value = new JLabel("");
 		connected_machines_value = new JLabel("");
 		user_info_total_rendertime_this_session_value = new JLabel("");
+		lastRenderTime = new JLabel("");
 		lastRender = new JLabel("");
 	}
 	
@@ -150,8 +153,12 @@ public class Working implements Activity {
 		
 		// last frame
 		JPanel last_frame_panel = new JPanel();
+		last_frame_panel.setLayout(new BoxLayout(last_frame_panel, BoxLayout.Y_AXIS));
 		last_frame_panel.setBorder(BorderFactory.createTitledBorder("Last rendered frame"));
 		lastRender.setIcon(new ImageIcon(new BufferedImage(200, 120, BufferedImage.TYPE_INT_ARGB)));
+		lastRender.setAlignmentX(Component.CENTER_ALIGNMENT);
+		lastRenderTime.setAlignmentX(Component.CENTER_ALIGNMENT);
+		last_frame_panel.add(lastRenderTime);
 		last_frame_panel.add(lastRender);
 		
 		ImageIcon image = new ImageIcon(getClass().getResource("/title.png"));
@@ -246,6 +253,7 @@ public class Working implements Activity {
 	public void showLastRender() {
 		Client client = parent.getClient();
 		if (client != null) {
+			Job lastJob = client.getPreviousJob();
 			Server server = client.getServer();
 			if (server != null) {
 				byte[] data = server.getLastRender();
@@ -255,6 +263,12 @@ public class Working implements Activity {
 						BufferedImage image = ImageIO.read(is);
 						if (image != null) {
 							lastRender.setIcon(new ImageIcon(image));
+							if (lastJob != null) {
+								// don't use lastJob.getProcessRender().getDuration() due to timezone
+								if (lastJob.getProcessRender().getDuration() > 1) {
+									lastRenderTime.setText("Render time : " + Utils.humanDuration(new Date(lastJob.getProcessRender().getEndTime() - lastJob.getProcessRender().getStartTime())));
+								}
+							}
 						}
 					}
 					catch (IOException e) {
