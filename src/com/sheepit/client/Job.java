@@ -63,6 +63,7 @@ public class Job {
 	private RenderProcess render;
 	private boolean askForRendererKill;
 	private boolean userBlockJob;
+	private boolean serverBlockJob;
 	private Gui gui;
 	private Configuration config;
 	private Log log;
@@ -86,6 +87,7 @@ public class Job {
 		updateRenderingStatusMethod = update_method_;
 		askForRendererKill = false;
 		userBlockJob = false;
+		serverBlockJob = false;
 		log = log_;
 		render = new RenderProcess();
 	}
@@ -144,6 +146,14 @@ public class Job {
 	
 	public boolean getUserBlockJob() {
 		return userBlockJob;
+	}
+	
+	public void setServerBlockJob(boolean val) {
+		serverBlockJob = val;
+	}
+	
+	public boolean getServerBlockJob() {
+		return serverBlockJob;
 	}
 	
 	public String getRenderCommand() {
@@ -345,6 +355,9 @@ public class Job {
 			log.debug("Job::render been asked to end render");
 			if (files.length != 0) {
 				new File(files[0].getAbsolutePath()).delete();
+			}
+			if (getServerBlockJob()) {
+				return Error.Type.RENDERER_KILLED_BY_SERVER;
 			}
 			if (getUserBlockJob()) {
 				return Error.Type.RENDERER_KILLED_BY_USER;
