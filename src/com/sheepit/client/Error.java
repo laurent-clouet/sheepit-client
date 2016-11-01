@@ -40,6 +40,7 @@ public class Error {
 		RENDERER_OUT_OF_MEMORY(21),
 		RENDERER_KILLED(14),
 		RENDERER_KILLED_BY_USER(20),
+		RENDERER_KILLED_BY_SERVER(22),
 		RENDERER_MISSING_LIBRARIES(15),
 		FAILED_TO_EXECUTE(16),
 		OS_NOT_SUPPORTED(17),
@@ -170,6 +171,8 @@ public class Error {
 			    return "The renderer stopped because either you asked to stop or the server did (usually for a render time too high).";
 			case RENDERER_KILLED_BY_USER:
 				return "The renderer stopped because you've blocked its project.";
+			case RENDERER_KILLED_BY_SERVER:
+				return "The renderer stopped because it's been killed by the server. Usually because the project will take too much time or it's been paused.";
 			case SESSION_DISABLED:
 				return "The server has disabled your session. Your client may have generated a broken frame (GPU not compatible, not enough RAM/VRAM, etc).";
 			case RENDERER_NOT_AVAILABLE:
