@@ -21,12 +21,15 @@ package com.sheepit.client.standalone;
 
 import com.sheepit.client.Client;
 import com.sheepit.client.Gui;
+import com.sheepit.client.Job;
 import com.sheepit.client.Stats;
+import com.sheepit.client.standalone.text.CLIIInputListener;
+import com.sheepit.client.standalone.text.CLIInputObserver;
 
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
-public class GuiTextOneLine implements Gui {
+public class GuiTextOneLine implements Gui, CLIIInputListener {
 	public static final String type = "oneLine";
 	
 	private String project;
@@ -42,6 +45,7 @@ public class GuiTextOneLine implements Gui {
 	
 	private Client client;
 	
+	
 	public GuiTextOneLine() {
 		project = "";
 		rendered = 0;
@@ -51,9 +55,23 @@ public class GuiTextOneLine implements Gui {
 		line = "";
 	}
 	
+	public void commandEntered(Client client, String command){
+		if(command.equalsIgnoreCase("block")){
+			Job job = client.getRenderingJob();
+			if(job != null){
+				job.block();
+			}	
+		}
+	}
+	
 	@Override
 	public void start() {
 		if (client != null) {
+			
+			CLIInputObserver cli_input_observer = new CLIInputObserver(client);
+			cli_input_observer.addListener(this);
+			Thread cli_input_observer_thread = new Thread(cli_input_observer);
+			cli_input_observer_thread.start();
 
 			Signal.handle(new Signal("INT"), new SignalHandler() {
 				@Override
