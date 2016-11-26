@@ -7,6 +7,13 @@ public class CLIInputActionHandler implements CLIIInputListener {
 
 	@Override
 	public void commandEntered(Client client, String command) {
+		//prevent Null Pointer at next step
+		if(command == null){
+			return;
+		}
+		if(client  == null){
+			return;
+		}
 		if(command.equalsIgnoreCase("block")){
 			Job job = client.getRenderingJob();
 			if(job != null){
