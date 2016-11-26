@@ -11,7 +11,9 @@ public class CLIInputActionHandler implements CLIIInputListener {
 		if(command == null){
 			return;
 		}
-		
+		if(client  == null){
+			return;
+		}
 		if(command.equalsIgnoreCase("block")){
 			Job job = client.getRenderingJob();
 			if(job != null){
