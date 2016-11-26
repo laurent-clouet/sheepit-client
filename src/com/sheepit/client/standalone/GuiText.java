@@ -24,13 +24,13 @@ import com.sheepit.client.Gui;
 import com.sheepit.client.Job;
 import com.sheepit.client.Log;
 import com.sheepit.client.Stats;
-import com.sheepit.client.standalone.text.CLIIInputListener;
+import com.sheepit.client.standalone.text.CLIInputActionHandler;
 import com.sheepit.client.standalone.text.CLIInputObserver;
 
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
-public class GuiText implements Gui, CLIIInputListener {
+public class GuiText implements Gui {
 	public static final String type = "text";
 	
 	private int framesRendered;
@@ -50,7 +50,7 @@ public class GuiText implements Gui, CLIIInputListener {
 	public void start() {
 		if (client != null) {
 			CLIInputObserver cli_input_observer = new CLIInputObserver(client);
-			cli_input_observer.addListener(this);
+			cli_input_observer.addListener(new CLIInputActionHandler());
 			Thread cli_input_observer_thread = new Thread(cli_input_observer);
 			cli_input_observer_thread.start();
 			
@@ -80,15 +80,6 @@ public class GuiText implements Gui, CLIIInputListener {
 
 			client.run();
 			client.stop();
-		}
-	}
-	
-	public void commandEntered(Client client, String command){
-		if(command.equalsIgnoreCase("block")){
-			Job job = client.getRenderingJob();
-			if(job != null){
-				job.block();
-			}	
 		}
 	}
 	
