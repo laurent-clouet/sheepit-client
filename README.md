@@ -26,3 +26,5 @@ At the command line ui (-ui text / -ui oneLine) you could type in the following 
 * stop: stop the client after the current frame has finished
 * cancel: cancle the stop request
 * quit: stops the client directly without finishing the current frame
+* priority &lt;n&gt;: changes the priority for the next render job to the given nice value
+
