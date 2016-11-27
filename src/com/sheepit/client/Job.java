@@ -237,6 +237,7 @@ public class Job {
 		
 		new_env.put("BLENDER_USER_CONFIG", config.workingDirectory.getAbsolutePath().replace("\\", "\\\\"));
 		new_env.put("CORES", Integer.toString(config.getNbCores()));
+		new_env.put("PRIORITY", Integer.toString(config.getPriority()));
 		
 		for (String arg : command1) {
 			switch (arg) {
