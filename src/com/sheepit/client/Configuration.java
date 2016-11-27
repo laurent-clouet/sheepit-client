@@ -47,6 +47,7 @@ public class Configuration {
 	private String proxy;
 	private int maxUploadingJob;
 	private int nbCores;
+	private int priority;
 	private ComputeType computeMethod;
 	private GPUDevice GPUDevice;
 	private boolean printLog;
@@ -63,6 +64,7 @@ public class Configuration {
 		this.static_exeDirName = "exe";
 		this.maxUploadingJob = 1;
 		this.nbCores = -1; // ie not set
+		this.priority = 19;
 		this.computeMethod = null;
 		this.GPUDevice = null;
 		this.userSpecifiedACacheDir = false;
@@ -123,6 +125,20 @@ public class Configuration {
 	
 	public int getNbCores() {
 		return this.nbCores;
+	}
+	
+	public void setUsePriority(int priority) {
+		if (priority > 19)
+			priority = 19;
+		if (priority < -19)
+			priority = -19;
+		
+		this.priority = priority;
+		
+	}
+	
+	public int getPriority() {
+		return this.priority;
 	}
 	
 	public void setPrintLog(boolean val) {
