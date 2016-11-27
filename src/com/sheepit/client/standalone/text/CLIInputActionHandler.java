@@ -1,12 +1,18 @@
 package com.sheepit.client.standalone.text;
 
+import javax.swing.plaf.synth.SynthSeparatorUI;
+
 import com.sheepit.client.Client;
+import com.sheepit.client.Configuration;
 import com.sheepit.client.Job;
+import com.sun.scenario.effect.impl.prism.PrImage;
 
 public class CLIInputActionHandler implements CLIIInputListener {
 
 	@Override
 	public void commandEntered(Client client, String command) {
+		int priorityLength = "priority".length();
+		
 		//prevent Null Pointer at next step
 		if(command == null){
 			return;
@@ -35,16 +41,35 @@ public class CLIInputActionHandler implements CLIIInputListener {
 		else if(command.equalsIgnoreCase("quit")){
 			client.stop();
 			System.exit(0);
-		}
-		else {
-			System.out.println("Unknown command: " + command);
-			System.out.println("block:  block project");
-			System.out.println("pause:  pause client requesting new jobs");
-			System.out.println("resume: resume after client was paused");
-			System.out.println("stop:   exit after frame was finished");
-			System.out.println("cancel: cancel exit");
-			System.out.println("quit:   exit now");
+		} else if((command.length() > priorityLength ) && 
+					( command.substring(0, priorityLength).equalsIgnoreCase("priority"))	){
+				changePriority(client, command.substring(priorityLength));
+				
+			}
+			else {
+				System.out.println("Unknown command: " + command);
+				System.out.println("block:  block project");
+				System.out.println("pause:  pause client requesting new jobs");
+				System.out.println("resume: resume after client was paused");
+				System.out.println("stop:   exit after frame was finished");
+				System.out.println("cancel: cancel exit");
+				System.out.println("quit:   exit now");
+				System.out.println("priority <n>: set the priority for the next renderjob");
+			
 		}
 	}
 
+	void changePriority(Client client, String newPriority){
+		Configuration config = client.getConfiguration();
+		if(config != null){
+			try {
+				config.setUsePriority(Integer.parseInt(newPriority.trim()));
+			}
+			catch(NumberFormatException e){
+				System.out.println("Invalid priority: " + newPriority);
+			}
+		}
+		
+	}
+	
 }
