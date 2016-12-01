@@ -58,6 +58,9 @@ public class Worker {
 	@Option(name = "-max-uploading-job", usage = "", metaVar = "1", required = false)
 	private int max_upload = -1;
 	
+	@Option(name = "-block_time", usage = "max rendertime in minutes for projects. Projects with larger rendertime will be blocked automated", metaVar = "0", required = false)
+	private intg block_time = 0;
+	
 	@Option(name = "-gpu", usage = "CUDA name of the GPU used for the render, for example CUDA_0", metaVar = "CUDA_0", required = false)
 	private String gpu_device = null;
 	
@@ -112,6 +115,8 @@ public class Worker {
 		ComputeType compute_method = ComputeType.CPU;
 		Configuration config = new Configuration(null, login, password);
 		config.setPrintLog(print_log);
+		
+		config.setBlockTime(block_time);
 		
 		if (cache_dir != null) {
 			File a_dir = new File(cache_dir);

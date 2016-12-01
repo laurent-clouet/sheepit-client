@@ -405,6 +405,18 @@ public class Job {
 		return Error.Type.OK;
 	}
 	
+	private void block_project(long startTime, long total_duration){
+		if(config.getBlockTime() == 0){
+			return;
+		}
+		if(new Date().getTime() - startTime) < 10000){
+			return;
+		}
+		if((total_duration / 1000 /60) > config.getBlockTime()){
+			block();
+		}
+	}
+	
 	private void updateRenderingStatus(String line) {
 		if (getUpdateRenderingStatusMethod() != null && getUpdateRenderingStatusMethod().equals(Job.UPDATE_METHOD_BLENDER_INTERNAL_BY_PART)) {
 			String search = " Part ";
@@ -420,8 +432,10 @@ public class Job {
 							long end_render = (new Date().getTime() - this.render.getStartTime()) * total / current;
 							Date date = new Date(end_render);
 							gui.setRemainingTime(String.format("%s %% (%s)", (int) (100.0 - 100.0 * current / total), Utils.humanDuration(date)));
+							block_project(this.render.getStartTime(), end_render);
 							return;
 						}
+						
 					}
 					catch (NumberFormatException e) {
 						System.out.println("Exception 92: " + e);
