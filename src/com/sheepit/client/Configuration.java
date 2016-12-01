@@ -122,7 +122,7 @@ public class Configuration {
 		this.block_time = minutes;
 	}
 	
-	public void getBlockTime(){
+	public int getBlockTime(){
 		return this.block_time;
 	}
 	

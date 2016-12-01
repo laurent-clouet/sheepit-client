@@ -418,15 +418,17 @@ public class Job {
 		if(config.getBlockTime() == 0){
 			return;
 		}
-		if(new Date().getTime() - startTime) < 10000){
+		if((new Date().getTime() - startTime) < 10000){ //wait at least 10 seconds to get good total estimation
 			return;
 		}
-		if((total_duration / 1000 /60) > config.getBlockTime()){
+		if((total_duration / 1000 / 60) > config.getBlockTime()){
 			block();
 		}
 	}
 	
 	private void updateRenderingStatus(String line) {
+		block_project(this.render.getStartTime(), new Date().getTime() - this.render.getStartTime());
+		
 		if (getUpdateRenderingStatusMethod() != null && getUpdateRenderingStatusMethod().equals(Job.UPDATE_METHOD_BLENDER_INTERNAL_BY_PART)) {
 			String search = " Part ";
 			int index = line.lastIndexOf(search);
@@ -478,6 +480,8 @@ public class Job {
 						Date date = date_parse.parse(remaining_time);
 						gui.setRemainingTime(Utils.humanDuration(date));
 						getProcessRender().setRemainingDuration((int) (date.getTime() / 1000));
+						long end_render = date.getTime() + new Date().getTime() - this.render.getStartTime();
+						block_project(this.render.getStartTime(), end_render);
 					}
 					catch (ParseException err) {
 						log.error("Client::updateRenderingStatus ParseException " + err);
