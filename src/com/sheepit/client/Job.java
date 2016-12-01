@@ -418,7 +418,7 @@ public class Job {
 		if(config.getBlockTime() == 0){
 			return;
 		}
-		if((new Date().getTime() - startTime) < 10000){ //wait at least 10 seconds to get good total estimation
+		if((new Date().getTime() - startTime) < 30000){ //wait at least 30 seconds to get good total estimation
 			return;
 		}
 		if((total_duration / 1000 / 60) > config.getBlockTime()){
