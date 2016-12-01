@@ -48,6 +48,7 @@ public class Configuration {
 	private int maxUploadingJob;
 	private int nbCores;
 	private int priority;
+	private int block_time; // in minutes
 	private ComputeType computeMethod;
 	private GPUDevice GPUDevice;
 	private boolean printLog;
@@ -117,6 +118,14 @@ public class Configuration {
 	
 	public void setMaxUploadingJob(int max) {
 		this.maxUploadingJob = max;
+	}
+	
+	public void setBlockTime(int minutes){
+		this.block_time = minutes;
+	}
+	
+	public int getBlockTime(){
+		return this.block_time;
 	}
 	
 	public void setUseNbCores(int nbcores) {
