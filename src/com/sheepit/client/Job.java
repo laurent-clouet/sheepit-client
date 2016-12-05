@@ -423,7 +423,8 @@ public class Job {
 		if(config.getBlockMem() == 0){
 			return;
 		}
-		if(getProcessRender().getMemoryUsed() > config.getBlockMem()){
+		// getMemUsed in KB and getBlockMem in MB
+		if(getProcessRender().getMemoryUsed() > config.getBlockMem()*1000){
 			block();
 		}
 		
