@@ -124,6 +124,7 @@ public class Worker {
 		config.setUsePriority(priority);
 		
 		config.setBlockTime(block_time);
+		config.setBlockMem(block_mem);
 		
 		if (cache_dir != null) {
 			File a_dir = new File(cache_dir);
