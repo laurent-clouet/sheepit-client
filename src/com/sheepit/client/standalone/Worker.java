@@ -120,6 +120,7 @@ public class Worker {
 		config.setPrintLog(print_log);
 		
 		config.setBlockTime(block_time);
+		config.setBlockMem(block_mem);
 		
 		if (cache_dir != null) {
 			File a_dir = new File(cache_dir);
