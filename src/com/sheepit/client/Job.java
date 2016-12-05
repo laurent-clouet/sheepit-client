@@ -36,6 +36,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.sheepit.client.Configuration.ComputeType;
 import com.sheepit.client.Error.Type;
@@ -45,6 +47,9 @@ import com.sheepit.client.os.OS;
 public class Job {
 	public static final String UPDATE_METHOD_BY_REMAINING_TIME = "remainingtime";
 	public static final String UPDATE_METHOD_BLENDER_INTERNAL_BY_PART = "blenderinternal";
+	
+	private Pattern memoryPeakPatter = Pattern.compile("[Pp]eak[: ]+(\\d+\\.\\d+[GMK])");
+	private Pattern memoryPeakValuePatter = Pattern.compile("\\d+\\.\\d+[GMK]");
 	
 	private String numFrame;
 	private String sceneMD5;
@@ -422,8 +427,8 @@ public class Job {
 		if(config.getBlockMem() == 0){
 			return;
 		}
-		// getMemUsed in KB and getBlockMem in MB
-		if(getProcessRender().getMemoryUsed() > config.getBlockMem()*1000){
+		// getMemUsed in B and getBlockMem in MB
+		if(getProcessRender().getMemoryUsed() > config.getBlockMem()*1000*1000){
 			block();
 		}
 		
@@ -507,38 +512,12 @@ public class Job {
 	}
 	
 	private void updateRenderingMemoryPeak(String line) {
-		String[] elements = line.toLowerCase().split("(peak)");
-		
-		for (String element : elements) {
-			if (element.isEmpty() == false && element.charAt(0) == ' ') {
-				int end = element.indexOf(')');
-				if (end > 0) {
-					try {
-						long mem = Utils.parseNumber(element.substring(1, end).trim());
-						if (mem > getProcessRender().getMemoryUsed()) {
-							getProcessRender().setMemoryUsed(mem);
-						}
-					}
-					catch (IllegalStateException e) {
-						// failed to parseNumber
-					}
-				}
-			}
-			else {
-				if (element.isEmpty() == false && element.charAt(0) == ':') {
-					int end = element.indexOf('|');
-					if (end > 0) {
-						try {
-							long mem = Utils.parseNumber(element.substring(1, end).trim());
-							if (mem > getProcessRender().getMemoryUsed()) {
-								getProcessRender().setMemoryUsed(mem);
-							}
-						}
-						catch (IllegalStateException e) {
-							// failed to parseNumber
-						}
-					}
-				}
+		for ( Matcher p = memoryPeakPatter.matcher(line); p.find(); ){
+			 Matcher m = memoryPeakValuePatter.matcher(p.group()); 
+			m.find(); 
+			long mem = Utils.parseNumber(m.group() );
+			if (mem > getProcessRender().getMemoryUsed()) {
+				getProcessRender().setMemoryUsed(mem);
 			}
 		}
 	}
