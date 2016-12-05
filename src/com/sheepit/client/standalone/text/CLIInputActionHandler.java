@@ -13,6 +13,7 @@ public class CLIInputActionHandler implements CLIIInputListener {
 	public void commandEntered(Client client, String command) {
 		int priorityLength = "priority".length();
 		int blockTimeLength = "block_time".length();
+		int blockMemLength = "block_mem".length();
 		
 		//prevent Null Pointer at next step
 		if(command == null){
@@ -42,20 +43,27 @@ public class CLIInputActionHandler implements CLIIInputListener {
 		else if(command.equalsIgnoreCase("quit")){
 			client.stop();
 			System.exit(0);
-		} else if((command.length() > priorityLength ) && 
-					( command.substring(0, priorityLength).equalsIgnoreCase("priority"))	){
-				changePriority(client, command.substring(priorityLength));
-				
-			}
+		} 
+		else if((command.length() > priorityLength ) && 
+			( command.substring(0, priorityLength).equalsIgnoreCase("priority"))	){
+			changePriority(client, command.substring(priorityLength));
+			
+		}
 		else if((command.length() > blockTimeLength ) && 
 				( command.substring(0, blockTimeLength).equalsIgnoreCase("block_time"))	){
 			changeBlockTime(client, command.substring(blockTimeLength));
+			
+		}
+		else if((command.length() > blockMemLength ) && 
+				( command.substring(0, blockMemLength).equalsIgnoreCase("block_mem"))	){
+			changeBlockMem(client, command.substring(blockMemLength));
 			
 		}
 		else {
 			System.out.println("Unknown command: " + command);
 			System.out.println("block:  block project");
 			System.out.println("block_time n: automated block projects needing more than n minutes to render. 0 disables");
+			System.out.println("block_mem n: automated block projects needing more than n megabytes RAM to render. 0 disables");
 			System.out.println("pause:  pause client requesting new jobs");
 			System.out.println("resume: resume after client was paused");
 			System.out.println("stop:   exit after frame was finished");
@@ -92,4 +100,16 @@ public class CLIInputActionHandler implements CLIIInputListener {
 		
 	}
 	
+	void changeBlockMem(Client client, String newBlockMem){
+		Configuration config = client.getConfiguration();
+		if(config != null){
+			try {
+				config.setBlockMem(Integer.parseInt(newBlockMem.trim()));
+			}
+			catch(NumberFormatException e){
+				System.out.println("Invalid block_mem: " + newBlockMem);
+			}
+		}
+		
+	}
 }

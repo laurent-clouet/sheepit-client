@@ -416,6 +416,20 @@ public class Job {
 	}
 	
 	private void block_project(long startTime, long total_duration){
+		block_project_time(startTime, total_duration);
+		block_project_mem();
+	}
+	private void block_project_mem(){
+		if(config.getBlockMem() == 0){
+			return;
+		}
+		if(getProcessRender().getMemoryUsed() > config.getBlockMem()){
+			block();
+		}
+		
+	}
+	
+	private void block_project_time(long startTime, long total_duration){
 		if(config.getBlockTime() == 0){
 			return;
 		}

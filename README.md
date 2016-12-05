@@ -22,6 +22,7 @@ At the command line ui (-ui text / -ui oneLine) you could type in the following 
 
 * block: to block the current project
 * block_time n: to automated block projects needing more than n minutes to finish rendering
+* block_mem n: to automated block projects needing more than n megabytes RAM for rendering
 * pause: pause the client to request new jobs after the current frame has finished to render
 * resume: resume the client after it was paused
 * stop: stop the client after the current frame has finished
