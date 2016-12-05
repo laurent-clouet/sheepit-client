@@ -48,6 +48,7 @@ public class Configuration {
 	private int maxUploadingJob;
 	private int nbCores;
 	private int block_time; // in minutes
+	private int block_mem; // in megabytes
 	private ComputeType computeMethod;
 	private GPUDevice GPUDevice;
 	private boolean printLog;
@@ -124,6 +125,14 @@ public class Configuration {
 	
 	public int getBlockTime(){
 		return this.block_time;
+	}
+	
+	public void setBlockMem(int megabyte){
+		this.block_mem = megabyte;
+	}
+	
+	public int getBlockMem(){
+		return this.block_mem;
 	}
 	
 	public void setUseNbCores(int nbcores) {
