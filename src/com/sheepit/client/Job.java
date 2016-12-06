@@ -418,7 +418,7 @@ public class Job {
 		if(config.getBlockTime() == 0){
 			return;
 		}
-		if((new Date().getTime() - startTime) < 30000){ //wait at least 30 seconds to get good total estimation
+		if((new Date().getTime() - startTime) < 60000){ //wait at least 60 seconds to get good total estimation
 			return;
 		}
 		if((total_duration / 1000 / 60) > config.getBlockTime()){
@@ -427,8 +427,6 @@ public class Job {
 	}
 	
 	private void updateRenderingStatus(String line) {
-		block_project(this.render.getStartTime(), new Date().getTime() - this.render.getStartTime());
-		
 		if (getUpdateRenderingStatusMethod() != null && getUpdateRenderingStatusMethod().equals(Job.UPDATE_METHOD_BLENDER_INTERNAL_BY_PART)) {
 			String search = " Part ";
 			int index = line.lastIndexOf(search);
