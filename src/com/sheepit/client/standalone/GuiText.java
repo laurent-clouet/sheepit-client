@@ -114,12 +114,12 @@ public class GuiText implements Gui {
 	
 	@Override
 	public void setRemainingTime(String time_) {
-		System.out.println("Rendering " + time_);
+		System.out.println("Rendering (remaining " + time_ + ")");
 	}
 	
 	@Override
 	public void setRenderingTime(String time_) {
-		System.out.println("Rendering (remaining " + time_ + ")");
+		System.out.println("Rendering " + time_);
 	}
 	
 	@Override
