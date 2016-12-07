@@ -75,6 +75,8 @@ public class Settings implements Activity {
 	private boolean haveAutoStarted;
 	
 	private JTextField tileSizeValue;
+	private JTextField blockTimeValue;
+	private JTextField blockMemValue;
 	private JLabel tileSizeLabel;
 	private JCheckBox customTileSize;
 	
@@ -245,7 +247,7 @@ public class Settings implements Activity {
 		parent.getContentPane().add(compute_devices_panel, constraints);
 		
 		// other
-		JPanel advanced_panel = new JPanel(new GridLayout(3, 2));
+		JPanel advanced_panel = new JPanel(new GridLayout(5, 2));
 		advanced_panel.setBorder(BorderFactory.createTitledBorder("Advanced options"));
 		
 		JLabel proxyLabel = new JLabel("Proxy :");
@@ -281,6 +283,25 @@ public class Settings implements Activity {
 		
 		advanced_panel.add(tileSizeLabel);
 		advanced_panel.add(tileSizeValue);
+		
+		JLabel blockTimeLabel = new JLabel("max. rendertime (min)");
+		blockTimeValue = new JTextField();
+		int config_blocktime = parent.getConfiguration().getBlockTime();
+		if(config_blocktime > 0){
+			blockTimeValue.setText(Integer.toString(config_blocktime));
+		}
+		advanced_panel.add(blockTimeLabel);
+		advanced_panel.add(blockTimeValue);
+		
+		JLabel blockMemLabel = new JLabel("max. render memory (MB)");
+		blockMemValue = new JTextField();
+		int config_blockmem = parent.getConfiguration().getBlockMem();
+		if(config_blockmem > 0){
+			blockMemValue.setText(Integer.toString(config_blockmem));
+		}
+		advanced_panel.add(blockMemLabel);
+		advanced_panel.add(blockMemValue);
+		
 		
 		currentRow++;
 		constraints.gridx = 0;
@@ -474,7 +495,7 @@ public class Settings implements Activity {
 				}
 				catch (MalformedURLException e1) {
 					System.err.println("Error: wrong url for proxy");
-					System.err.println(e);
+					System.err.println(e1);
 					System.exit(2);
 				}
 			}
@@ -487,7 +508,39 @@ public class Settings implements Activity {
 				}
 				catch (NumberFormatException e1) {
 					System.err.println("Error: wrong tile format");
-					System.err.println(e);
+					System.err.println(e1);
+					System.exit(2);
+				}
+			}
+			
+			String memvalue = null;
+			if(blockMemValue != null){
+				try{
+					memvalue = blockMemValue.getText().trim();
+					if(memvalue.equals("")){
+						memvalue = "0";
+					}
+					config.setBlockMem(Integer.parseInt(memvalue));
+				}
+				catch (NumberFormatException e1) {
+					System.err.println("Error: wrong mem value format");
+					System.err.println(e1);
+					System.exit(2);
+				}
+			}
+			
+			String timevalue = null;
+			if(blockTimeValue != null){
+				try{
+					timevalue = blockTimeValue.getText().trim();
+					if(timevalue.equals("")){
+						timevalue = "0";
+					}
+					config.setBlockTime(Integer.parseInt(timevalue));
+				}
+				catch (NumberFormatException e1) {
+					System.err.println("Error: wrong time value format");
+					System.err.println(e1);
 					System.exit(2);
 				}
 			}
@@ -500,7 +553,7 @@ public class Settings implements Activity {
 			}
 			
 			if (saveFile.isSelected()) {
-				new SettingsLoader(login.getText(), new String(password.getPassword()), proxyText, method, selected_gpu, cpu_cores, cachePath, autoSignIn.isSelected(), GuiSwing.type, tile).saveFile();
+				new SettingsLoader(login.getText(), new String(password.getPassword()), proxyText, method, selected_gpu, cpu_cores, cachePath, autoSignIn.isSelected(), GuiSwing.type, tile, memvalue, timevalue).saveFile();
 			}
 			else {
 				try {

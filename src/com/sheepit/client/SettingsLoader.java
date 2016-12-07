@@ -50,6 +50,8 @@ public class SettingsLoader {
 	private String autoSignIn;
 	private String ui;
 	private String tileSize;
+	private String blockMem;
+	private String blockTime;
 	
 	public SettingsLoader() {
 		path = getDefaultFilePath();
@@ -59,7 +61,8 @@ public class SettingsLoader {
 		path = path_;
 	}
 	
-	public SettingsLoader(String login_, String password_, String proxy_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, String cacheDir_, boolean autoSignIn_, String ui_, String tileSize_) {
+	public SettingsLoader(String login_, String password_, String proxy_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, String cacheDir_, boolean autoSignIn_, String ui_, String tileSize_, 
+						  String blockMem_, String blockTime_) {
 		path = getDefaultFilePath();
 		login = login_;
 		password = password_;
@@ -68,6 +71,8 @@ public class SettingsLoader {
 		autoSignIn = String.valueOf(autoSignIn_);
 		ui = ui_;
 		tileSize = tileSize_;
+		blockMem = blockMem_;
+		blockTime = blockTime_;
 		if (cores_ > 0) {
 			cores = String.valueOf(cores_);
 		}
@@ -139,6 +144,14 @@ public class SettingsLoader {
 				prop.setProperty("tile-size", tileSize);
 			}
 			
+			if (blockMem != null) {
+				prop.setProperty("block-mem", blockMem);
+			}
+			
+			if (blockTime != null) {
+				prop.setProperty("block-time", blockTime);
+			}
+			
 			prop.store(output, null);
 		}
 		catch (IOException io) {
@@ -181,6 +194,8 @@ public class SettingsLoader {
 		this.autoSignIn = null;
 		this.ui = null;
 		this.tileSize = null;
+		this.blockMem = null;
+		this.blockTime = null;
 		
 		if (new File(path).exists() == false) {
 			return;
@@ -230,6 +245,12 @@ public class SettingsLoader {
 			
 			if (prop.containsKey("tile-size")) {
 				this.tileSize = prop.getProperty("tile-size");
+			}
+			if (prop.containsKey("block-mem")) {
+				this.blockMem = prop.getProperty("block-mem");
+			}
+			if (prop.containsKey("block-time")) {
+				this.blockTime = prop.getProperty("block-time");
 			}
 		}
 		catch (IOException io) {
@@ -299,11 +320,19 @@ public class SettingsLoader {
 			config.setTileSize(Integer.valueOf(tileSize));
 		}
 		
+		if (config.getBlockMem() == 0 && blockMem != null) {
+			config.setBlockMem(Integer.valueOf(blockMem));
+		}
+		if (config.getBlockTime() == 0 && blockTime != null) {
+			config.setBlockTime(Integer.valueOf(blockTime));
+		}
+		
 		config.setAutoSignIn(Boolean.valueOf(autoSignIn));
 	}
 	
 	@Override
 	public String toString() {
-		return "ConfigurationLoader [path=" + path + ", login=" + login + ", password=" + password + ", computeMethod=" + computeMethod + ", gpu=" + gpu + ", cacheDir=" + cacheDir + "]";
+		return "ConfigurationLoader [path=" + path + ", login=" + login + ", password=" + password + ", computeMethod=" + computeMethod + ", gpu=" + gpu + ", cacheDir=" + cacheDir + 
+				 ", blockMem=" + blockMem +  ", blockTime=" + blockTime + "]";
 	}
 }
