@@ -115,6 +115,7 @@ public class Worker {
 		
 		if (cache_dir != null) {
 			File a_dir = new File(cache_dir);
+			a_dir.mkdirs();
 			if (a_dir.isDirectory() && a_dir.canWrite()) {
 				config.setCacheDir(a_dir);
 			}
