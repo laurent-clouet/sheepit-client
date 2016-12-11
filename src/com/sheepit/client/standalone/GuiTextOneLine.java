@@ -123,13 +123,13 @@ public class GuiTextOneLine implements Gui {
 	
 	@Override
 	public void setRemainingTime(String time_) {
-		status = "Rendering " + time_;
+		status = "Rendering (remaining " + time_ + ")";
 		updateLine();
 	}
 	
 	@Override
 	public void setRenderingTime(String time_) {
-		status = "Rendering (remaining " + time_ + ")";
+		status = "Rendering " + time_;
 		updateLine();
 	}
 	
