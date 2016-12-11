@@ -100,6 +100,7 @@ public class Job {
 	public void block(){
 		setAskForRendererKill(true);
 		setUserBlockJob(true);
+		BlockList.getInstance().blockJob(sceneMD5, name);
 		RenderProcess process = getProcessRender();
 		if (process != null) {
 			OS.getOS().kill(process.getProcess());
@@ -227,6 +228,7 @@ public class Job {
 	}
 	
 	public Error.Type render() {
+			
 		gui.status("Rendering");
 		RenderProcess process = getProcessRender();
 		String core_script = "import bpy\n" + "bpy.context.user_preferences.system.compute_device_type = \"%s\"\n" + "bpy.context.scene.cycles.device = \"%s\"\n" + "bpy.context.user_preferences.system.compute_device = \"%s\"\n";
@@ -428,7 +430,9 @@ public class Job {
 			return;
 		}
 		// getMemUsed in B and getBlockMem in MB
-		if(getProcessRender().getMemoryUsed() > config.getBlockMem()*1000*1000){
+		long mem_used = getProcessRender().getMemoryUsed() / 1000 / 1000;
+		if(mem_used > config.getBlockMem()){
+			System.out.println(String.format("Blocked by mem (%d MB used but %d MB allowed)", mem_used, config.getBlockMem()));
 			block();
 		}
 		
@@ -441,7 +445,9 @@ public class Job {
 		if((new Date().getTime() - startTime) < 30000){ //wait at least 30 seconds to get good total estimation
 			return;
 		}
-		if((total_duration / 1000 / 60) > config.getBlockTime()){
+		long total_min = total_duration / 1000 / 60;
+		if(total_min > config.getBlockTime()){
+			System.out.println(String.format("Blocked by time (%d min used but %d min allowed)", total_min, config.getBlockTime()));
 			block();
 		}
 	}
