@@ -98,9 +98,13 @@ public class Job {
 	}
 	
 	public void block(){
+		block("");
+	}
+	
+	public void block(String message){
 		setAskForRendererKill(true);
 		setUserBlockJob(true);
-		BlockList.getInstance().blockJob(sceneMD5, name);
+		BlockList.getInstance().blockJob(sceneMD5, String.format("%s: %s", name, message ));
 		RenderProcess process = getProcessRender();
 		if (process != null) {
 			OS.getOS().kill(process.getProcess());
@@ -432,8 +436,9 @@ public class Job {
 		// getMemUsed in B and getBlockMem in MB
 		long mem_used = getProcessRender().getMemoryUsed() / 1000 / 1000;
 		if(mem_used > config.getBlockMem()){
-			System.out.println(String.format("Blocked by mem (%d MB used but %d MB allowed)", mem_used, config.getBlockMem()));
-			block();
+			String message = String.format("Blocked by mem (%d MB used but %d MB allowed)", mem_used, config.getBlockMem());
+			System.out.println(message );
+			block(message );
 		}
 		
 	}
@@ -447,8 +452,9 @@ public class Job {
 		}
 		long total_min = total_duration / 1000 / 60;
 		if(total_min > config.getBlockTime()){
-			System.out.println(String.format("Blocked by time (%d min used but %d min allowed)", total_min, config.getBlockTime()));
-			block();
+			String message = String.format("Blocked by time (%d min used but %d min allowed)", total_min, config.getBlockTime());
+			System.out.println(message);
+			block(message);
 		}
 	}
 	
