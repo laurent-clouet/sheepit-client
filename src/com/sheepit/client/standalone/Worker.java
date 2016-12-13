@@ -64,6 +64,9 @@ public class Worker {
 	@Option(name = "-block_mem", usage = "max memory in megabytes that could be used to render a project. Projects with larger memory consumtion will be blocked automated", metaVar = "0", required = false)
 	private int block_mem = 0;
 	
+	@Option(name = "-block_list", usage = "File where to store / load the list of blocked projects", metaVar = "blocklist.dat", required = false)
+	private String block_list = "blocklist.dat";
+	
 	@Option(name = "-gpu", usage = "CUDA name of the GPU used for the render, for example CUDA_0", metaVar = "CUDA_0", required = false)
 	private String gpu_device = null;
 	
@@ -125,6 +128,8 @@ public class Worker {
 		
 		config.setBlockTime(block_time);
 		config.setBlockMem(block_mem);
+		config.setBlockList(block_list);
+		
 		
 		if (cache_dir != null) {
 			File a_dir = new File(cache_dir);

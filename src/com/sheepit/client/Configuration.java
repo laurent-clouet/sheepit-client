@@ -50,6 +50,7 @@ public class Configuration {
 	private int priority;
 	private int block_time; // in minutes
 	private int block_mem; // in megabytes
+	private String block_list; 
 	private ComputeType computeMethod;
 	private GPUDevice GPUDevice;
 	private boolean printLog;
@@ -135,6 +136,15 @@ public class Configuration {
 	
 	public int getBlockMem(){
 		return this.block_mem;
+	}
+	
+	public void setBlockList(String blockList){
+		this.block_list = blockList;
+		BlockList.getInstance().setBlockList(blockList);
+	}
+	
+	public String getBlockList(){
+		return this.block_list;
 	}
 	
 	public void setUseNbCores(int nbcores) {
