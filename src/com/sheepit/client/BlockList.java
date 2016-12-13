@@ -17,11 +17,15 @@ public class BlockList {
 	private HashMap blockedJobs = null;
 	private FileWriter blockListWriter = null;
 	private File blockListFile = null;
+	private String block_list = null;
 	
 	private BlockList() {
 		blockedJobs = new HashMap();
+	}
+	
+	public void setBlockList(String blockList){
 		try{
-			blockListFile  = new File("blocklist.dat");
+			blockListFile  = new File(blockList);
 			if(blockListFile.exists()){
 				load();
 			}
