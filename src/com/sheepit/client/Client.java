@@ -553,6 +553,11 @@ public class Client {
 	public Error.Type work(Job ajob) {
 		int ret;
 		
+		if(BlockList.getInstance().isBlocked(ajob.getSceneMD5())){
+			System.out.println("Job is at blocklist");
+			return Error.Type.RENDERER_KILLED_BY_USER; 
+		}
+		
 		gui.setRenderingProjectName(ajob.getName());
 		
 		try {
