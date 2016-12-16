@@ -465,7 +465,7 @@ public class Job {
 			return;
 		}
 		long up_time = new Date().getTime() - startTime;
-		if(up_time < 30000){ //wait at least 30 seconds to get good total estimation
+		if(up_time < 60000){ //wait at least 60 seconds to get good total estimation
 			return;
 		}
 		long total_min = total_duration / 1000 / 60;
