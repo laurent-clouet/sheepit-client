@@ -111,6 +111,10 @@ public class Job {
 		}
 	}
 	
+	public void mark_blocked(String message){
+		BlockList.getInstance().blockJob(sceneMD5, String.format("%s: %s", name, message ));
+	}
+	
 	public RenderProcess getProcessRender() {
 		return render;
 	}
@@ -352,6 +356,8 @@ public class Job {
 			log.error("Job::render exception(A) " + err + " stacktrace " + sw.toString());
 			return Error.Type.FAILED_TO_EXECUTE;
 		}
+		/* block project to prevent rendering again*/
+		block_project_uptime(getProcessRender().getStartTime());
 		
 		int exit_value = process.exitValue();
 		process.finish();
@@ -443,11 +449,23 @@ public class Job {
 		
 	}
 	
+	private void block_project_uptime(long startTime){
+		if(config.getBlockTime() == 0){
+			return;
+		}
+		long up_time = (new Date().getTime() - startTime) / 1000 / 60;
+		if(up_time > config.getBlockTime()){
+			String message = String.format("Blocked by total_render_time (%d min used but %d min allowed)", up_time, config.getBlockTime());
+			System.out.println(message);
+			mark_blocked(message);
+		}
+	}
 	private void block_project_time(long startTime, long total_duration){
 		if(config.getBlockTime() == 0){
 			return;
 		}
-		if((new Date().getTime() - startTime) < 30000){ //wait at least 30 seconds to get good total estimation
+		long up_time = new Date().getTime() - startTime;
+		if(up_time < 30000){ //wait at least 30 seconds to get good total estimation
 			return;
 		}
 		long total_min = total_duration / 1000 / 60;
