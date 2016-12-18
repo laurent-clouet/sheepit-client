@@ -439,8 +439,8 @@ public class Job {
 		if(config.getBlockMem() == 0){
 			return;
 		}
-		// getMemUsed in B and getBlockMem in MB
-		long mem_used = getProcessRender().getMemoryUsed() / 1000 / 1000;
+		// getMemUsed in KB and getBlockMem in MB
+		long mem_used = getProcessRender().getMemoryUsed()  / 1000;
 		if(mem_used > config.getBlockMem()){
 			String message = String.format("Blocked by mem (%d MB used but %d MB allowed)", mem_used, config.getBlockMem());
 			System.out.println(message );
@@ -547,7 +547,7 @@ public class Job {
 			m.find(); 
 			long mem = Utils.parseNumber(m.group() );
 			if (mem > getProcessRender().getMemoryUsed()) {
-				getProcessRender().setMemoryUsed(mem);
+				getProcessRender().setMemoryUsed(mem/1000);
 			}
 		}
 	}
