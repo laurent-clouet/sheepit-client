@@ -151,14 +151,14 @@ public class Utils {
 		int scale = 1;
 		switch (m.group(2).charAt(0)) {
 			case 'G':
-				scale *= 1000;
 			case 'g':
 				scale *= 1000;
 			case 'M':
-				scale *= 1000;
 			case 'm':
 				scale *= 1000;
 			case 'K':
+			case 'k':
+				scale *= 1000;
 				break;
 			default:
 				return 0;
