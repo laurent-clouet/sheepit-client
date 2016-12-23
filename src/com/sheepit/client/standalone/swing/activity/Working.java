@@ -134,9 +134,9 @@ public class Working implements Activity {
 		JPanel global_stats_panel = new JPanel(new SpringLayout());
 		global_stats_panel.setBorder(BorderFactory.createTitledBorder("Global stats"));
 		
-		JLabel global_stats_machine_connected = new JLabel("Machine connected : ", JLabel.TRAILING);
+		JLabel global_stats_machine_connected = new JLabel("Connected Machines : ", JLabel.TRAILING);
 		JLabel global_stats_remaining_frame = new JLabel("Remaining frames : ", JLabel.TRAILING);
-		JLabel global_stats_waiting_project = new JLabel("Waiting project : ", JLabel.TRAILING);
+		JLabel global_stats_waiting_project = new JLabel("Waiting projects : ", JLabel.TRAILING);
 		JLabel global_stats_user_points = new JLabel("User points : ", JLabel.TRAILING);
 		
 		global_stats_panel.add(global_stats_waiting_project);
