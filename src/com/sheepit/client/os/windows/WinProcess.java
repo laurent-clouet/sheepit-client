@@ -83,11 +83,11 @@ public class WinProcess {
 	public WinProcess(int pid_) throws IOException {
 		this();
 		this.handle = Kernel32.INSTANCE.OpenProcess(0x0400 | // PROCESS_QUERY_INFORMATION
-													0x0800 | // PROCESS_SUSPEND_RESUME
-													0x0001 | // PROCESS_TERMINATE
-													0x0200 | // PROCESS_SET_INFORMATION
-													0x00100000, // SYNCHRONIZE
-													false, pid_);
+				0x0800 | // PROCESS_SUSPEND_RESUME
+				0x0001 | // PROCESS_TERMINATE
+				0x0200 | // PROCESS_SET_INFORMATION
+				0x00100000, // SYNCHRONIZE
+				false, pid_);
 		if (this.handle == null) {
 			throw new IOException("OpenProcess failed: " + Kernel32Util.formatMessageFromLastErrorCode(Kernel32.INSTANCE.GetLastError()) + " (pid: " + pid_ + ")");
 		}

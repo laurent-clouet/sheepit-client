@@ -31,9 +31,9 @@ public class GuiText implements Gui {
 	public static final String type = "text";
 	
 	private int framesRendered;
-
+	
 	private int sigIntCount = 0;
-
+	
 	private Log log;
 	
 	private Client client;
@@ -46,12 +46,12 @@ public class GuiText implements Gui {
 	@Override
 	public void start() {
 		if (client != null) {
-
+			
 			Signal.handle(new Signal("INT"), new SignalHandler() {
 				@Override
 				public void handle(Signal signal) {
 					sigIntCount++;
-
+					
 					if (sigIntCount == 4) {
 						// This is only for ugly issues that might occur
 						System.out.println("WARNING: Hitting Ctrl-C again will force close the application.");
@@ -70,7 +70,7 @@ public class GuiText implements Gui {
 					}
 				}
 			});
-
+			
 			client.run();
 			client.stop();
 		}

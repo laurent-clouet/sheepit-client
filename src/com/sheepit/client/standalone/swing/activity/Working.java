@@ -185,7 +185,6 @@ public class Working implements Activity {
 		buttonsPanel.add(blockJob);
 		buttonsPanel.add(exitAfterFrame);
 		
-		
 		parent.getContentPane().setLayout(new GridBagLayout());
 		GridBagConstraints global_constraints = new GridBagConstraints();
 		global_constraints.fill = GridBagConstraints.HORIZONTAL;
