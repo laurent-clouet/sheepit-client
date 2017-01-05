@@ -161,7 +161,12 @@ public class FreeBSD extends OS {
 		}
 		if (this.hasNiceBinary.booleanValue()) {
 			// launch the process in lowest priority
-			actual_command.add(0, "19");
+			if (env_overight != null) {
+				actual_command.add(0, env_overight.get("PRIORITY"));
+			}
+			else {
+				actual_command.add(0, "19");
+			}
 			actual_command.add(0, "-n");
 			actual_command.add(0, NICE_BINARY_PATH);
 		}
