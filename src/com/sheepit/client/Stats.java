@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
- 
+
 package com.sheepit.client;
 
 public class Stats {
@@ -41,7 +41,7 @@ public class Stats {
 		waitingProject = 0;
 		connectedMachine = 0;
 	}
-
+	
 	public int getRemainingFrame() {
 		return remainingFrame;
 	}
@@ -61,7 +61,7 @@ public class Stats {
 	public int getConnectedMachine() {
 		return connectedMachine;
 	}
-
+	
 	@Override
 	public String toString() {
 		return "Stats [remainingFrame=" + remainingFrame + ", creditsEarned=" + creditsEarned + ", creditsEarnedSession=" + creditsEarnedSession + ", waitingProject=" + waitingProject + ", connectedMachine=" + connectedMachine + "]";

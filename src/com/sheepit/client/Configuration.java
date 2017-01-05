@@ -100,7 +100,7 @@ public class Configuration {
 	public String getProxy() {
 		return this.proxy;
 	}
-
+	
 	public void setProxy(String url) {
 		this.proxy = url;
 	}
