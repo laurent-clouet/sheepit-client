@@ -132,12 +132,77 @@ public class Windows extends OS {
 		}
 		Process p = builder.start();
 		WinProcess wproc = new WinProcess(p);
-		wproc.setPriority(WinProcess.PRIORITY_BELOW_NORMAL);
+		if (env != null) {
+			String priority = env.get("PRIORITY");
+			wproc.setPriority(getPriorityClass(Integer.parseInt(priority)));
+		}
+		else {
+			wproc.setPriority(WinProcess.PRIORITY_BELOW_NORMAL);
+		}
 		if (env != null) {
 			String cores = env.get("CORES");
 			wproc.setAffinity(Integer.parseInt(cores));
 		}
 		return p;
+	}
+	
+	int getPriorityClass(int priority) {
+		int process_class = WinProcess.PRIORITY_IDLE;
+		switch (priority) {
+			case 19:
+			case 18:
+			case 17:
+			case 16:
+			case 15:
+				process_class = WinProcess.PRIORITY_IDLE;
+				break;
+			
+			case 14:
+			case 13:
+			case 12:
+			case 11:
+			case 10:
+			case 9:
+			case 8:
+			case 7:
+			case 6:
+			case 5:
+				process_class = WinProcess.PRIORITY_BELOW_NORMAL;
+				break;
+			case 4:
+			case 3:
+			case 2:
+			case 1:
+			case 0:
+			case -1:
+			case -2:
+			case -3:
+				process_class = WinProcess.PRIORITY_NORMAL;
+				break;
+			case -4:
+			case -5:
+			case -6:
+			case -7:
+			case -8:
+			case -9:
+				process_class = WinProcess.PRIORITY_ABOVE_NORMAL;
+				break;
+			case -10:
+			case -11:
+			case -12:
+			case -13:
+			case -14:
+				process_class = WinProcess.PRIORITY_HIGH;
+				break;
+			case -15:
+			case -16:
+			case -17:
+			case -18:
+			case -19:
+				process_class = WinProcess.PRIORITY_REALTIME;
+				break;
+		}
+		return process_class;
 	}
 	
 	@Override
