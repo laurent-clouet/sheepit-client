@@ -37,11 +37,7 @@ public class GuiTextOneLine implements Gui {
 	private int remaining;
 	private String creditsEarned;
 	private int sigIntCount = 0;
-	
-<<<<<<< 90b0e3a1e533dd404f2f1050cf21b1b4e5849880
 	private String computeMethod;
-=======
->>>>>>> Code formating
 	private String status;
 	private String line;
 	

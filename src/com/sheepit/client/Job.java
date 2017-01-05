@@ -251,6 +251,7 @@ public class Job {
 		
 		new_env.put("BLENDER_USER_CONFIG", config.workingDirectory.getAbsolutePath().replace("\\", "\\\\"));
 		new_env.put("CORES", Integer.toString(config.getNbCores()));
+		new_env.put("PRIORITY", Integer.toString(config.getPriority()));
 		if ("OPENCL".equals(config.getGPUDevice().getType())) {
 			new_env.put("CYCLES_OPENCL_SPLIT_KERNEL_TEST", "1");
 			this.updateRenderingStatusMethod = UPDATE_METHOD_BY_TILE; // don't display remaining time
