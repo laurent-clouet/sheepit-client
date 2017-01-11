@@ -59,7 +59,7 @@ public class GPUDevice {
 	public String toString() {
 		return "GPUDevice [model=" + model + ", memory=" + memory + ", cudaName=" + cudaName + "]";
 	}
-
+	
 	public int getRecommandedTileSize() {
 		// GPU
 		// if the vram is lower than 1G reduce the size of tile to avoid black output

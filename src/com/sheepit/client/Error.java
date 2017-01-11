@@ -168,7 +168,7 @@ public class Error {
 			case RENDERER_MISSING_LIBRARIES:
 				return "Failed to launch renderer. Please check if you have necessary libraries installed and if you have enough free space in your working directory.";
 			case RENDERER_KILLED:
-			    return "The renderer stopped because either you asked to stop or the server did (usually for a render time too high).";
+				return "The renderer stopped because either you asked to stop or the server did (usually for a render time too high).";
 			case RENDERER_KILLED_BY_USER:
 				return "The renderer stopped because you've blocked its project.";
 			case RENDERER_KILLED_BY_SERVER:
