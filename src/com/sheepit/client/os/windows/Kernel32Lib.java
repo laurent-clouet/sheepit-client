@@ -220,5 +220,5 @@ public interface Kernel32Lib extends Library {
 	 * @return If the function succeeds, the return value is the thread's previous affinity mask.
 	 */
 	public boolean SetProcessAffinityMask(HANDLE hProcess, DWORD_PTR dwProcessAffinityMask);
-
+	
 }
