@@ -148,10 +148,10 @@ public class Mac extends OS {
 		}
 		if (this.hasNiceBinary.booleanValue()) {
 			// launch the process in lowest priority
-			if(env != null){
+			if (env != null) {
 				actual_command.add(0, env.get("PRIORITY"));
 			}
-			else{
+			else {
 				actual_command.add(0, "19");
 			}
 			actual_command.add(0, "-n");

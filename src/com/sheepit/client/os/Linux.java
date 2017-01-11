@@ -144,10 +144,10 @@ public class Linux extends OS {
 		}
 		if (this.hasNiceBinary.booleanValue()) {
 			// launch the process in lowest priority
-			if(env_overight != null){
+			if (env_overight != null) {
 				actual_command.add(0, env_overight.get("PRIORITY"));
 			}
-			else{
+			else {
 				actual_command.add(0, "19");
 			}
 			actual_command.add(0, "-n");
