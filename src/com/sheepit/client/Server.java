@@ -557,7 +557,8 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 		// the destination_ parent directory must exist
 		try {
 			HttpURLConnection httpCon = this.HTTPRequest(url_);
-			
+			String final_destination = destination_ ;
+			destination_  = destination_ + ".download";
 			InputStream inStrm = httpCon.getInputStream();
 			if (httpCon.getResponseCode() != HttpURLConnection.HTTP_OK) {
 				this.log.error("Server::HTTPGetFile(" + url_ + ", ...) HTTP code is not " + HttpURLConnection.HTTP_OK + " it's " + httpCon.getResponseCode());
@@ -584,6 +585,10 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			long end = new Date().getTime();
 			this.log.debug(String.format("File downloaded at %.1f kB/s", ((float) (size / 1000)) / ((float) (end - start) / 1000)));
 			this.lastRequestTime = new Date().getTime();
+			// Rename destination_file
+			File tmp_destination_file = new File(destination_);
+			tmp_destination_file.renameTo(new File(final_destination));
+			
 			return 0;
 		}
 		catch (Exception e) {
