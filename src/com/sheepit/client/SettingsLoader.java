@@ -50,6 +50,7 @@ public class SettingsLoader {
 	private String autoSignIn;
 	private String ui;
 	private String tileSize;
+	private int    priority;
 	
 	public SettingsLoader() {
 		path = getDefaultFilePath();
@@ -59,7 +60,7 @@ public class SettingsLoader {
 		path = path_;
 	}
 	
-	public SettingsLoader(String login_, String password_, String proxy_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, String cacheDir_, boolean autoSignIn_, String ui_, String tileSize_) {
+	public SettingsLoader(String login_, String password_, String proxy_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, String cacheDir_, boolean autoSignIn_, String ui_, String tileSize_, int priority_) {
 		path = getDefaultFilePath();
 		login = login_;
 		password = password_;
@@ -83,6 +84,8 @@ public class SettingsLoader {
 		if (gpu_ != null) {
 			gpu = gpu_.getCudaName();
 		}
+		
+		priority = priority_;
 	}
 	
 	public static String getDefaultFilePath() {
@@ -98,6 +101,7 @@ public class SettingsLoader {
 		OutputStream output = null;
 		try {
 			output = new FileOutputStream(path);
+			prop.setProperty("priority", new Integer(priority).toString());
 			
 			if (cacheDir != null) {
 				prop.setProperty("cache-dir", cacheDir);
@@ -181,6 +185,7 @@ public class SettingsLoader {
 		this.autoSignIn = null;
 		this.ui = null;
 		this.tileSize = null;
+		this.priority = 19;
 		
 		if (new File(path).exists() == false) {
 			return;
@@ -231,6 +236,10 @@ public class SettingsLoader {
 			if (prop.containsKey("tile-size")) {
 				this.tileSize = prop.getProperty("tile-size");
 			}
+
+			if (prop.containsKey("priority")) {
+				this.priority = Integer.parseInt(prop.getProperty("priority"));
+			}
 		}
 		catch (IOException io) {
 			io.printStackTrace();
@@ -269,6 +278,9 @@ public class SettingsLoader {
 			config.setProxy(proxy);
 		}
 		
+		if(config.getPriority() == 19){
+			config.setUsePriority(priority);
+		}
 		try {
 			if ((config.getComputeMethod() == null && computeMethod != null) || (computeMethod != null && config.getComputeMethod() != ComputeType.valueOf(computeMethod))) {
 				config.setComputeMethod(ComputeType.valueOf(computeMethod));
