@@ -345,6 +345,6 @@ public class SettingsLoader {
 	@Override
 	public String toString() {
 		return "ConfigurationLoader [path=" + path + ", login=" + login + ", password=" + password + ", computeMethod=" + computeMethod + ", gpu=" + gpu + ", cacheDir=" + cacheDir + 
-				 ", blockMem=" + blockMem +  ", blockTime=" + blockTime + "]";
+				 ", priority=" + priority + ", blockMem=" + blockMem +  ", blockTime=" + blockTime + "]";
 	}
 }
