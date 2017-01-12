@@ -474,7 +474,7 @@ public class Settings implements Activity {
 				}
 				catch (MalformedURLException e1) {
 					System.err.println("Error: wrong url for proxy");
-					System.err.println(e);
+					System.err.println(e1);
 					System.exit(2);
 				}
 			}
@@ -487,7 +487,7 @@ public class Settings implements Activity {
 				}
 				catch (NumberFormatException e1) {
 					System.err.println("Error: wrong tile format");
-					System.err.println(e);
+					System.err.println(e1);
 					System.exit(2);
 				}
 			}
