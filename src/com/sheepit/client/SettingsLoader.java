@@ -50,6 +50,7 @@ public class SettingsLoader {
 	private String autoSignIn;
 	private String ui;
 	private String tileSize;
+	private int    priority;
 	private String blockMem;
 	private String blockTime;
 	
@@ -62,7 +63,7 @@ public class SettingsLoader {
 	}
 	
 	public SettingsLoader(String login_, String password_, String proxy_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, String cacheDir_, boolean autoSignIn_, String ui_, String tileSize_, 
-						  String blockMem_, String blockTime_) {
+						  int priority_, String blockMem_, String blockTime_) {
 		path = getDefaultFilePath();
 		login = login_;
 		password = password_;
@@ -88,6 +89,8 @@ public class SettingsLoader {
 		if (gpu_ != null) {
 			gpu = gpu_.getCudaName();
 		}
+		
+		priority = priority_;
 	}
 	
 	public static String getDefaultFilePath() {
@@ -103,6 +106,7 @@ public class SettingsLoader {
 		OutputStream output = null;
 		try {
 			output = new FileOutputStream(path);
+			prop.setProperty("priority", new Integer(priority).toString());
 			
 			if (cacheDir != null) {
 				prop.setProperty("cache-dir", cacheDir);
@@ -194,6 +198,7 @@ public class SettingsLoader {
 		this.autoSignIn = null;
 		this.ui = null;
 		this.tileSize = null;
+		this.priority = 19;
 		this.blockMem = null;
 		this.blockTime = null;
 		
@@ -246,6 +251,10 @@ public class SettingsLoader {
 			if (prop.containsKey("tile-size")) {
 				this.tileSize = prop.getProperty("tile-size");
 			}
+
+			if (prop.containsKey("priority")) {
+				this.priority = Integer.parseInt(prop.getProperty("priority"));
+			}
 			if (prop.containsKey("block-mem")) {
 				this.blockMem = prop.getProperty("block-mem");
 			}
@@ -290,6 +299,9 @@ public class SettingsLoader {
 			config.setProxy(proxy);
 		}
 		
+		if(config.getPriority() == 19){
+			config.setUsePriority(priority);
+		}
 		try {
 			if ((config.getComputeMethod() == null && computeMethod != null) || (computeMethod != null && config.getComputeMethod() != ComputeType.valueOf(computeMethod))) {
 				config.setComputeMethod(ComputeType.valueOf(computeMethod));
@@ -333,6 +345,6 @@ public class SettingsLoader {
 	@Override
 	public String toString() {
 		return "ConfigurationLoader [path=" + path + ", login=" + login + ", password=" + password + ", computeMethod=" + computeMethod + ", gpu=" + gpu + ", cacheDir=" + cacheDir + 
-				 ", blockMem=" + blockMem +  ", blockTime=" + blockTime + "]";
+				 ", priority=" + priority + ", blockMem=" + blockMem +  ", blockTime=" + blockTime + "]";
 	}
 }
