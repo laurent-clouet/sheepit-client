@@ -578,7 +578,7 @@ public class Settings implements Activity {
 			}
 			
 			if (saveFile.isSelected()) {
-				new SettingsLoader(login.getText(), new String(password.getPassword()), proxyText, method, selected_gpu, cpu_cores, cachePath, autoSignIn.isSelected(), GuiSwing.type, tile, , priority.getValue(), memvalue, timevalue).saveFile();
+				new SettingsLoader(login.getText(), new String(password.getPassword()), proxyText, method, selected_gpu, cpu_cores, cachePath, autoSignIn.isSelected(), GuiSwing.type, tile, priority.getValue(), memvalue, timevalue).saveFile();
 			}
 			else {
 				try {
