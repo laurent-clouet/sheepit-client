@@ -93,6 +93,9 @@ public class Worker {
 	
 	@Option(name = "-priority", usage = "Set render process priority (19 lowest to -19 highest)", required = false)
 	private int priority = 19;
+
+	@Option(name = "-show-gpudev", usage = "Print available CUDA devices and exit", required = false)
+	private boolean show_gpudev = false;
 	
 	public static void main(String[] args) {
 		new Worker().doMain(args);
@@ -123,6 +126,23 @@ public class Worker {
 			if (a_dir.isDirectory() && a_dir.canWrite()) {
 				config.setCacheDir(a_dir);
 			}
+		}
+		
+		if (show_gpudev) {
+			List<GPUDevice> gpus = GPU.listDevices();
+			if (gpus == null) {
+				// Err message print by GPU class. No need message here.
+				return;
+			}
+			
+			for (GPUDevice gpu : gpus) {
+				System.out.println("CUDA Name  : " + gpu.getCudaName());
+				System.out.println("Model      : " + gpu.getModel());
+				System.out.println("Memory, MiB: " + (int)(gpu.getMemory() / 1048576));
+				System.out.println();
+			}
+			
+			return;
 		}
 		
 		if (max_upload != -1) {
