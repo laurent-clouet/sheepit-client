@@ -172,6 +172,11 @@ public class Working implements Activity {
 		settingsButton.addActionListener(new SettingsAction());
 		
 		pauseButton = new JButton("Pause");
+		Client client = parent.getClient();
+		if (client != null && client.isSuspended()) {
+			pauseButton.setText("Resume");
+		}
+		
 		pauseButton.addActionListener(new PauseAction());
 		
 		JButton blockJob = new JButton("Block this project");
