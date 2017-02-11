@@ -215,12 +215,12 @@ public class Job {
 	public Error.Type render() {
 		gui.status("Rendering");
 		RenderProcess process = getProcessRender();
-		String core_script = "import bpy\n" + "bpy.context.user_preferences.system.compute_device_type = \"%s\"\n" + "bpy.context.scene.cycles.device = \"%s\"\n" + "bpy.context.user_preferences.system.compute_device = \"%s\"\n";
+		String core_script = "";
 		if (getUseGPU() && config.getGPUDevice() != null && config.getComputeMethod() != ComputeType.CPU) {
-			core_script = String.format(core_script, "CUDA", "GPU", config.getGPUDevice().getCudaName());
+			core_script = "sheepit_set_compute_device(\"CUDA\", \"GPU\", \"" + config.getGPUDevice().getCudaName() + "\")\n";
 		}
 		else {
-			core_script = String.format(core_script, "NONE", "CPU", "CPU");
+			core_script = "sheepit_set_compute_device(\"NONE\", \"CPU\", \"CPU\")\n";
 		}
 		core_script += String.format("bpy.context.scene.render.tile_x = %1$d\nbpy.context.scene.render.tile_y = %1$d\n", getTileSize());
 		File script_file = null;
