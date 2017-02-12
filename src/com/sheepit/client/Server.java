@@ -779,8 +779,8 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			}
 			int size = httpCon.getContentLength();
 			
-			if (size == 0) {
-				this.log.debug("Server::getLastRender size is 0");
+			if (size <= 0) {
+				this.log.debug("Server::getLastRender size is negative (size: " + size + ")");
 				return null;
 			}
 			
