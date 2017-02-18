@@ -1,5 +1,7 @@
 # SheepIt Render Farm Client
 
+[![Build Status](https://secure.travis-ci.org/laurent-clouet/sheepit-client.svg)](http://travis-ci.org/#!/laurent-clouet/sheepit-client)
+
 ## Overview
 
 SheepIt Render Farm Client is an *Open Source* client for the distributed render farm [**SheepIt**](https://www.sheepit-renderfarm.com).
