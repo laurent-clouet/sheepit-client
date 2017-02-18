@@ -106,35 +106,35 @@ public class Settings implements Activity {
 		++currentRow;
 		
 		// authentication
-		JPanel authentification_panel = new JPanel(new GridLayout(2, 2));
-		authentification_panel.setBorder(BorderFactory.createTitledBorder("Authentification"));
+		JPanel authentication_panel = new JPanel(new GridLayout(2, 2));
+		authentication_panel.setBorder(BorderFactory.createTitledBorder("Authentication"));
 		
-		JLabel loginLabel = new JLabel("Login :");
+		JLabel loginLabel = new JLabel("Username:");
 		login = new JTextField();
 		login.setText(parent.getConfiguration().login());
 		login.setColumns(20);
 		login.addKeyListener(new CheckCanStart());
-		JLabel passwordLabel = new JLabel("Password :");
+		JLabel passwordLabel = new JLabel("Password:");
 		password = new JPasswordField();
 		password.setText(parent.getConfiguration().password());
 		password.setColumns(10);
 		password.addKeyListener(new CheckCanStart());
 		
-		authentification_panel.add(loginLabel);
-		authentification_panel.add(login);
+		authentication_panel.add(loginLabel);
+		authentication_panel.add(login);
 		
-		authentification_panel.add(passwordLabel);
-		authentification_panel.add(password);
+		authentication_panel.add(passwordLabel);
+		authentication_panel.add(password);
 		
 		constraints.gridx = 0;
 		constraints.gridy = currentRow;
 		constraints.fill = GridBagConstraints.HORIZONTAL;
-		parent.getContentPane().add(authentification_panel, constraints);
+		parent.getContentPane().add(authentication_panel, constraints);
 		
 		// directory
 		JPanel directory_panel = new JPanel(new GridLayout(1, 3));
 		directory_panel.setBorder(BorderFactory.createTitledBorder("Cache"));
-		JLabel cacheLabel = new JLabel("Working directory :");
+		JLabel cacheLabel = new JLabel("Working directory:");
 		directory_panel.add(cacheLabel);
 		String destination = DUMMY_CACHE_DIR;
 		if (config.getUserSpecifiedACacheDir()) {
@@ -248,7 +248,7 @@ public class Settings implements Activity {
 		JPanel advanced_panel = new JPanel(new GridLayout(3, 2));
 		advanced_panel.setBorder(BorderFactory.createTitledBorder("Advanced options"));
 		
-		JLabel proxyLabel = new JLabel("Proxy :");
+		JLabel proxyLabel = new JLabel("Proxy:");
 		proxyLabel.setToolTipText("http://login:password@host:port");
 		proxy = new JTextField();
 		proxy.setToolTipText("http://login:password@host:port");
@@ -258,7 +258,7 @@ public class Settings implements Activity {
 		advanced_panel.add(proxyLabel);
 		advanced_panel.add(proxy);
 		
-		JLabel customTileSizeLabel = new JLabel("Custom render tile size");
+		JLabel customTileSizeLabel = new JLabel("Custom render tile size:");
 		customTileSize = new JCheckBox("", config.getTileSize() != -1);
 		advanced_panel.add(customTileSizeLabel);
 		advanced_panel.add(customTileSize);
