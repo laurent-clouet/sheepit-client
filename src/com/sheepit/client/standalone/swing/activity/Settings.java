@@ -355,9 +355,6 @@ public class Settings implements Activity {
 		advanced_panel.add(renderTime);
 		
 		JLabel customTileSizeLabel = new JLabel("Custom render tile size:");
-=======
-		JLabel customTileSizeLabel = new JLabel("Custom render tile size");
->>>>>>> * Better ui with more infos
 		customTileSize = new JCheckBox("", config.getTileSize() != -1);
 		advanced_panel.add(customTileSizeLabel);
 		advanced_panel.add(customTileSize);
