@@ -394,12 +394,7 @@ public class Working implements Activity {
 			if (client != null) {
 				Job job = client.getRenderingJob();
 				if (job != null) {
-					job.setAskForRendererKill(true);
-					job.setUserBlockJob(true);
-					RenderProcess process = job.getProcessRender();
-					if (process != null) {
-						OS.getOS().kill(process.getProcess());
-					}
+					job.block();
 				}
 			}
 		}
