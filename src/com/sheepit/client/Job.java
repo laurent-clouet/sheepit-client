@@ -92,6 +92,15 @@ public class Job {
 		render = new RenderProcess();
 	}
 	
+	public void block() {
+		setAskForRendererKill(true);
+		setUserBlockJob(true);
+		RenderProcess process = getProcessRender();
+		if (process != null) {
+			OS.getOS().kill(process.getProcess());
+		}
+	}
+	
 	public RenderProcess getProcessRender() {
 		return render;
 	}
