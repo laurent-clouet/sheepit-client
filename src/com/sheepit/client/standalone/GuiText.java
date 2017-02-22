@@ -21,8 +21,11 @@ package com.sheepit.client.standalone;
 
 import com.sheepit.client.Client;
 import com.sheepit.client.Gui;
+import com.sheepit.client.Job;
 import com.sheepit.client.Log;
 import com.sheepit.client.Stats;
+import com.sheepit.client.standalone.text.CLIInputActionHandler;
+import com.sheepit.client.standalone.text.CLIInputObserver;
 
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
@@ -46,6 +49,11 @@ public class GuiText implements Gui {
 	@Override
 	public void start() {
 		if (client != null) {
+			
+			CLIInputObserver cli_input_observer = new CLIInputObserver(client);
+			cli_input_observer.addListener(new CLIInputActionHandler());
+			Thread cli_input_observer_thread = new Thread(cli_input_observer);
+			cli_input_observer_thread.start();
 			
 			Signal.handle(new Signal("INT"), new SignalHandler() {
 				@Override
