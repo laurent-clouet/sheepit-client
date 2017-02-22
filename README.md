@@ -1,5 +1,7 @@
 # SheepIt Render Farm Client
 
+[![Build Status](https://secure.travis-ci.org/laurent-clouet/sheepit-client.svg)](http://travis-ci.org/#!/laurent-clouet/sheepit-client)
+
 ## Overview
 
 SheepIt Render Farm Client is an *Open Source* client for the distributed render farm [**SheepIt**](https://www.sheepit-renderfarm.com).
@@ -20,11 +22,11 @@ When you are doing development work, you can use a mirror of the main site speci
 
 At the command line ui (-ui text / -ui oneLine) you could type in the following commands and press enter to controll the client:
 
+* status: to get the current status of the client (paused, stoped, ...)
+* priority <n>: to set the renderer process priority
 * block: to block the current project
 * pause: pause the client to request new jobs after the current frame has finished to render
 * resume: resume the client after it was paused
 * stop: stop the client after the current frame has finished
-* cancel: cancle the stop request
+* cancel: cancel the stop request
 * quit: stops the client directly without finishing the current frame
-* priority &lt;n&gt;: changes the priority for the next render job to the given nice value
-

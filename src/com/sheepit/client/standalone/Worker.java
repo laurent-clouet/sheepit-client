@@ -88,6 +88,9 @@ public class Worker {
 	@Option(name = "--version", usage = "Display application version", required = false, handler = VersionParameterHandler.class)
 	private VersionParameterHandler versionHandler;
 	
+	@Option(name = "--show-gpu", usage = "Print available CUDA devices and exit", required = false, handler = ListGpuParameterHandler.class)
+	private ListGpuParameterHandler listGpuParameterHandler;
+	
 	@Option(name = "--no-systray", usage = "Don't use systray", required = false)
 	private boolean no_systray = false;
 	
