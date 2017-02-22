@@ -44,7 +44,6 @@ public class CLIInputActionHandler implements CLIInputListener {
 				job.block();
 			}
 		}
-		}
 		else if (command.equalsIgnoreCase("resume")) {
 			client.resume();
 		}
@@ -65,16 +64,12 @@ public class CLIInputActionHandler implements CLIInputListener {
 			System.exit(0);
 		}
 		else if ((command.length() > priorityLength) && (command.substring(0, priorityLength).equalsIgnoreCase("priority"))) {
-			changePriority(client, command.substring(priorityLength));
-		}
 		else if ((command.length() > blockTimeLength ) && (command.substring(0, blockTimeLength).equalsIgnoreCase("block_time"))) {
 			changeBlockTime(client, command.substring(blockTimeLength));
 		}
 		else if ((command.length() > blockMemLength ) && (command.substring(0, blockMemLength).equalsIgnoreCase("block_mem"))) {
 			changeBlockMem(client, command.substring(blockMemLength));
 		}
-		else {
-			System.out.println("Unknown command: " + command);
 			System.out.println("status: display client status");
 			System.out.println("priority <n>: set the priority for the next renderjob");
 			System.out.println("block:  block project");

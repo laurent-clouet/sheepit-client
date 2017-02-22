@@ -97,7 +97,7 @@ public class Job {
 		render = new RenderProcess();
 	}
 	
-	public void block(){
+	public void block() {
 		block("");
 	}
 	

@@ -54,11 +54,6 @@ public class GuiText implements Gui {
 			Thread cli_input_observer_thread = new Thread(cli_input_observer);
 			cli_input_observer_thread.start();
 			
-			CLIInputObserver cli_input_observer = new CLIInputObserver(client);
-			cli_input_observer.addListener(new CLIInputActionHandler());
-			Thread cli_input_observer_thread = new Thread(cli_input_observer);
-			cli_input_observer_thread.start();
-			
 			Signal.handle(new Signal("INT"), new SignalHandler() {
 				@Override
 				public void handle(Signal signal) {
