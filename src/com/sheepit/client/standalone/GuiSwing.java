@@ -65,7 +65,7 @@ public class GuiSwing extends JFrame implements Gui {
 	
 	private int framesRendered;
 	
-	private boolean waitingForAuthentication;
+	private boolean waitingForAuthentification;
 	private Client client;
 	
 	private ThreadClient threadClient;
@@ -73,7 +73,7 @@ public class GuiSwing extends JFrame implements Gui {
 	public GuiSwing(boolean useSysTray_) {
 		framesRendered = 0;
 		useSysTray = useSysTray_;
-		waitingForAuthentication = true;
+		waitingForAuthentification = true;
 		
 		new Timer().scheduleAtFixedRate(new TimerTask() {
 			@Override
@@ -133,7 +133,7 @@ public class GuiSwing extends JFrame implements Gui {
 		
 		this.showActivity(ActivityType.SETTINGS);
 		
-		while (waitingForAuthentication) {
+		while (waitingForAuthentification) {
 			try {
 				synchronized (this) {
 					wait();
@@ -220,7 +220,7 @@ public class GuiSwing extends JFrame implements Gui {
 		client.getConfiguration().setLogin(contentLogin);
 		client.getConfiguration().setPassword(contentPassword);
 		
-		waitingForAuthentication = false;
+		waitingForAuthentification = false;
 		synchronized (this) {
 			notifyAll();
 		}
