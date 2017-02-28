@@ -548,6 +548,9 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			}
 		}
 		
+		// actually use the connection to, in case of timeout, generate an exception
+		connection.getResponseCode();
+		
 		this.lastRequestTime = new Date().getTime();
 		
 		return connection;
