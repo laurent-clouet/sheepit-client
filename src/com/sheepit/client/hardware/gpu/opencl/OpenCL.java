@@ -34,8 +34,6 @@ import com.sun.jna.ptr.IntByReference;
 public class OpenCL implements GPULister {
 	
 	public static List<GPUDevice> getGpus() {
-		System.out.println("OpenCL::getGpus()");
-		
 		OpenCLLib lib = null;
 		
 		String path = "OpenCL";
