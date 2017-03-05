@@ -491,6 +491,9 @@ public class Settings implements Activity {
 					System.exit(2);
 				}
 			}
+			else {
+				config.setTileSize(-1); // no tile
+			}
 			
 			parent.setCredentials(login.getText(), new String(password.getPassword()));
 			
