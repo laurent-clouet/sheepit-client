@@ -136,7 +136,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 							Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(in);
 							ServerCode ret = Utils.statusIsOK(document, "keepmealive");
 							if (ret == ServerCode.KEEPMEALIVE_STOP_RENDERING) {
-								this.log.debug("Server::keeepmealive server asked to kill local render process");
+								this.log.debug("Server::stayAlive server asked to kill local render process");
 								// kill the current process, it will generate an error but it's okay
 								if (this.client != null && this.client.getRenderingJob() != null && this.client.getRenderingJob().getProcessRender().getProcess() != null) {
 									this.client.getRenderingJob().setServerBlockJob(true);
@@ -152,7 +152,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 					}
 				}
 				catch (NoRouteToHostException e) {
-					this.log.debug("Server::keeepmealive can not connect to server");
+					this.log.debug("Server::stayAlive can not connect to server");
 				}
 				catch (IOException e) {
 					e.printStackTrace();
