@@ -95,10 +95,10 @@ public class CLIInputActionHandler implements CLIInputListener {
 			System.out.println("Status: paused");
 		}
 		else if (client.isRunning()) {
-			System.out.println("Status: will exit after the current frame");
+			System.out.println("Status: running");
 		}
 		else {
-			System.out.println("Status: running");
+			System.out.println("Status: will exit after the current frame");
 		}
 	}
 }
