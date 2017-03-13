@@ -33,6 +33,6 @@ public interface CUDA extends Library {
 	
 	public int cuDeviceGetName(byte[] name, int len, int dev);
 	
-	// http://en.wikipedia.org/wiki/Java_Native_Access
+	public int cuDeviceTotalMem_v2(LongByReference bytes, int dev);
 	public int cuDeviceTotalMem(LongByReference bytes, int dev);
 }
