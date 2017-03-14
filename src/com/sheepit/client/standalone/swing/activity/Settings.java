@@ -537,6 +537,9 @@ public class Settings implements Activity {
 					System.exit(2);
 				}
 			}
+			else {
+				config.setTileSize(-1); // no tile
+			}
 			
 			String memvalue = null;
 			if(blockMemValue != null){
