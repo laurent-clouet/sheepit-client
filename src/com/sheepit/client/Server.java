@@ -590,7 +590,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			return 0;
 		}
 		catch (Exception e) {
-			if (Utils.noFreeSpaceOnDisk(destination_)) {
+			if (Utils.noFreeSpaceOnDisk(new File(destination_).getParent())) {
 				throw new FermeExceptionNoSpaceLeftOnDevice();
 			}
 			
