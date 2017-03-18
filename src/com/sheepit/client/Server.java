@@ -705,6 +705,10 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			this.log.error("Server::HTTPSendFile, exception Exception " + e6);
 			return ServerCode.UNKNOWN;
 		}
+		catch (OutOfMemoryError e6) {
+			this.log.error("Server::HTTPSendFile, exception Exception " + e6);
+			return ServerCode.JOB_VALIDATION_ERROR_UPLOAD_FAILED;
+		}
 		
 		int r;
 		try {
