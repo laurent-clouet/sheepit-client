@@ -45,6 +45,7 @@ public class GuiTextOneLine implements Gui {
 	
 	private Client client;
 	
+	
 	public GuiTextOneLine() {
 		project = "";
 		rendered = 0;

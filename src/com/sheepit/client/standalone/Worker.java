@@ -94,7 +94,7 @@ public class Worker {
 	@Option(name = "--no-systray", usage = "Don't use systray", required = false)
 	private boolean no_systray = false;
 	
-	@Option(name = "-priority", usage = "Set render process priority (19 lowest to -19 highest)", required = false)
+	@Option(name = "-priority", usage = "Set render process priority (19 lowest to -19 highest [need root rights])", required = false)
 	private int priority = 19;
 	
 	public static void main(String[] args) {
