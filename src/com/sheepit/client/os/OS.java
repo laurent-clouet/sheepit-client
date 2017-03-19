@@ -37,6 +37,10 @@ public abstract class OS {
 		return null;
 	}
 	
+	public boolean getSupportHighPriority() {
+		return true;
+	}
+	
 	public Process exec(List<String> command, Map<String, String> env) throws IOException {
 		ProcessBuilder builder = new ProcessBuilder(command);
 		builder.redirectErrorStream(true);
