@@ -66,6 +66,7 @@ public class Settings implements Activity {
 	private JCheckBox useCPU;
 	private List<JCheckBoxGPU> useGPUs;
 	private JSlider cpuCores;
+	private JSlider priority;
 	private JTextField proxy;
 	
 	private JCheckBox saveFile;
@@ -237,6 +238,29 @@ public class Settings implements Activity {
 			gridbag.setConstraints(cpuCores, compute_devices_constraints);
 			compute_devices_panel.add(cpuCores);
 		}
+		
+		// priority
+		priority = new JSlider(-19, 19);
+		priority.setMajorTickSpacing(5);
+		priority.setMinorTickSpacing(1);
+		priority.setPaintTicks(true);
+		priority.setPaintLabels(true);
+		priority.setValue(config.getPriority());
+		JLabel priorityLabel = new JLabel("Priority (High <-> Low):");
+		
+		compute_devices_constraints.weightx = 1.0 / gpus.size();
+		compute_devices_constraints.gridx = 0;
+		compute_devices_constraints.gridy++;
+		
+		gridbag.setConstraints(priorityLabel, compute_devices_constraints);
+		compute_devices_panel.add(priorityLabel);
+		
+		compute_devices_constraints.gridx = 1;
+		compute_devices_constraints.weightx = 1.0;
+		
+		gridbag.setConstraints(priority, compute_devices_constraints);
+		compute_devices_panel.add(priority);
+
 		
 		currentRow++;
 		constraints.gridx = 0;
@@ -466,6 +490,8 @@ public class Settings implements Activity {
 				config.setUseNbCores(cpu_cores);
 			}
 			
+			config.setUsePriority(priority.getValue());
+			
 			String proxyText = null;
 			if (proxy != null) {
 				try {
@@ -503,7 +529,7 @@ public class Settings implements Activity {
 			}
 			
 			if (saveFile.isSelected()) {
-				new SettingsLoader(login.getText(), new String(password.getPassword()), proxyText, method, selected_gpu, cpu_cores, cachePath, autoSignIn.isSelected(), GuiSwing.type, tile).saveFile();
+				new SettingsLoader(login.getText(), new String(password.getPassword()), proxyText, method, selected_gpu, cpu_cores, cachePath, autoSignIn.isSelected(), GuiSwing.type, tile, priority.getValue()).saveFile();
 			}
 			else {
 				try {

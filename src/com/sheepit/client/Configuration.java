@@ -64,7 +64,7 @@ public class Configuration {
 		this.static_exeDirName = "exe";
 		this.maxUploadingJob = 1;
 		this.nbCores = -1; // ie not set
-		this.priority = 19;
+		this.priority = 19; // default lowest
 		this.computeMethod = null;
 		this.GPUDevice = null;
 		this.userSpecifiedACacheDir = false;
