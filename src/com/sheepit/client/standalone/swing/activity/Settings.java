@@ -51,6 +51,7 @@ import com.sheepit.client.hardware.cpu.CPU;
 import com.sheepit.client.hardware.gpu.GPU;
 import com.sheepit.client.hardware.gpu.GPUDevice;
 import com.sheepit.client.network.Proxy;
+import com.sheepit.client.os.OS;
 import com.sheepit.client.standalone.GuiSwing;
 
 public class Settings implements Activity {
@@ -248,6 +249,31 @@ public class Settings implements Activity {
 		priority.setPaintLabels(true);
 		priority.setValue(config.getPriority());
 		JLabel priorityLabel = new JLabel("Priority (High <-> Low):");
+		
+		compute_devices_constraints.weightx = 1.0 / gpus.size();
+		compute_devices_constraints.gridx = 0;
+		compute_devices_constraints.gridy++;
+		
+		gridbag.setConstraints(priorityLabel, compute_devices_constraints);
+		compute_devices_panel.add(priorityLabel);
+		
+		compute_devices_constraints.gridx = 1;
+		compute_devices_constraints.weightx = 1.0;
+		
+		gridbag.setConstraints(priority, compute_devices_constraints);
+		compute_devices_panel.add(priority);
+
+		
+		// priority
+		OS os = OS.getOS();
+		boolean high_priority_support = os.getSupportHighPriority();
+		priority = new JSlider(high_priority_support ? -19 : 0, 19);
+		priority.setMajorTickSpacing(19);
+		priority.setMinorTickSpacing(1);
+		priority.setPaintTicks(true);
+		priority.setPaintLabels(true);
+		priority.setValue(config.getPriority());
+		JLabel priorityLabel = new JLabel(high_priority_support ? "Priority (High <-> Low):" : "Priority (Normal <-> Low):" );
 		
 		compute_devices_constraints.weightx = 1.0 / gpus.size();
 		compute_devices_constraints.gridx = 0;

@@ -72,6 +72,7 @@ public class SettingsLoader {
 		autoSignIn = String.valueOf(autoSignIn_);
 		ui = ui_;
 		tileSize = tileSize_;
+		priority = priority_;
 		blockMem = blockMem_;
 		blockTime = blockTime_;
 		if (cores_ > 0) {
@@ -198,7 +199,7 @@ public class SettingsLoader {
 		this.autoSignIn = null;
 		this.ui = null;
 		this.tileSize = null;
-		this.priority = 19;
+		this.priority = 19; // must be the same default as Configuration
 		this.blockMem = null;
 		this.blockTime = null;
 		
@@ -251,7 +252,7 @@ public class SettingsLoader {
 			if (prop.containsKey("tile-size")) {
 				this.tileSize = prop.getProperty("tile-size");
 			}
-
+			
 			if (prop.containsKey("priority")) {
 				this.priority = Integer.parseInt(prop.getProperty("priority"));
 			}
@@ -299,7 +300,7 @@ public class SettingsLoader {
 			config.setProxy(proxy);
 		}
 		
-		if(config.getPriority() == 19){
+		if (config.getPriority() == 19) { // 19 is default value
 			config.setUsePriority(priority);
 		}
 		try {

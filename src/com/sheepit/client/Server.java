@@ -595,7 +595,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			return 0;
 		}
 		catch (Exception e) {
-			if (Utils.noFreeSpaceOnDisk(destination_)) {
+			if (Utils.noFreeSpaceOnDisk(new File(destination_).getParent())) {
 				throw new FermeExceptionNoSpaceLeftOnDevice();
 			}
 			
@@ -709,6 +709,10 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 		catch (Exception e6) {
 			this.log.error("Server::HTTPSendFile, exception Exception " + e6);
 			return ServerCode.UNKNOWN;
+		}
+		catch (OutOfMemoryError e6) {
+			this.log.error("Server::HTTPSendFile, exception Exception " + e6);
+			return ServerCode.JOB_VALIDATION_ERROR_UPLOAD_FAILED;
 		}
 		
 		int r;

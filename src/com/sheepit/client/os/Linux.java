@@ -167,6 +167,19 @@ public class Linux extends OS {
 		return builder.start();
 	}
 	
+	@Override
+	public boolean getSupportHighPriority() {
+		// only the root user can create process with high (negative nice) value
+		String logname = System.getenv("LOGNAME");
+		String user = System.getenv("USER");
+		
+		if ((logname != null && logname.equals("root"))	|| (user != null && user.equals("root"))) {
+			return true;
+		}
+		
+		return false;
+	}
+	
 	protected void checkNiceAvailability() {
 		ProcessBuilder builder = new ProcessBuilder();
 		builder.command(NICE_BINARY_PATH);
