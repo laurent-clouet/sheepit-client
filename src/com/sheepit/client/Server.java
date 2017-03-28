@@ -136,7 +136,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 							Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(in);
 							ServerCode ret = Utils.statusIsOK(document, "keepmealive");
 							if (ret == ServerCode.KEEPMEALIVE_STOP_RENDERING) {
-								this.log.debug("Server::keeepmealive server asked to kill local render process");
+								this.log.debug("Server::stayAlive server asked to kill local render process");
 								// kill the current process, it will generate an error but it's okay
 								if (this.client != null && this.client.getRenderingJob() != null && this.client.getRenderingJob().getProcessRender().getProcess() != null) {
 									this.client.getRenderingJob().setServerBlockJob(true);
@@ -152,7 +152,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 					}
 				}
 				catch (NoRouteToHostException e) {
-					this.log.debug("Server::keeepmealive can not connect to server");
+					this.log.debug("Server::stayAlive can not connect to server");
 				}
 				catch (IOException e) {
 					e.printStackTrace();
@@ -548,6 +548,9 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			}
 		}
 		
+		// actually use the connection to, in case of timeout, generate an exception
+		connection.getResponseCode();
+		
 		this.lastRequestTime = new Date().getTime();
 		
 		return connection;
@@ -583,7 +586,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			fos.close();
 			inStrm.close();
 			long end = new Date().getTime();
-			this.log.debug(String.format("File downloaded at %.1f kB/s", ((float) (size / 1000)) / ((float) (end - start) / 1000)));
+			this.log.debug(String.format("File downloaded at %.1f kB/s, written %d B", ((float) (size / 1000)) / ((float) (end - start) / 1000), written));
 			this.lastRequestTime = new Date().getTime();
 			// Rename destination_file
 			File tmp_destination_file = new File(destination_);
@@ -592,7 +595,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			return 0;
 		}
 		catch (Exception e) {
-			if (Utils.noFreeSpaceOnDisk(destination_)) {
+			if (Utils.noFreeSpaceOnDisk(new File(destination_).getParent())) {
 				throw new FermeExceptionNoSpaceLeftOnDevice();
 			}
 			
@@ -706,6 +709,10 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 		catch (Exception e6) {
 			this.log.error("Server::HTTPSendFile, exception Exception " + e6);
 			return ServerCode.UNKNOWN;
+		}
+		catch (OutOfMemoryError e6) {
+			this.log.error("Server::HTTPSendFile, exception Exception " + e6);
+			return ServerCode.JOB_VALIDATION_ERROR_UPLOAD_FAILED;
 		}
 		
 		int r;

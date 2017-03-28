@@ -91,7 +91,13 @@ public class GPU {
 			}
 			
 			LongByReference ram = new LongByReference();
-			result = cudalib.cuDeviceTotalMem(ram, num);
+			try {
+				result = cudalib.cuDeviceTotalMem_v2(ram, num);
+			}
+			catch (UnsatisfiedLinkError e) {
+				// fall back to old function
+				result = cudalib.cuDeviceTotalMem(ram, num);
+			}
 			
 			if (result != CUresult.CUDA_SUCCESS) {
 				System.out.println("GPU::generate cuDeviceTotalMem failed (ret: " + CUresult.stringFor(result) + ")");
