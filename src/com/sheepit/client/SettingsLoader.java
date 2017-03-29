@@ -46,6 +46,7 @@ public class SettingsLoader {
 	private String computeMethod;
 	private String gpu;
 	private String cores;
+	private String ram;
 	private String cacheDir;
 	private String autoSignIn;
 	private String ui;
@@ -60,7 +61,7 @@ public class SettingsLoader {
 		path = path_;
 	}
 	
-	public SettingsLoader(String login_, String password_, String proxy_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, String cacheDir_, boolean autoSignIn_, String ui_, String tileSize_, int priority_) {
+	public SettingsLoader(String login_, String password_, String proxy_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, int maxRam_, String cacheDir_, boolean autoSignIn_, String ui_, String tileSize_, int priority_) {
 		path = getDefaultFilePath();
 		login = login_;
 		password = password_;
@@ -73,7 +74,9 @@ public class SettingsLoader {
 		if (cores_ > 0) {
 			cores = String.valueOf(cores_);
 		}
-		
+		if (maxRam_ > 0) {
+			ram = String.valueOf(maxRam_);
+		}
 		if (computeMethod_ != null) {
 			try {
 				computeMethod = computeMethod_.name();
@@ -116,6 +119,10 @@ public class SettingsLoader {
 			
 			if (cores != null) {
 				prop.setProperty("cpu-cores", cores);
+			}
+			
+			if (ram != null) {
+				prop.setProperty("ram", ram);
 			}
 			
 			if (login != null) {
@@ -185,6 +192,7 @@ public class SettingsLoader {
 		this.ui = null;
 		this.tileSize = null;
 		this.priority = 19; // must be the same default as Configuration
+		this.ram = null;
 		
 		if (new File(path).exists() == false) {
 			return;
@@ -210,6 +218,10 @@ public class SettingsLoader {
 			
 			if (prop.containsKey("cpu-cores")) {
 				this.cores = prop.getProperty("cpu-cores");
+			}
+			
+			if (prop.containsKey("ram")) {
+				this.ram = prop.getProperty("ram");
 			}
 			
 			if (prop.containsKey("login")) {
@@ -298,6 +310,11 @@ public class SettingsLoader {
 		if (config.getNbCores() == -1 && cores != null) {
 			config.setUseNbCores(Integer.valueOf(cores));
 		}
+		
+		if (config.getMaxMemory() == -1 && ram != null) {
+			config.setMaxMemory(Integer.valueOf(ram));
+		}
+		
 		if (config.getUserSpecifiedACacheDir() == false && cacheDir != null && new File(cacheDir).exists()) {
 			config.setCacheDir(new File(cacheDir));
 		}

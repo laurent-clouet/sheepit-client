@@ -28,6 +28,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
 import java.net.MalformedURLException;
+import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -67,6 +68,7 @@ public class Settings implements Activity {
 	private JCheckBox useCPU;
 	private List<JCheckBoxGPU> useGPUs;
 	private JSlider cpuCores;
+	private JSlider ram;
 	private JSlider priority;
 	private JTextField proxy;
 	
@@ -240,8 +242,38 @@ public class Settings implements Activity {
 			compute_devices_panel.add(cpuCores);
 		}
 		
-		// priority
+		// max ram allowed to render
 		OS os = OS.getOS();
+		int all_ram = os.getMemory();
+		ram = new JSlider(0, all_ram);
+		int step = 1000000;
+		Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
+		for (int g = 0; g < all_ram; g += step) {
+			labelTable.put(new Integer(g), new JLabel("" + (g / step)));
+		}
+		ram.setMajorTickSpacing(step);
+		ram.setLabelTable(labelTable);
+		ram.setPaintTicks(true);
+		ram.setPaintLabels(true);
+		ram.setValue(config.getMaxMemory() != -1 ? config.getMaxMemory() : os.getMemory());
+		JLabel ramLabel = new JLabel("Memory:");
+		
+		compute_devices_constraints.weightx = 1.0 / gpus.size();
+		compute_devices_constraints.gridx = 0;
+		compute_devices_constraints.gridy++;
+		
+		gridbag.setConstraints(ramLabel, compute_devices_constraints);
+		compute_devices_panel.add(ramLabel);
+		
+		compute_devices_constraints.gridx = 1;
+		compute_devices_constraints.weightx = 1.0;
+		
+		gridbag.setConstraints(ram, compute_devices_constraints);
+		compute_devices_panel.add(ram);
+		
+		parent.getContentPane().add(compute_devices_panel, constraints);
+		
+		// priority
 		boolean high_priority_support = os.getSupportHighPriority();
 		priority = new JSlider(high_priority_support ? -19 : 0, 19);
 		priority.setMajorTickSpacing(19);
@@ -263,7 +295,6 @@ public class Settings implements Activity {
 		
 		gridbag.setConstraints(priority, compute_devices_constraints);
 		compute_devices_panel.add(priority);
-
 		
 		currentRow++;
 		constraints.gridx = 0;
@@ -493,6 +524,15 @@ public class Settings implements Activity {
 				config.setUseNbCores(cpu_cores);
 			}
 			
+			int max_ram = -1;
+			if (ram != null) {
+				max_ram = ram.getValue();
+			}
+			
+			if (max_ram > 0) {
+				config.setMaxMemory(max_ram);
+			}
+			
 			config.setUsePriority(priority.getValue());
 			
 			String proxyText = null;
@@ -532,7 +572,7 @@ public class Settings implements Activity {
 			}
 			
 			if (saveFile.isSelected()) {
-				new SettingsLoader(login.getText(), new String(password.getPassword()), proxyText, method, selected_gpu, cpu_cores, cachePath, autoSignIn.isSelected(), GuiSwing.type, tile, priority.getValue()).saveFile();
+				new SettingsLoader(login.getText(), new String(password.getPassword()), proxyText, method, selected_gpu, cpu_cores, max_ram, cachePath, autoSignIn.isSelected(), GuiSwing.type, tile, priority.getValue()).saveFile();
 			}
 			else {
 				try {
