@@ -168,7 +168,7 @@ Parameter as GET or POST:
     * frame: job's frame number
     * extras: job's extra data
     * rendertime (optional): job's frame number
-    * memoryused (optional): max memory used for the render
+    * memoryused (optional): max memory used for the render (in kilo bytes)
 Parameter as form-urlencoded:
     * file: the error log to send   
 
