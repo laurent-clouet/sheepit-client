@@ -310,9 +310,18 @@ public class Job {
 			log.debug("renderer output");
 			try {
 				while ((line = input.readLine()) != null) {
-					updateRenderingMemoryPeak(line);
-					
 					log.debug(line);
+					
+					updateRenderingMemoryPeak(line);
+					if (process.getMemoryUsed() > config.getMaxMemory()) {
+						log.debug("Blocking render because process ram used (" + process.getMemoryUsed() + "k) is over user setting (" + config.getMaxMemory() + "k)");
+						process.finish();
+						if (script_file != null) {
+							script_file.delete();
+						}
+						return Error.Type.RENDERER_OUT_OF_MEMORY;
+					}
+					
 					if ((new Date().getTime() - last_update_status) > 2000) { // only call the update every two seconds
 						updateRenderingStatus(line);
 						last_update_status = new Date().getTime();
