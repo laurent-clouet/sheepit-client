@@ -47,6 +47,7 @@ public class Configuration {
 	private String proxy;
 	private int maxUploadingJob;
 	private int nbCores;
+	private int maxMemory; // max memory allowed for render
 	private int priority;
 	private int block_time; // in minutes
 	private int block_mem; // in megabytes
@@ -67,6 +68,7 @@ public class Configuration {
 		this.static_exeDirName = "exe";
 		this.maxUploadingJob = 1;
 		this.nbCores = -1; // ie not set
+		this.maxMemory = -1; // ie not set
 		this.priority = 19; // default lowest
 		this.computeMethod = null;
 		this.GPUDevice = null;
@@ -153,6 +155,14 @@ public class Configuration {
 	
 	public int getNbCores() {
 		return this.nbCores;
+	}
+	
+	public void setMaxMemory(int max) {
+		this.maxMemory = max;
+	}
+	
+	public int getMaxMemory() {
+		return this.maxMemory;
 	}
 	
 	public void setUsePriority(int priority) {

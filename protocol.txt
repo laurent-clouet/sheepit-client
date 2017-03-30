@@ -11,7 +11,8 @@ Parameters as GET:
     * cpu_model: CPU's model, on linux it can be get in /proc/cpuinfo via the attribute "model".
     * cpu_model_name: CPU's model as human readable, on linux it can be get in /proc/cpuinfo via the attribute "model name".
     * cpu_cores: Number of core (or thread) available.
-    * ram: Memory available in bytes.
+    * ram: Memory available in kilo bytes.
+    * ram_max: Maximum memory allowed for render (in kilo bytes).
     * extras (optional): Extra data use for the configuration.
     * hostname (optional): Hostname of the machine, it's useful when the user have multiple machines with same hardware configuration. It's only used for display for server website.
 
@@ -168,7 +169,7 @@ Parameter as GET or POST:
     * frame: job's frame number
     * extras: job's extra data
     * rendertime (optional): job's frame number
-    * memoryused (optional): max memory used for the render
+    * memoryused (optional): max memory used for the render (in kilo bytes)
 Parameter as form-urlencoded:
     * file: the error log to send   
 
