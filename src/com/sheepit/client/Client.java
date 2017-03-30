@@ -553,9 +553,9 @@ public class Client {
 	public Error.Type work(Job ajob) {
 		int ret;
 		
-		if(BlockList.getInstance().isBlocked(ajob.getSceneMD5())){
+		if (BlockList.getInstance().isBlocked(ajob.getSceneMD5())) {
 			System.out.println("Job is at blocklist");
-			return Error.Type.RENDERER_KILLED_BY_USER; 
+			return Error.Type.RENDERER_KILLED_BY_USER;
 		}
 		
 		gui.setRenderingProjectName(ajob.getName());
@@ -759,11 +759,11 @@ public class Client {
 				case JOB_VALIDATION_ERROR_SESSION_DISABLED:
 				case JOB_VALIDATION_ERROR_BROKEN_MACHINE:
 					return Type.SESSION_DISABLED;
-					
+				
 				case JOB_VALIDATION_ERROR_MISSING_PARAMETER:
 					// no point to retry the request
 					return Error.Type.UNKNOWN;
-					
+				
 				default:
 					// do nothing, try to do a request on the next loop
 					break;

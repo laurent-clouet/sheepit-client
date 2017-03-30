@@ -251,7 +251,7 @@ public class Settings implements Activity {
 		priority.setPaintTicks(true);
 		priority.setPaintLabels(true);
 		priority.setValue(config.getPriority());
-		JLabel priorityLabel = new JLabel(high_priority_support ? "Priority (High <-> Low):" : "Priority (Normal <-> Low):" );
+		JLabel priorityLabel = new JLabel(high_priority_support ? "Priority (High <-> Low):" : "Priority (Normal <-> Low):");
 		
 		compute_devices_constraints.weightx = 1.0 / gpus.size();
 		compute_devices_constraints.gridx = 0;
@@ -265,7 +265,6 @@ public class Settings implements Activity {
 		
 		gridbag.setConstraints(priority, compute_devices_constraints);
 		compute_devices_panel.add(priority);
-
 		
 		currentRow++;
 		constraints.gridx = 0;
@@ -314,7 +313,7 @@ public class Settings implements Activity {
 		JLabel blockTimeLabel = new JLabel("max. rendertime (min)");
 		blockTimeValue = new JTextField();
 		int config_blocktime = parent.getConfiguration().getBlockTime();
-		if(config_blocktime > 0){
+		if (config_blocktime > 0) {
 			blockTimeValue.setText(Integer.toString(config_blocktime));
 		}
 		advanced_panel.add(blockTimeLabel);
@@ -323,12 +322,11 @@ public class Settings implements Activity {
 		JLabel blockMemLabel = new JLabel("max. render memory (MB)");
 		blockMemValue = new JTextField();
 		int config_blockmem = parent.getConfiguration().getBlockMem();
-		if(config_blockmem > 0){
+		if (config_blockmem > 0) {
 			blockMemValue.setText(Integer.toString(config_blockmem));
 		}
 		advanced_panel.add(blockMemLabel);
 		advanced_panel.add(blockMemValue);
-		
 		
 		currentRow++;
 		constraints.gridx = 0;
@@ -546,10 +544,10 @@ public class Settings implements Activity {
 			}
 			
 			String memvalue = null;
-			if(blockMemValue != null){
-				try{
+			if (blockMemValue != null) {
+				try {
 					memvalue = blockMemValue.getText().trim();
-					if(memvalue.equals("")){
+					if (memvalue.equals("")) {
 						memvalue = "0";
 					}
 					config.setBlockMem(Integer.parseInt(memvalue));
@@ -562,10 +560,10 @@ public class Settings implements Activity {
 			}
 			
 			String timevalue = null;
-			if(blockTimeValue != null){
-				try{
+			if (blockTimeValue != null) {
+				try {
 					timevalue = blockTimeValue.getText().trim();
-					if(timevalue.equals("")){
+					if (timevalue.equals("")) {
 						timevalue = "0";
 					}
 					config.setBlockTime(Integer.parseInt(timevalue));

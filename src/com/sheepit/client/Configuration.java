@@ -50,7 +50,7 @@ public class Configuration {
 	private int priority;
 	private int block_time; // in minutes
 	private int block_mem; // in megabytes
-	private String block_list; 
+	private String block_list;
 	private ComputeType computeMethod;
 	private GPUDevice GPUDevice;
 	private boolean printLog;
@@ -122,28 +122,28 @@ public class Configuration {
 		this.maxUploadingJob = max;
 	}
 	
-	public void setBlockTime(int minutes){
+	public void setBlockTime(int minutes) {
 		this.block_time = minutes;
 	}
 	
-	public int getBlockTime(){
+	public int getBlockTime() {
 		return this.block_time;
 	}
 	
-	public void setBlockMem(int megabyte){
+	public void setBlockMem(int megabyte) {
 		this.block_mem = megabyte;
 	}
 	
-	public int getBlockMem(){
+	public int getBlockMem() {
 		return this.block_mem;
 	}
 	
-	public void setBlockList(String blockList){
+	public void setBlockList(String blockList) {
 		this.block_list = blockList;
 		BlockList.getInstance().setBlockList(blockList);
 	}
 	
-	public String getBlockList(){
+	public String getBlockList() {
 		return this.block_list;
 	}
 	

@@ -50,7 +50,7 @@ public class SettingsLoader {
 	private String autoSignIn;
 	private String ui;
 	private String tileSize;
-	private int    priority;
+	private int priority;
 	private String blockMem;
 	private String blockTime;
 	
@@ -62,8 +62,7 @@ public class SettingsLoader {
 		path = path_;
 	}
 	
-	public SettingsLoader(String login_, String password_, String proxy_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, String cacheDir_, boolean autoSignIn_, String ui_, String tileSize_, 
-						  int priority_, String blockMem_, String blockTime_) {
+	public SettingsLoader(String login_, String password_, String proxy_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, String cacheDir_, boolean autoSignIn_, String ui_, String tileSize_, int priority_, String blockMem_, String blockTime_) {
 		path = getDefaultFilePath();
 		login = login_;
 		password = password_;
@@ -279,8 +278,8 @@ public class SettingsLoader {
 	}
 	
 	/**
-	 * Merge the Settings file with the Configuration.
-	 * The Configuration will have high priority.
+	 * Merge the Settings file with the Configuration. The Configuration will
+	 * have high priority.
 	 */
 	public void merge(Configuration config) {
 		if (config == null) {
@@ -345,7 +344,6 @@ public class SettingsLoader {
 	
 	@Override
 	public String toString() {
-		return "SettingsLoader [path=" + path + ", login=" + login + ", password=" + password + ", computeMethod=" + computeMethod + ", gpu=" + gpu + ", cacheDir=" + cacheDir 
-				 + ", priority=" + priority + ", blockMem=" + blockMem +  ", blockTime=" + blockTime + "]";
+		return "SettingsLoader [path=" + path + ", login=" + login + ", password=" + password + ", computeMethod=" + computeMethod + ", gpu=" + gpu + ", cacheDir=" + cacheDir + ", priority=" + priority + ", blockMem=" + blockMem + ", blockTime=" + blockTime + "]";
 	}
 }

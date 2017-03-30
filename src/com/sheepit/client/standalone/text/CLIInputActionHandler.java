@@ -66,13 +66,11 @@ public class CLIInputActionHandler implements CLIInputListener {
 		else if ((command.length() > priorityLength) && (command.substring(0, priorityLength).equalsIgnoreCase("priority"))) {
 			changePriority(client, command.substring(priorityLength));
 		}
-		else if((command.length() > blockTimeLength ) && 
-				( command.substring(0, blockTimeLength).equalsIgnoreCase("block_time"))	){
+		else if ((command.length() > blockTimeLength) && (command.substring(0, blockTimeLength).equalsIgnoreCase("block_time"))) {
 			changeBlockTime(client, command.substring(blockTimeLength));
 			
 		}
-		else if((command.length() > blockMemLength ) && 
-				( command.substring(0, blockMemLength).equalsIgnoreCase("block_mem"))	){
+		else if ((command.length() > blockMemLength) && (command.substring(0, blockMemLength).equalsIgnoreCase("block_mem"))) {
 			changeBlockMem(client, command.substring(blockMemLength));
 			
 		}
@@ -103,7 +101,7 @@ public class CLIInputActionHandler implements CLIInputListener {
 		}
 		
 	}
-
+	
 	void displayStatus(Client client) {
 		if (client.isSuspended()) {
 			System.out.println("Status: paused");
@@ -115,26 +113,26 @@ public class CLIInputActionHandler implements CLIInputListener {
 			System.out.println("Status: will exit after the current frame");
 		}
 	}
-
-	void changeBlockTime(Client client, String newBlockTime){
+	
+	void changeBlockTime(Client client, String newBlockTime) {
 		Configuration config = client.getConfiguration();
-		if(config != null){
+		if (config != null) {
 			try {
 				config.setBlockTime(Integer.parseInt(newBlockTime.trim()));
 			}
-			catch(NumberFormatException e){
+			catch (NumberFormatException e) {
 				System.out.println("Invalid block_time: " + newBlockTime);
 			}
 		}
 	}
 	
-	void changeBlockMem(Client client, String newBlockMem){
+	void changeBlockMem(Client client, String newBlockMem) {
 		Configuration config = client.getConfiguration();
-		if(config != null){
+		if (config != null) {
 			try {
 				config.setBlockMem(Integer.parseInt(newBlockMem.trim()));
 			}
-			catch(NumberFormatException e){
+			catch (NumberFormatException e) {
 				System.out.println("Invalid block_mem: " + newBlockMem);
 			}
 		}

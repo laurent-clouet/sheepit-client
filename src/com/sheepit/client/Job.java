@@ -101,18 +101,18 @@ public class Job {
 		block("");
 	}
 	
-	public void block(String message){
+	public void block(String message) {
 		setAskForRendererKill(true);
 		setUserBlockJob(true);
-		BlockList.getInstance().blockJob(sceneMD5, String.format("%s: %s", name, message ));
+		BlockList.getInstance().blockJob(sceneMD5, String.format("%s: %s", name, message));
 		RenderProcess process = getProcessRender();
 		if (process != null) {
 			OS.getOS().kill(process.getProcess());
 		}
 	}
 	
-	public void mark_blocked(String message){
-		BlockList.getInstance().blockJob(sceneMD5, String.format("%s: %s", name, message ));
+	public void mark_blocked(String message) {
+		BlockList.getInstance().blockJob(sceneMD5, String.format("%s: %s", name, message));
 	}
 	
 	public RenderProcess getProcessRender() {
@@ -236,7 +236,7 @@ public class Job {
 	}
 	
 	public Error.Type render() {
-			
+		
 		gui.status("Rendering");
 		RenderProcess process = getProcessRender();
 		String core_script = "";
@@ -432,45 +432,47 @@ public class Job {
 		return Error.Type.OK;
 	}
 	
-	private void block_project(long startTime, long total_duration){
+	private void block_project(long startTime, long total_duration) {
 		block_project_time(startTime, total_duration);
 		block_project_mem();
 	}
-	private void block_project_mem(){
-		if(config.getBlockMem() == 0){
+	
+	private void block_project_mem() {
+		if (config.getBlockMem() == 0) {
 			return;
 		}
 		// getMemUsed in KB and getBlockMem in MB
-		long mem_used = getProcessRender().getMemoryUsed()  / 1000;
-		if(mem_used > config.getBlockMem()){
+		long mem_used = getProcessRender().getMemoryUsed() / 1000;
+		if (mem_used > config.getBlockMem()) {
 			String message = String.format("Blocked by mem (%d MB used but %d MB allowed)", mem_used, config.getBlockMem());
-			System.out.println(message );
-			block(message );
+			System.out.println(message);
+			block(message);
 		}
 		
 	}
 	
-	private void block_project_uptime(long startTime){
-		if(config.getBlockTime() == 0){
+	private void block_project_uptime(long startTime) {
+		if (config.getBlockTime() == 0) {
 			return;
 		}
 		long up_time = (new Date().getTime() - startTime) / 1000 / 60;
-		if(up_time > config.getBlockTime()){
+		if (up_time > config.getBlockTime()) {
 			String message = String.format("Blocked by total_render_time (%d min used but %d min allowed)", up_time, config.getBlockTime());
 			System.out.println(message);
 			mark_blocked(message);
 		}
 	}
-	private void block_project_time(long startTime, long total_duration){
-		if(config.getBlockTime() == 0){
+	
+	private void block_project_time(long startTime, long total_duration) {
+		if (config.getBlockTime() == 0) {
 			return;
 		}
 		long up_time = new Date().getTime() - startTime;
-		if(up_time < 60000){ //wait at least 60 seconds to get good total estimation
+		if (up_time < 60000) { //wait at least 60 seconds to get good total estimation
 			return;
 		}
 		long total_min = total_duration / 1000 / 60;
-		if(total_min > config.getBlockTime()){
+		if (total_min > config.getBlockTime()) {
 			String message = String.format("Blocked by time (%d min used but %d min allowed)", total_min, config.getBlockTime());
 			System.out.println(message);
 			block(message);
@@ -541,12 +543,12 @@ public class Job {
 	}
 	
 	private void updateRenderingMemoryPeak(String line) {
-		for ( Matcher p = memoryPeakPatter.matcher(line); p.find(); ){
-			 Matcher m = memoryPeakValuePatter.matcher(p.group()); 
-			m.find(); 
-			long mem = Utils.parseNumber(m.group() );
+		for (Matcher p = memoryPeakPatter.matcher(line); p.find();) {
+			Matcher m = memoryPeakValuePatter.matcher(p.group());
+			m.find();
+			long mem = Utils.parseNumber(m.group());
 			if (mem > getProcessRender().getMemoryUsed()) {
-				getProcessRender().setMemoryUsed(mem/1000);
+				getProcessRender().setMemoryUsed(mem / 1000);
 			}
 		}
 	}
