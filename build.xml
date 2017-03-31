@@ -5,7 +5,7 @@
     <property name="compile.deprecation" value="true"/>
     <property name="compile.optimize" value="true"/>
     <property name="compile.version" value="1.7"/>
-    <property name="compile.release" value="5.0.0"/>
+    <property name="compile.release" value="5.363.2805"/>
 	
 	<available file=".git" type="dir" property="git.present"/>
 
