@@ -484,7 +484,7 @@ public class Client {
 			writer.close();
 			String args = "?type=" + (error == null ? "" : error.getValue());
 			if (job_to_reset_ != null) {
-				args += "&frame=" + job_to_reset_.getFrameNumber() + "&job=" + job_to_reset_.getId() + "&render_time=" + job_to_reset_.getProcessRender().getDuration();
+				args += "&frame=" + job_to_reset_.getFrameNumber() + "&job=" + job_to_reset_.getId() + "&render_time=" + job_to_reset_.getProcessRender().getDuration() + "&memoryused=" + job_to_reset_.getProcessRender().getMemoryUsed();
 				if (job_to_reset_.getExtras() != null && job_to_reset_.getExtras().isEmpty() == false) {
 					args += "&extras=" + job_to_reset_.getExtras();
 				}
@@ -553,9 +553,9 @@ public class Client {
 	public Error.Type work(Job ajob) {
 		int ret;
 		
-		if(BlockList.getInstance().isBlocked(ajob.getSceneMD5())){
+		if (BlockList.getInstance().isBlocked(ajob.getSceneMD5())) {
 			System.out.println("Job is at blocklist");
-			return Error.Type.RENDERER_KILLED_BY_USER; 
+			return Error.Type.RENDERER_KILLED_BY_USER;
 		}
 		
 		gui.setRenderingProjectName(ajob.getName());
@@ -759,11 +759,11 @@ public class Client {
 				case JOB_VALIDATION_ERROR_SESSION_DISABLED:
 				case JOB_VALIDATION_ERROR_BROKEN_MACHINE:
 					return Type.SESSION_DISABLED;
-					
+				
 				case JOB_VALIDATION_ERROR_MISSING_PARAMETER:
 					// no point to retry the request
 					return Error.Type.UNKNOWN;
-					
+				
 				default:
 					// do nothing, try to do a request on the next loop
 					break;

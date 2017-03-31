@@ -47,10 +47,11 @@ public class Configuration {
 	private String proxy;
 	private int maxUploadingJob;
 	private int nbCores;
+	private int maxMemory; // max memory allowed for render
 	private int priority;
 	private int block_time; // in minutes
 	private int block_mem; // in megabytes
-	private String block_list; 
+	private String block_list;
 	private ComputeType computeMethod;
 	private GPUDevice GPUDevice;
 	private boolean printLog;
@@ -67,6 +68,7 @@ public class Configuration {
 		this.static_exeDirName = "exe";
 		this.maxUploadingJob = 1;
 		this.nbCores = -1; // ie not set
+		this.maxMemory = -1; // ie not set
 		this.priority = 19; // default lowest
 		this.computeMethod = null;
 		this.GPUDevice = null;
@@ -122,28 +124,28 @@ public class Configuration {
 		this.maxUploadingJob = max;
 	}
 	
-	public void setBlockTime(int minutes){
+	public void setBlockTime(int minutes) {
 		this.block_time = minutes;
 	}
 	
-	public int getBlockTime(){
+	public int getBlockTime() {
 		return this.block_time;
 	}
 	
-	public void setBlockMem(int megabyte){
+	public void setBlockMem(int megabyte) {
 		this.block_mem = megabyte;
 	}
 	
-	public int getBlockMem(){
+	public int getBlockMem() {
 		return this.block_mem;
 	}
 	
-	public void setBlockList(String blockList){
+	public void setBlockList(String blockList) {
 		this.block_list = blockList;
 		BlockList.getInstance().setBlockList(blockList);
 	}
 	
-	public String getBlockList(){
+	public String getBlockList() {
 		return this.block_list;
 	}
 	
@@ -153,6 +155,14 @@ public class Configuration {
 	
 	public int getNbCores() {
 		return this.nbCores;
+	}
+	
+	public void setMaxMemory(int max) {
+		this.maxMemory = max;
+	}
+	
+	public int getMaxMemory() {
+		return this.maxMemory;
 	}
 	
 	public void setUsePriority(int priority) {

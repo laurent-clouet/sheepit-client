@@ -98,7 +98,7 @@ public class CLIInputActionHandler implements CLIInputListener {
 		}
 		
 	}
-
+	
 	void displayStatus(Client client) {
 		if (client.isSuspended()) {
 			System.out.println("Status: paused");
@@ -110,14 +110,14 @@ public class CLIInputActionHandler implements CLIInputListener {
 			System.out.println("Status: will exit after the current frame");
 		}
 	}
-
+	
 	void changeBlockTime(Client client, String newBlockTime) {
 		Configuration config = client.getConfiguration();
 		if (config != null) {
 			try {
 				config.setBlockTime(Integer.parseInt(newBlockTime.trim()));
 			}
-			catch(NumberFormatException e) {
+			catch (NumberFormatException e) {
 				System.out.println("Invalid block_time: " + newBlockTime);
 			}
 		}
@@ -129,7 +129,7 @@ public class CLIInputActionHandler implements CLIInputListener {
 			try {
 				config.setBlockMem(Integer.parseInt(newBlockMem.trim()));
 			}
-			catch(NumberFormatException e){
+			catch (NumberFormatException e) {
 				System.out.println("Invalid block_mem: " + newBlockMem);
 			}
 		}
