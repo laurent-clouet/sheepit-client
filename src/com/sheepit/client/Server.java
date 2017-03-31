@@ -291,7 +291,12 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 		HttpURLConnection connection = null;
 		try {
 			OS os = OS.getOS();
-			String url = String.format("%s?computemethod=%s&cpu_cores=%s&ram_max=%s", this.getPage("request-job"), this.user_config.computeMethodToInt(), ((this.user_config.getNbCores() == -1) ? os.getCPU().cores() : this.user_config.getNbCores()), this.user_config.getMaxMemory());
+			int max_ram = this.user_config.getMaxMemory();
+			if (max_ram == -1){
+				max_ram = os.getMemory();
+			}
+					
+			String url = String.format("%s?computemethod=%s&cpu_cores=%s&ram_max=%s", this.getPage("request-job"), this.user_config.computeMethodToInt(), ((this.user_config.getNbCores() == -1) ? os.getCPU().cores() : this.user_config.getNbCores()), max_ram);
 			if (this.user_config.getComputeMethod() != ComputeType.CPU && this.user_config.getGPUDevice() != null) {
 				String gpu_model = "";
 				try {
