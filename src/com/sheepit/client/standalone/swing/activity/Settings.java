@@ -80,7 +80,6 @@ public class Settings implements Activity {
 	
 	private JTextField tileSizeValue;
 	private JTextField blockTimeValue;
-	private JTextField blockMemValue;
 	private JLabel tileSizeLabel;
 	private JCheckBox customTileSize;
 	
@@ -351,15 +350,6 @@ public class Settings implements Activity {
 		advanced_panel.add(blockTimeLabel);
 		advanced_panel.add(blockTimeValue);
 		
-		JLabel blockMemLabel = new JLabel("max. render memory (MB)");
-		blockMemValue = new JTextField();
-		int config_blockmem = parent.getConfiguration().getBlockMem();
-		if (config_blockmem > 0) {
-			blockMemValue.setText(Integer.toString(config_blockmem));
-		}
-		advanced_panel.add(blockMemLabel);
-		advanced_panel.add(blockMemValue);
-		
 		currentRow++;
 		constraints.gridx = 0;
 		constraints.gridy = currentRow;
@@ -584,22 +574,6 @@ public class Settings implements Activity {
 				config.setTileSize(-1); // no tile
 			}
 			
-			String memvalue = null;
-			if (blockMemValue != null) {
-				try {
-					memvalue = blockMemValue.getText().trim();
-					if (memvalue.equals("")) {
-						memvalue = "0";
-					}
-					config.setBlockMem(Integer.parseInt(memvalue));
-				}
-				catch (NumberFormatException e1) {
-					System.err.println("Error: wrong mem value format");
-					System.err.println(e1);
-					System.exit(2);
-				}
-			}
-			
 			String timevalue = null;
 			if (blockTimeValue != null) {
 				try {
@@ -624,7 +598,7 @@ public class Settings implements Activity {
 			}
 			
 			if (saveFile.isSelected()) {
-				new SettingsLoader(login.getText(), new String(password.getPassword()), proxyText, method, selected_gpu, cpu_cores, max_ram, cachePath, autoSignIn.isSelected(), GuiSwing.type, tile, priority.getValue(), memvalue, timevalue).saveFile();
+				new SettingsLoader(login.getText(), new String(password.getPassword()), proxyText, method, selected_gpu, cpu_cores, max_ram, cachePath, autoSignIn.isSelected(), GuiSwing.type, tile, priority.getValue(), timevalue).saveFile();
 			}
 			else {
 				try {

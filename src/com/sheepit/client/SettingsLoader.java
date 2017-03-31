@@ -52,7 +52,6 @@ public class SettingsLoader {
 	private String ui;
 	private String tileSize;
 	private int priority;
-	private String blockMem;
 	private String blockTime;
 	
 	public SettingsLoader() {
@@ -63,7 +62,7 @@ public class SettingsLoader {
 		path = path_;
 	}
 	
-	public SettingsLoader(String login_, String password_, String proxy_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, int maxRam_, String cacheDir_, boolean autoSignIn_, String ui_, String tileSize_, int priority_, String blockMem_, String blockTime_) {
+	public SettingsLoader(String login_, String password_, String proxy_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, int maxRam_, String cacheDir_, boolean autoSignIn_, String ui_, String tileSize_, int priority_, String blockTime_) {
 		path = getDefaultFilePath();
 		login = login_;
 		password = password_;
@@ -73,7 +72,6 @@ public class SettingsLoader {
 		ui = ui_;
 		tileSize = tileSize_;
 		priority = priority_;
-		blockMem = blockMem_;
 		blockTime = blockTime_;
 		if (cores_ > 0) {
 			cores = String.valueOf(cores_);
@@ -153,10 +151,6 @@ public class SettingsLoader {
 				prop.setProperty("tile-size", tileSize);
 			}
 			
-			if (blockMem != null) {
-				prop.setProperty("block-mem", blockMem);
-			}
-			
 			if (blockTime != null) {
 				prop.setProperty("block-time", blockTime);
 			}
@@ -205,7 +199,6 @@ public class SettingsLoader {
 		this.tileSize = null;
 		this.priority = 19; // must be the same default as Configuration
 		this.ram = null;
-		this.blockMem = null;
 		this.blockTime = null;
 		
 		if (new File(path).exists() == false) {
@@ -264,9 +257,6 @@ public class SettingsLoader {
 			
 			if (prop.containsKey("priority")) {
 				this.priority = Integer.parseInt(prop.getProperty("priority"));
-			}
-			if (prop.containsKey("block-mem")) {
-				this.blockMem = prop.getProperty("block-mem");
 			}
 			if (prop.containsKey("block-time")) {
 				this.blockTime = prop.getProperty("block-time");
@@ -347,9 +337,6 @@ public class SettingsLoader {
 			config.setTileSize(Integer.valueOf(tileSize));
 		}
 		
-		if (config.getBlockMem() == 0 && blockMem != null) {
-			config.setBlockMem(Integer.valueOf(blockMem));
-		}
 		if (config.getBlockTime() == 0 && blockTime != null) {
 			config.setBlockTime(Integer.valueOf(blockTime));
 		}
@@ -359,6 +346,6 @@ public class SettingsLoader {
 	
 	@Override
 	public String toString() {
-		return "SettingsLoader [path=" + path + ", login=" + login + ", password=" + password + ", computeMethod=" + computeMethod + ", gpu=" + gpu + ", cacheDir=" + cacheDir + ", priority=" + priority + ", blockMem=" + blockMem + ", blockTime=" + blockTime + "]";
+		return "SettingsLoader [path=" + path + ", login=" + login + ", password=" + password + ", computeMethod=" + computeMethod + ", gpu=" + gpu + ", cacheDir=" + cacheDir + ", priority=" + priority + ", blockTime=" + blockTime + "]";
 	}
 }
