@@ -328,12 +328,16 @@ public class Job {
 					log.debug(line);
 					
 					updateRenderingMemoryPeak(line);
-					if (process.getMemoryUsed() > config.getMaxMemory()) {
-						log.debug("Blocking render because process ram used (" + process.getMemoryUsed() + "k) is over user setting (" + config.getMaxMemory() + "k)");
+					log.debug("Memory configured; " + config.getMaxMemory() + "KB - Memory used: " + process.getMemoryUsed() );
+					if ((config.getMaxMemory() > -1) && (process.getMemoryUsed() > config.getMaxMemory())) {
+						String message = "Blocking render because process ram used (" + process.getMemoryUsed() + "k)";
+						log.info(message);
 						process.finish();
 						if (script_file != null) {
 							script_file.delete();
 						}
+						block(message);
+						
 						return Error.Type.RENDERER_OUT_OF_MEMORY;
 					}
 					
@@ -443,21 +447,6 @@ public class Job {
 	
 	private void block_project(long startTime, long total_duration) {
 		block_project_time(startTime, total_duration);
-		block_project_mem();
-	}
-	
-	private void block_project_mem() {
-		if (config.getBlockMem() == 0) {
-			return;
-		}
-		// getMemUsed in KB and getBlockMem in MB
-		long mem_used = getProcessRender().getMemoryUsed() / 1000;
-		if (mem_used > config.getBlockMem()) {
-			String message = String.format("Blocked by mem (%d MB used but %d MB allowed)", mem_used, config.getBlockMem());
-			System.out.println(message);
-			block(message);
-		}
-		
 	}
 	
 	private void block_project_uptime(long startTime) {

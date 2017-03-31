@@ -133,11 +133,7 @@ public class Configuration {
 	}
 	
 	public void setBlockMem(int megabyte) {
-		this.block_mem = megabyte;
-	}
-	
-	public int getBlockMem() {
-		return this.block_mem;
+		setMaxMemory(megabyte * 1024);
 	}
 	
 	public void setBlockList(String blockList) {
