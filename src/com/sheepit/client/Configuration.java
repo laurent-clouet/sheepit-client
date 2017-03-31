@@ -50,7 +50,6 @@ public class Configuration {
 	private int maxMemory; // max memory allowed for render
 	private int priority;
 	private int block_time; // in minutes
-	private int block_mem; // in megabytes
 	private String block_list;
 	private ComputeType computeMethod;
 	private GPUDevice GPUDevice;
@@ -133,7 +132,9 @@ public class Configuration {
 	}
 	
 	public void setBlockMem(int megabyte) {
-		setMaxMemory(megabyte * 1024);
+		if (megabyte > 0) {
+			setMaxMemory(megabyte * 1024);
+		}
 	}
 	
 	public void setBlockList(String blockList) {
