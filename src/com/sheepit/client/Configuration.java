@@ -50,7 +50,6 @@ public class Configuration {
 	private int maxMemory; // max memory allowed for render
 	private int priority;
 	private int block_time; // in minutes
-	private int block_mem; // in megabytes
 	private String block_list;
 	private ComputeType computeMethod;
 	private GPUDevice GPUDevice;
