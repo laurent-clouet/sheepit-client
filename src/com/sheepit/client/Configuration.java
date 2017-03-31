@@ -132,7 +132,9 @@ public class Configuration {
 	}
 	
 	public void setBlockMem(int megabyte) {
-		setMaxMemory(megabyte * 1024);
+		if (megabyte > 0) {
+			setMaxMemory(megabyte * 1024);
+		}
 	}
 	
 	public void setBlockList(String blockList) {
