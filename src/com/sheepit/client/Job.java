@@ -313,7 +313,7 @@ public class Job {
 					log.debug(line);
 					
 					updateRenderingMemoryPeak(line);
-					if (process.getMemoryUsed() > config.getMaxMemory()) {
+					if (config.getMaxMemory() != -1 && process.getMemoryUsed() > config.getMaxMemory()) {
 						log.debug("Blocking render because process ram used (" + process.getMemoryUsed() + "k) is over user setting (" + config.getMaxMemory() + "k)");
 						process.finish();
 						if (script_file != null) {
