@@ -67,6 +67,9 @@ public class Worker {
 	@Option(name = "-cores", usage = "Number of cores/threads to use for the render", metaVar = "3", required = false)
 	private int nb_cores = -1;
 	
+	@Option(name = "-memory", usage = "Maximum memory allow to be used by renderer (in MB)", required = false)
+	private int max_ram = -1;
+	
 	@Option(name = "--verbose", usage = "Display log", required = false)
 	private boolean print_log = false;
 	
@@ -196,6 +199,10 @@ public class Worker {
 		}
 		else {
 			config.setUseNbCores(nb_cores);
+		}
+		
+		if (max_ram > 0) {
+			config.setMaxMemory(max_ram * 1000);
 		}
 		
 		if (method != null) {
