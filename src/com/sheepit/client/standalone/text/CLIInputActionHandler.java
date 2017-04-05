@@ -29,7 +29,7 @@ public class CLIInputActionHandler implements CLIInputListener {
 	public void commandEntered(Client client, String command) {
 		int priorityLength = "priority".length();
 		int blockTimeLength = "block_time".length();
-		int blockMemLength = "block_mem".length();
+		int memoryLength = "memory".length();
 		
 		//prevent Null Pointer at next step
 		if (command == null) {
@@ -70,8 +70,8 @@ public class CLIInputActionHandler implements CLIInputListener {
 			changeBlockTime(client, command.substring(blockTimeLength));
 			
 		}
-		else if ((command.length() > blockMemLength) && (command.substring(0, blockMemLength).equalsIgnoreCase("block_mem"))) {
-			changeBlockMem(client, command.substring(blockMemLength));
+		else if ((command.length() > memoryLength) && (command.substring(0, memoryLength).equalsIgnoreCase("memory"))) {
+			changeMaxMem(client, command.substring(memoryLength));
 			
 		}
 		else {
@@ -80,7 +80,7 @@ public class CLIInputActionHandler implements CLIInputListener {
 			System.out.println("priority <n>: set the priority for the next renderjob");
 			System.out.println("block:  block project");
 			System.out.println("block_time n: automated block projects needing more than n minutes to render. 0 disables");
-			System.out.println("block_mem n: automated block projects needing more than n megabytes RAM to render. 0 disables");
+			System.out.println("memory n: automated block projects needing more than n megabytes RAM to render. 0 disables");
 			System.out.println("pause:  pause client requesting new jobs");
 			System.out.println("resume: resume after client was paused");
 			System.out.println("stop:   exit after frame was finished");
@@ -126,14 +126,14 @@ public class CLIInputActionHandler implements CLIInputListener {
 		}
 	}
 	
-	void changeBlockMem(Client client, String newBlockMem) {
+	void changeMaxMem(Client client, String newMaxMemory) {
 		Configuration config = client.getConfiguration();
 		if (config != null) {
 			try {
-				config.setBlockMem(Integer.parseInt(newBlockMem.trim()));
+				config.setMaxMemory(Integer.parseInt(newMaxMemory.trim()) * 1000);
 			}
 			catch (NumberFormatException e) {
-				System.out.println("Invalid block_mem: " + newBlockMem);
+				System.out.println("Invalid maxMemory: " + newMaxMemory + "MB");
 			}
 		}
 		
