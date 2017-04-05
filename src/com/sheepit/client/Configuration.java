@@ -131,12 +131,6 @@ public class Configuration {
 		return this.block_time;
 	}
 	
-	public void setBlockMem(int megabyte) {
-		if (megabyte > 0) {
-			setMaxMemory(megabyte * 1024);
-		}
-	}
-	
 	public void setBlockList(String blockList) {
 		this.block_list = blockList;
 		BlockList.getInstance().setBlockList(blockList);
