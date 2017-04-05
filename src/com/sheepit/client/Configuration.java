@@ -131,7 +131,9 @@ public class Configuration {
 		return this.block_time;
 	}
 	
+	//TODO remove in next version
 	public void setBlockMem(int megabyte) {
+		System.out.println("parameter -block-mem was replaced by -memory. Please use -memory instead of -block-mem");
 		if (megabyte > 0) {
 			setMaxMemory(megabyte * 1024);
 		}
