@@ -43,7 +43,7 @@ public class ListGpuParameterHandler<T> extends OptionHandler<T> {
 			for (GPUDevice gpu : gpus) {
 				System.out.println("CUDA Name : " + gpu.getCudaName());
 				System.out.println("Model     : " + gpu.getModel());
-				System.out.println("Memory, MB: " + (int) (gpu.getMemory() / (1024 * 1024)));
+				System.out.println("Memory, MB: " + (long) (gpu.getMemory() / (1024 * 1024)));
 				System.out.println();
 			}
 		}
