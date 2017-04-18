@@ -601,6 +601,17 @@ public class Job {
 			// end of rendering
 			return Type.RENDERER_OUT_OF_VIDEO_MEMORY;
 		}
+		else if (line.indexOf("CUDA error: Invalid value in cuTexRefSetAddress(") != -1) {
+			// Fra:83 Mem:1201.77M (0.00M, Peak 1480.94M) | Time:00:59.30 | Mem:894.21M, Peak:894.21M | color 3, RenderLayer | Updating Mesh | Copying Strands to device
+			// Fra:83 Mem:1316.76M (0.00M, Peak 1480.94M) | Time:01:02.84 | Mem:1010.16M, Peak:1010.16M | color 3, RenderLayer | Cancel | CUDA error: Invalid value in cuTexRefSetAddress(NULL, texref, cuda_device_ptr(mem.device_pointer), size)
+			// Error: CUDA error: Invalid value in cuTexRefSetAddress(NULL, texref, cuda_device_ptr(mem.device_pointer), size)
+			// Fra:83 Mem:136.82M (0.00M, Peak 1480.94M) | Time:01:03.40 | Sce: color 3 Ve:0 Fa:0 La:0
+			// Blender quit
+			// CUDA error: Invalid value in cuTexRefSetAddress(NULL, texref, cuda_device_ptr(mem.device_pointer), size)
+			// Refer to the Cycles GPU rendering documentation for possible solutions:
+			// http://www.blender.org/manual/render/cycles/gpu_rendering.html
+			return Error.Type.RENDERER_OUT_OF_VIDEO_MEMORY;
+		}
 		else if (line.indexOf("CUDA device supported only with compute capability") != -1) {
 			// found bundled python: /tmp/xx/2.73/python
 			// read blend: /tmp/xx/compute-method.blend
