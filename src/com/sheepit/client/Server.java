@@ -155,7 +155,10 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 					this.log.debug("Server::stayAlive can not connect to server");
 				}
 				catch (IOException e) {
-					e.printStackTrace();
+					StringWriter sw = new StringWriter();
+					PrintWriter pw = new PrintWriter(sw);
+					e.printStackTrace(pw);
+					this.log.debug("Server::stayAlive IOException " + e + " stacktrace: " + sw.toString());
 				}
 			}
 			try {
@@ -165,6 +168,10 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				return;
 			}
 			catch (Exception e) {
+				StringWriter sw = new StringWriter();
+				PrintWriter pw = new PrintWriter(sw);
+				e.printStackTrace(pw);
+				this.log.debug("Server::stayAlive Exception " + e + " stacktrace: " + sw.toString());
 				return;
 			}
 		}
@@ -393,7 +400,10 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 					}
 				}
 				catch (Exception e) {
-					e.printStackTrace();
+					StringWriter sw = new StringWriter();
+					PrintWriter pw = new PrintWriter(sw);
+					e.printStackTrace(pw);
+					this.log.debug("Server::requestJob Exception " + e + " stacktrace: " + sw.toString());
 				}
 				
 				String[] job_node_require_attribute = { "id", "archive_md5", "path", "use_gpu", "frame", "name", "extras", "password" };
@@ -515,11 +525,17 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				((HttpsURLConnection) connection).setHostnameVerifier(this);
 			}
 			catch (NoSuchAlgorithmException e) {
-				e.printStackTrace();
+				StringWriter sw = new StringWriter();
+				PrintWriter pw = new PrintWriter(sw);
+				e.printStackTrace(pw);
+				this.log.debug("Server::HTTPRequest NoSuchAlgorithmException " + e + " stacktrace: " + sw.toString());
 				return null;
 			}
 			catch (KeyManagementException e) {
-				e.printStackTrace();
+				StringWriter sw = new StringWriter();
+				PrintWriter pw = new PrintWriter(sw);
+				e.printStackTrace(pw);
+				this.log.debug("Server::HTTPRequest KeyManagementException " + e + " stacktrace: " + sw.toString());
 				return null;
 			}
 		}
@@ -596,7 +612,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
-			this.log.error("Server::HTTPGetFile exception " + e + " stacktrace " + sw.toString());
+			this.log.error("Server::HTTPGetFile Exception " + e + " stacktrace " + sw.toString());
 		}
 		this.log.debug("Server::HTTPGetFile(" + url_ + ", ...) will failed (end of function)");
 		return -2;
@@ -693,29 +709,44 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			dos.flush();
 			dos.close();
 		}
-		catch (MalformedURLException ex) {
-			this.log.error("Server::HTTPSendFile, exception MalformedURLException " + ex);
+		catch (MalformedURLException e) {
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			e.printStackTrace(pw);
+			this.log.error("Server::HTTPSendFile, MalformedURLException " + e + " stacktrace " + sw.toString());
 			return ServerCode.UNKNOWN;
 		}
-		catch (IOException ioe) {
-			this.log.error("Server::HTTPSendFile, exception IOException " + ioe);
+		catch (IOException e) {
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			e.printStackTrace(pw);
+			this.log.error("Server::HTTPSendFile, IOException " + e + " stacktrace " + sw.toString());
 			return ServerCode.UNKNOWN;
 		}
-		catch (Exception e6) {
-			this.log.error("Server::HTTPSendFile, exception Exception " + e6);
-			return ServerCode.UNKNOWN;
-		}
-		catch (OutOfMemoryError e6) {
-			this.log.error("Server::HTTPSendFile, exception Exception " + e6);
+		catch (OutOfMemoryError e) {
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			e.printStackTrace(pw);
+			this.log.error("Server::HTTPSendFile, OutOfMemoryError " + e + " stacktrace " + sw.toString());
 			return ServerCode.JOB_VALIDATION_ERROR_UPLOAD_FAILED;
+		}
+		catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			e.printStackTrace(pw);
+			this.log.error("Server::HTTPSendFile, Exception " + e + " stacktrace " + sw.toString());
+			return ServerCode.UNKNOWN;
 		}
 		
 		int r;
 		try {
 			r = conn.getResponseCode();
 		}
-		catch (IOException e1) {
-			e1.printStackTrace();
+		catch (IOException e) {
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			e.printStackTrace(pw);
+			this.log.debug("Server::HTTPSendFile IOException " + e + " stacktrace: " + sw.toString());
 			return ServerCode.UNKNOWN;
 		}
 		String contentType = conn.getContentType();
@@ -725,8 +756,11 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			try {
 				in = new DataInputStream(conn.getInputStream());
 			}
-			catch (IOException e1) {
-				e1.printStackTrace();
+			catch (IOException e) {
+				StringWriter sw = new StringWriter();
+				PrintWriter pw = new PrintWriter(sw);
+				e.printStackTrace(pw);
+				this.log.debug("Server::HTTPSendFile IOException " + e + " stacktrace: " + sw.toString());
 				return ServerCode.UNKNOWN;
 			}
 			Document document = null;
@@ -734,15 +768,24 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(in);
 			}
 			catch (SAXException e) {
-				e.printStackTrace();
+				StringWriter sw = new StringWriter();
+				PrintWriter pw = new PrintWriter(sw);
+				e.printStackTrace(pw);
+				this.log.debug("Server::HTTPSendFile SAXException " + e + " stacktrace: " + sw.toString());
 				return ServerCode.UNKNOWN;
 			}
 			catch (IOException e) {
-				e.printStackTrace();
+				StringWriter sw = new StringWriter();
+				PrintWriter pw = new PrintWriter(sw);
+				e.printStackTrace(pw);
+				this.log.debug("Server::HTTPSendFile IOException " + e + " stacktrace: " + sw.toString());
 				return ServerCode.UNKNOWN;
 			}
 			catch (ParserConfigurationException e) {
-				e.printStackTrace();
+				StringWriter sw = new StringWriter();
+				PrintWriter pw = new PrintWriter(sw);
+				e.printStackTrace(pw);
+				this.log.debug("Server::HTTPSendFile ParserConfigurationException " + e + " stacktrace: " + sw.toString());
 				return ServerCode.UNKNOWN;
 			}
 			
@@ -803,9 +846,10 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			return ret;
 		}
 		catch (Exception e) {
-			System.err.println("Server::getLastRender exception " + e);
-			e.printStackTrace();
-			
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			e.printStackTrace(pw);
+			this.log.debug("Server::getLastRender Exception " + e + " stacktrace: " + sw.toString());
 		}
 		return null;
 	}
