@@ -36,6 +36,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.sheepit.client.Configuration.ComputeType;
 import com.sheepit.client.Error.Type;
@@ -45,6 +47,9 @@ import com.sheepit.client.os.OS;
 public class Job {
 	public static final String UPDATE_METHOD_BY_REMAINING_TIME = "remainingtime";
 	public static final String UPDATE_METHOD_BLENDER_INTERNAL_BY_PART = "blenderinternal";
+	
+	private Pattern memoryPeakPatter = Pattern.compile("[Pp]eak[: ]+(\\d+\\.\\d+[GMK])");
+	private Pattern memoryPeakValuePatter = Pattern.compile("\\d+\\.\\d+[GMK]");
 	
 	private String numFrame;
 	private String sceneMD5;
@@ -93,12 +98,21 @@ public class Job {
 	}
 	
 	public void block() {
+		block("");
+	}
+	
+	public void block(String message) {
 		setAskForRendererKill(true);
 		setUserBlockJob(true);
+		BlockList.getInstance().blockJob(sceneMD5, String.format("%s: %s", name, message));
 		RenderProcess process = getProcessRender();
 		if (process != null) {
 			OS.getOS().kill(process.getProcess());
 		}
+	}
+	
+	public void mark_blocked(String message) {
+		BlockList.getInstance().blockJob(sceneMD5, String.format("%s: %s", name, message));
 	}
 	
 	public RenderProcess getProcessRender() {
@@ -222,6 +236,7 @@ public class Job {
 	}
 	
 	public Error.Type render() {
+		
 		gui.status("Rendering");
 		RenderProcess process = getProcessRender();
 		String core_script = "";
@@ -313,12 +328,16 @@ public class Job {
 					log.debug(line);
 					
 					updateRenderingMemoryPeak(line);
-					if (config.getMaxMemory() != -1 && process.getMemoryUsed() > config.getMaxMemory()) {
-						log.debug("Blocking render because process ram used (" + process.getMemoryUsed() + "k) is over user setting (" + config.getMaxMemory() + "k)");
+					log.debug("Memory configured; " + config.getMaxMemory() + "KB - Memory used: " + process.getMemoryUsed());
+					if ((config.getMaxMemory() > 0) && (process.getMemoryUsed() > config.getMaxMemory())) {
+						String message = "Blocking render because process ram used (" + process.getMemoryUsed() + "k) is over user setting (" + config.getMaxMemory() + "k)";
+						log.info(message);
 						process.finish();
 						if (script_file != null) {
 							script_file.delete();
 						}
+						block(message);
+						
 						return Error.Type.RENDERER_OUT_OF_MEMORY;
 					}
 					
@@ -351,6 +370,8 @@ public class Job {
 			log.error("Job::render exception(A) " + err + " stacktrace " + sw.toString());
 			return Error.Type.FAILED_TO_EXECUTE;
 		}
+		/* block project to prevent rendering again*/
+		block_project_uptime(getProcessRender().getStartTime());
 		
 		int exit_value = process.exitValue();
 		process.finish();
@@ -424,6 +445,38 @@ public class Job {
 		return Error.Type.OK;
 	}
 	
+	private void block_project(long startTime, long total_duration) {
+		block_project_time(startTime, total_duration);
+	}
+	
+	private void block_project_uptime(long startTime) {
+		if (config.getBlockTime() == 0) {
+			return;
+		}
+		long up_time = (new Date().getTime() - startTime) / 1000 / 60;
+		if (up_time > config.getBlockTime()) {
+			String message = String.format("Blocked by total_render_time (%d min used but %d min allowed)", up_time, config.getBlockTime());
+			System.out.println(message);
+			mark_blocked(message);
+		}
+	}
+	
+	private void block_project_time(long startTime, long total_duration) {
+		if (config.getBlockTime() == 0) {
+			return;
+		}
+		long up_time = new Date().getTime() - startTime;
+		if (up_time < 60000) { //wait at least 60 seconds to get good total estimation
+			return;
+		}
+		long total_min = total_duration / 1000 / 60;
+		if (total_min > config.getBlockTime()) {
+			String message = String.format("Blocked by time (%d min used but %d min allowed)", total_min, config.getBlockTime());
+			System.out.println(message);
+			block(message);
+		}
+	}
+	
 	private void updateRenderingStatus(String line) {
 		if (getUpdateRenderingStatusMethod() != null && getUpdateRenderingStatusMethod().equals(Job.UPDATE_METHOD_BLENDER_INTERNAL_BY_PART)) {
 			String search = " Part ";
@@ -439,8 +492,10 @@ public class Job {
 							long end_render = (new Date().getTime() - this.render.getStartTime()) * total / current;
 							Date date = new Date(end_render);
 							gui.setRemainingTime(String.format("%s %% (%s)", (int) (100.0 - 100.0 * current / total), Utils.humanDuration(date)));
+							block_project(this.render.getStartTime(), end_render);
 							return;
 						}
+						
 					}
 					catch (NumberFormatException e) {
 						System.out.println("Exception 92: " + e);
@@ -474,6 +529,8 @@ public class Job {
 						Date date = date_parse.parse(remaining_time);
 						gui.setRemainingTime(Utils.humanDuration(date));
 						getProcessRender().setRemainingDuration((int) (date.getTime() / 1000));
+						long end_render = date.getTime() + new Date().getTime() - this.render.getStartTime();
+						block_project(this.render.getStartTime(), end_render);
 					}
 					catch (ParseException err) {
 						log.error("Client::updateRenderingStatus ParseException " + err);
@@ -484,38 +541,12 @@ public class Job {
 	}
 	
 	private void updateRenderingMemoryPeak(String line) {
-		String[] elements = line.toLowerCase().split("(peak)");
-		
-		for (String element : elements) {
-			if (element.isEmpty() == false && element.charAt(0) == ' ') {
-				int end = element.indexOf(')');
-				if (end > 0) {
-					try {
-						long mem = Utils.parseNumber(element.substring(1, end).trim());
-						if (mem > getProcessRender().getMemoryUsed()) {
-							getProcessRender().setMemoryUsed(mem);
-						}
-					}
-					catch (IllegalStateException e) {
-						// failed to parseNumber
-					}
-				}
-			}
-			else {
-				if (element.isEmpty() == false && element.charAt(0) == ':') {
-					int end = element.indexOf('|');
-					if (end > 0) {
-						try {
-							long mem = Utils.parseNumber(element.substring(1, end).trim());
-							if (mem > getProcessRender().getMemoryUsed()) {
-								getProcessRender().setMemoryUsed(mem);
-							}
-						}
-						catch (IllegalStateException e) {
-							// failed to parseNumber
-						}
-					}
-				}
+		for (Matcher p = memoryPeakPatter.matcher(line); p.find();) {
+			Matcher m = memoryPeakValuePatter.matcher(p.group());
+			m.find();
+			long mem = Utils.parseNumber(m.group());
+			if (mem > getProcessRender().getMemoryUsed()) {
+				getProcessRender().setMemoryUsed(mem / 1000);
 			}
 		}
 	}

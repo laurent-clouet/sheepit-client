@@ -51,7 +51,8 @@ public class SettingsLoader {
 	private String autoSignIn;
 	private String ui;
 	private String tileSize;
-	private int    priority;
+	private int priority;
+	private String blockTime;
 	
 	public SettingsLoader() {
 		path = getDefaultFilePath();
@@ -61,7 +62,7 @@ public class SettingsLoader {
 		path = path_;
 	}
 	
-	public SettingsLoader(String login_, String password_, String proxy_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, int maxRam_, String cacheDir_, boolean autoSignIn_, String ui_, String tileSize_, int priority_) {
+	public SettingsLoader(String login_, String password_, String proxy_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, int maxRam_, String cacheDir_, boolean autoSignIn_, String ui_, String tileSize_, int priority_, String blockTime_) {
 		path = getDefaultFilePath();
 		login = login_;
 		password = password_;
@@ -71,6 +72,7 @@ public class SettingsLoader {
 		ui = ui_;
 		tileSize = tileSize_;
 		priority = priority_;
+		blockTime = blockTime_;
 		if (cores_ > 0) {
 			cores = String.valueOf(cores_);
 		}
@@ -149,6 +151,10 @@ public class SettingsLoader {
 				prop.setProperty("tile-size", tileSize);
 			}
 			
+			if (blockTime != null) {
+				prop.setProperty("block-time", blockTime);
+			}
+			
 			prop.store(output, null);
 		}
 		catch (IOException io) {
@@ -193,6 +199,7 @@ public class SettingsLoader {
 		this.tileSize = null;
 		this.priority = 19; // must be the same default as Configuration
 		this.ram = null;
+		this.blockTime = null;
 		
 		if (new File(path).exists() == false) {
 			return;
@@ -250,6 +257,9 @@ public class SettingsLoader {
 			
 			if (prop.containsKey("priority")) {
 				this.priority = Integer.parseInt(prop.getProperty("priority"));
+			}
+			if (prop.containsKey("block-time")) {
+				this.blockTime = prop.getProperty("block-time");
 			}
 		}
 		catch (IOException io) {
@@ -327,11 +337,15 @@ public class SettingsLoader {
 			config.setTileSize(Integer.valueOf(tileSize));
 		}
 		
+		if (config.getBlockTime() == 0 && blockTime != null) {
+			config.setBlockTime(Integer.valueOf(blockTime));
+		}
+		
 		config.setAutoSignIn(Boolean.valueOf(autoSignIn));
 	}
 	
 	@Override
 	public String toString() {
-		return "SettingsLoader [path=" + path + ", login=" + login + ", password=" + password + ", computeMethod=" + computeMethod + ", gpu=" + gpu + ", cacheDir=" + cacheDir + "priority="+priority+"]";
+		return "SettingsLoader [path=" + path + ", login=" + login + ", password=" + password + ", computeMethod=" + computeMethod + ", gpu=" + gpu + ", cacheDir=" + cacheDir + ", priority=" + priority + ", blockTime=" + blockTime + "]";
 	}
 }

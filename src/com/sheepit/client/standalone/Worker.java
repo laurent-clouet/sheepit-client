@@ -58,6 +58,12 @@ public class Worker {
 	@Option(name = "-max-uploading-job", usage = "", metaVar = "1", required = false)
 	private int max_upload = -1;
 	
+	@Option(name = "-block_time", usage = "max rendertime in minutes for projects. Projects with larger rendertime will be blocked automated", metaVar = "0", required = false)
+	private int block_time = 0;
+	
+	@Option(name = "-block_list", usage = "File where to store / load the list of blocked projects", metaVar = "blocklist.dat", required = false)
+	private String block_list = "blocklist.dat";
+	
 	@Option(name = "-gpu", usage = "CUDA name of the GPU used for the render, for example CUDA_0", metaVar = "CUDA_0", required = false)
 	private String gpu_device = null;
 	
@@ -97,7 +103,7 @@ public class Worker {
 	@Option(name = "--no-systray", usage = "Don't use systray", required = false)
 	private boolean no_systray = false;
 	
-	@Option(name = "-priority", usage = "Set render process priority (19 lowest to -19 highest)", required = false)
+	@Option(name = "-priority", usage = "Set render process priority (19 lowest to -19 highest [need root rights])", required = false)
 	private int priority = 19;
 	
 	public static void main(String[] args) {
@@ -122,6 +128,10 @@ public class Worker {
 		Configuration config = new Configuration(null, login, password);
 		config.setPrintLog(print_log);
 		config.setUsePriority(priority);
+		
+		config.setBlockTime(block_time);
+		config.setBlockList(block_list);
+		
 		
 		if (cache_dir != null) {
 			File a_dir = new File(cache_dir);

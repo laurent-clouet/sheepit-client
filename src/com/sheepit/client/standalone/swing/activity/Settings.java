@@ -79,6 +79,7 @@ public class Settings implements Activity {
 	private boolean haveAutoStarted;
 	
 	private JTextField tileSizeValue;
+	private JTextField blockTimeValue;
 	private JLabel tileSizeLabel;
 	private JCheckBox customTileSize;
 	
@@ -281,7 +282,7 @@ public class Settings implements Activity {
 		priority.setPaintTicks(true);
 		priority.setPaintLabels(true);
 		priority.setValue(config.getPriority());
-		JLabel priorityLabel = new JLabel(high_priority_support ? "Priority (High <-> Low):" : "Priority (Normal <-> Low):" );
+		JLabel priorityLabel = new JLabel(high_priority_support ? "Priority (High <-> Low):" : "Priority (Normal <-> Low):");
 		
 		compute_devices_constraints.weightx = 1.0 / gpus.size();
 		compute_devices_constraints.gridx = 0;
@@ -303,7 +304,7 @@ public class Settings implements Activity {
 		parent.getContentPane().add(compute_devices_panel, constraints);
 		
 		// other
-		JPanel advanced_panel = new JPanel(new GridLayout(3, 2));
+		JPanel advanced_panel = new JPanel(new GridLayout(5, 2));
 		advanced_panel.setBorder(BorderFactory.createTitledBorder("Advanced options"));
 		
 		JLabel proxyLabel = new JLabel("Proxy:");
@@ -339,6 +340,15 @@ public class Settings implements Activity {
 		
 		advanced_panel.add(tileSizeLabel);
 		advanced_panel.add(tileSizeValue);
+		
+		JLabel blockTimeLabel = new JLabel("max. rendertime (min)");
+		blockTimeValue = new JTextField();
+		int config_blocktime = parent.getConfiguration().getBlockTime();
+		if (config_blocktime > 0) {
+			blockTimeValue.setText(Integer.toString(config_blocktime));
+		}
+		advanced_panel.add(blockTimeLabel);
+		advanced_panel.add(blockTimeValue);
 		
 		currentRow++;
 		constraints.gridx = 0;
@@ -564,6 +574,22 @@ public class Settings implements Activity {
 				config.setTileSize(-1); // no tile
 			}
 			
+			String timevalue = null;
+			if (blockTimeValue != null) {
+				try {
+					timevalue = blockTimeValue.getText().trim();
+					if (timevalue.equals("")) {
+						timevalue = "0";
+					}
+					config.setBlockTime(Integer.parseInt(timevalue));
+				}
+				catch (NumberFormatException e1) {
+					System.err.println("Error: wrong time value format");
+					System.err.println(e1);
+					System.exit(2);
+				}
+			}
+			
 			parent.setCredentials(login.getText(), new String(password.getPassword()));
 			
 			String cachePath = null;
@@ -572,7 +598,7 @@ public class Settings implements Activity {
 			}
 			
 			if (saveFile.isSelected()) {
-				new SettingsLoader(login.getText(), new String(password.getPassword()), proxyText, method, selected_gpu, cpu_cores, max_ram, cachePath, autoSignIn.isSelected(), GuiSwing.type, tile, priority.getValue()).saveFile();
+				new SettingsLoader(login.getText(), new String(password.getPassword()), proxyText, method, selected_gpu, cpu_cores, max_ram, cachePath, autoSignIn.isSelected(), GuiSwing.type, tile, priority.getValue(), timevalue).saveFile();
 			}
 			else {
 				try {

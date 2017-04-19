@@ -291,7 +291,12 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 		HttpURLConnection connection = null;
 		try {
 			OS os = OS.getOS();
-			String url = String.format("%s?computemethod=%s&cpu_cores=%s&ram_max=%s", this.getPage("request-job"), this.user_config.computeMethodToInt(), ((this.user_config.getNbCores() == -1) ? os.getCPU().cores() : this.user_config.getNbCores()), this.user_config.getMaxMemory());
+			int max_ram = this.user_config.getMaxMemory();
+			if (max_ram == -1){
+				max_ram = os.getMemory();
+			}
+					
+			String url = String.format("%s?computemethod=%s&cpu_cores=%s&ram_max=%s", this.getPage("request-job"), this.user_config.computeMethodToInt(), ((this.user_config.getNbCores() == -1) ? os.getCPU().cores() : this.user_config.getNbCores()), max_ram);
 			if (this.user_config.getComputeMethod() != ComputeType.CPU && this.user_config.getGPUDevice() != null) {
 				String gpu_model = "";
 				try {
@@ -560,7 +565,8 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 		// the destination_ parent directory must exist
 		try {
 			HttpURLConnection httpCon = this.HTTPRequest(url_);
-			
+			String final_destination = destination_ ;
+			destination_  = destination_ + ".download";
 			InputStream inStrm = httpCon.getInputStream();
 			if (httpCon.getResponseCode() != HttpURLConnection.HTTP_OK) {
 				this.log.error("Server::HTTPGetFile(" + url_ + ", ...) HTTP code is not " + HttpURLConnection.HTTP_OK + " it's " + httpCon.getResponseCode());
@@ -587,6 +593,10 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			long end = new Date().getTime();
 			this.log.debug(String.format("File downloaded at %.1f kB/s, written %d B", ((float) (size / 1000)) / ((float) (end - start) / 1000), written));
 			this.lastRequestTime = new Date().getTime();
+			// Rename destination_file
+			File tmp_destination_file = new File(destination_);
+			tmp_destination_file.renameTo(new File(final_destination));
+			
 			return 0;
 		}
 		catch (Exception e) {
