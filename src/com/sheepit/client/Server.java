@@ -172,7 +172,6 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				PrintWriter pw = new PrintWriter(sw);
 				e.printStackTrace(pw);
 				this.log.debug("Server::stayAlive Exception " + e + " stacktrace: " + sw.toString());
-				return;
 			}
 		}
 	}
