@@ -70,6 +70,9 @@ public class Worker {
 	@Option(name = "-memory", usage = "Maximum memory allow to be used by renderer (in MB)", required = false)
 	private int max_ram = -1;
 	
+	@Option(name = "-rendertime", usage = "Maximum time allow for each frame (in minute)", required = false)
+	private int max_rendertime = -1;
+	
 	@Option(name = "--verbose", usage = "Display log", required = false)
 	private boolean print_log = false;
 	
@@ -203,6 +206,10 @@ public class Worker {
 		
 		if (max_ram > 0) {
 			config.setMaxMemory(max_ram * 1000);
+		}
+		
+		if (max_rendertime > 0) {
+			config.setMaxRenderTime(max_rendertime * 60);
 		}
 		
 		if (method != null) {

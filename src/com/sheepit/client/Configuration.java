@@ -48,6 +48,7 @@ public class Configuration {
 	private int maxUploadingJob;
 	private int nbCores;
 	private int maxMemory; // max memory allowed for render
+	private int maxRenderTime; // max render time per frame allowed
 	private int priority;
 	private ComputeType computeMethod;
 	private GPUDevice GPUDevice;
@@ -66,6 +67,7 @@ public class Configuration {
 		this.maxUploadingJob = 1;
 		this.nbCores = -1; // ie not set
 		this.maxMemory = -1; // ie not set
+		this.maxRenderTime = -1; // ie not set
 		this.priority = 19; // default lowest
 		this.computeMethod = null;
 		this.GPUDevice = null;
@@ -135,6 +137,14 @@ public class Configuration {
 	
 	public int getMaxMemory() {
 		return this.maxMemory;
+	}
+	
+	public void setMaxRenderTime(int max) {
+		this.maxRenderTime = max;
+	}
+	
+	public int getMaxRenderTime() {
+		return this.maxRenderTime;
 	}
 	
 	public void setUsePriority(int priority) {
