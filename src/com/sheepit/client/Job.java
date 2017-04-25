@@ -36,6 +36,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.sheepit.client.Configuration.ComputeType;
 import com.sheepit.client.Error.Type;
@@ -224,6 +226,7 @@ public class Job {
 	public Error.Type render() {
 		gui.status("Rendering");
 		RenderProcess process = getProcessRender();
+		Timer timerOfMaxRenderTime = null;
 		String core_script = "";
 		if (getUseGPU() && config.getGPUDevice() != null && config.getComputeMethod() != ComputeType.CPU) {
 			core_script = "sheepit_set_compute_device(\"CUDA\", \"GPU\", \"" + config.getGPUDevice().getCudaName() + "\")\n";
@@ -306,6 +309,24 @@ public class Job {
 			getProcessRender().setProcess(os.exec(command, new_env));
 			BufferedReader input = new BufferedReader(new InputStreamReader(getProcessRender().getProcess().getInputStream()));
 			
+			if (config.getMaxRenderTime() > 0) {
+				timerOfMaxRenderTime = new Timer();
+				timerOfMaxRenderTime.schedule(new TimerTask() {
+					@Override
+					public void run() {
+						RenderProcess process = getProcessRender();
+						if (process != null) {
+							long duration = (new Date().getTime() - process.getStartTime() ) / 1000; // in seconds
+							if (config.getMaxRenderTime() != -1 &&  duration > config.getMaxRenderTime()) {
+								log.debug("Killing render because process duration");
+								OS.getOS().kill(process.getProcess());
+								setAskForRendererKill(true);
+							}
+						}
+					}
+				}, config.getMaxRenderTime() * 1000 + 2000); // +2s to be sure the delay is over
+			}
+			
 			long last_update_status = 0;
 			log.debug("renderer output");
 			try {
@@ -354,6 +375,9 @@ public class Job {
 		
 		int exit_value = process.exitValue();
 		process.finish();
+		if (timerOfMaxRenderTime != null) {
+			timerOfMaxRenderTime.cancel();
+		}
 		
 		if (script_file != null) {
 			script_file.delete();
@@ -372,6 +396,13 @@ public class Job {
 		
 		if (getAskForRendererKill()) {
 			log.debug("Job::render been asked to end render");
+			
+			long duration = (new Date().getTime() - process.getStartTime() ) / 1000; // in seconds
+			if (config.getMaxRenderTime() != -1 &&  duration > config.getMaxRenderTime()) {
+				log.debug("Render killed because process duration (" + duration + "s) is over user setting (" + config.getMaxRenderTime() + "s)");
+				return Error.Type.RENDERER_KILLED_BY_USER_OVER_TIME;
+			}
+			
 			if (files.length != 0) {
 				new File(files[0].getAbsolutePath()).delete();
 			}

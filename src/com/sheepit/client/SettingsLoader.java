@@ -47,6 +47,7 @@ public class SettingsLoader {
 	private String gpu;
 	private String cores;
 	private String ram;
+	private String renderTime;
 	private String cacheDir;
 	private String autoSignIn;
 	private String ui;
@@ -61,7 +62,7 @@ public class SettingsLoader {
 		path = path_;
 	}
 	
-	public SettingsLoader(String login_, String password_, String proxy_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, int maxRam_, String cacheDir_, boolean autoSignIn_, String ui_, String tileSize_, int priority_) {
+	public SettingsLoader(String login_, String password_, String proxy_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, int maxRam_, int maxRenderTime_, String cacheDir_, boolean autoSignIn_, String ui_, String tileSize_, int priority_) {
 		path = getDefaultFilePath();
 		login = login_;
 		password = password_;
@@ -76,6 +77,9 @@ public class SettingsLoader {
 		}
 		if (maxRam_ > 0) {
 			ram = String.valueOf(maxRam_);
+		}
+		if (maxRenderTime_ > 0) {
+			renderTime = String.valueOf(maxRenderTime_);
 		}
 		if (computeMethod_ != null) {
 			try {
@@ -123,6 +127,10 @@ public class SettingsLoader {
 			
 			if (ram != null) {
 				prop.setProperty("ram", ram);
+			}
+			
+			if (renderTime != null) {
+				prop.setProperty("rendertime", renderTime);
 			}
 			
 			if (login != null) {
@@ -193,6 +201,7 @@ public class SettingsLoader {
 		this.tileSize = null;
 		this.priority = 19; // must be the same default as Configuration
 		this.ram = null;
+		this.renderTime = null;
 		
 		if (new File(path).exists() == false) {
 			return;
@@ -222,6 +231,10 @@ public class SettingsLoader {
 			
 			if (prop.containsKey("ram")) {
 				this.ram = prop.getProperty("ram");
+			}
+			
+			if (prop.containsKey("rendertime")) {
+				this.renderTime = prop.getProperty("rendertime");
 			}
 			
 			if (prop.containsKey("login")) {
@@ -313,6 +326,10 @@ public class SettingsLoader {
 		
 		if (config.getMaxMemory() == -1 && ram != null) {
 			config.setMaxMemory(Integer.valueOf(ram));
+		}
+		
+		if (config.getMaxRenderTime() == -1 && renderTime != null) {
+			config.setMaxRenderTime(Integer.valueOf(renderTime));
 		}
 		
 		if (config.getUserSpecifiedACacheDir() == false && cacheDir != null && new File(cacheDir).exists()) {
