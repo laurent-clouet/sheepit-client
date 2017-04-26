@@ -317,7 +317,7 @@ public class Job {
 						RenderProcess process = getProcessRender();
 						if (process != null) {
 							long duration = (new Date().getTime() - process.getStartTime() ) / 1000; // in seconds
-							if (config.getMaxRenderTime() != -1 &&  duration > config.getMaxRenderTime()) {
+							if (config.getMaxRenderTime() > 0 &&  duration > config.getMaxRenderTime()) {
 								log.debug("Killing render because process duration");
 								OS.getOS().kill(process.getProcess());
 								setAskForRendererKill(true);
