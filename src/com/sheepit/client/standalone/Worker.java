@@ -145,17 +145,17 @@ public class Worker {
 		}
 		
 		if (gpu_device != null) {
-			if (gpu_device.startsWith(Nvidia.FAMILY) == false && gpu_device.startsWith(OpenCL.FAMILY) == false) {
-				System.err.println("CUDA_DEVICE should look like '" + Nvidia.FAMILY + "_X' or '" + OpenCL.FAMILY + "_X' where X is a number");
+			if (gpu_device.startsWith(Nvidia.TYPE) == false && gpu_device.startsWith(OpenCL.TYPE) == false) {
+				System.err.println("CUDA_DEVICE should look like '" + Nvidia.TYPE + "_X' or '" + OpenCL.TYPE + "_X' where X is a number");
 				return;
 			}
 			String family = "";
 			try {
-				if (gpu_device.startsWith(Nvidia.FAMILY)) {
-					family = Nvidia.FAMILY;
+				if (gpu_device.startsWith(Nvidia.TYPE)) {
+					family = Nvidia.TYPE;
 				}
-				else if (gpu_device.startsWith(OpenCL.FAMILY)) {
-					family = OpenCL.FAMILY;
+				else if (gpu_device.startsWith(OpenCL.TYPE)) {
+					family = OpenCL.TYPE;
 				}
 				Integer.parseInt(gpu_device.substring(family.length() + 1)); // for the _
 			}

@@ -32,7 +32,7 @@ import com.sun.jna.Native;
 import com.sun.jna.ptr.IntByReference;
 
 public class OpenCL implements GPULister {
-	public static String FAMILY = "OPENCL";
+	public static String TYPE = "OPENCL";
 	
 	public static List<GPUDevice> getGpus() {
 		OpenCLLib lib = null;
@@ -105,7 +105,7 @@ public class OpenCL implements GPULister {
 					String name = getInfodeviceString(lib, devices[j], OpenCLLib.CL_DEVICE_NAME);
 					long vram = getInfodeviceLong(lib, devices[j], OpenCLLib.CL_DEVICE_GLOBAL_MEM_SIZE);
 					if (name != null && vram > 0) {
-						available_devices.add(new GPUDevice(FAMILY, name, vram, FAMILY + "_" + id));
+						available_devices.add(new GPUDevice(TYPE, name, vram, TYPE + "_" + id));
 					}
 				}
 				id++;

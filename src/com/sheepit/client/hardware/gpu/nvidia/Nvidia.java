@@ -10,7 +10,7 @@ import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.LongByReference;
 
 public class Nvidia {
-	public static String FAMILY = "CUDA";
+	public static String TYPE = "CUDA";
 	
 	public static List<GPUDevice> getGpus() {
 		OS os = OS.getOS();
@@ -86,7 +86,7 @@ public class Nvidia {
 				return null;
 			}
 			
-			devices.add(new GPUDevice(FAMILY, new String(name).trim(), ram.getValue(), FAMILY + "_" + Integer.toString(num)));
+			devices.add(new GPUDevice(TYPE, new String(name).trim(), ram.getValue(), TYPE + "_" + Integer.toString(num)));
 		}
 		return devices;
 	}
