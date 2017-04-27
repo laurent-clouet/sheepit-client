@@ -160,7 +160,7 @@ public class Worker {
 				Integer.parseInt(gpu_device.substring(family.length() + 1)); // for the _
 			}
 			catch (NumberFormatException en) {
-				System.err.println("CUDA_DEVICE should look like '" +family + "_X' where X is a number");
+				System.err.println("Gpu device code should look like '" +family + "_X' where X is a number");
 				return;
 			}
 			GPUDevice gpu = GPU.getGPUDevice(gpu_device);
