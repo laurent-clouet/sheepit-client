@@ -40,6 +40,8 @@ import com.sheepit.client.SettingsLoader;
 import com.sheepit.client.ShutdownHook;
 import com.sheepit.client.hardware.gpu.GPU;
 import com.sheepit.client.hardware.gpu.GPUDevice;
+import com.sheepit.client.hardware.gpu.nvidia.Nvidia;
+import com.sheepit.client.hardware.gpu.opencl.OpenCL;
 import com.sheepit.client.network.Proxy;
 
 public class Worker {
@@ -143,16 +145,22 @@ public class Worker {
 		}
 		
 		if (gpu_device != null) {
-			String cuda_str = "CUDA_";
-			if (gpu_device.startsWith(cuda_str) == false) {
-				System.err.println("CUDA_DEVICE should look like 'CUDA_X' where X is a number");
+			if (gpu_device.startsWith(Nvidia.FAMILY) == false && gpu_device.startsWith(OpenCL.FAMILY) == false) {
+				System.err.println("CUDA_DEVICE should look like '" + Nvidia.FAMILY + "_X' or '" + OpenCL.FAMILY + "_X' where X is a number");
 				return;
 			}
+			String family = "";
 			try {
-				Integer.parseInt(gpu_device.substring(cuda_str.length()));
+				if (gpu_device.startsWith(Nvidia.FAMILY)) {
+					family = Nvidia.FAMILY;
+				}
+				else if (gpu_device.startsWith(OpenCL.FAMILY)) {
+					family = OpenCL.FAMILY;
+				}
+				Integer.parseInt(gpu_device.substring(family.length() + 1)); // for the _
 			}
 			catch (NumberFormatException en) {
-				System.err.println("CUDA_DEVICE should look like 'CUDA_X' where X is a number");
+				System.err.println("CUDA_DEVICE should look like '" +family + "_X' where X is a number");
 				return;
 			}
 			GPUDevice gpu = GPU.getGPUDevice(gpu_device);
