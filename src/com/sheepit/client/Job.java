@@ -398,7 +398,7 @@ public class Job {
 			log.debug("Job::render been asked to end render");
 			
 			long duration = (new Date().getTime() - process.getStartTime() ) / 1000; // in seconds
-			if (config.getMaxRenderTime() != -1 &&  duration > config.getMaxRenderTime()) {
+			if (config.getMaxRenderTime() > 0 && duration > config.getMaxRenderTime()) {
 				log.debug("Render killed because process duration (" + duration + "s) is over user setting (" + config.getMaxRenderTime() + "s)");
 				return Error.Type.RENDERER_KILLED_BY_USER_OVER_TIME;
 			}
