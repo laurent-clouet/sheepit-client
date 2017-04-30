@@ -119,7 +119,7 @@ public class GuiSwing extends JFrame implements Gui {
 		}
 		
 		setTitle("SheepIt Render Farm");
-		setSize(520, 640);
+		setSize(520, 660);
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
