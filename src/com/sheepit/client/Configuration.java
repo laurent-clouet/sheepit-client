@@ -195,6 +195,12 @@ public class Configuration {
 				this.workingDirectory.delete(); // hoho
 				this.workingDirectory.mkdir();
 				this.workingDirectory.deleteOnExit();
+				
+				// since there is no working directory and the client will be working in the system temp directory, 
+				// we can also set up a 'permanent' directory for immutable files (like renderer binary)
+				
+				this.storageDirectory = new File(this.workingDirectory.getParent() + File.separator + "sheepit_binary_cache");
+				this.storageDirectory.mkdir();
 			}
 			catch (IOException e) {
 				e.printStackTrace();
