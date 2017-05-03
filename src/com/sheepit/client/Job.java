@@ -42,6 +42,7 @@ import java.util.TimerTask;
 import com.sheepit.client.Configuration.ComputeType;
 import com.sheepit.client.Error.Type;
 import com.sheepit.client.hardware.gpu.GPUDevice;
+import com.sheepit.client.hardware.gpu.opencl.OpenCL;
 import com.sheepit.client.os.OS;
 
 public class Job {
@@ -252,7 +253,7 @@ public class Job {
 		new_env.put("BLENDER_USER_CONFIG", config.workingDirectory.getAbsolutePath().replace("\\", "\\\\"));
 		new_env.put("CORES", Integer.toString(config.getNbCores()));
 		new_env.put("PRIORITY", Integer.toString(config.getPriority()));
-		if ("OPENCL".equals(config.getGPUDevice().getType())) {
+		if (getUseGPU() && config.getGPUDevice() != null && config.getComputeMethod() != ComputeType.CPU && OpenCL.TYPE.equals(config.getGPUDevice().getType())) {
 			new_env.put("CYCLES_OPENCL_SPLIT_KERNEL_TEST", "1");
 			this.updateRenderingStatusMethod = UPDATE_METHOD_BY_TILE; // don't display remaining time
 		}
