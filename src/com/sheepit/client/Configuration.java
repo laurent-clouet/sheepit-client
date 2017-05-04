@@ -209,6 +209,7 @@ public class Configuration {
 		else {
 			this.userSpecifiedACacheDir = true;
 			this.workingDirectory = cache_dir_;
+			this.storageDirectory = cache_dir_;
 		}
 		
 	}
