@@ -62,7 +62,7 @@ public class GuiSwing extends JFrame implements Gui {
 	private Settings activitySettings;
 	private TrayIcon trayIcon;
 	private boolean useSysTray;
-	
+
 	private int framesRendered;
 	
 	private boolean waitingForAuthentication;
@@ -211,7 +211,13 @@ public class GuiSwing extends JFrame implements Gui {
 	public void setClient(Client cli) {
 		client = cli;
 	}
-	
+
+	@Override
+	public void setComputeMethod(String computeMethod)
+	{
+		this.activityWorking.setComputeMethod(computeMethod);
+	}
+
 	public Configuration getConfiguration() {
 		return client.getConfiguration();
 	}

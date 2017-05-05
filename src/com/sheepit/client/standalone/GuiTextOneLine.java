@@ -145,7 +145,13 @@ public class GuiTextOneLine implements Gui {
 	public void setClient(Client cli) {
 		client = cli;
 	}
-	
+
+	@Override
+	public void setComputeMethod(String computeMethod)
+	{
+		System.out.println("Compute method: " + computeMethod);
+	}
+
 	@Override
 	public Client getClient() {
 		return client;
