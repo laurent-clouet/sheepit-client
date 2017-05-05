@@ -57,6 +57,7 @@ public class Job {
 	private String rendererCommand;
 	private String script;
 	private boolean useGPU;
+	private boolean usingGPU;  // used for the UI to tell what is actually being used to render the job
 	private String name;
 	private String password;
 	private String extras;
@@ -214,15 +215,20 @@ public class Job {
 	public String getSceneArchivePath() {
 		return config.workingDirectory.getAbsolutePath() + File.separator + sceneMD5 + ".zip";
 	}
-	
+
+	public boolean getUsingGPU()
+	{
+		return usingGPU;
+	}
+
 	public String getSceneArchivePassword() {
 		return password;
 	}
-	
+
 	public boolean simultaneousUploadIsAllowed() {
 		return synchronousUpload;
 	}
-	
+
 	public Error.Type render() {
 		gui.status("Rendering");
 		RenderProcess process = getProcessRender();
@@ -230,9 +236,11 @@ public class Job {
 		String core_script = "";
 		if (getUseGPU() && config.getGPUDevice() != null && config.getComputeMethod() != ComputeType.CPU) {
 			core_script = "sheepit_set_compute_device(\"CUDA\", \"GPU\", \"" + config.getGPUDevice().getCudaName() + "\")\n";
+			usingGPU = true;
 		}
 		else {
 			core_script = "sheepit_set_compute_device(\"NONE\", \"CPU\", \"CPU\")\n";
+			usingGPU = false;
 		}
 		core_script += String.format("bpy.context.scene.render.tile_x = %1$d\nbpy.context.scene.render.tile_y = %1$d\n", getTileSize());
 		File script_file = null;
