@@ -35,11 +35,7 @@ import java.net.URL;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import com.sheepit.client.Client;
@@ -62,7 +58,7 @@ public class GuiSwing extends JFrame implements Gui {
 	private Settings activitySettings;
 	private TrayIcon trayIcon;
 	private boolean useSysTray;
-	
+
 	private int framesRendered;
 	
 	private boolean waitingForAuthentication;
@@ -98,10 +94,14 @@ public class GuiSwing extends JFrame implements Gui {
 			try {
 				sysTray = SystemTray.getSystemTray();
 				if (SystemTray.isSupported()) {
-					addWindowStateListener(new WindowStateListener() {
-						public void windowStateChanged(WindowEvent e) {
-							if (e.getNewState() == ICONIFIED) {
-								hideToTray();
+					addWindowStateListener(new WindowStateListener()
+					{
+						@Override
+						public void windowStateChanged(WindowEvent e)
+						{
+							if (e.getNewState() == ICONIFIED)
+							{
+								GuiSwing.this.hideToTray();
 							}
 						}
 					});
@@ -121,7 +121,7 @@ public class GuiSwing extends JFrame implements Gui {
 		setTitle("SheepIt Render Farm");
 		setSize(520, 660);
 		
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		
 		panel = new JPanel();
 		panel.setLayout(new GridBagLayout());
@@ -211,7 +211,13 @@ public class GuiSwing extends JFrame implements Gui {
 	public void setClient(Client cli) {
 		client = cli;
 	}
-	
+
+	@Override
+	public void setComputeMethod(String computeMethod)
+	{
+		this.activityWorking.setComputeMethod(computeMethod);
+	}
+
 	public Configuration getConfiguration() {
 		return client.getConfiguration();
 	}
@@ -225,7 +231,7 @@ public class GuiSwing extends JFrame implements Gui {
 			notifyAll();
 		}
 		
-		if (threadClient == null || threadClient.isAlive() == false) {
+		if (threadClient == null || !threadClient.isAlive()) {
 			threadClient = new ThreadClient();
 			threadClient.start();
 		}
@@ -249,7 +255,7 @@ public class GuiSwing extends JFrame implements Gui {
 	}
 	
 	public void hideToTray() {
-		if (sysTray == null || SystemTray.isSupported() == false) {
+		if (sysTray == null || !SystemTray.isSupported()) {
 			System.out.println("GuiSwing::hideToTray SystemTray not supported!");
 			return;
 		}
@@ -271,7 +277,7 @@ public class GuiSwing extends JFrame implements Gui {
 		if (sysTray != null && SystemTray.isSupported()) {
 			sysTray.remove(trayIcon);
 			setVisible(true);
-			setExtendedState(getExtendedState() & ~JFrame.ICONIFIED & JFrame.NORMAL); // for toFront and requestFocus to actually work
+			setExtendedState(0); // for toFront and requestFocus to actually work
 			toFront();
 			requestFocus();
 		}
@@ -285,29 +291,35 @@ public class GuiSwing extends JFrame implements Gui {
 		final TrayIcon icon = new TrayIcon(img);
 		
 		MenuItem exit = new MenuItem("Exit");
-		exit.addActionListener(new ActionListener() {
+		exit.addActionListener(new ActionListener()
+		{
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e)
+			{
 				System.exit(0);
 			}
 		});
 		trayMenu.add(exit);
 		
 		MenuItem open = new MenuItem("Open...");
-		open.addActionListener(new ActionListener() {
+		open.addActionListener(new ActionListener()
+		{
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				restoreFromTray();
+			public void actionPerformed(ActionEvent e)
+			{
+				GuiSwing.this.restoreFromTray();
 			}
 		});
 		trayMenu.add(open);
 		
 		MenuItem settings = new MenuItem("Settings...");
-		settings.addActionListener(new ActionListener() {
+		settings.addActionListener(new ActionListener()
+		{
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				restoreFromTray();
-				showActivity(ActivityType.SETTINGS);
+			public void actionPerformed(ActionEvent e)
+			{
+				GuiSwing.this.restoreFromTray();
+				GuiSwing.this.showActivity(ActivityType.SETTINGS);
 			}
 		});
 		trayMenu.add(settings);
@@ -316,10 +328,12 @@ public class GuiSwing extends JFrame implements Gui {
 		icon.setImageAutoSize(true);
 		icon.setToolTip("SheepIt! Client");
 		
-		icon.addActionListener(new ActionListener() {
+		icon.addActionListener(new ActionListener()
+		{
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				restoreFromTray();
+			public void actionPerformed(ActionEvent e)
+			{
+				GuiSwing.this.restoreFromTray();
 			}
 		});
 		

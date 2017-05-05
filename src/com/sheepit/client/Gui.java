@@ -39,6 +39,8 @@ public interface Gui {
 	public void AddFrameRendered();
 	
 	public void setClient(Client cli);
+
+	public void setComputeMethod(String computeMethod);
 	
 	public Client getClient();
 }

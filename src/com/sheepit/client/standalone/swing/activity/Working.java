@@ -54,23 +54,24 @@ import com.sheepit.client.standalone.GuiSwing;
 import com.sheepit.client.standalone.GuiSwing.ActivityType;
 
 public class Working implements Activity {
-	GuiSwing parent;
+	private GuiSwing parent;
 	
-	JLabel statusContent;
-	JLabel renderedFrameContent;
-	JLabel remainingFrameContent;
-	JLabel lastRenderTime;
-	JLabel lastRender;
-	JLabel creditEarned;
-	JButton pauseButton;
-	JButton exitAfterFrame;
-	JLabel current_project_name_value;
-	JLabel current_project_duration_value;
-	JLabel currrent_project_progression_value;
-	JLabel user_info_points_total_value;
-	JLabel waiting_projects_value;
-	JLabel connected_machines_value;
-	JLabel user_info_total_rendertime_this_session_value;
+	private JLabel statusContent;
+	private JLabel renderedFrameContent;
+	private JLabel remainingFrameContent;
+	private JLabel lastRenderTime;
+	private JLabel lastRender;
+	private JLabel creditEarned;
+	private JButton pauseButton;
+	private JButton exitAfterFrame;
+	private JLabel current_project_name_value;
+	private JLabel current_project_duration_value;
+	private JLabel currrent_project_progression_value;
+	private JLabel user_info_points_total_value;
+	private JLabel waiting_projects_value;
+	private JLabel connected_machines_value;
+	private JLabel user_info_total_rendertime_this_session_value;
+	private JLabel computeMethod;
 	
 	public Working(GuiSwing parent_) {
 		parent = parent_;
@@ -88,6 +89,7 @@ public class Working implements Activity {
 		user_info_total_rendertime_this_session_value = new JLabel("");
 		lastRenderTime = new JLabel("");
 		lastRender = new JLabel("");
+		computeMethod = new JLabel("");
 	}
 	
 	@Override
@@ -100,7 +102,8 @@ public class Working implements Activity {
 		JLabel current_project_name = new JLabel("Name: ", JLabel.TRAILING);
 		JLabel current_project_duration = new JLabel("Rendering for: ", JLabel.TRAILING);
 		JLabel current_project_progression = new JLabel("Remaining: ", JLabel.TRAILING);
-		
+		JLabel computeMethodLabel = new JLabel("Compute method: ", JLabel.TRAILING);
+
 		current_project_panel.add(current_project_status);
 		current_project_panel.add(statusContent);
 		
@@ -112,6 +115,9 @@ public class Working implements Activity {
 		
 		current_project_panel.add(current_project_progression);
 		current_project_panel.add(currrent_project_progression_value);
+
+		current_project_panel.add(computeMethodLabel);
+		current_project_panel.add(computeMethod);
 		
 		// user info
 		JPanel session_info_panel = new JPanel(new SpringLayout());
@@ -120,7 +126,7 @@ public class Working implements Activity {
 		JLabel user_info_credits_this_session = new JLabel("Points earned: ", JLabel.TRAILING);
 		JLabel user_info_total_rendertime_this_session = new JLabel("Duration: ", JLabel.TRAILING);
 		JLabel user_info_rendered_frame_this_session = new JLabel("Rendered frames: ", JLabel.TRAILING);
-		
+
 		session_info_panel.add(user_info_credits_this_session);
 		session_info_panel.add(creditEarned);
 		
@@ -129,7 +135,7 @@ public class Working implements Activity {
 		
 		session_info_panel.add(user_info_total_rendertime_this_session);
 		session_info_panel.add(user_info_total_rendertime_this_session_value);
-		
+
 		// global stats
 		JPanel global_stats_panel = new JPanel(new SpringLayout());
 		global_stats_panel.setBorder(BorderFactory.createTitledBorder("Global stats"));
@@ -205,7 +211,7 @@ public class Working implements Activity {
 		Spring widthLeftColumn = getBestWidth(current_project_panel, 4, 2);
 		widthLeftColumn = Spring.max(widthLeftColumn, getBestWidth(global_stats_panel, 4, 2));
 		widthLeftColumn = Spring.max(widthLeftColumn, getBestWidth(session_info_panel, 3, 2));
-		alignPanel(current_project_panel, 4, 2, widthLeftColumn);
+		alignPanel(current_project_panel, 5, 2, widthLeftColumn);
 		alignPanel(global_stats_panel, 4, 2, widthLeftColumn);
 		alignPanel(session_info_panel, 3, 2, widthLeftColumn);
 	}
@@ -225,7 +231,12 @@ public class Working implements Activity {
 	public void setRenderingTime(String time_) {
 		current_project_duration_value.setText("<html>" + time_ + "</html>");
 	}
-	
+
+	public void setComputeMethod(String computeMethod)
+	{
+		this.computeMethod.setText(computeMethod);
+	}
+
 	public void displayStats(Stats stats) {
 		DecimalFormat df = new DecimalFormat("##,##,##,##,##,##,##0");
 		remainingFrameContent.setText(df.format(stats.getRemainingFrame()));
