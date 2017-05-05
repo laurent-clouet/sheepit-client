@@ -557,6 +557,7 @@ public class Client {
 		int ret;
 		
 		gui.setRenderingProjectName(ajob.getName());
+		gui.setComputeMethod(ajob.getUsingGPU() ? "GPU" : "CPU");
 		
 		try {
 			ret = this.downloadExecutable(ajob);
@@ -604,6 +605,7 @@ public class Client {
 		gui.setRenderingProjectName("");
 		gui.setRemainingTime("");
 		gui.setRenderingTime("");
+		gui.setComputeMethod("");
 		if (err != Error.Type.OK) {
 			this.log.error("Client::work problem with runRenderer (ret " + err + ")");
 			return err;
