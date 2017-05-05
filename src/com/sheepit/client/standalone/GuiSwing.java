@@ -27,6 +27,10 @@ import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.Toolkit;
 import java.awt.TrayIcon;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowStateListener;
 import java.net.URL;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -90,12 +94,17 @@ public class GuiSwing extends JFrame implements Gui {
 			try {
 				sysTray = SystemTray.getSystemTray();
 				if (SystemTray.isSupported()) {
-					addWindowStateListener(e ->
+					addWindowStateListener(new WindowStateListener()
 					{
-                        if (e.getNewState() == ICONIFIED) {
-                            hideToTray();
-                        }
-                    });
+						@Override
+						public void windowStateChanged(WindowEvent e)
+						{
+							if (e.getNewState() == ICONIFIED)
+							{
+								GuiSwing.this.hideToTray();
+							}
+						}
+					});
 				}
 			}
 			catch (UnsupportedOperationException e) {
@@ -282,26 +291,51 @@ public class GuiSwing extends JFrame implements Gui {
 		final TrayIcon icon = new TrayIcon(img);
 		
 		MenuItem exit = new MenuItem("Exit");
-		exit.addActionListener(e -> System.exit(0));
+		exit.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				System.exit(0);
+			}
+		});
 		trayMenu.add(exit);
 		
 		MenuItem open = new MenuItem("Open...");
-		open.addActionListener(e -> restoreFromTray());
+		open.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				GuiSwing.this.restoreFromTray();
+			}
+		});
 		trayMenu.add(open);
 		
 		MenuItem settings = new MenuItem("Settings...");
-		settings.addActionListener(e ->
+		settings.addActionListener(new ActionListener()
 		{
-            restoreFromTray();
-            showActivity(ActivityType.SETTINGS);
-        });
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				GuiSwing.this.restoreFromTray();
+				GuiSwing.this.showActivity(ActivityType.SETTINGS);
+			}
+		});
 		trayMenu.add(settings);
 		
 		icon.setPopupMenu(trayMenu);
 		icon.setImageAutoSize(true);
 		icon.setToolTip("SheepIt! Client");
 		
-		icon.addActionListener(e -> restoreFromTray());
+		icon.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				GuiSwing.this.restoreFromTray();
+			}
+		});
 		
 		return icon;
 		
