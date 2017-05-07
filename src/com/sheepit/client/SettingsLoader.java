@@ -43,6 +43,7 @@ public class SettingsLoader {
 	private String login;
 	private String password;
 	private String proxy;
+	private String hostname;
 	private String computeMethod;
 	private String gpu;
 	private String cores;
@@ -62,11 +63,12 @@ public class SettingsLoader {
 		path = path_;
 	}
 	
-	public SettingsLoader(String login_, String password_, String proxy_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, int maxRam_, int maxRenderTime_, String cacheDir_, boolean autoSignIn_, String ui_, String tileSize_, int priority_) {
+	public SettingsLoader(String login_, String password_, String proxy_, String hostname_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, int maxRam_, int maxRenderTime_, String cacheDir_, boolean autoSignIn_, String ui_, String tileSize_, int priority_) {
 		path = getDefaultFilePath();
 		login = login_;
 		password = password_;
 		proxy = proxy_;
+		hostname = hostname_;
 		cacheDir = cacheDir_;
 		autoSignIn = String.valueOf(autoSignIn_);
 		ui = ui_;
@@ -145,6 +147,10 @@ public class SettingsLoader {
 				prop.setProperty("proxy", proxy);
 			}
 			
+			if (hostname != null) {
+				prop.setProperty("hostname", hostname);
+			}
+			
 			if (autoSignIn != null) {
 				prop.setProperty("auto-signin", autoSignIn);
 			}
@@ -193,6 +199,7 @@ public class SettingsLoader {
 		this.login = null;
 		this.password = null;
 		this.proxy = null;
+		this.hostname = null;
 		this.computeMethod = null;
 		this.gpu = null;
 		this.cacheDir = null;
@@ -249,6 +256,10 @@ public class SettingsLoader {
 				this.proxy = prop.getProperty("proxy");
 			}
 			
+			if (prop.containsKey("hostname")) {
+				this.hostname = prop.getProperty("hostname");
+			}
+			
 			if (prop.containsKey("auto-signin")) {
 				this.autoSignIn = prop.getProperty("auto-signin");
 			}
@@ -300,6 +311,10 @@ public class SettingsLoader {
 		
 		if ((config.getProxy() == null || config.getProxy().isEmpty()) && proxy != null) {
 			config.setProxy(proxy);
+		}
+		
+		if ((config.getHostname() == null || config.getHostname().isEmpty() || config.getHostname().equals(config.getDefaultHostname())) && hostname != null) {
+			config.setHostname(hostname);
 		}
 		
 		if (config.getPriority() == 19) { // 19 is default value

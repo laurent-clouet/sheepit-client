@@ -34,12 +34,10 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
-import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.NoRouteToHostException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
@@ -184,14 +182,6 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 		OS os = OS.getOS();
 		HttpURLConnection connection = null;
 		try {
-			String hostname;
-			try {
-				hostname = InetAddress.getLocalHost().getHostName();
-			}
-			catch (UnknownHostException e) {
-				this.log.error("Server::getConfiguration failed to get hostname (exception: " + e + ")");
-				hostname = "";
-			}
 			String url_contents = String.format("%s%s?login=%s&password=%s&cpu_family=%s&cpu_model=%s&cpu_model_name=%s&cpu_cores=%s&os=%s&ram=%s&bits=%s&version=%s&hostname=%s&extras=%s", 
 				this.base_url,
 				"/server/config.php",
@@ -205,7 +195,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				os.getMemory(),
 				URLEncoder.encode(os.getCPU().arch(), "UTF-8"),
 				this.user_config.getJarVersion(),
-				URLEncoder.encode(hostname, "UTF-8"),
+				URLEncoder.encode(this.user_config.getHostname(), "UTF-8"),
 				this.user_config.getExtras());
 			this.log.debug("Server::getConfiguration url " + url_contents);
 			
