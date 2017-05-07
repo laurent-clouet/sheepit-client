@@ -136,6 +136,11 @@ public class GuiText implements Gui {
 	}
 	
 	@Override
+	public void setComputeMethod(String computeMethod) {
+		System.out.println("Compute method: " + computeMethod);
+	}
+	
+	@Override
 	public Client getClient() {
 		return client;
 	}
