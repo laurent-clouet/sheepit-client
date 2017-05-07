@@ -54,23 +54,23 @@ import com.sheepit.client.standalone.GuiSwing;
 import com.sheepit.client.standalone.GuiSwing.ActivityType;
 
 public class Working implements Activity {
-	GuiSwing parent;
+	private GuiSwing parent;
 	
-	JLabel statusContent;
-	JLabel renderedFrameContent;
-	JLabel remainingFrameContent;
-	JLabel lastRenderTime;
-	JLabel lastRender;
-	JLabel creditEarned;
-	JButton pauseButton;
-	JButton exitAfterFrame;
-	JLabel current_project_name_value;
-	JLabel current_project_duration_value;
-	JLabel currrent_project_progression_value;
-	JLabel user_info_points_total_value;
-	JLabel waiting_projects_value;
-	JLabel connected_machines_value;
-	JLabel user_info_total_rendertime_this_session_value;
+	private JLabel statusContent;
+	private JLabel renderedFrameContent;
+	private JLabel remainingFrameContent;
+	private JLabel lastRenderTime;
+	private JLabel lastRender;
+	private JLabel creditEarned;
+	private JButton pauseButton;
+	private JButton exitAfterFrame;
+	private JLabel current_project_name_value;
+	private JLabel current_project_duration_value;
+	private JLabel currrent_project_progression_value;
+	private JLabel user_info_points_total_value;
+	private JLabel waiting_projects_value;
+	private JLabel connected_machines_value;
+	private JLabel user_info_total_rendertime_this_session_value;
 	
 	public Working(GuiSwing parent_) {
 		parent = parent_;
