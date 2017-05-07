@@ -230,9 +230,11 @@ public class Job {
 		String core_script = "";
 		if (getUseGPU() && config.getGPUDevice() != null && config.getComputeMethod() != ComputeType.CPU) {
 			core_script = "sheepit_set_compute_device(\"CUDA\", \"GPU\", \"" + config.getGPUDevice().getCudaName() + "\")\n";
+			gui.setComputeMethod("GPU");
 		}
 		else {
 			core_script = "sheepit_set_compute_device(\"NONE\", \"CPU\", \"CPU\")\n";
+			gui.setComputeMethod("CPU");
 		}
 		core_script += String.format("bpy.context.scene.render.tile_x = %1$d\nbpy.context.scene.render.tile_y = %1$d\n", getTileSize());
 		File script_file = null;

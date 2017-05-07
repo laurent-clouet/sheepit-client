@@ -67,6 +67,7 @@ public class Working implements Activity {
 	private JLabel current_project_name_value;
 	private JLabel current_project_duration_value;
 	private JLabel currrent_project_progression_value;
+	private JLabel current_project_compute_method_value;
 	private JLabel user_info_points_total_value;
 	private JLabel waiting_projects_value;
 	private JLabel connected_machines_value;
@@ -82,6 +83,7 @@ public class Working implements Activity {
 		current_project_name_value = new JLabel("");
 		current_project_duration_value = new JLabel("");
 		currrent_project_progression_value = new JLabel("");
+		current_project_compute_method_value = new JLabel("");
 		user_info_points_total_value = new JLabel("");
 		waiting_projects_value = new JLabel("");
 		connected_machines_value = new JLabel("");
@@ -100,6 +102,7 @@ public class Working implements Activity {
 		JLabel current_project_name = new JLabel("Name: ", JLabel.TRAILING);
 		JLabel current_project_duration = new JLabel("Rendering for: ", JLabel.TRAILING);
 		JLabel current_project_progression = new JLabel("Remaining: ", JLabel.TRAILING);
+		JLabel current_project_compute_method_label = new JLabel("Compute method: ", JLabel.TRAILING);
 		
 		current_project_panel.add(current_project_status);
 		current_project_panel.add(statusContent);
@@ -112,6 +115,9 @@ public class Working implements Activity {
 		
 		current_project_panel.add(current_project_progression);
 		current_project_panel.add(currrent_project_progression_value);
+		
+		current_project_panel.add(current_project_compute_method_label);
+		current_project_panel.add(current_project_compute_method_value);
 		
 		// user info
 		JPanel session_info_panel = new JPanel(new SpringLayout());
@@ -205,7 +211,7 @@ public class Working implements Activity {
 		Spring widthLeftColumn = getBestWidth(current_project_panel, 4, 2);
 		widthLeftColumn = Spring.max(widthLeftColumn, getBestWidth(global_stats_panel, 4, 2));
 		widthLeftColumn = Spring.max(widthLeftColumn, getBestWidth(session_info_panel, 3, 2));
-		alignPanel(current_project_panel, 4, 2, widthLeftColumn);
+		alignPanel(current_project_panel, 5, 2, widthLeftColumn);
 		alignPanel(global_stats_panel, 4, 2, widthLeftColumn);
 		alignPanel(session_info_panel, 3, 2, widthLeftColumn);
 	}
@@ -224,6 +230,10 @@ public class Working implements Activity {
 	
 	public void setRenderingTime(String time_) {
 		current_project_duration_value.setText("<html>" + time_ + "</html>");
+	}
+	
+	public void setComputeMethod(String computeMethod_) {
+		this.current_project_compute_method_value.setText(computeMethod_);
 	}
 	
 	public void displayStats(Stats stats) {
