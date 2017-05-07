@@ -75,6 +75,7 @@ public class Settings implements Activity {
 	private JSpinner renderTime;
 	private JSlider priority;
 	private JTextField proxy;
+	private JTextField hostname;
 	
 	private JCheckBox saveFile;
 	private JCheckBox autoSignIn;
@@ -307,7 +308,7 @@ public class Settings implements Activity {
 		parent.getContentPane().add(compute_devices_panel, constraints);
 		
 		// other
-		JPanel advanced_panel = new JPanel(new GridLayout(4, 2));
+		JPanel advanced_panel = new JPanel(new GridLayout(5, 2));
 		advanced_panel.setBorder(BorderFactory.createTitledBorder("Advanced options"));
 		
 		JLabel proxyLabel = new JLabel("Proxy:");
@@ -320,6 +321,12 @@ public class Settings implements Activity {
 		advanced_panel.add(proxyLabel);
 		advanced_panel.add(proxy);
 		
+		JLabel hostnameLabel = new JLabel("Computer name:");
+		hostname = new JTextField();
+		hostname.setText(parent.getConfiguration().getHostname());
+		
+		advanced_panel.add(hostnameLabel);
+		advanced_panel.add(hostname);
 		
 		JLabel renderTimeLabel = new JLabel("Max time per frame (in minute):");
 		int val = 0;
@@ -592,8 +599,13 @@ public class Settings implements Activity {
 				cachePath = config.getStorageDir().getAbsolutePath();
 			}
 			
+			String hostnameText = null;
+			if (hostname.getText() != null && hostname.getText().equals(parent.getConfiguration().getHostname()) == false) {
+				hostnameText = hostname.getText();
+			}
+			
 			if (saveFile.isSelected()) {
-				new SettingsLoader(login.getText(), new String(password.getPassword()), proxyText, method, selected_gpu, cpu_cores, max_ram, max_rendertime, cachePath, autoSignIn.isSelected(), GuiSwing.type, tile, priority.getValue()).saveFile();
+				new SettingsLoader(login.getText(), new String(password.getPassword()), proxyText, hostnameText, method, selected_gpu, cpu_cores, max_ram, max_rendertime, cachePath, autoSignIn.isSelected(), GuiSwing.type, tile, priority.getValue()).saveFile();
 			}
 			else {
 				try {
