@@ -499,6 +499,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 		connection = (HttpURLConnection) url.openConnection();
 		connection.setDoInput(true);
 		connection.setDoOutput(true);
+		connection.setInstanceFollowRedirects(true);
 		connection.setRequestMethod("GET");
 		for (String cookie : this.cookies) {
 			connection.setRequestProperty("Cookie", cookie);
@@ -634,6 +635,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			conn = (HttpURLConnection) url.openConnection();
 			conn.setDoInput(true);
 			conn.setDoOutput(true);
+			conn.setInstanceFollowRedirects(true);
 			conn.setUseCaches(false);
 			for (String cookie : this.cookies) {
 				conn.setRequestProperty("Cookie", cookie);
