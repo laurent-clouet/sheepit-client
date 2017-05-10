@@ -215,6 +215,8 @@ public class GuiSwing extends JFrame implements Gui {
 	@Override
 	public void setComputeMethod(String computeMethod) {
 		this.activityWorking.setComputeMethod(computeMethod);
+	}
+	
 	public Configuration getConfiguration() {
 		return client.getConfiguration();
 	}
