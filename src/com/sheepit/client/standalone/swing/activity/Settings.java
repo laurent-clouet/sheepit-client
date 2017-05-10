@@ -44,7 +44,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JSlider;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
+
 import com.sheepit.client.Configuration;
 import com.sheepit.client.Configuration.ComputeType;
 import com.sheepit.client.SettingsLoader;
@@ -69,8 +72,10 @@ public class Settings implements Activity {
 	private List<JCheckBoxGPU> useGPUs;
 	private JSlider cpuCores;
 	private JSlider ram;
+	private JSpinner renderTime;
 	private JSlider priority;
 	private JTextField proxy;
+	private JTextField hostname;
 	
 	private JCheckBox saveFile;
 	private JCheckBox autoSignIn;
@@ -79,7 +84,6 @@ public class Settings implements Activity {
 	private boolean haveAutoStarted;
 	
 	private JTextField tileSizeValue;
-	private JTextField blockTimeValue;
 	private JLabel tileSizeLabel;
 	private JCheckBox customTileSize;
 	
@@ -282,7 +286,7 @@ public class Settings implements Activity {
 		priority.setPaintTicks(true);
 		priority.setPaintLabels(true);
 		priority.setValue(config.getPriority());
-		JLabel priorityLabel = new JLabel(high_priority_support ? "Priority (High <-> Low):" : "Priority (Normal <-> Low):");
+		JLabel priorityLabel = new JLabel(high_priority_support ? "Priority (High <-> Low):" : "Priority (Normal <-> Low):" );
 		
 		compute_devices_constraints.weightx = 1.0 / gpus.size();
 		compute_devices_constraints.gridx = 0;
@@ -317,6 +321,23 @@ public class Settings implements Activity {
 		advanced_panel.add(proxyLabel);
 		advanced_panel.add(proxy);
 		
+		JLabel hostnameLabel = new JLabel("Computer name:");
+		hostname = new JTextField();
+		hostname.setText(parent.getConfiguration().getHostname());
+		
+		advanced_panel.add(hostnameLabel);
+		advanced_panel.add(hostname);
+		
+		JLabel renderTimeLabel = new JLabel("Max time per frame (in minute):");
+		int val = 0;
+		if (parent.getConfiguration().getMaxRenderTime() > 0) {
+			val = parent.getConfiguration().getMaxRenderTime() / 60;
+		}
+		renderTime = new JSpinner(new SpinnerNumberModel(val,0,1000,1));
+		
+		advanced_panel.add(renderTimeLabel);
+		advanced_panel.add(renderTime);
+		
 		JLabel customTileSizeLabel = new JLabel("Custom render tile size:");
 		customTileSize = new JCheckBox("", config.getTileSize() != -1);
 		advanced_panel.add(customTileSizeLabel);
@@ -340,15 +361,6 @@ public class Settings implements Activity {
 		
 		advanced_panel.add(tileSizeLabel);
 		advanced_panel.add(tileSizeValue);
-		
-		JLabel blockTimeLabel = new JLabel("max. rendertime (min)");
-		blockTimeValue = new JTextField();
-		int config_blocktime = parent.getConfiguration().getBlockTime();
-		if (config_blocktime > 0) {
-			blockTimeValue.setText(Integer.toString(config_blocktime));
-		}
-		advanced_panel.add(blockTimeLabel);
-		advanced_panel.add(blockTimeValue);
 		
 		currentRow++;
 		constraints.gridx = 0;
@@ -543,6 +555,12 @@ public class Settings implements Activity {
 				config.setMaxMemory(max_ram);
 			}
 			
+			int max_rendertime = -1;
+			if (renderTime != null) {
+				max_rendertime = (Integer)renderTime.getValue() * 60;
+				config.setMaxRenderTime(max_rendertime);
+			}
+			
 			config.setUsePriority(priority.getValue());
 			
 			String proxyText = null;
@@ -574,22 +592,6 @@ public class Settings implements Activity {
 				config.setTileSize(-1); // no tile
 			}
 			
-			String timevalue = null;
-			if (blockTimeValue != null) {
-				try {
-					timevalue = blockTimeValue.getText().trim();
-					if (timevalue.equals("")) {
-						timevalue = "0";
-					}
-					config.setBlockTime(Integer.parseInt(timevalue));
-				}
-				catch (NumberFormatException e1) {
-					System.err.println("Error: wrong time value format");
-					System.err.println(e1);
-					System.exit(2);
-				}
-			}
-			
 			parent.setCredentials(login.getText(), new String(password.getPassword()));
 			
 			String cachePath = null;
@@ -597,8 +599,13 @@ public class Settings implements Activity {
 				cachePath = config.getStorageDir().getAbsolutePath();
 			}
 			
+			String hostnameText = null;
+			if (hostname.getText() != null && hostname.getText().equals(parent.getConfiguration().getHostname()) == false) {
+				hostnameText = hostname.getText();
+			}
+			
 			if (saveFile.isSelected()) {
-				new SettingsLoader(login.getText(), new String(password.getPassword()), proxyText, method, selected_gpu, cpu_cores, max_ram, cachePath, autoSignIn.isSelected(), GuiSwing.type, tile, priority.getValue(), timevalue).saveFile();
+				new SettingsLoader(login.getText(), new String(password.getPassword()), proxyText, hostnameText, method, selected_gpu, cpu_cores, max_ram, max_rendertime, cachePath, autoSignIn.isSelected(), GuiSwing.type, tile, priority.getValue()).saveFile();
 			}
 			else {
 				try {
