@@ -492,8 +492,11 @@ public class Client {
 			this.server.HTTPSendFile(this.server.getPage("error") + args, temp_file.getAbsolutePath());
 			temp_file.delete();
 		}
-		catch (Exception e1) {
-			e1.printStackTrace();
+		catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			e.printStackTrace(pw);
+			this.log.debug("Client::sendError Exception " + e + " stacktrace: " + sw.toString());
 			// no exception should be raised to actual launcher (applet or standalone)
 		}
 		
@@ -601,6 +604,7 @@ public class Client {
 		gui.setRenderingProjectName("");
 		gui.setRemainingTime("");
 		gui.setRenderingTime("");
+		gui.setComputeMethod("");
 		if (err != Error.Type.OK) {
 			this.log.error("Client::work problem with runRenderer (ret " + err + ")");
 			return err;

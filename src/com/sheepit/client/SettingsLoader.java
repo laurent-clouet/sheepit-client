@@ -43,10 +43,12 @@ public class SettingsLoader {
 	private String login;
 	private String password;
 	private String proxy;
+	private String hostname;
 	private String computeMethod;
 	private String gpu;
 	private String cores;
 	private String ram;
+	private String renderTime;
 	private String cacheDir;
 	private String autoSignIn;
 	private String ui;
@@ -61,11 +63,12 @@ public class SettingsLoader {
 		path = path_;
 	}
 	
-	public SettingsLoader(String login_, String password_, String proxy_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, int maxRam_, String cacheDir_, boolean autoSignIn_, String ui_, String tileSize_, int priority_) {
+	public SettingsLoader(String login_, String password_, String proxy_, String hostname_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, int maxRam_, int maxRenderTime_, String cacheDir_, boolean autoSignIn_, String ui_, String tileSize_, int priority_) {
 		path = getDefaultFilePath();
 		login = login_;
 		password = password_;
 		proxy = proxy_;
+		hostname = hostname_;
 		cacheDir = cacheDir_;
 		autoSignIn = String.valueOf(autoSignIn_);
 		ui = ui_;
@@ -76,6 +79,9 @@ public class SettingsLoader {
 		}
 		if (maxRam_ > 0) {
 			ram = String.valueOf(maxRam_);
+		}
+		if (maxRenderTime_ > 0) {
+			renderTime = String.valueOf(maxRenderTime_);
 		}
 		if (computeMethod_ != null) {
 			try {
@@ -125,6 +131,10 @@ public class SettingsLoader {
 				prop.setProperty("ram", ram);
 			}
 			
+			if (renderTime != null) {
+				prop.setProperty("rendertime", renderTime);
+			}
+			
 			if (login != null) {
 				prop.setProperty("login", login);
 			}
@@ -135,6 +145,10 @@ public class SettingsLoader {
 			
 			if (proxy != null) {
 				prop.setProperty("proxy", proxy);
+			}
+			
+			if (hostname != null) {
+				prop.setProperty("hostname", hostname);
 			}
 			
 			if (autoSignIn != null) {
@@ -185,6 +199,7 @@ public class SettingsLoader {
 		this.login = null;
 		this.password = null;
 		this.proxy = null;
+		this.hostname = null;
 		this.computeMethod = null;
 		this.gpu = null;
 		this.cacheDir = null;
@@ -193,6 +208,7 @@ public class SettingsLoader {
 		this.tileSize = null;
 		this.priority = 19; // must be the same default as Configuration
 		this.ram = null;
+		this.renderTime = null;
 		
 		if (new File(path).exists() == false) {
 			return;
@@ -224,6 +240,10 @@ public class SettingsLoader {
 				this.ram = prop.getProperty("ram");
 			}
 			
+			if (prop.containsKey("rendertime")) {
+				this.renderTime = prop.getProperty("rendertime");
+			}
+			
 			if (prop.containsKey("login")) {
 				this.login = prop.getProperty("login");
 			}
@@ -234,6 +254,10 @@ public class SettingsLoader {
 			
 			if (prop.containsKey("proxy")) {
 				this.proxy = prop.getProperty("proxy");
+			}
+			
+			if (prop.containsKey("hostname")) {
+				this.hostname = prop.getProperty("hostname");
 			}
 			
 			if (prop.containsKey("auto-signin")) {
@@ -289,6 +313,10 @@ public class SettingsLoader {
 			config.setProxy(proxy);
 		}
 		
+		if ((config.getHostname() == null || config.getHostname().isEmpty() || config.getHostname().equals(config.getDefaultHostname())) && hostname != null) {
+			config.setHostname(hostname);
+		}
+		
 		if (config.getPriority() == 19) { // 19 is default value
 			config.setUsePriority(priority);
 		}
@@ -313,6 +341,10 @@ public class SettingsLoader {
 		
 		if (config.getMaxMemory() == -1 && ram != null) {
 			config.setMaxMemory(Integer.valueOf(ram));
+		}
+		
+		if (config.getMaxRenderTime() == -1 && renderTime != null) {
+			config.setMaxRenderTime(Integer.valueOf(renderTime));
 		}
 		
 		if (config.getUserSpecifiedACacheDir() == false && cacheDir != null && new File(cacheDir).exists()) {

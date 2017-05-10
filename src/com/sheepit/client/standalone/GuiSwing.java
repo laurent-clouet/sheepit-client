@@ -119,7 +119,7 @@ public class GuiSwing extends JFrame implements Gui {
 		}
 		
 		setTitle("SheepIt Render Farm");
-		setSize(520, 640);
+		setSize(520, 680);
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
@@ -212,6 +212,9 @@ public class GuiSwing extends JFrame implements Gui {
 		client = cli;
 	}
 	
+	@Override
+	public void setComputeMethod(String computeMethod) {
+		this.activityWorking.setComputeMethod(computeMethod);
 	public Configuration getConfiguration() {
 		return client.getConfiguration();
 	}

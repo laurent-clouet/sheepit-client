@@ -44,7 +44,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JSlider;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
+
 import com.sheepit.client.Configuration;
 import com.sheepit.client.Configuration.ComputeType;
 import com.sheepit.client.SettingsLoader;
@@ -69,8 +72,10 @@ public class Settings implements Activity {
 	private List<JCheckBoxGPU> useGPUs;
 	private JSlider cpuCores;
 	private JSlider ram;
+	private JSpinner renderTime;
 	private JSlider priority;
 	private JTextField proxy;
+	private JTextField hostname;
 	
 	private JCheckBox saveFile;
 	private JCheckBox autoSignIn;
@@ -303,7 +308,7 @@ public class Settings implements Activity {
 		parent.getContentPane().add(compute_devices_panel, constraints);
 		
 		// other
-		JPanel advanced_panel = new JPanel(new GridLayout(3, 2));
+		JPanel advanced_panel = new JPanel(new GridLayout(5, 2));
 		advanced_panel.setBorder(BorderFactory.createTitledBorder("Advanced options"));
 		
 		JLabel proxyLabel = new JLabel("Proxy:");
@@ -315,6 +320,23 @@ public class Settings implements Activity {
 		
 		advanced_panel.add(proxyLabel);
 		advanced_panel.add(proxy);
+		
+		JLabel hostnameLabel = new JLabel("Computer name:");
+		hostname = new JTextField();
+		hostname.setText(parent.getConfiguration().getHostname());
+		
+		advanced_panel.add(hostnameLabel);
+		advanced_panel.add(hostname);
+		
+		JLabel renderTimeLabel = new JLabel("Max time per frame (in minute):");
+		int val = 0;
+		if (parent.getConfiguration().getMaxRenderTime() > 0) {
+			val = parent.getConfiguration().getMaxRenderTime() / 60;
+		}
+		renderTime = new JSpinner(new SpinnerNumberModel(val,0,1000,1));
+		
+		advanced_panel.add(renderTimeLabel);
+		advanced_panel.add(renderTime);
 		
 		JLabel customTileSizeLabel = new JLabel("Custom render tile size:");
 		customTileSize = new JCheckBox("", config.getTileSize() != -1);
@@ -533,6 +555,12 @@ public class Settings implements Activity {
 				config.setMaxMemory(max_ram);
 			}
 			
+			int max_rendertime = -1;
+			if (renderTime != null) {
+				max_rendertime = (Integer)renderTime.getValue() * 60;
+				config.setMaxRenderTime(max_rendertime);
+			}
+			
 			config.setUsePriority(priority.getValue());
 			
 			String proxyText = null;
@@ -571,8 +599,13 @@ public class Settings implements Activity {
 				cachePath = config.getStorageDir().getAbsolutePath();
 			}
 			
+			String hostnameText = null;
+			if (hostname.getText() != null && hostname.getText().equals(parent.getConfiguration().getHostname()) == false) {
+				hostnameText = hostname.getText();
+			}
+			
 			if (saveFile.isSelected()) {
-				new SettingsLoader(login.getText(), new String(password.getPassword()), proxyText, method, selected_gpu, cpu_cores, max_ram, cachePath, autoSignIn.isSelected(), GuiSwing.type, tile, priority.getValue()).saveFile();
+				new SettingsLoader(login.getText(), new String(password.getPassword()), proxyText, hostnameText, method, selected_gpu, cpu_cores, max_ram, max_rendertime, cachePath, autoSignIn.isSelected(), GuiSwing.type, tile, priority.getValue()).saveFile();
 			}
 			else {
 				try {
