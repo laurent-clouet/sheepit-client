@@ -52,7 +52,6 @@ public class Configuration {
 	private int maxMemory; // max memory allowed for render
 	private int maxRenderTime; // max render time per frame allowed
 	private int priority;
-	private int block_time; // in minutes
 	private String block_list;
 	private ComputeType computeMethod;
 	private GPUDevice GPUDevice;
@@ -128,14 +127,6 @@ public class Configuration {
 	
 	public void setMaxUploadingJob(int max) {
 		this.maxUploadingJob = max;
-	}
-	
-	public void setBlockTime(int minutes) {
-		this.block_time = minutes;
-	}
-	
-	public int getBlockTime() {
-		return this.block_time;
 	}
 	
 	public void setBlockList(String blockList) {

@@ -58,8 +58,6 @@ public class Worker {
 	@Option(name = "-max-uploading-job", usage = "", metaVar = "1", required = false)
 	private int max_upload = -1;
 	
-	@Option(name = "-block_time", usage = "max rendertime in minutes for projects. Projects with larger rendertime will be blocked automated", metaVar = "0", required = false)
-	private int block_time = 0;
 	
 	@Option(name = "-block_list", usage = "File where to store / load the list of blocked projects", metaVar = "blocklist.dat", required = false)
 	private String block_list = "blocklist.dat";
@@ -132,7 +130,6 @@ public class Worker {
 		config.setPrintLog(print_log);
 		config.setUsePriority(priority);
 		
-		config.setBlockTime(block_time);
 		config.setBlockList(block_list);
 		
 		

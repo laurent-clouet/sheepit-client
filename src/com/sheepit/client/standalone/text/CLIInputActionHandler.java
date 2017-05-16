@@ -41,7 +41,7 @@ public class CLIInputActionHandler implements CLIInputListener {
 		if (command.equalsIgnoreCase("block")) {
 			Job job = client.getRenderingJob();
 			if (job != null) {
-				job.block();
+				job.block("blocked by user");
 			}
 		}
 		else if (command.equalsIgnoreCase("resume")) {
@@ -67,7 +67,7 @@ public class CLIInputActionHandler implements CLIInputListener {
 			changePriority(client, command.substring(priorityLength));
 		}
 		else if ((command.length() > blockTimeLength ) && (command.substring(0, blockTimeLength).equalsIgnoreCase("block_time"))) {
-			changeBlockTime(client, command.substring(blockTimeLength));
+			changeMaxRenderTime(client, command.substring(blockTimeLength));
 		}
 		else if ((command.length() > memoryLength) && (command.substring(0, memoryLength).equalsIgnoreCase("memory"))) {
 			changeMaxMem(client, command.substring(memoryLength));
@@ -111,14 +111,14 @@ public class CLIInputActionHandler implements CLIInputListener {
 		}
 	}
 	
-	void changeBlockTime(Client client, String newBlockTime) {
+	void changeMaxRenderTime(Client client, String newMaxRenderTime) {
 		Configuration config = client.getConfiguration();
 		if (config != null) {
 			try {
-				config.setBlockTime(Integer.parseInt(newBlockTime.trim()));
+				config.setMaxRenderTime(Integer.parseInt(newMaxRenderTime.trim()));
 			}
 			catch (NumberFormatException e) {
-				System.out.println("Invalid block_time: " + newBlockTime);
+				System.out.println("Invalid block_time: " + newMaxRenderTime);
 			}
 		}
 	}

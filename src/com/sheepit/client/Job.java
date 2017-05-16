@@ -39,6 +39,9 @@ import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import com.sheepit.client.Configuration.ComputeType;
 import com.sheepit.client.Error.Type;
 import com.sheepit.client.hardware.gpu.GPUDevice;
@@ -69,6 +72,12 @@ public class Job {
 	private Gui gui;
 	private Configuration config;
 	private Log log;
+	private boolean time_error = false;
+	
+
+	private Pattern memoryPeakPatter = Pattern.compile("[Pp]eak[: ]+(\\d+\\.\\d+[GMK])");
+	private Pattern memoryPeakValuePatter = Pattern.compile("\\d+\\.\\d+[GMK]");
+			
 	
 	public Job(Configuration config_, Gui gui_, Log log_, String id_, String frame_, String path_, boolean use_gpu, String command_, String script_, String sceneMd5_, String rendererMd5_, String name_, String password_, String extras_, boolean synchronous_upload_, String update_method_) {
 		config = config_;
@@ -94,13 +103,18 @@ public class Job {
 		render = new RenderProcess();
 	}
 	
-	public void block() {
+	public void block(String message) {
 		setAskForRendererKill(true);
 		setUserBlockJob(true);
 		RenderProcess process = getProcessRender();
+		BlockList.getInstance().blockJob(sceneMD5, String.format("%s: %s", name, message));
 		if (process != null) {
 			OS.getOS().kill(process.getProcess());
 		}
+	}
+	
+	public void mark_blocked(String message) {
+		BlockList.getInstance().blockJob(sceneMD5, String.format("%s: %s", name, message));
 	}
 	
 	public RenderProcess getProcessRender() {
@@ -321,7 +335,7 @@ public class Job {
 							long duration = (new Date().getTime() - process.getStartTime() ) / 1000; // in seconds
 							if (config.getMaxRenderTime() > 0 &&  duration > config.getMaxRenderTime()) {
 								log.debug("Killing render because process duration");
-								OS.getOS().kill(process.getProcess());
+								block("Killing render because process duration");
 								setAskForRendererKill(true);
 							}
 						}
@@ -337,16 +351,21 @@ public class Job {
 					
 					updateRenderingMemoryPeak(line);
 					if (config.getMaxMemory() != -1 && process.getMemoryUsed() > config.getMaxMemory()) {
-						log.debug("Blocking render because process ram used (" + process.getMemoryUsed() + "k) is over user setting (" + config.getMaxMemory() + "k)");
+						String message = "Blocking render because process ram used (" + process.getMemoryUsed() + "k) is over user setting (" + config.getMaxMemory() + "k)";
+						log.debug(message);
 						process.finish();
 						if (script_file != null) {
 							script_file.delete();
 						}
+						block(message);
 						return Error.Type.RENDERER_OUT_OF_MEMORY;
 					}
 					
 					if ((new Date().getTime() - last_update_status) > 2000) { // only call the update every two seconds
 						updateRenderingStatus(line);
+						if (time_error){
+							return Error.Type.RENDERER_KILLED_BY_USER_OVER_TIME;
+						}
 						last_update_status = new Date().getTime();
 					}
 					Type error = detectError(line);
@@ -380,7 +399,10 @@ public class Job {
 		if (timerOfMaxRenderTime != null) {
 			timerOfMaxRenderTime.cancel();
 		}
-		
+
+		/* block project to prevent rendering again*/
+		block_project_uptime(getProcessRender().getStartTime());
+
 		if (script_file != null) {
 			script_file.delete();
 		}
@@ -457,6 +479,39 @@ public class Job {
 		return Error.Type.OK;
 	}
 	
+	
+	private void block_project_uptime(long startTime) {
+		if (config.getMaxRenderTime() == 0) {
+			return;
+		}
+		long up_time = (new Date().getTime() - startTime) / 1000 / 60;
+		if (up_time > config.getMaxRenderTime()) {
+			String message = String.format("Blocked by total_render_time (%d min used but %d min allowed)", up_time, config.getMaxRenderTime());
+			System.out.println(message);
+			mark_blocked(message);
+			time_error = true;
+		}
+	}
+	
+	
+	private void block_project_time(long startTime, long total_duration) {
+		if (config.getMaxRenderTime() == 0) {
+			return;
+		}
+		long up_time = new Date().getTime() - startTime;
+		if (up_time < 60000) { //wait at least 60 seconds to get good total estimation
+			return;
+		}
+		long total_min = total_duration / 1000 / 60;
+		if (total_min > config.getMaxRenderTime()) {
+			String message = String.format("Blocked by time (%d min used but %d min allowed)", total_min, config.getMaxRenderTime());
+			System.out.println(message);
+			block(message);
+			time_error = true;
+		}
+		
+	}
+
 	private void updateRenderingStatus(String line) {
 		if (getUpdateRenderingStatusMethod() != null && getUpdateRenderingStatusMethod().equals(Job.UPDATE_METHOD_BLENDER_INTERNAL_BY_PART)) {
 			String search = " Part ";
@@ -472,6 +527,7 @@ public class Job {
 							long end_render = (new Date().getTime() - this.render.getStartTime()) * total / current;
 							Date date = new Date(end_render);
 							gui.setRemainingTime(String.format("%s %% (%s)", (int) (100.0 - 100.0 * current / total), Utils.humanDuration(date)));
+							block_project_time(this.render.getStartTime(), end_render);
 							return;
 						}
 					}
@@ -507,6 +563,8 @@ public class Job {
 						Date date = date_parse.parse(remaining_time);
 						gui.setRemainingTime(Utils.humanDuration(date));
 						getProcessRender().setRemainingDuration((int) (date.getTime() / 1000));
+						long end_render = date.getTime() + new Date().getTime() - this.render.getStartTime();
+						block_project_time(this.render.getStartTime(), end_render);
 					}
 					catch (ParseException err) {
 						log.error("Client::updateRenderingStatus ParseException " + err);
@@ -517,38 +575,12 @@ public class Job {
 	}
 	
 	private void updateRenderingMemoryPeak(String line) {
-		String[] elements = line.toLowerCase().split("(peak)");
-		
-		for (String element : elements) {
-			if (element.isEmpty() == false && element.charAt(0) == ' ') {
-				int end = element.indexOf(')');
-				if (end > 0) {
-					try {
-						long mem = Utils.parseNumber(element.substring(1, end).trim());
-						if (mem > getProcessRender().getMemoryUsed()) {
-							getProcessRender().setMemoryUsed(mem);
-						}
-					}
-					catch (IllegalStateException e) {
-						// failed to parseNumber
-					}
-				}
-			}
-			else {
-				if (element.isEmpty() == false && element.charAt(0) == ':') {
-					int end = element.indexOf('|');
-					if (end > 0) {
-						try {
-							long mem = Utils.parseNumber(element.substring(1, end).trim());
-							if (mem > getProcessRender().getMemoryUsed()) {
-								getProcessRender().setMemoryUsed(mem);
-							}
-						}
-						catch (IllegalStateException e) {
-							// failed to parseNumber
-						}
-					}
-				}
+		for (Matcher p = memoryPeakPatter.matcher(line); p.find();) {
+			Matcher m = memoryPeakValuePatter.matcher(p.group());
+			m.find();
+			long mem = Utils.parseNumber(m.group());
+			if (mem > getProcessRender().getMemoryUsed()) {
+				getProcessRender().setMemoryUsed(mem / 1000);
 			}
 		}
 	}
