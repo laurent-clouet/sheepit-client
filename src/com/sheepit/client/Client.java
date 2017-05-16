@@ -234,7 +234,7 @@ public class Client {
 				}
 				catch (FermeExceptionServerOverloaded e) {
 					int wait = 15;
-					int time_sleep = 1000 * 60 * wait;
+					int time_sleep = 1000*(int)Math.random() * 60 * wait;
 					this.gui.status(String.format("Server is overloaded and cannot give frame to render. Will retry in %s minutes", wait));
 					try {
 						Thread.sleep(time_sleep);
@@ -246,7 +246,7 @@ public class Client {
 				}
 				catch (FermeExceptionServerInMaintenance e) {
 					int wait = 15;
-					int time_sleep = 1000 * 60 * wait;
+					int time_sleep = 1000*(int)Math.random() * 60 * wait;
 					this.gui.status(String.format("Server is in maintenance and cannot give frame to render. Will retry in %s minutes", wait));
 					try {
 						Thread.sleep(time_sleep);
@@ -258,7 +258,7 @@ public class Client {
 				}
 				catch (FermeExceptionBadResponseFromServer e) {
 					int wait = 15;
-					int time_sleep = 1000 * 60 * wait;
+					int time_sleep = 1000*(int)Math.random() * 60 * wait;
 					this.gui.status(String.format("Bad answer from server. Will retry in %s minutes", wait));
 					try {
 						Thread.sleep(time_sleep);
@@ -279,7 +279,7 @@ public class Client {
 				}
 				
 				if (this.renderingJob == null) { // no job
-					int time_sleep = 1000 * 60 * 15;
+					int time_sleep = 1000*(int)Math.random() * 60 * 15;
 					Date wakeup_time = new Date(new Date().getTime() + time_sleep);
 					this.gui.status(String.format("No job available. Sleeping for 15 minutes (will wake up at %tR)", wakeup_time));
 					this.gui.displayStats(new Stats());
