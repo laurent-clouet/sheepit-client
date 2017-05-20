@@ -38,7 +38,7 @@ public class Main {
 	@Option(name = "-server", usage = "Render-farm server, default https://client.sheepit-renderfarm.com", metaVar = "URL", required = false)
 	private String server = "https://client.sheepit-renderfarm.com";
 	
-	@Option(name = "-port", usage = "Bind port", metaVar = "8080", required = false)
+	@Option(name = "-port", usage = "Bind port", metaVar = "2060", required = false)
 	private int port = 2060;
 	
 	@Option(name = "-cache-dir", usage = "Cache/Working directory. Caution, everything in it not related to the render-farm will be removed", metaVar = "/tmp/cache", required = false)
