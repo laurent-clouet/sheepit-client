@@ -36,7 +36,7 @@ import com.sheepit.proxy.SettingsLoader;
 
 public class Main {
 	@Option(name = "-server", usage = "Render-farm server, default https://client.sheepit-renderfarm.com", metaVar = "URL", required = false)
-	private String server = "http://sandbox.sheepit-renderfarm.com";
+	private String server = "https://client.sheepit-renderfarm.com";
 	
 	@Option(name = "-port", usage = "Bind port", metaVar = "8080", required = false)
 	private int port = 2060;
