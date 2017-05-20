@@ -19,6 +19,9 @@
 
 package com.sheepit.proxy.main;
 
+import sun.misc.Signal;
+import sun.misc.SignalHandler;
+
 import com.sheepit.proxy.Log;
 import com.sheepit.proxy.ProxyRunner;
 import com.sheepit.proxy.Gui;
@@ -29,33 +32,50 @@ public class GuiText implements Gui {
 	private Log log;
 	private ProxyRunner proxy;
 	
+	private int sigIntCount;
+	
 	public GuiText() {
-		//	this.framesRendered = 0;
-			log = Log.getInstance(null);
+		sigIntCount = 0;
+		log = Log.getInstance(null);
 	}
 	
 	@Override
 	public void start() {
-		// TODO Auto-generated method stub
+		if (proxy != null) {
+			Signal.handle(new Signal("INT"), new SignalHandler() {
+				@Override
+				public void handle(Signal signal) {
+					sigIntCount++;
+					
+					if (sigIntCount == 1) {
+						System.out.println("WARNING: Hitting Ctrl-C again will force close the application.");
+					}
+					else if (sigIntCount == 2) {
+						Signal.raise(new Signal("INT"));
+						Runtime.getRuntime().halt(0);
+					}
+				}
+			});
+			
+			proxy.run();
+			proxy.stop();
+		}
 		
 	}
 	
 	@Override
 	public void stop() {
-		// TODO Auto-generated method stub
 		
 	}
 	
 	@Override
 	public void status(String msg_) {
-		// TODO Auto-generated method stub
-		
+		System.out.println("status: " + msg_);
 	}
 	
 	@Override
 	public void error(String err_) {
-		// TODO Auto-generated method stub
-		
+		System.out.println("error: " + err_);
 	}
 	
 	@Override
@@ -67,111 +87,4 @@ public class GuiText implements Gui {
 	public ProxyRunner getProxyRunner() {
 		return proxy;
 	}
-	
-	//	private int framesRendered;
-	//	
-	//	private int sigIntCount = 0;
-	//	
-	
-	//	
-	
-	//	@Override
-	//	public void start() {
-	//		if (client != null) {
-	//			
-	//			CLIInputObserver cli_input_observer = new CLIInputObserver(client);
-	//			cli_input_observer.addListener(new CLIInputActionHandler());
-	//			Thread cli_input_observer_thread = new Thread(cli_input_observer);
-	//			cli_input_observer_thread.start();
-	//			
-	//			Signal.handle(new Signal("INT"), new SignalHandler() {
-	//				@Override
-	//				public void handle(Signal signal) {
-	//					sigIntCount++;
-	//					
-	//					if (sigIntCount == 4) {
-	//						// This is only for ugly issues that might occur
-	//						System.out.println("WARNING: Hitting Ctrl-C again will force close the application.");
-	//					}
-	//					else if (sigIntCount == 5) {
-	//						Signal.raise(new Signal("INT"));
-	//						Runtime.getRuntime().halt(0);
-	//					}
-	//					else if (client.isRunning() && client.isSuspended() == false) {
-	//						client.askForStop();
-	//						System.out.println("Will exit after current frame... Press Ctrl+C again to exit now.");
-	//					}
-	//					else {
-	//						client.stop();
-	//						GuiText.this.stop();
-	//					}
-	//				}
-	//			});
-	//			
-	//			client.run();
-	//			client.stop();
-	//		}
-	//	}
-	//	
-	//	@Override
-	//	public void stop() {
-	//		Runtime.getRuntime().halt(0);
-	//	}
-	//	
-	//	@Override
-	//	public void status(String msg_) {
-	//		System.out.println(msg_);
-	//		log.debug("GUI " + msg_);
-	//	}
-	//	
-	//	@Override
-	//	public void error(String err_) {
-	//		System.out.println("Error " + err_);
-	//		log.error("Error " + err_);
-	//	}
-	//	
-	//	@Override
-	//	public void AddFrameRendered() {
-	//		this.framesRendered += 1;
-	//		System.out.println("Frames rendered: " + this.framesRendered);
-	//	}
-	//	
-	//	@Override
-	//	public void displayStats(Stats stats) {
-	//		System.out.println("Frames remaining: " + stats.getRemainingFrame());
-	//		System.out.println("Credits earned: " + stats.getCreditsEarnedDuringSession());
-	//	}
-	//	
-	//	@Override
-	//	public void setRenderingProjectName(String name_) {
-	//		if (name_ != null && name_.isEmpty() == false) {
-	//			System.out.println("Rendering project \"" + name_ + "\"");
-	//		}
-	//	}
-	//	
-	//	@Override
-	//	public void setRemainingTime(String time_) {
-	//		System.out.println("Rendering (remaining " + time_ + ")");
-	//	}
-	//	
-	//	@Override
-	//	public void setRenderingTime(String time_) {
-	//		System.out.println("Rendering " + time_);
-	//	}
-	//	
-	//	@Override
-	//	public void setClient(Client cli) {
-	//		client = cli;
-	//	}
-	//	
-	//	@Override
-	//	public void setComputeMethod(String computeMethod) {
-	//		System.out.println("Compute method: " + computeMethod);
-	//	}
-	//	
-	//	@Override
-	//	public Client getClient() {
-	//		return client;
-	//	}
-	//	
 }
