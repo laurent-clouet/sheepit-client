@@ -574,6 +574,29 @@ public class Job {
 			// Blender quit
 			return Type.RENDERER_OUT_OF_VIDEO_MEMORY;
 		}
+		else if (line.indexOf("CUDA error at cuCtxCreate: Out of memory") != -1) {
+			// renderer output
+			// CUDA error at cuCtxCreate: Out of memory
+			// Refer to the Cycles GPU rendering documentation for possible solutions:
+			// http://www.blender.org/manual/render/cycles/gpu_rendering.html
+			// found bundled python: /tmp/aaaa/bbbb/2.78/python
+			// read blend: /tmp/aaaa/bbbb/compute-method.blend
+			// Fra:340 Mem:7.25M (0.00M, Peak 7.25M) | Time:00:00.13 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Sun
+			// Fra:340 Mem:7.25M (0.00M, Peak 7.25M) | Time:00:00.13 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Plane
+			// Fra:340 Mem:7.25M (0.00M, Peak 7.26M) | Time:00:00.13 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Cube
+			// Fra:340 Mem:7.25M (0.00M, Peak 7.26M) | Time:00:00.13 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Camera
+			// Fra:340 Mem:7.25M (0.00M, Peak 7.26M) | Time:00:00.13 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Initializing
+			// Fra:340 Mem:7.25M (0.00M, Peak 7.26M) | Time:00:00.13 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Loading render kernels (may take a few minutes the first time)
+			// Fra:340 Mem:7.25M (0.00M, Peak 7.26M) | Time:00:00.13 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Error | CUDA error at cuCtxCreate: Out of memory
+			// Error: CUDA error at cuCtxCreate: Out of memory
+			// Fra:340 Mem:7.25M (0.00M, Peak 7.26M) | Time:00:00.13 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Waiting for render to start
+			// Fra:340 Mem:7.25M (0.00M, Peak 7.26M) | Time:00:00.13 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Cancel | CUDA error at cuCtxCreate: Out of memory
+			// CUDA error: Invalid value in cuCtxDestroy(cuContext)
+			// Fra:340 Mem:7.25M (0.00M, Peak 7.26M) | Time:00:00.13 | Sce: Scene Ve:0 Fa:0 La:0
+			// Blender quit
+			// end of rendering
+			return Type.RENDERER_OUT_OF_VIDEO_MEMORY;
+		}
 		else if (line.indexOf("CUDA error: Launch exceeded timeout in") != -1) {
 			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:01:08.44 | Mem:176.04M, Peak:199.23M | Scene, RenderLayer | Path Tracing Tile 2/24, Sample 10/14
 			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:01:07.08 | Mem:175.48M, Peak:199.23M | Scene, RenderLayer | Path Tracing Tile 2/24, Sample 14/14
