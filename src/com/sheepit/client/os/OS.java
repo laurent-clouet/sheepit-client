@@ -25,6 +25,8 @@ import java.util.Map;
 import com.sheepit.client.hardware.cpu.CPU;
 
 public abstract class OS {
+	private static OS instance = null;
+	
 	public abstract String name();
 	
 	public abstract CPU getCPU();
@@ -59,21 +61,22 @@ public abstract class OS {
 	}
 	
 	public static OS getOS() {
-		String os = System.getProperty("os.name").toLowerCase();
-		if (os.contains("win")) {
-			return new Windows();
+		if (instance == null) {
+			String os = System.getProperty("os.name").toLowerCase();
+			if (os.contains("win")) {
+				instance = new Windows();
+			}
+			else if (os.contains("mac")) {
+				instance = new Mac();
+			}
+			else if (os.contains("nix") || os.contains("nux")) {
+				instance = new Linux();
+			}
+			else if (os.contains("freebsd")) {
+				instance = new FreeBSD();
+			}
 		}
-		else if (os.contains("mac")) {
-			return new Mac();
-		}
-		else if (os.contains("nix") || os.contains("nux")) {
-			return new Linux();
-		}
-		else if (os.contains("freebsd")) {
-			return new FreeBSD();
-		}
-		else {
-			return null;
-		}
+		
+		return instance;
 	}
 }
