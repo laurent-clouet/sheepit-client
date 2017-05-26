@@ -495,16 +495,16 @@ public class Job {
 	
 	
 	private void block_project_time(long startTime, long total_duration) {
-		if (config.getMaxRenderTime() == 0) {
+		if (config.getMaxRenderTime() <= 0) {
 			return;
 		}
 		long up_time = new Date().getTime() - startTime;
 		if (up_time < 60000) { //wait at least 60 seconds to get good total estimation
 			return;
 		}
-		long total_min = total_duration / 1000 / 60;
+		long total_min = total_duration / 1000 ;
 		if (total_min > config.getMaxRenderTime()) {
-			String message = String.format("Blocked by time (%d min used but %d min allowed)", total_min, config.getMaxRenderTime());
+			String message = String.format("Blocked by time (%d min used estimated but %d min allowed)", total_min / 60, config.getMaxRenderTime() /60);
 			System.out.println(message);
 			block(message);
 			time_error = true;

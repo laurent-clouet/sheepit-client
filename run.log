@@ -1,0 +1,191 @@
+block by list: adf51c8a5125abda3506727d8fd2e091;test travelling: Blocked by time (79 min used estimated but 45 min allowed)
+block by list: adf51c8a5125abda3506727d8fd2e091;test travelling: Killing render because process duration
+block by list: cc9e17df429ac7229d5d540243994bf9;Ic 1 Animation Shot 5_6: Blocking render because process ram used (2019820k) is over user setting (2000000k)
+block by list: eb456243398efd8e3e89a01473bf81fd;Gandhi: Blocked by time (45 min used estimated but 45 min allowed)
+block by list: 867958484ed4c9ed924b820098697943;lookingaround.blend11: Blocked by time (1344 min used estimated but 45 min allowed)
+block by list: cc9e17df429ac7229d5d540243994bf9;Ic 1 Animation Shot 5_6: Killing render because process duration
+block by list: 474ce955c9b1dd788cb2f60c995bccbd;steinstrand depth of field: Blocking render because process ram used (2089000k) is over user setting (2000000k)
+block by list: 2f6f360ea569a296795347976888a14c;steinstrand diffuse and light: Blocking render because process ram used (2088280k) is over user setting (2000000k)
+block by list: 1c1aa991f067741b89ba50ba3bae37b9;fhill_3d_1_light_u_collapse_nohuio_full_002 1-2500: Blocked by time (394 min used estimated but 45 min allowed)
+block by list: 8b62b3217ad9a809e8aeeca7f3be1b61;Ic 1 Animation Shot 5_6 1006-1240: Blocking render because process ram used (2023430k) is over user setting (2000000k)
+block by list: eb456243398efd8e3e89a01473bf81fd;Gandhi: Killing render because process duration
+block by list: f612fb117a9546b9c4bc645550cf4f21;David-Anim-002 1-500: Blocked by time (2213 min used estimated but 45 min allowed)
+block by list: 867958484ed4c9ed924b820098697943;lookingaround.blend11: Killing render because process duration
+block by list: f612fb117a9546b9c4bc645550cf4f21;David-Anim-002 1-500: Killing render because process duration
+block by list: 8016c44b86920c1a8485d3d8eae6a94c;steinstrand diffuse: Blocking render because process ram used (2088260k) is over user setting (2000000k)
+block by list: 574b86072b47aa3d4ab8fbafca23b535;steinstrand materials: Blocking render because process ram used (2089000k) is over user setting (2000000k)
+block by list: a2787536e9256f6940888ed20786b0bf;scen5_2: Blocked by time (62 min used estimated but 45 min allowed)
+block by list: 474ce955c9b1dd788cb2f60c995bccbd;steinstrand depth of field: Killing render because process duration
+block by list: 2f6f360ea569a296795347976888a14c;steinstrand diffuse and light: Killing render because process duration
+block by list: 1c1aa991f067741b89ba50ba3bae37b9;fhill_3d_1_light_u_collapse_nohuio_full_002 1-2500: Killing render because process duration
+block by list: 46609efd7e4a217be38d777a72422e69;blendcache_abc innerblend: Blocked by time (111 min used estimated but 45 min allowed)
+block by list: 8b62b3217ad9a809e8aeeca7f3be1b61;Ic 1 Animation Shot 5_6 1006-1240: Killing render because process duration
+block by list: 8016c44b86920c1a8485d3d8eae6a94c;steinstrand diffuse: Killing render because process duration
+block by list: 574b86072b47aa3d4ab8fbafca23b535;steinstrand materials: Killing render because process duration
+block by list: a2787536e9256f6940888ed20786b0bf;scen5_2: Killing render because process duration
+block by list: 46609efd7e4a217be38d777a72422e69;blendcache_abc innerblend: Killing render because process duration
+block by list: 095aa75368a37493f5065c1129093c8e;interior_office_1: Blocked by time (3537 min used estimated but 45 min allowed)
+block by list: 095aa75368a37493f5065c1129093c8e;interior_office_1: Killing render because process duration
+block by list: 37a64edf59063e57ad1ef4355d7d8fe4;animacja 0-3700: Blocked by time (63 min used estimated but 45 min allowed)
+C:\dev\git\sheepit-client\block.dat
+26-05 22:48:02 (debug) client version 5.366.0
+Starting
+26-05 22:48:02 (debug) GUI Starting
+26-05 22:48:25 (debug) Server::getConfiguration url https://client.sheepit-renderfarm.com/server/config.php?login=principat&password=footer&cpu_family=6&cpu_model=58&cpu_model_name=Intel%28R%29+Core%28TM%29+i5-3320M+CPU+%40+2.60GHz&cpu_cores=4&os=windows&ram=8079016&bits=64bit&version=5.366.0&hostname=OSP3321&extras=
+26-05 22:48:25 (debug) Server::HTTPRequest url(https://client.sheepit-renderfarm.com/server/config.php?login=principat&password=footer&cpu_family=6&cpu_model=58&cpu_model_name=Intel%28R%29+Core%28TM%29+i5-3320M+CPU+%40+2.60GHz&cpu_cores=4&os=windows&ram=8079016&bits=64bit&version=5.366.0&hostname=OSP3321&extras=)
+Requesting Job
+26-05 22:48:27 (debug) GUI Requesting Job
+26-05 22:48:27 (debug) Server::requestJob
+26-05 22:48:34 (debug) Server::HTTPRequest url(https://client.sheepit-renderfarm.com/server/request_job.php?computemethod=1&cpu_cores=4&ram_max=2000000&rendertime_max=2700)
+Frames remaining: 33048
+Credits earned: 0
+26-05 22:48:34 (debug) Got work to do id: 1 frame: 0340
+Rendering project "Can Blender be launch?"
+Reusing cached renderer
+26-05 22:48:34 (debug) GUI Reusing cached renderer
+Reusing cached project
+26-05 22:48:34 (debug) GUI Reusing cached project
+Extracting renderer
+26-05 22:48:34 (debug) GUI Extracting renderer
+Extracting project
+26-05 22:48:51 (debug) GUI Extracting project
+Rendering
+26-05 22:48:51 (debug) GUI Rendering
+Compute method: CPU
+26-05 22:48:51 (debug) [C:\dev\git\sheepit-client\test-data\dba4924a43c27d7dbc35b853f51e6292\rend.exe, --factory-startup, --disable-autoexec, -b, C:\dev\git\sheepit-client\test-data\4753a1cec7ed5aaa6f0e02438a82e4a5\compute-method.blend, -P, C:\dev\git\sheepit-client\test-data\script_5230015918874388581, -o, C:\dev\git\sheepit-client\test-data\1_, -f, 0340, -x, 1]
+26-05 22:48:52 (debug) renderer output
+26-05 22:48:54 (debug) found bundled python: C:\dev\git\sheepit-client\test-data\dba4924a43c27d7dbc35b853f51e6292\2.78\python
+26-05 22:48:54 (debug) read blend: C:\dev\git\sheepit-client\test-data\4753a1cec7ed5aaa6f0e02438a82e4a5\compute-method.blend
+26-05 22:48:54 (debug) Fra:340 Mem:7.26M (0.00M, Peak 7.26M) | Time:00:00.00 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Sun
+26-05 22:48:54 (debug) Fra:340 Mem:7.26M (0.00M, Peak 7.26M) | Time:00:00.00 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Plane
+26-05 22:48:54 (debug) Fra:340 Mem:7.26M (0.00M, Peak 7.27M) | Time:00:00.00 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Cube
+26-05 22:48:54 (debug) Fra:340 Mem:7.26M (0.00M, Peak 7.27M) | Time:00:00.00 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Camera
+26-05 22:48:54 (debug) Fra:340 Mem:7.26M (0.00M, Peak 7.27M) | Time:00:00.00 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Initializing
+26-05 22:48:54 (debug) Fra:340 Mem:7.26M (0.00M, Peak 7.27M) | Time:00:00.00 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Loading render kernels (may take a few minutes the first time)
+26-05 22:48:54 (debug) Fra:340 Mem:7.26M (0.00M, Peak 7.27M) | Time:00:00.00 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Waiting for render to start
+26-05 22:48:54 (debug) Fra:340 Mem:7.26M (0.00M, Peak 7.27M) | Time:00:00.00 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Updating Scene
+26-05 22:48:54 (debug) Fra:340 Mem:7.26M (0.00M, Peak 7.27M) | Time:00:00.00 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Updating Shaders
+26-05 22:48:54 (debug) Fra:340 Mem:7.76M (0.00M, Peak 7.76M) | Time:00:00.08 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Updating Background
+26-05 22:48:54 (debug) Fra:340 Mem:7.76M (0.00M, Peak 7.76M) | Time:00:00.08 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Updating Camera
+26-05 22:48:54 (debug) Fra:340 Mem:7.76M (0.00M, Peak 7.76M) | Time:00:00.08 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Updating Meshes Flags
+26-05 22:48:54 (debug) Fra:340 Mem:7.76M (0.00M, Peak 7.76M) | Time:00:00.08 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Updating Objects
+26-05 22:48:54 (debug) Fra:340 Mem:7.76M (0.00M, Peak 7.76M) | Time:00:00.08 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Updating Objects | Copying Transformations to device
+26-05 22:48:54 (debug) Fra:340 Mem:7.76M (0.00M, Peak 7.76M) | Time:00:00.08 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Updating Objects | Applying Static Transformations
+26-05 22:48:54 (debug) Fra:340 Mem:7.76M (0.00M, Peak 7.76M) | Time:00:00.08 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Updating Meshes
+26-05 22:48:54 (debug) Fra:340 Mem:7.76M (0.00M, Peak 7.76M) | Time:00:00.08 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Updating Mesh | Computing attributes
+26-05 22:48:54 (debug) Fra:340 Mem:7.76M (0.00M, Peak 7.76M) | Time:00:00.08 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Updating Mesh | Copying Attributes to device
+26-05 22:48:54 (debug) Fra:340 Mem:7.76M (0.00M, Peak 7.76M) | Time:00:00.08 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Updating Scene BVH | Building
+26-05 22:48:54 (debug) Fra:340 Mem:7.76M (0.00M, Peak 7.76M) | Time:00:00.08 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Updating Scene BVH | Building BVH
+26-05 22:48:54 (debug) Fra:340 Mem:7.76M (0.00M, Peak 7.76M) | Time:00:00.09 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Updating Scene BVH | Packing BVH triangles and strands
+26-05 22:48:54 (debug) Fra:340 Mem:7.76M (0.00M, Peak 7.76M) | Time:00:00.09 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Updating Scene BVH | Packing BVH nodes
+26-05 22:48:54 (debug) Fra:340 Mem:7.76M (0.00M, Peak 7.77M) | Time:00:00.09 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Updating Scene BVH | Copying BVH to device
+26-05 22:48:54 (debug) Fra:340 Mem:7.76M (0.00M, Peak 7.77M) | Time:00:00.09 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Updating Mesh | Computing normals
+26-05 22:48:54 (debug) Fra:340 Mem:7.76M (0.00M, Peak 7.77M) | Time:00:00.09 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Updating Mesh | Copying Mesh to device
+26-05 22:48:54 (debug) Fra:340 Mem:7.76M (0.00M, Peak 7.77M) | Time:00:00.09 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Updating Objects Flags
+26-05 22:48:54 (debug) Fra:340 Mem:7.76M (0.00M, Peak 7.77M) | Time:00:00.09 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Updating Images
+26-05 22:48:54 (debug) Fra:340 Mem:7.76M (0.00M, Peak 7.77M) | Time:00:00.09 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Updating Camera Volume
+26-05 22:48:54 (debug) Fra:340 Mem:7.76M (0.00M, Peak 7.77M) | Time:00:00.09 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Updating Hair Systems
+26-05 22:48:54 (debug) Fra:340 Mem:7.76M (0.00M, Peak 7.77M) | Time:00:00.09 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Updating Hair settings | Copying Hair settings to device
+26-05 22:48:54 (debug) Fra:340 Mem:7.76M (0.00M, Peak 7.77M) | Time:00:00.09 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Updating Lookup Tables
+26-05 22:48:54 (debug) Fra:340 Mem:7.76M (0.00M, Peak 7.77M) | Time:00:00.09 | Mem:0.25M, Peak:0.25M | Scene, RenderLayer | Updating Lights
+26-05 22:48:54 (debug) Fra:340 Mem:7.76M (0.00M, Peak 7.77M) | Time:00:00.09 | Mem:0.25M, Peak:0.25M | Scene, RenderLayer | Updating Lights | Computing distribution
+26-05 22:48:54 (debug) Fra:340 Mem:7.76M (0.00M, Peak 7.77M) | Time:00:00.09 | Mem:0.25M, Peak:0.25M | Scene, RenderLayer | Updating Particle Systems
+26-05 22:48:54 (debug) Fra:340 Mem:7.76M (0.00M, Peak 7.77M) | Time:00:00.09 | Mem:0.25M, Peak:0.25M | Scene, RenderLayer | Updating Particle Systems | Copying Particles to device
+26-05 22:48:54 (debug) Fra:340 Mem:7.76M (0.00M, Peak 7.77M) | Time:00:00.09 | Mem:0.25M, Peak:0.25M | Scene, RenderLayer | Updating Integrator
+26-05 22:48:54 (debug) Fra:340 Mem:7.80M (0.00M, Peak 7.80M) | Time:00:00.09 | Mem:0.29M, Peak:0.29M | Scene, RenderLayer | Updating Film
+26-05 22:48:54 (debug) Fra:340 Mem:7.81M (0.00M, Peak 8.06M) | Time:00:00.09 | Mem:0.29M, Peak:0.29M | Scene, RenderLayer | Updating Lookup Tables
+26-05 22:48:54 (debug) Fra:340 Mem:7.81M (0.00M, Peak 8.06M) | Time:00:00.09 | Mem:0.30M, Peak:0.30M | Scene, RenderLayer | Updating Baking
+26-05 22:48:54 (debug) Fra:340 Mem:7.81M (0.00M, Peak 8.06M) | Time:00:00.09 | Mem:0.30M, Peak:0.30M | Scene, RenderLayer | Updating Device | Writing constant memory
+26-05 22:48:54 (debug) Fra:340 Mem:7.81M (0.00M, Peak 8.06M) | Time:00:00.09 | Mem:0.30M, Peak:0.30M | Scene, RenderLayer | Path Tracing Tile 0/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.84M (0.00M, Peak 8.06M) | Time:00:00.09 | Mem:0.33M, Peak:0.33M | Scene, RenderLayer | Path Tracing Tile 1/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.88M (0.00M, Peak 8.06M) | Time:00:00.09 | Mem:0.37M, Peak:0.37M | Scene, RenderLayer | Path Tracing Tile 2/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.91M (0.00M, Peak 8.06M) | Time:00:00.09 | Mem:0.40M, Peak:0.40M | Scene, RenderLayer | Path Tracing Tile 3/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.09 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 4/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.09 | Remaining:00:00.21 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 5/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.09 | Remaining:00:00.11 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 6/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.09 | Remaining:00:00.11 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 7/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.09 | Remaining:00:00.08 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 8/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.09 | Remaining:00:00.10 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 9/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.10 | Remaining:00:00.09 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 10/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.10 | Remaining:00:00.09 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 11/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.10 | Remaining:00:00.08 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 12/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.10 | Remaining:00:00.07 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 13/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.10 | Remaining:00:00.07 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 14/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.10 | Remaining:00:00.06 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 15/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.91M (0.00M, Peak 8.06M) | Time:00:00.10 | Remaining:00:00.05 | Mem:0.40M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 16/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.10 | Remaining:00:00.06 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 17/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.10 | Remaining:00:00.05 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 18/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.10 | Remaining:00:00.05 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 19/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.10 | Remaining:00:00.05 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 20/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.10 | Remaining:00:00.05 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 21/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.11 | Remaining:00:00.04 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 23/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.11 | Remaining:00:00.04 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 24/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.11 | Remaining:00:00.04 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 26/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.11 | Remaining:00:00.04 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 27/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.91M (0.00M, Peak 8.06M) | Time:00:00.11 | Remaining:00:00.03 | Mem:0.40M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 28/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.11 | Remaining:00:00.03 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 29/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.11 | Remaining:00:00.03 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 30/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.11 | Remaining:00:00.03 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 31/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.12 | Remaining:00:00.03 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 32/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.12 | Remaining:00:00.03 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 33/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.91M (0.00M, Peak 8.06M) | Time:00:00.12 | Remaining:00:00.03 | Mem:0.40M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 34/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.91M (0.00M, Peak 8.06M) | Time:00:00.12 | Remaining:00:00.03 | Mem:0.40M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 35/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.12 | Remaining:00:00.03 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 36/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.12 | Remaining:00:00.03 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 37/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.12 | Remaining:00:00.03 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 38/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.91M (0.00M, Peak 8.06M) | Time:00:00.12 | Remaining:00:00.02 | Mem:0.40M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 39/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.12 | Remaining:00:00.02 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 41/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.13 | Remaining:00:00.02 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 42/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.13 | Remaining:00:00.02 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 43/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.13 | Remaining:00:00.02 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 44/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.13 | Remaining:00:00.02 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 45/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.13 | Remaining:00:00.02 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 46/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.13 | Remaining:00:00.02 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 47/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.13 | Remaining:00:00.01 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 48/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.13 | Remaining:00:00.01 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 49/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.13 | Remaining:00:00.01 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 50/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.13 | Remaining:00:00.01 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 51/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.13 | Remaining:00:00.01 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 52/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.13 | Remaining:00:00.01 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 53/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.13 | Remaining:00:00.01 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 55/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.14 | Remaining:00:00.01 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 56/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.14 | Remaining:00:00.01 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 57/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.14 | Remaining:00:00.00 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 58/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.14 | Remaining:00:00.00 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 59/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.14 | Remaining:00:00.00 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 60/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.14 | Remaining:00:00.00 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 61/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.14 | Remaining:00:00.00 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 62/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.14 | Remaining:00:00.00 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 63/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.95M (0.00M, Peak 8.06M) | Time:00:00.14 | Remaining:00:00.00 | Mem:0.44M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 64/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.84M (0.00M, Peak 8.06M) | Time:00:00.14 | Remaining:00:00.00 | Mem:0.33M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 64/64, Sample 1/1
+26-05 22:48:54 (debug) Fra:340 Mem:7.81M (0.00M, Peak 8.06M) | Time:00:00.14 | Mem:0.30M, Peak:0.44M | Scene, RenderLayer | Path Tracing Tile 64/64
+26-05 22:48:54 (debug) Fra:340 Mem:7.81M (0.00M, Peak 8.06M) | Time:00:00.14 | Mem:0.30M, Peak:0.44M | Scene, RenderLayer | Finished
+26-05 22:48:54 (debug) Fra:340 Mem:7.50M (0.00M, Peak 8.06M) | Time:00:00.14 | Sce: Scene Ve:0 Fa:0 La:0
+26-05 22:48:54 (debug) Saved: 'C:\dev\git\sheepit-client\test-data\1_0340.png'
+26-05 22:48:54 (debug)  Time: 00:00.24 (Saving: 00:00.09)
+26-05 22:48:54 (debug) Blender quit
+26-05 22:48:54 (debug) AL lib: (EE) UpdateDeviceParams: Failed to set 44100hz, got 48000hz instead
+26-05 22:48:54 (debug) end of rendering
+26-05 22:48:54 (debug) Job::render pictureFilename: 'C:\dev\git\sheepit-client\test-data\1_0340.png'
+Frame rendered in 0min2s
+26-05 22:48:54 (debug) GUI Frame rendered in 0min2s
+Rendering (remaining )
+Rendering 
+Compute method: 
+26-05 22:48:54 (debug) will validate Job (numFrame '0340' sceneMD5 '4753a1cec7ed5aaa6f0e02438a82e4a5' rendererMD5 'dba4924a43c27d7dbc35b853f51e6292' ID '1' pictureFilename 'C:\dev\git\sheepit-client\test-data\1_0340.png' jobPath 'compute-method.blend' gpu true name 'Can Blender be launch?' extras '' updateRenderingStatusMethod 'remainingtime' render com.sheepit.client.RenderProcess@13e60433)
+26-05 22:48:54 (debug) Server::HTTPSendFile(https://client.sheepit-renderfarm.com/server/send_frame.php?job=1&frame=0340&rendertime=2&memoryused=8060&extras=,C:\dev\git\sheepit-client\test-data\1_0340.png)
+Frames rendered: 1
+Requesting Job
+26-05 22:48:58 (debug) GUI Requesting Job
+26-05 22:48:58 (debug) Server::requestJob
+26-05 22:49:05 (debug) Server::HTTPRequest url(https://client.sheepit-renderfarm.com/server/request_job.php?computemethod=1&cpu_cores=4&ram_max=2000000&rendertime_max=2700)
+Frames remaining: 33003
+Credits earned: 0
+26-05 22:49:07 (debug) Got work to do id: 3156292 frame: 0073
+Rendering project "delirium diffuse and light"
+Reusing cached renderer
+26-05 22:49:07 (debug) GUI Reusing cached renderer
+Reusing cached project
+26-05 22:49:07 (debug) GUI Reusing cached project
+Extracting renderer
+26-05 22:49:07 (debug) GUI Extracting renderer

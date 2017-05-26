@@ -49,8 +49,8 @@ public class Configuration {
 	private String proxy;
 	private int maxUploadingJob;
 	private int nbCores;
-	private int maxMemory; // max memory allowed for render
-	private int maxRenderTime; // max render time per frame allowed
+	private int maxMemory; // max memory allowed for render in kB
+	private int maxRenderTime; // max render time per frame allowed in seconds 
 	private int priority;
 	private String block_list;
 	private ComputeType computeMethod;
