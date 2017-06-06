@@ -74,6 +74,7 @@ import com.sheepit.client.Configuration.ComputeType;
 import com.sheepit.client.Error.ServerCode;
 import com.sheepit.client.exception.FermeException;
 import com.sheepit.client.exception.FermeExceptionBadResponseFromServer;
+import com.sheepit.client.exception.FermeExceptionNoRendererAvailable;
 import com.sheepit.client.exception.FermeExceptionNoRightToRender;
 import com.sheepit.client.exception.FermeExceptionNoSession;
 import com.sheepit.client.exception.FermeExceptionNoSpaceLeftOnDevice;
@@ -330,6 +331,9 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 					}
 					else if (ret == ServerCode.JOB_REQUEST_ERROR_DEAD_SESSION) {
 						throw new FermeExceptionNoSession();
+					}
+					else if (ret == ServerCode.JOB_REQUEST_ERROR_RENDERER_NOT_AVAILABLE) {
+						throw new FermeExceptionNoRendererAvailable();
 					}
 					else if (ret == ServerCode.JOB_REQUEST_ERROR_SESSION_DISABLED) {
 						throw new FermeExceptionSessionDisabled();
