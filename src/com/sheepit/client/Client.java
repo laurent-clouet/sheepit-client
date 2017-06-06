@@ -34,6 +34,7 @@ import com.sheepit.client.Error.ServerCode;
 import com.sheepit.client.Error.Type;
 import com.sheepit.client.exception.FermeException;
 import com.sheepit.client.exception.FermeExceptionBadResponseFromServer;
+import com.sheepit.client.exception.FermeExceptionNoRendererAvailable;
 import com.sheepit.client.exception.FermeExceptionNoRightToRender;
 import com.sheepit.client.exception.FermeExceptionNoSession;
 import com.sheepit.client.exception.FermeExceptionNoSpaceLeftOnDevice;
@@ -179,6 +180,17 @@ public class Client {
 				}
 				catch (FermeExceptionSessionDisabled e) {
 					this.gui.error(Error.humanString(Error.Type.SESSION_DISABLED));
+					// should wait forever to actually display the message to the user
+					while (true) {
+						try {
+							Thread.sleep(100000);
+						}
+						catch (InterruptedException e1) {
+						}
+					}
+				}
+				catch (FermeExceptionNoRendererAvailable e) {
+					this.gui.error(Error.humanString(Error.Type.RENDERER_NOT_AVAILABLE));
 					// should wait forever to actually display the message to the user
 					while (true) {
 						try {
