@@ -269,7 +269,7 @@ public class Client {
 					continue; // go back to ask job
 				}
 				catch (FermeException e) {
-					this.gui.error("Client::renderingManagement exception requestJob (1) " + e.getMessage());
+					this.gui.error("Client::run exception requestJob (1) " + e.getMessage());
 					StringWriter sw = new StringWriter();
 					PrintWriter pw = new PrintWriter(sw);
 					e.printStackTrace(pw);
@@ -327,7 +327,7 @@ public class Client {
 				if (this.renderingJob.simultaneousUploadIsAllowed() == false) { // power or compute_method job, need to upload right away
 					ret = confirmJob(this.renderingJob);
 					if (ret != Error.Type.OK) {
-						gui.error("Client::renderingManagement problem with confirmJob (returned " + ret + ")");
+						gui.error("Client::run problem with confirmJob (returned " + ret + ")");
 						sendError(step);
 					}
 					else {
