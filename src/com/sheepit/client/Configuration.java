@@ -24,6 +24,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.LinkedList;
@@ -47,9 +49,9 @@ public class Configuration {
 	private String proxy;
 	private int maxUploadingJob;
 	private int nbCores;
-	private int maxMemory; // max memory allowed for render
+	private int maxMemory; // max memory allowed for render in kB
+	private int maxRenderTime; // max render time per frame allowed in seconds 
 	private int priority;
-	private int block_time; // in minutes
 	private String block_list;
 	private ComputeType computeMethod;
 	private GPUDevice GPUDevice;
@@ -59,15 +61,18 @@ public class Configuration {
 	private boolean autoSignIn;
 	private String UIType;
 	private int tileSize;
+	private String hostname;
 	
 	public Configuration(File cache_dir_, String login_, String password_) {
 		this.login = login_;
 		this.password = password_;
 		this.proxy = null;
+		this.hostname = this.getDefaultHostname();
 		this.static_exeDirName = "exe";
 		this.maxUploadingJob = 1;
 		this.nbCores = -1; // ie not set
 		this.maxMemory = -1; // ie not set
+		this.maxRenderTime = -1; // ie not set
 		this.priority = 19; // default lowest
 		this.computeMethod = null;
 		this.GPUDevice = null;
@@ -82,6 +87,7 @@ public class Configuration {
 		this.UIType = null;
 		this.tileSize = -1; // ie not set
 	}
+	
 	
 	public String toString() {
 		return String.format("Configuration (workingDirectory '%s')", this.workingDirectory.getAbsolutePath());
@@ -123,14 +129,6 @@ public class Configuration {
 		this.maxUploadingJob = max;
 	}
 	
-	public void setBlockTime(int minutes) {
-		this.block_time = minutes;
-	}
-	
-	public int getBlockTime() {
-		return this.block_time;
-	}
-	
 	public void setBlockList(String blockList) {
 		this.block_list = blockList;
 		BlockList.getInstance().setBlockList(blockList);
@@ -154,6 +152,14 @@ public class Configuration {
 	
 	public int getMaxMemory() {
 		return this.maxMemory;
+	}
+	
+	public void setMaxRenderTime(int max) {
+		this.maxRenderTime = max;
+	}
+	
+	public int getMaxRenderTime() {
+		return this.maxRenderTime;
 	}
 	
 	public void setUsePriority(int priority) {
@@ -204,6 +210,12 @@ public class Configuration {
 				this.workingDirectory.delete(); // hoho
 				this.workingDirectory.mkdir();
 				this.workingDirectory.deleteOnExit();
+				
+				// since there is no working directory and the client will be working in the system temp directory, 
+				// we can also set up a 'permanent' directory for immutable files (like renderer binary)
+				
+				this.storageDirectory = new File(this.workingDirectory.getParent() + File.separator + "sheepit_binary_cache");
+				this.storageDirectory.mkdir();
 			}
 			catch (IOException e) {
 				e.printStackTrace();
@@ -212,6 +224,7 @@ public class Configuration {
 		else {
 			this.userSpecifiedACacheDir = true;
 			this.workingDirectory = cache_dir_;
+			this.storageDirectory = cache_dir_;
 		}
 		
 	}
@@ -268,6 +281,23 @@ public class Configuration {
 	
 	public int getTileSize() {
 		return this.tileSize;
+	}
+	
+	public void setHostname(String hostname_) {
+		this.hostname = hostname_;
+	}
+	
+	public String getHostname() {
+		return this.hostname;
+	}
+	
+	public String getDefaultHostname() {
+		try {
+			return InetAddress.getLocalHost().getHostName();
+		}
+		catch (UnknownHostException e) {
+			return null;
+		}
 	}
 	
 	public void cleanWorkingDirectory() {

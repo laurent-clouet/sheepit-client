@@ -38,6 +38,7 @@ public class GuiTextOneLine implements Gui {
 	private String creditsEarned;
 	private int sigIntCount = 0;
 	
+	private String computeMethod;
 	private String status;
 	private String line;
 	
@@ -51,6 +52,7 @@ public class GuiTextOneLine implements Gui {
 		remaining = 0;
 		creditsEarned = null;
 		status = "";
+		computeMethod = "";
 		line = "";
 	}
 	
@@ -147,6 +149,11 @@ public class GuiTextOneLine implements Gui {
 	}
 	
 	@Override
+	public void setComputeMethod(String computeMethod_) {
+		computeMethod = computeMethod_;
+	}
+	
+	@Override
 	public Client getClient() {
 		return client;
 	}
@@ -155,7 +162,7 @@ public class GuiTextOneLine implements Gui {
 		int charToRemove = line.length();
 		
 		System.out.print("\r");
-		line = String.format("Frames rendered: %d remaining: %d Credits earned: %s | %s %s", rendered, remaining, creditsEarned != null ? creditsEarned : "unknown", project, status + (exiting ? " (Exiting after this frame)" : ""));
+		line = String.format("Frames rendered: %d remaining: %d Credits earned: %s | %s using %s %s", rendered, remaining, creditsEarned != null ? creditsEarned : "unknown", project, computeMethod, status + (exiting ? " (Exiting after this frame)" : ""));
 		System.out.print(line);
 		for (int i = line.length(); i <= charToRemove; i++) {
 			System.out.print(" ");

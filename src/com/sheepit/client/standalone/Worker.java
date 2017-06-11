@@ -58,8 +58,6 @@ public class Worker {
 	@Option(name = "-max-uploading-job", usage = "", metaVar = "1", required = false)
 	private int max_upload = -1;
 	
-	@Option(name = "-block_time", usage = "max rendertime in minutes for projects. Projects with larger rendertime will be blocked automated", metaVar = "0", required = false)
-	private int block_time = 0;
 	
 	@Option(name = "-block_list", usage = "File where to store / load the list of blocked projects", metaVar = "blocklist.dat", required = false)
 	private String block_list = "blocklist.dat";
@@ -75,6 +73,9 @@ public class Worker {
 	
 	@Option(name = "-memory", usage = "Maximum memory allow to be used by renderer (in MB)", required = false)
 	private int max_ram = -1;
+	
+	@Option(name = "-rendertime", usage = "Maximum time allow for each frame (in minute)", required = false)
+	private int max_rendertime = -1;
 	
 	@Option(name = "--verbose", usage = "Display log", required = false)
 	private boolean print_log = false;
@@ -129,7 +130,6 @@ public class Worker {
 		config.setPrintLog(print_log);
 		config.setUsePriority(priority);
 		
-		config.setBlockTime(block_time);
 		config.setBlockList(block_list);
 		
 		
@@ -213,6 +213,10 @@ public class Worker {
 		
 		if (max_ram > 0) {
 			config.setMaxMemory(max_ram * 1000);
+		}
+		
+		if (max_rendertime > 0) {
+			config.setMaxRenderTime(max_rendertime * 60);
 		}
 		
 		if (method != null) {

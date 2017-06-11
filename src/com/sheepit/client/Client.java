@@ -234,7 +234,7 @@ public class Client {
 				}
 				catch (FermeExceptionServerOverloaded e) {
 					int wait = 15;
-					int time_sleep = 1000 * 60 * wait;
+					int time_sleep = 1000*(int)Math.random() * 60 * wait;
 					this.gui.status(String.format("Server is overloaded and cannot give frame to render. Will retry in %s minutes", wait));
 					try {
 						Thread.sleep(time_sleep);
@@ -246,7 +246,7 @@ public class Client {
 				}
 				catch (FermeExceptionServerInMaintenance e) {
 					int wait = 15;
-					int time_sleep = 1000 * 60 * wait;
+					int time_sleep = 1000*(int)Math.random() * 60 * wait;
 					this.gui.status(String.format("Server is in maintenance and cannot give frame to render. Will retry in %s minutes", wait));
 					try {
 						Thread.sleep(time_sleep);
@@ -258,7 +258,7 @@ public class Client {
 				}
 				catch (FermeExceptionBadResponseFromServer e) {
 					int wait = 15;
-					int time_sleep = 1000 * 60 * wait;
+					int time_sleep = 1000*(int)Math.random() * 60 * wait;
 					this.gui.status(String.format("Bad answer from server. Will retry in %s minutes", wait));
 					try {
 						Thread.sleep(time_sleep);
@@ -279,7 +279,7 @@ public class Client {
 				}
 				
 				if (this.renderingJob == null) { // no job
-					int time_sleep = 1000 * 60 * 15;
+					int time_sleep = 1000*(int)Math.random() * 60 * 15;
 					Date wakeup_time = new Date(new Date().getTime() + time_sleep);
 					this.gui.status(String.format("No job available. Sleeping for 15 minutes (will wake up at %tR)", wakeup_time));
 					this.gui.displayStats(new Stats());
@@ -492,8 +492,11 @@ public class Client {
 			this.server.HTTPSendFile(this.server.getPage("error") + args, temp_file.getAbsolutePath());
 			temp_file.delete();
 		}
-		catch (Exception e1) {
-			e1.printStackTrace();
+		catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			e.printStackTrace(pw);
+			this.log.debug("Client::sendError Exception " + e + " stacktrace: " + sw.toString());
 			// no exception should be raised to actual launcher (applet or standalone)
 		}
 		
@@ -606,6 +609,7 @@ public class Client {
 		gui.setRenderingProjectName("");
 		gui.setRemainingTime("");
 		gui.setRenderingTime("");
+		gui.setComputeMethod("");
 		if (err != Error.Type.OK) {
 			this.log.error("Client::work problem with runRenderer (ret " + err + ")");
 			return err;

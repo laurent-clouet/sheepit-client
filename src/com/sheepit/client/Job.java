@@ -36,6 +36,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,9 +50,6 @@ import com.sheepit.client.os.OS;
 public class Job {
 	public static final String UPDATE_METHOD_BY_REMAINING_TIME = "remainingtime";
 	public static final String UPDATE_METHOD_BLENDER_INTERNAL_BY_PART = "blenderinternal";
-	
-	private Pattern memoryPeakPatter = Pattern.compile("[Pp]eak[: ]+(\\d+\\.\\d+[GMK])");
-	private Pattern memoryPeakValuePatter = Pattern.compile("\\d+\\.\\d+[GMK]");
 	
 	private String numFrame;
 	private String sceneMD5;
@@ -72,6 +72,12 @@ public class Job {
 	private Gui gui;
 	private Configuration config;
 	private Log log;
+	private boolean time_error = false;
+	
+
+	private Pattern memoryPeakPatter = Pattern.compile("[Pp]eak[: ]+(\\d+\\.\\d+[GMK])");
+	private Pattern memoryPeakValuePatter = Pattern.compile("\\d+\\.\\d+[GMK]");
+			
 	
 	public Job(Configuration config_, Gui gui_, Log log_, String id_, String frame_, String path_, boolean use_gpu, String command_, String script_, String sceneMd5_, String rendererMd5_, String name_, String password_, String extras_, boolean synchronous_upload_, String update_method_) {
 		config = config_;
@@ -97,15 +103,11 @@ public class Job {
 		render = new RenderProcess();
 	}
 	
-	public void block() {
-		block("");
-	}
-	
 	public void block(String message) {
 		setAskForRendererKill(true);
 		setUserBlockJob(true);
-		BlockList.getInstance().blockJob(sceneMD5, String.format("%s: %s", name, message));
 		RenderProcess process = getProcessRender();
+		BlockList.getInstance().blockJob(sceneMD5, String.format("%s: %s", name, message));
 		if (process != null) {
 			OS.getOS().kill(process.getProcess());
 		}
@@ -236,15 +238,17 @@ public class Job {
 	}
 	
 	public Error.Type render() {
-		
 		gui.status("Rendering");
 		RenderProcess process = getProcessRender();
+		Timer timerOfMaxRenderTime = null;
 		String core_script = "";
 		if (getUseGPU() && config.getGPUDevice() != null && config.getComputeMethod() != ComputeType.CPU) {
 			core_script = "sheepit_set_compute_device(\"CUDA\", \"GPU\", \"" + config.getGPUDevice().getCudaName() + "\")\n";
+			gui.setComputeMethod("GPU");
 		}
 		else {
 			core_script = "sheepit_set_compute_device(\"NONE\", \"CPU\", \"CPU\")\n";
+			gui.setComputeMethod("CPU");
 		}
 		core_script += String.format("bpy.context.scene.render.tile_x = %1$d\nbpy.context.scene.render.tile_y = %1$d\n", getTileSize());
 		File script_file = null;
@@ -321,6 +325,24 @@ public class Job {
 			getProcessRender().setProcess(os.exec(command, new_env));
 			BufferedReader input = new BufferedReader(new InputStreamReader(getProcessRender().getProcess().getInputStream()));
 			
+			if (config.getMaxRenderTime() > 0) {
+				timerOfMaxRenderTime = new Timer();
+				timerOfMaxRenderTime.schedule(new TimerTask() {
+					@Override
+					public void run() {
+						RenderProcess process = getProcessRender();
+						if (process != null) {
+							long duration = (new Date().getTime() - process.getStartTime() ) / 1000; // in seconds
+							if (config.getMaxRenderTime() > 0 &&  duration > config.getMaxRenderTime()) {
+								log.debug("Killing render because process duration");
+								block("Killing render because process duration");
+								setAskForRendererKill(true);
+							}
+						}
+					}
+				}, config.getMaxRenderTime() * 1000 + 2000); // +2s to be sure the delay is over
+			}
+			
 			long last_update_status = 0;
 			log.debug("renderer output");
 			try {
@@ -328,21 +350,22 @@ public class Job {
 					log.debug(line);
 					
 					updateRenderingMemoryPeak(line);
-					log.debug("Memory configured; " + config.getMaxMemory() + "KB - Memory used: " + process.getMemoryUsed());
-					if ((config.getMaxMemory() > 0) && (process.getMemoryUsed() > config.getMaxMemory())) {
+					if (config.getMaxMemory() != -1 && process.getMemoryUsed() > config.getMaxMemory()) {
 						String message = "Blocking render because process ram used (" + process.getMemoryUsed() + "k) is over user setting (" + config.getMaxMemory() + "k)";
-						log.info(message);
+						log.debug(message);
 						process.finish();
 						if (script_file != null) {
 							script_file.delete();
 						}
 						block(message);
-						
 						return Error.Type.RENDERER_OUT_OF_MEMORY;
 					}
 					
 					if ((new Date().getTime() - last_update_status) > 2000) { // only call the update every two seconds
 						updateRenderingStatus(line);
+						if (time_error){
+							return Error.Type.RENDERER_KILLED_BY_USER_OVER_TIME;
+						}
 						last_update_status = new Date().getTime();
 					}
 					Type error = detectError(line);
@@ -370,12 +393,16 @@ public class Job {
 			log.error("Job::render exception(A) " + err + " stacktrace " + sw.toString());
 			return Error.Type.FAILED_TO_EXECUTE;
 		}
-		/* block project to prevent rendering again*/
-		block_project_uptime(getProcessRender().getStartTime());
 		
 		int exit_value = process.exitValue();
 		process.finish();
-		
+		if (timerOfMaxRenderTime != null) {
+			timerOfMaxRenderTime.cancel();
+		}
+
+		/* block project to prevent rendering again*/
+		block_project_uptime(getProcessRender().getStartTime());
+
 		if (script_file != null) {
 			script_file.delete();
 		}
@@ -393,6 +420,13 @@ public class Job {
 		
 		if (getAskForRendererKill()) {
 			log.debug("Job::render been asked to end render");
+			
+			long duration = (new Date().getTime() - process.getStartTime() ) / 1000; // in seconds
+			if (config.getMaxRenderTime() > 0 && duration > config.getMaxRenderTime()) {
+				log.debug("Render killed because process duration (" + duration + "s) is over user setting (" + config.getMaxRenderTime() + "s)");
+				return Error.Type.RENDERER_KILLED_BY_USER_OVER_TIME;
+			}
+			
 			if (files.length != 0) {
 				new File(files[0].getAbsolutePath()).delete();
 			}
@@ -445,38 +479,39 @@ public class Job {
 		return Error.Type.OK;
 	}
 	
-	private void block_project(long startTime, long total_duration) {
-		block_project_time(startTime, total_duration);
-	}
 	
 	private void block_project_uptime(long startTime) {
-		if (config.getBlockTime() == 0) {
+		if (config.getMaxRenderTime() == 0) {
 			return;
 		}
 		long up_time = (new Date().getTime() - startTime) / 1000 / 60;
-		if (up_time > config.getBlockTime()) {
-			String message = String.format("Blocked by total_render_time (%d min used but %d min allowed)", up_time, config.getBlockTime());
+		if (up_time > config.getMaxRenderTime()) {
+			String message = String.format("Blocked by total_render_time (%d min used but %d min allowed)", up_time, config.getMaxRenderTime());
 			System.out.println(message);
 			mark_blocked(message);
+			time_error = true;
 		}
 	}
 	
+	
 	private void block_project_time(long startTime, long total_duration) {
-		if (config.getBlockTime() == 0) {
+		if (config.getMaxRenderTime() <= 0) {
 			return;
 		}
 		long up_time = new Date().getTime() - startTime;
 		if (up_time < 60000) { //wait at least 60 seconds to get good total estimation
 			return;
 		}
-		long total_min = total_duration / 1000 / 60;
-		if (total_min > config.getBlockTime()) {
-			String message = String.format("Blocked by time (%d min used but %d min allowed)", total_min, config.getBlockTime());
+		long total_min = total_duration / 1000 ;
+		if (total_min > config.getMaxRenderTime()) {
+			String message = String.format("Blocked by time (%d min used estimated but %d min allowed)", total_min / 60, config.getMaxRenderTime() /60);
 			System.out.println(message);
 			block(message);
+			time_error = true;
 		}
+		
 	}
-	
+
 	private void updateRenderingStatus(String line) {
 		if (getUpdateRenderingStatusMethod() != null && getUpdateRenderingStatusMethod().equals(Job.UPDATE_METHOD_BLENDER_INTERNAL_BY_PART)) {
 			String search = " Part ";
@@ -492,10 +527,9 @@ public class Job {
 							long end_render = (new Date().getTime() - this.render.getStartTime()) * total / current;
 							Date date = new Date(end_render);
 							gui.setRemainingTime(String.format("%s %% (%s)", (int) (100.0 - 100.0 * current / total), Utils.humanDuration(date)));
-							block_project(this.render.getStartTime(), end_render);
+							block_project_time(this.render.getStartTime(), end_render);
 							return;
 						}
-						
 					}
 					catch (NumberFormatException e) {
 						System.out.println("Exception 92: " + e);
@@ -530,7 +564,7 @@ public class Job {
 						gui.setRemainingTime(Utils.humanDuration(date));
 						getProcessRender().setRemainingDuration((int) (date.getTime() / 1000));
 						long end_render = date.getTime() + new Date().getTime() - this.render.getStartTime();
-						block_project(this.render.getStartTime(), end_render);
+						block_project_time(this.render.getStartTime(), end_render);
 					}
 					catch (ParseException err) {
 						log.error("Client::updateRenderingStatus ParseException " + err);
@@ -631,6 +665,17 @@ public class Job {
 			// Blender quit
 			// end of rendering
 			return Type.RENDERER_OUT_OF_VIDEO_MEMORY;
+		}
+		else if (line.indexOf("CUDA error: Invalid value in cuTexRefSetAddress(") != -1) {
+			// Fra:83 Mem:1201.77M (0.00M, Peak 1480.94M) | Time:00:59.30 | Mem:894.21M, Peak:894.21M | color 3, RenderLayer | Updating Mesh | Copying Strands to device
+			// Fra:83 Mem:1316.76M (0.00M, Peak 1480.94M) | Time:01:02.84 | Mem:1010.16M, Peak:1010.16M | color 3, RenderLayer | Cancel | CUDA error: Invalid value in cuTexRefSetAddress(NULL, texref, cuda_device_ptr(mem.device_pointer), size)
+			// Error: CUDA error: Invalid value in cuTexRefSetAddress(NULL, texref, cuda_device_ptr(mem.device_pointer), size)
+			// Fra:83 Mem:136.82M (0.00M, Peak 1480.94M) | Time:01:03.40 | Sce: color 3 Ve:0 Fa:0 La:0
+			// Blender quit
+			// CUDA error: Invalid value in cuTexRefSetAddress(NULL, texref, cuda_device_ptr(mem.device_pointer), size)
+			// Refer to the Cycles GPU rendering documentation for possible solutions:
+			// http://www.blender.org/manual/render/cycles/gpu_rendering.html
+			return Error.Type.RENDERER_OUT_OF_VIDEO_MEMORY;
 		}
 		else if (line.indexOf("CUDA device supported only with compute capability") != -1) {
 			// found bundled python: /tmp/xx/2.73/python

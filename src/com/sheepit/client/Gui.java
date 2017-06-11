@@ -40,5 +40,7 @@ public interface Gui {
 	
 	public void setClient(Client cli);
 	
+	public void setComputeMethod(String computeMethod_);
+	
 	public Client getClient();
 }
