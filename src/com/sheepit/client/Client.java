@@ -34,6 +34,7 @@ import com.sheepit.client.Error.ServerCode;
 import com.sheepit.client.Error.Type;
 import com.sheepit.client.exception.FermeException;
 import com.sheepit.client.exception.FermeExceptionBadResponseFromServer;
+import com.sheepit.client.exception.FermeExceptionNoRendererAvailable;
 import com.sheepit.client.exception.FermeExceptionNoRightToRender;
 import com.sheepit.client.exception.FermeExceptionNoSession;
 import com.sheepit.client.exception.FermeExceptionNoSpaceLeftOnDevice;
@@ -188,6 +189,17 @@ public class Client {
 						}
 					}
 				}
+				catch (FermeExceptionNoRendererAvailable e) {
+					this.gui.error(Error.humanString(Error.Type.RENDERER_NOT_AVAILABLE));
+					// should wait forever to actually display the message to the user
+					while (true) {
+						try {
+							Thread.sleep(100000);
+						}
+						catch (InterruptedException e1) {
+						}
+					}
+				}
 				catch (FermeExceptionNoSession e) {
 					// User has no session need to re-authenticate
 					ret = this.server.getConfiguration();
@@ -269,7 +281,7 @@ public class Client {
 					continue; // go back to ask job
 				}
 				catch (FermeException e) {
-					this.gui.error("Client::renderingManagement exception requestJob (1) " + e.getMessage());
+					this.gui.error("Client::run exception requestJob (1) " + e.getMessage());
 					StringWriter sw = new StringWriter();
 					PrintWriter pw = new PrintWriter(sw);
 					e.printStackTrace(pw);
@@ -327,7 +339,7 @@ public class Client {
 				if (this.renderingJob.simultaneousUploadIsAllowed() == false) { // power or compute_method job, need to upload right away
 					ret = confirmJob(this.renderingJob);
 					if (ret != Error.Type.OK) {
-						gui.error("Client::renderingManagement problem with confirmJob (returned " + ret + ")");
+						gui.error("Client::run problem with confirmJob (returned " + ret + ")");
 						sendError(step);
 					}
 					else {

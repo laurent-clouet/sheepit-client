@@ -133,7 +133,7 @@ public class GuiTextOneLine implements Gui {
 	
 	@Override
 	public void setRemainingTime(String time_) {
-		status = "Rendering (remaining " + time_ + ")";
+		status = "(remaining " + time_ + ")";
 		updateLine();
 	}
 	
@@ -162,7 +162,7 @@ public class GuiTextOneLine implements Gui {
 		int charToRemove = line.length();
 		
 		System.out.print("\r");
-		line = String.format("Frames rendered: %d remaining: %d Credits earned: %s | %s using %s %s", rendered, remaining, creditsEarned != null ? creditsEarned : "unknown", project, computeMethod, status + (exiting ? " (Exiting after this frame)" : ""));
+		line = String.format("Frames: %d Points: %s | %s %s %s", rendered, creditsEarned != null ? creditsEarned : "unknown", project, computeMethod, status + (exiting ? " (Exiting after this frame)" : ""));
 		System.out.print(line);
 		for (int i = line.length(); i <= charToRemove; i++) {
 			System.out.print(" ");
