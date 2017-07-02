@@ -225,8 +225,15 @@ public class Settings implements Activity {
 		
 		CPU cpu = new CPU();
 		if (cpu.cores() > 1) { // if only one core is available, no need to show the choice
+			double step = 1;
+			double display = (double)cpu.cores() / step;
+			while (display > 10) {
+				step += 1.0;
+				display = (double)cpu.cores() / step;
+			}
+			
 			cpuCores = new JSlider(1, cpu.cores());
-			cpuCores.setMajorTickSpacing(1);
+			cpuCores.setMajorTickSpacing((int)(step));
 			cpuCores.setMinorTickSpacing(1);
 			cpuCores.setPaintTicks(true);
 			cpuCores.setPaintLabels(true);
@@ -252,9 +259,14 @@ public class Settings implements Activity {
 		int all_ram = os.getMemory();
 		ram = new JSlider(0, all_ram);
 		int step = 1000000;
+		double display = (double)all_ram / (double)step;
+		while (display > 10) {
+			step += 1000000;
+			display = (double)all_ram / (double)step;
+		}
 		Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
 		for (int g = 0; g < all_ram; g += step) {
-			labelTable.put(new Integer(g), new JLabel("" + (g / step)));
+			labelTable.put(new Integer(g), new JLabel("" + (g / 1000000)));
 		}
 		ram.setMajorTickSpacing(step);
 		ram.setLabelTable(labelTable);
