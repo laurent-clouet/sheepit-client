@@ -286,7 +286,7 @@ public class Configuration {
 			return InetAddress.getLocalHost().getHostName();
 		}
 		catch (UnknownHostException e) {
-			return null;
+			return "";
 		}
 	}
 	
