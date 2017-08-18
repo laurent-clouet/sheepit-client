@@ -63,15 +63,13 @@ public class Updater {
 		
 		System.out.println("everything is fine will launch " + jarPath);
 		
-		String[] argsToClient = {};
-		
 		try {
 			ClassLoader classLoader = new URLClassLoader(new URL[] { new File(jarPath).toURI().toURL() });
 			Class<?> c = classLoader.loadClass("com.sheepit.client.standalone.Worker");
 			
-			Method m = c.getMethod("main", new Class[] { argsToClient.getClass() });
+			Method m = c.getMethod("main", new Class[] { argsFromMain.getClass() });
 			m.setAccessible(true);
-			m.invoke(null, new Object[] { argsToClient });
+			m.invoke(null, new Object[] { argsFromMain });
 		}
 		catch (ReflectiveOperationException e) {
 			e.printStackTrace();
