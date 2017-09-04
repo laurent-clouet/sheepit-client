@@ -300,6 +300,16 @@ public class Settings implements Activity {
 		priority.setValue(config.getPriority());
 		JLabel priorityLabel = new JLabel(high_priority_support ? "Priority (High <-> Low):" : "Priority (Normal <-> Low):" );
 		
+		compute_devices_constraints.weightx = 1.0 / gpus.size();
+		compute_devices_constraints.gridx = 0;
+		compute_devices_constraints.gridy++;
+		
+		gridbag.setConstraints(priorityLabel, compute_devices_constraints);
+		compute_devices_panel.add(priorityLabel);
+		
+		compute_devices_constraints.gridx = 1;
+		compute_devices_constraints.weightx = 1.0;
+		
 		gridbag.setConstraints(priority, compute_devices_constraints);
 		compute_devices_panel.add(priority);
 		

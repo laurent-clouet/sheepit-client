@@ -37,6 +37,7 @@ public class GuiTextOneLine implements Gui {
 	private int remaining;
 	private String creditsEarned;
 	private int sigIntCount = 0;
+	
 	private String computeMethod;
 	private String status;
 	private String line;
@@ -63,6 +64,7 @@ public class GuiTextOneLine implements Gui {
 			cli_input_observer.addListener(new CLIInputActionHandler());
 			Thread cli_input_observer_thread = new Thread(cli_input_observer);
 			cli_input_observer_thread.start();
+			
 			Signal.handle(new Signal("INT"), new SignalHandler() {
 				@Override
 				public void handle(Signal signal) {
