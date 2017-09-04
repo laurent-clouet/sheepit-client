@@ -207,8 +207,12 @@ public class Working implements Activity {
 		
 		// last frame
 		JPanel last_frame_panel = new JPanel();
+		last_frame_panel.setLayout(new BoxLayout(last_frame_panel, BoxLayout.Y_AXIS));
 		last_frame_panel.setBorder(BorderFactory.createTitledBorder("Last rendered frame"));
 		lastRender.setIcon(new ImageIcon(new BufferedImage(200, 120, BufferedImage.TYPE_INT_ARGB)));
+		lastRender.setAlignmentX(Component.CENTER_ALIGNMENT);
+		lastRenderTime.setAlignmentX(Component.CENTER_ALIGNMENT);
+		last_frame_panel.add(lastRenderTime);
 		last_frame_panel.add(lastRender);
 		
 		ImageIcon image = new ImageIcon(getClass().getResource("/title.png"));
