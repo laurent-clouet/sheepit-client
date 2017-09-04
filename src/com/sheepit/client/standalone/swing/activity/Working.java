@@ -167,54 +167,6 @@ public class Working implements Activity {
 		last_frame_panel.add(lastRenderTime);
 		last_frame_panel.add(lastRender);
 		
-		// user info
-		JPanel session_info_panel = new JPanel(new SpringLayout());
-		session_info_panel.setBorder(BorderFactory.createTitledBorder("Session infos"));
-		
-		JLabel user_info_credits_this_session = new JLabel("Points earned: ", JLabel.TRAILING);
-		JLabel user_info_total_rendertime_this_session = new JLabel("Duration: ", JLabel.TRAILING);
-		JLabel user_info_rendered_frame_this_session = new JLabel("Rendered frames: ", JLabel.TRAILING);
-		
-		session_info_panel.add(user_info_credits_this_session);
-		session_info_panel.add(creditEarned);
-		
-		session_info_panel.add(user_info_rendered_frame_this_session);
-		session_info_panel.add(renderedFrameContent);
-		
-		session_info_panel.add(user_info_total_rendertime_this_session);
-		session_info_panel.add(user_info_total_rendertime_this_session_value);
-		
-		// global stats
-		JPanel global_stats_panel = new JPanel(new SpringLayout());
-		global_stats_panel.setBorder(BorderFactory.createTitledBorder("Global stats"));
-		
-		JLabel global_stats_machine_connected = new JLabel("Machines connected: ", JLabel.TRAILING);
-		JLabel global_stats_remaining_frame = new JLabel("Remaining frames: ", JLabel.TRAILING);
-		JLabel global_stats_waiting_project = new JLabel("Remaining projects: ", JLabel.TRAILING);
-		JLabel global_stats_user_points = new JLabel("User's points: ", JLabel.TRAILING);
-		
-		global_stats_panel.add(global_stats_waiting_project);
-		global_stats_panel.add(waiting_projects_value);
-		
-		global_stats_panel.add(global_stats_machine_connected);
-		global_stats_panel.add(connected_machines_value);
-		
-		global_stats_panel.add(global_stats_remaining_frame);
-		global_stats_panel.add(remainingFrameContent);
-		
-		global_stats_panel.add(global_stats_user_points);
-		global_stats_panel.add(user_info_points_total_value);
-		
-		// last frame
-		JPanel last_frame_panel = new JPanel();
-		last_frame_panel.setLayout(new BoxLayout(last_frame_panel, BoxLayout.Y_AXIS));
-		last_frame_panel.setBorder(BorderFactory.createTitledBorder("Last rendered frame"));
-		lastRender.setIcon(new ImageIcon(new BufferedImage(200, 120, BufferedImage.TYPE_INT_ARGB)));
-		lastRender.setAlignmentX(Component.CENTER_ALIGNMENT);
-		lastRenderTime.setAlignmentX(Component.CENTER_ALIGNMENT);
-		last_frame_panel.add(lastRenderTime);
-		last_frame_panel.add(lastRender);
-		
 		ImageIcon image = new ImageIcon(getClass().getResource("/title.png"));
 		JLabel labelImage = new JLabel(image);
 		labelImage.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -282,26 +234,6 @@ public class Working implements Activity {
 	
 	public void setComputeMethod(String computeMethod_) {
 		this.current_project_compute_method_value.setText(computeMethod_);
-	}
-	
-	public void displayStats(Stats stats) {
-		DecimalFormat df = new DecimalFormat("##,##,##,##,##,##,##0");
-		remainingFrameContent.setText(df.format(stats.getRemainingFrame()));
-		creditEarned.setText(df.format(stats.getCreditsEarnedDuringSession()));
-		user_info_points_total_value.setText(df.format(stats.getCreditsEarned()));
-		waiting_projects_value.setText(df.format(stats.getWaitingProject()));
-		connected_machines_value.setText(df.format(stats.getConnectedMachine()));
-		updateTime();
-	}
-	
-	}
-	
-	public void setRemainingTime(String time_) {
-		currrent_project_progression_value.setText("<html>" + time_ + "</html>");
-	}
-	
-	public void setRenderingTime(String time_) {
-		current_project_duration_value.setText("<html>" + time_ + "</html>");
 	}
 	
 	public void displayStats(Stats stats) {
