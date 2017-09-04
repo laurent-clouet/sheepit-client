@@ -68,11 +68,7 @@ public class GPUDevice {
 	@Override
 	public String toString() {
 		return "GPUDevice [type=" + type + ", model='" + model + "', memory=" + memory + ", id=" + id + "]";
-<<<<<<< 2d321357b509083b7db1a41922e388976e685ef5
 	}	
-=======
-	}
->>>>>>> Add support of OpenCL
 	
 	public int getRecommandedTileSize() {
 		// GPU
