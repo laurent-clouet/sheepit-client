@@ -661,13 +661,12 @@ public class Client {
 		}
 		File localFile = new File(local_path);
 		String remoteFilename = localFile.getName();
-		System.out.println("download: " + local_path + " from " + remoteFilename);
+		this.gui.status("download: " + local_path + " from " + remoteFilename);
 		FileOutputStream fileWriter;
 		try {
 			fileWriter = new FileOutputStream(localFile);
 
 			boolean rc = fileProxy.downloadFile(remoteFilename, fileWriter);
-			System.out.println(rc);
 			fileWriter.close();
 			return rc;
 		} catch (Exception e) {
@@ -685,12 +684,11 @@ public class Client {
 		System.out.println("fileproxy Defined");
 		File localFile = new File(local_path);
 		String remoteFilename = localFile.getName();
-		System.out.println("upload: " + local_path + " to " + remoteFilename);
+		this.gui.status("upload: " + local_path + " to " + remoteFilename);
 		FileInputStream fileReaderStream;
 		try {
 			fileReaderStream = new FileInputStream(localFile);
 			boolean rc =fileProxy.uploadFile(remoteFilename, fileReaderStream);
-			System.out.println(rc);
 			fileReaderStream.close();
 			return rc;
 		} catch (Exception e) {

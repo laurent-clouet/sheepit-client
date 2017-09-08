@@ -15,6 +15,8 @@ public class FileProxy {
 	private int fileProxyPort = -1;
 	private String fileProxyUser;
 	private String fileProxyPaswd;
+	private Log log;
+	
 	
 	
 	private FTPClient ftpClient;
@@ -24,6 +26,8 @@ public class FileProxy {
 		this.fileProxyPort = config.getFileProxyPort();
 		this.fileProxyUser = config.getFileProxyUser();
 		this.fileProxyPaswd = config.getFileProxyPasswd();
+		
+		this.log = Log.getInstance(config);
 		
 		if(fileProxyPort == -1){
 			fileProxyPort = 21;
@@ -35,11 +39,11 @@ public class FileProxy {
 
 	private boolean initConnection() throws SocketException, IOException {
 		if (fileProxyUrl == null) {
-			System.out.println("noUrl");
+			log.error("noUrl");
 			return false;
 		}
 		if(ftpClient.isConnected()){
-			System.out.println("is connected");
+			log.debug("is connected");
 			return true;
 		}
 
@@ -47,31 +51,31 @@ public class FileProxy {
 		ftpClient.login(this.fileProxyUser, this.fileProxyPaswd);
 		int replyCode = ftpClient.getReplyCode();
 		if (!FTPReply.isPositiveCompletion(replyCode)) {
-			System.out.println("not connected");
+			log.error("not connected");
 			ftpClient.disconnect();
 			return false;
 		}
 		ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
 		ftpClient.enterLocalPassiveMode();		
-		System.out.println("connected");
+		log.debug("connected");
 		return true;
 	}
 
 	public boolean uploadFile(String remoteFilename, InputStream uploadStream) {
 		try {
-			System.out.println("init connection");
+			log.debug("init connection");
 			if (!this.initConnection()) {
-				System.out.println("faild to init connection");
+				log.error("faild to init connection");
 				return false;
 				// transfer file
 			}
-			System.out.println( "staret upload");
+			log.debug( "staret upload");
 			boolean rc = ftpClient.storeFile(remoteFilename, uploadStream);
-			System.out.println("upload " + remoteFilename + ": " + rc);
-			System.out.println(ftpClient.getReplyString());
+			log.debug("upload " + remoteFilename + ": " + rc);
+			log.debug(ftpClient.getReplyString());
 			return rc;
 		} catch (Exception e) {
-			System.out.println("error: " + e.getMessage() + e.getLocalizedMessage());
+			log.error( e.getMessage() + e.getLocalizedMessage());
 			return false;
 		}
 	}
@@ -83,10 +87,10 @@ public class FileProxy {
 				// transfer file
 			}
 			boolean rc = ftpClient.retrieveFile(remoteFilename, downloadStream);
-			System.out.println(rc);
+			log.debug("download " + remoteFilename + ": " + rc);
 			return rc;
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			log.error(e.getMessage());
 			return false;
 		}
 	}
