@@ -336,7 +336,7 @@ public class Job {
 							if (config.getMaxRenderTime() > 0 &&  duration > config.getMaxRenderTime()) {
 								log.debug("Killing render because process duration");
 								block("Killing render because process duration");
-								setAskForRendererKill(true);
+								
 							}
 						}
 					}
