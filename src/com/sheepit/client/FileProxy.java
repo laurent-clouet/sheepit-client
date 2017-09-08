@@ -115,7 +115,10 @@ public class FileProxy {
 		OutputStream prepareOutputStream = new ByteArrayOutputStream();
 		
 		long max_wait_time = 1000 * 5 * fileProxyMaxCacheWaitTime; // 5Min
-		long sleeptime = 10000;
+		long sleeptime = max_wait_time / 20;
+		if (sleeptime > 30000){
+			sleeptime = 30000;
+		}
 		boolean rc ;
 		while((rc = ftpClient.retrieveFile(prepareFilename, prepareOutputStream)) && (max_wait_time > 0)){
 			max_wait_time = max_wait_time - sleeptime ;
