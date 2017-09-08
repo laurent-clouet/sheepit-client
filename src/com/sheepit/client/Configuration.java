@@ -51,6 +51,7 @@ public class Configuration {
 	private int fileProxyPort = 21;
 	private String fileProxyUser;
 	private String fileProxyPasswd;
+	private int fileProxyMaxCacheWaitTime = 10;
 	private int maxUploadingJob;
 	private int nbCores;
 	private int maxMemory; // max memory allowed for render in kB
@@ -460,5 +461,15 @@ public class Configuration {
 
 	public void setFileProxyPort(int fileProxyPort) {
 		this.fileProxyPort = fileProxyPort;
+	}
+
+
+	public int getFileProxyMaxCacheWaitTime() {
+		return fileProxyMaxCacheWaitTime;
+	}
+
+
+	public void setFileProxyMaxCacheWaitTime(int fileProxyMaxCacheWaitTime) {
+		this.fileProxyMaxCacheWaitTime = fileProxyMaxCacheWaitTime;
 	}
 }

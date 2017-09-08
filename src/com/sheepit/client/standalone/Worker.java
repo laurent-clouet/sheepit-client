@@ -98,6 +98,10 @@ public class Worker {
 	@Option(name = "-file_proxy_password", usage = "Password for the Ftp-Server to cache project files end render at local network",  required = false)
 	private String file_proxy_password = null;
 	
+	@Option(name = "-file_proxy_max_cache_wait_time", usage = "Max Waittime in minutes for the cache to get a started file to be uploaded before starting to download the file from sheepit (timeout for double download prevention )",  metaVar = "10", required = false)
+	private String file_proxy_max_cache_wait_time = null;
+
+	
 	@Option(name = "-extras", usage = "Extras data push on the authentication request", required = false)
 	private String extras = null;
 	
@@ -271,6 +275,9 @@ public class Worker {
 		}
 		if(file_proxy_password != null) {
 			config.setFileProxyPasswd(file_proxy_password);
+		}
+		if(file_proxy_max_cache_wait_time!= null) {
+			config.setFileProxyMaxCacheWaitTime(Integer.parseInt(file_proxy_max_cache_wait_time));
 		}
 		
 		

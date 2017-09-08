@@ -1,8 +1,12 @@
 package com.sheepit.client;
 
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringBufferInputStream;
 import java.net.SocketException;
 
 import org.apache.commons.net.ftp.FTP;
@@ -16,6 +20,7 @@ public class FileProxy {
 	private String fileProxyUser;
 	private String fileProxyPaswd;
 	private Log log;
+	private int fileProxyMaxCacheWaitTime;
 	
 	
 	
@@ -26,6 +31,7 @@ public class FileProxy {
 		this.fileProxyPort = config.getFileProxyPort();
 		this.fileProxyUser = config.getFileProxyUser();
 		this.fileProxyPaswd = config.getFileProxyPasswd();
+		this.fileProxyMaxCacheWaitTime = config.getFileProxyMaxCacheWaitTime();
 		
 		this.log = Log.getInstance(config);
 		
@@ -73,6 +79,9 @@ public class FileProxy {
 			boolean rc = ftpClient.storeFile(remoteFilename, uploadStream);
 			log.debug("upload " + remoteFilename + ": " + rc);
 			log.debug(ftpClient.getReplyString());
+
+			String prepareFilename = remoteFilename + ".prepare";
+			ftpClient.deleteFile(prepareFilename);
 			return rc;
 		} catch (Exception e) {
 			log.error( e.getMessage() + e.getLocalizedMessage());
@@ -86,13 +95,47 @@ public class FileProxy {
 				return false;
 				// transfer file
 			}
-			boolean rc = ftpClient.retrieveFile(remoteFilename, downloadStream);
-			log.debug("download " + remoteFilename + ": " + rc);
-			return rc;
+			boolean download_succeeded = ftpClient.retrieveFile(remoteFilename, downloadStream);
+			log.debug("download " + remoteFilename + ": " + download_succeeded);
+			if(download_succeeded){
+				return download_succeeded;
+			}
+			else{
+				return wait_for_upload(remoteFilename, downloadStream);
+			}
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			return false;
 		}
+	}
+	
+	private boolean wait_for_upload(String remoteFilename, OutputStream downloadStream) throws IOException, InterruptedException{
+		//check if the file would be downloaded by another process
+		String prepareFilename = remoteFilename + ".prepare";
+		OutputStream prepareOutputStream = new ByteArrayOutputStream();
+		
+		long max_wait_time = 1000 * 5 * fileProxyMaxCacheWaitTime; // 5Min
+		long sleeptime = 10000;
+		boolean rc ;
+		while((rc = ftpClient.retrieveFile(prepareFilename, prepareOutputStream)) && (max_wait_time > 0)){
+			max_wait_time = max_wait_time - sleeptime ;
+			Thread.sleep(sleeptime );
+		}
+		if (rc == true){
+			ftpClient.deleteFile(prepareFilename);
+		}
+		else{
+			rc = ftpClient.retrieveFile(remoteFilename, downloadStream);
+			if(rc){
+				return true;
+			}
+			else{
+				// not downloaded and no preparefile so this may be the first on
+				ftpClient.storeFile(prepareFilename, new ByteArrayInputStream("prepare".getBytes()));
+				return false;
+			}
+		}
+		return false;
 	}
 
 }
