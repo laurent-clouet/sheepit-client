@@ -119,6 +119,7 @@ public class FileProxy {
 		boolean rc ;
 		while((rc = ftpClient.retrieveFile(prepareFilename, prepareOutputStream)) && (max_wait_time > 0)){
 			max_wait_time = max_wait_time - sleeptime ;
+			log.info("Wait " + (max_wait_time/1000) + " seconds, that the file would be uploaded to fileproxy");
 			Thread.sleep(sleeptime );
 		}
 		if (rc == true){
