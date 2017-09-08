@@ -47,6 +47,7 @@ public class Configuration {
 	private String login;
 	private String password;
 	private String proxy;
+	private String fileProxyUrl = "localhost";
 	private int maxUploadingJob;
 	private int nbCores;
 	private int maxMemory; // max memory allowed for render in kB
@@ -416,5 +417,15 @@ public class Configuration {
 			return cpu != null && cpu.haveData();
 		}
 		return false;
+	}
+
+
+	public String getFileProxyUrl() {
+		return fileProxyUrl;
+	}
+
+
+	public void setFileProxyUrl(String fileProxyUrl) {
+		this.fileProxyUrl = fileProxyUrl;
 	}
 }

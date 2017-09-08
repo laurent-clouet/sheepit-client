@@ -7,5 +7,6 @@
 	<classpathentry kind="lib" path="extern/jna.jar"/>
 	<classpathentry kind="lib" path="extern/platform.jar"/>
 	<classpathentry kind="lib" path="extern/zip4j.jar"/>
+	<classpathentry kind="lib" path="extern/commons-net-3.6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
