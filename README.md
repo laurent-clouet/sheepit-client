@@ -20,6 +20,8 @@ Once you have a jar file, you can view the usage by running:
 
 When you are doing development work, you can use a mirror of the main site specially made for demo/dev. The mirror is located at **http://sandbox.sheepit-renderfarm.com**, and you can use it by passing `-server http://sandbox.sheepit-renderfarm.com` to your invocation of the client.
 
+When you are running multiple instances at a local network you could configure a local FTP server to cache the renderer and project files local. 
+
 At the command line ui (-ui text / -ui oneLine) you could type in the following commands and press enter to controll the client:
 
 * status: to get the current status of the client (paused, stoped, ...)
