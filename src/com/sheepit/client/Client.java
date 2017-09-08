@@ -713,7 +713,10 @@ public class Client {
 		}
 
 		if (download_proxy(local_path, download_type, this.gui)) {
-			return 0;
+			boolean md5_check = this.checkFile(ajob, local_path, md5_server);
+			if (md5_check){
+				return 0;
+			}
 		}
 
 		this.gui.status("Downloading " + download_type);

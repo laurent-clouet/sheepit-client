@@ -47,10 +47,10 @@ public class Configuration {
 	private String login;
 	private String password;
 	private String proxy;
-	private String fileProxyUrl = "localhost";
+	private String fileProxyUrl;
 	private int fileProxyPort = 21;
-	private String fileProxyUser = "bob";
-	private String fileProxyPasswd= "bob";
+	private String fileProxyUser;
+	private String fileProxyPasswd;
 	private int maxUploadingJob;
 	private int nbCores;
 	private int maxMemory; // max memory allowed for render in kB

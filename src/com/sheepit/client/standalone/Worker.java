@@ -86,6 +86,18 @@ public class Worker {
 	@Option(name = "-proxy", usage = "URL of the proxy", metaVar = "http://login:password@host:port", required = false)
 	private String proxy = null;
 	
+	@Option(name = "-file_proxy_url", usage = "Name of the Ftp-Server to cache project files end render at local network", required = false)
+	private String file_proxy_url= null;
+	
+	@Option(name = "-file_proxy_port", usage = "Port of the Ftp-Server to cache project files end render at local network",  metaVar = "21", required = false)
+	private String file_proxy_port = null;
+	
+	@Option(name = "-file_proxy_user", usage = "User for the Ftp-Server to cache project files end render at local network", required = false)
+	private String file_proxy_user = null;
+	
+	@Option(name = "-file_proxy_password", usage = "Password for the Ftp-Server to cache project files end render at local network",  required = false)
+	private String file_proxy_password = null;
+	
 	@Option(name = "-extras", usage = "Extras data push on the authentication request", required = false)
 	private String extras = null;
 	
@@ -247,6 +259,20 @@ public class Worker {
 				System.exit(2);
 			}
 		}
+		
+		if(file_proxy_url != null) {
+			config.setFileProxyUrl(file_proxy_url);
+		}
+		if(file_proxy_port != null) {
+			config.setFileProxyPort(Integer.parseInt(file_proxy_port));
+		}
+		if(file_proxy_user != null) {
+			config.setFileProxyUser(file_proxy_user);
+		}
+		if(file_proxy_password != null) {
+			config.setFileProxyPasswd(file_proxy_password);
+		}
+		
 		
 		if (extras != null) {
 			config.setExtras(extras);
