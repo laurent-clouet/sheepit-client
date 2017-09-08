@@ -85,7 +85,7 @@ public class Client {
 		String fileProxyUrl = config.getFileProxyUrl();
 		System.out.println("fileProxyUrl: " + fileProxyUrl);
 		if (fileProxyUrl != null) {
-			this.fileProxy = new FileProxy(fileProxyUrl);
+			this.fileProxy = new FileProxy(config);
 		}
 	}
 

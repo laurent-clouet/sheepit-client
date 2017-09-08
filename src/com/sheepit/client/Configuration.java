@@ -48,6 +48,9 @@ public class Configuration {
 	private String password;
 	private String proxy;
 	private String fileProxyUrl = "localhost";
+	private int fileProxyPort = 21;
+	private String fileProxyUser = "bob";
+	private String fileProxyPasswd= "bob";
 	private int maxUploadingJob;
 	private int nbCores;
 	private int maxMemory; // max memory allowed for render in kB
@@ -427,5 +430,35 @@ public class Configuration {
 
 	public void setFileProxyUrl(String fileProxyUrl) {
 		this.fileProxyUrl = fileProxyUrl;
+	}
+
+
+	public String getFileProxyUser() {
+		return fileProxyUser;
+	}
+
+
+	public void setFileProxyUser(String fileProxyUser) {
+		this.fileProxyUser = fileProxyUser;
+	}
+
+
+	public String getFileProxyPasswd() {
+		return fileProxyPasswd;
+	}
+
+
+	public void setFileProxyPasswd(String fileProxyPasswd) {
+		this.fileProxyPasswd = fileProxyPasswd;
+	}
+
+
+	public int getFileProxyPort() {
+		return fileProxyPort;
+	}
+
+
+	public void setFileProxyPort(int fileProxyPort) {
+		this.fileProxyPort = fileProxyPort;
 	}
 }

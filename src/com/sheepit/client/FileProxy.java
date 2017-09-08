@@ -12,11 +12,23 @@ import org.apache.commons.net.ftp.FTPReply;
 public class FileProxy {
 
 	private String fileProxyUrl;
-
+	private int fileProxyPort = -1;
+	private String fileProxyUser;
+	private String fileProxyPaswd;
+	
+	
 	private FTPClient ftpClient;
 
-	public FileProxy(String fileProxyUrl) {
-		this.fileProxyUrl = fileProxyUrl;
+	public FileProxy(Configuration config) {
+		this.fileProxyUrl = config.getFileProxyUrl();
+		this.fileProxyPort = config.getFileProxyPort();
+		this.fileProxyUser = config.getFileProxyUser();
+		this.fileProxyPaswd = config.getFileProxyPasswd();
+		
+		if(fileProxyPort == -1){
+			fileProxyPort = 21;
+		}
+		
 		this.ftpClient = new FTPClient();
 
 	}
@@ -31,8 +43,8 @@ public class FileProxy {
 			return true;
 		}
 
-		ftpClient.connect(fileProxyUrl);
-		ftpClient.login("bob", "bob");
+		ftpClient.connect(fileProxyUrl, fileProxyPort);
+		ftpClient.login(this.fileProxyUser, this.fileProxyPaswd);
 		int replyCode = ftpClient.getReplyCode();
 		if (!FTPReply.isPositiveCompletion(replyCode)) {
 			System.out.println("not connected");

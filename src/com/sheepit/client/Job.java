@@ -481,7 +481,7 @@ public class Job {
 	
 	
 	private void block_project_uptime(long startTime) {
-		if (config.getMaxRenderTime() == 0) {
+		if (config.getMaxRenderTime() <= 0) {
 			return;
 		}
 		long up_time = (new Date().getTime() - startTime) / 1000 / 60;
