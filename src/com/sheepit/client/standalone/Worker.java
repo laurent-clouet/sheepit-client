@@ -60,7 +60,7 @@ public class Worker {
 	@Option(name = "-max-uploading-job", usage = "", metaVar = "1", required = false)
 	private int max_upload = -1;
 	
-	@Option(name = "-gpu", usage = "CUDA name of the GPU used for the render, for example CUDA_0", metaVar = "CUDA_0", required = false)
+	@Option(name = "-gpu", usage = "Name of the GPU used for the render, for example CUDA_0 for Nvidia or OPENCL_0 for AMD/Intel card", metaVar = "CUDA_0", required = false)
 	private String gpu_device = null;
 	
 	@Option(name = "-compute-method", usage = "CPU: only use cpu, GPU: only use gpu, CPU_GPU: can use cpu and gpu (not at the same time) if -gpu is not use it will not use the gpu", metaVar = "CPU", required = false)
