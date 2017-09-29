@@ -99,7 +99,7 @@ public class Settings implements Activity {
 		Configuration config = parent.getConfiguration();
 		new SettingsLoader().merge(config);
 		
-		List<GPUDevice> gpus = GPU.listDevices();
+		List<GPUDevice> gpus = GPU.listDevices(config);
 		
 		GridBagConstraints constraints = new GridBagConstraints();
 		int currentRow = 0;

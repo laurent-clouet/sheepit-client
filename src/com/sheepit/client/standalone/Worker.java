@@ -63,6 +63,9 @@ public class Worker {
 	@Option(name = "-gpu", usage = "Name of the GPU used for the render, for example CUDA_0 for Nvidia or OPENCL_0 for AMD/Intel card", metaVar = "CUDA_0", required = false)
 	private String gpu_device = null;
 	
+	@Option(name = "--no-gpu", usage = "Don't detect GPUs", required = false)
+	private boolean no_gpu_detection = false;
+	
 	@Option(name = "-compute-method", usage = "CPU: only use cpu, GPU: only use gpu, CPU_GPU: can use cpu and gpu (not at the same time) if -gpu is not use it will not use the gpu", metaVar = "CPU", required = false)
 	private String method = null;
 	
@@ -127,6 +130,7 @@ public class Worker {
 		Configuration config = new Configuration(null, login, password);
 		config.setPrintLog(print_log);
 		config.setUsePriority(priority);
+		config.setDetectGPUs(! no_gpu_detection);
 		
 		if (cache_dir != null) {
 			File a_dir = new File(cache_dir);
