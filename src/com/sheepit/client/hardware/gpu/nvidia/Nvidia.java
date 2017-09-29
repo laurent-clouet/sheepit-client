@@ -16,7 +16,6 @@ public class Nvidia {
 		OS os = OS.getOS();
 		String path = os.getCUDALib();
 		if (path == null) {
-			System.out.println("Nvidia::getGpus no CUDA lib path found");
 			return null;
 		}
 		CUDA cudalib = null;
@@ -24,7 +23,6 @@ public class Nvidia {
 			cudalib = (CUDA) Native.loadLibrary(path, CUDA.class);
 		}
 		catch (java.lang.UnsatisfiedLinkError e) {
-			System.out.println("Nvidia::getGpus failed to load CUDA lib (path: " + path + ")");
 			return null;
 		}
 		catch (java.lang.ExceptionInInitializerError e) {
