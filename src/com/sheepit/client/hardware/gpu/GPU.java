@@ -27,9 +27,10 @@ import com.sheepit.client.hardware.gpu.nvidia.Nvidia;
 import com.sheepit.client.hardware.gpu.opencl.OpenCL;
 
 public class GPU {
-	public static List<GPUDevice> devices = new LinkedList<GPUDevice>();
+	public static List<GPUDevice> devices = null;
 	
 	public static boolean generate() {
+		devices = new LinkedList<GPUDevice>();
 		List<GPUDevice> gpus = new Nvidia().getGpus();
 		if (gpus != null) {
 			devices.addAll(gpus);
@@ -56,9 +57,12 @@ public class GPU {
 	}
 	
 	public static List<GPUDevice> listDevices(Configuration config) {
-		if (config.getDetectGPUs()) {
-			if (devices == null) {
+		if (devices == null) {
+			if (config.getDetectGPUs()) {
 				generate();
+			}
+			else {
+				new LinkedList<GPUDevice>();
 			}
 		}
 		
