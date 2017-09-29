@@ -62,7 +62,7 @@ public class GPU {
 				generate();
 			}
 			else {
-				new LinkedList<GPUDevice>();
+				devices = new LinkedList<GPUDevice>();
 			}
 		}
 		
