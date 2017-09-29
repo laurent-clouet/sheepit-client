@@ -193,7 +193,6 @@ public class Configuration {
 	}
 	
 	public void setDetectGPUs(boolean val) {
-		System.out.println("setDetectGPUs " + val);
 		this.detectGPUs = val;
 	}
 	
