@@ -4,15 +4,17 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.sheepit.client.hardware.gpu.GPUDevice;
+import com.sheepit.client.hardware.gpu.GPULister;
 import com.sheepit.client.os.OS;
 import com.sun.jna.Native;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.LongByReference;
 
-public class Nvidia {
+public class Nvidia implements GPULister {
 	public static String TYPE = "CUDA";
 	
-	public static List<GPUDevice> getGpus() {
+	@Override
+	public List<GPUDevice> getGpus() {
 		OS os = OS.getOS();
 		String path = os.getCUDALib();
 		if (path == null) {

@@ -31,12 +31,12 @@ public class GPU {
 	public static boolean generate() {
 		devices = new LinkedList<GPUDevice>();
 		
-		List<GPUDevice> gpus = Nvidia.getGpus();
+		List<GPUDevice> gpus = new Nvidia().getGpus();
 		if (gpus != null) {
 			devices.addAll(gpus);
 		}
 		
-		gpus = OpenCL.getGpus();
+		gpus = new OpenCL().getGpus();
 		if (gpus != null) {
 			devices.addAll(gpus);
 		}
