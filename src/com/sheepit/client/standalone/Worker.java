@@ -86,16 +86,19 @@ public class Worker {
 	@Option(name = "-proxy", usage = "URL of the proxy", metaVar = "http://login:password@host:port", required = false)
 	private String proxy = null;
 	
-	@Option(name = "-file_proxy_url", usage = "Name of the Ftp-Server to cache project files end render at local network", required = false)
+	@Option(name = "-file_proxy_url", usage = "Url for the ftp server: ftp://user:passwd@host:pror/path ", required = false)
 	private String file_proxy_url= null;
+
+	@Option(name = "-file_proxy_passive_mode", usage = " enable passive mode for ftp ", required = false)
+	private boolean file_proxy_passive_mode = false;
 	
-	@Option(name = "-file_proxy_port", usage = "Port of the Ftp-Server to cache project files end render at local network",  metaVar = "21", required = false)
+	@Option(name = "-file_proxy_port", usage = "deprecated: see file_proxy_url",  metaVar = "21", required = false)
 	private String file_proxy_port = null;
 	
-	@Option(name = "-file_proxy_user", usage = "User for the Ftp-Server to cache project files end render at local network", required = false)
+	@Option(name = "-file_proxy_user", usage = "deprecated: see file_proxy_url", required = false)
 	private String file_proxy_user = null;
 	
-	@Option(name = "-file_proxy_password", usage = "Password for the Ftp-Server to cache project files end render at local network",  required = false)
+	@Option(name = "-file_proxy_password", usage = "deprecated: see file_proxy_url",  required = false)
 	private String file_proxy_password = null;
 	
 	@Option(name = "-file_proxy_max_cache_wait_time", usage = "Max Waittime in minutes for the cache to get a started file to be uploaded before starting to download the file from sheepit (timeout for double download prevention )",  metaVar = "10", required = false)
@@ -267,6 +270,9 @@ public class Worker {
 		if(file_proxy_url != null) {
 			config.setFileProxyUrl(file_proxy_url);
 		}
+		if(file_proxy_passive_mode){
+			config.setFileProxyPassiveMode(file_proxy_passive_mode);
+		}
 		if(file_proxy_port != null) {
 			config.setFileProxyPort(Integer.parseInt(file_proxy_port));
 		}
@@ -279,7 +285,7 @@ public class Worker {
 		if(file_proxy_max_cache_wait_time!= null) {
 			config.setFileProxyMaxCacheWaitTime(Integer.parseInt(file_proxy_max_cache_wait_time));
 		}
-		
+	
 		
 		if (extras != null) {
 			config.setExtras(extras);

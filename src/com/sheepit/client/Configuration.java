@@ -47,10 +47,11 @@ public class Configuration {
 	private String login;
 	private String password;
 	private String proxy;
-	private String fileProxyUrl;
-	private int fileProxyPort = 21;
-	private String fileProxyUser;
-	private String fileProxyPasswd;
+	private String fileProxyUrl; 
+	private int fileProxyPort = 21; // deprecated  fileProxyUrl
+	private boolean fileProxyPassiveMode = false;
+	private String fileProxyUser; // deprecated fileProxyUrl
+	private String fileProxyPasswd; // deprecated fileProxyUrl
 	private int fileProxyMaxCacheWaitTime = 10;
 	private int maxUploadingJob;
 	private int nbCores;
@@ -471,5 +472,15 @@ public class Configuration {
 
 	public void setFileProxyMaxCacheWaitTime(int fileProxyMaxCacheWaitTime) {
 		this.fileProxyMaxCacheWaitTime = fileProxyMaxCacheWaitTime;
+	}
+
+
+	public boolean isFileProxyPassiveMode() {
+		return fileProxyPassiveMode;
+	}
+
+
+	public void setFileProxyPassiveMode(boolean fileProxyPassiveMode) {
+		this.fileProxyPassiveMode = fileProxyPassiveMode;
 	}
 }

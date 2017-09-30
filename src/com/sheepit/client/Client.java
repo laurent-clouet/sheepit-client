@@ -670,7 +670,8 @@ public class Client {
 			fileWriter.close();
 			return rc;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			log.error("Error on download");
+			log.error(e.getMessage() );
 			System.out.println(e.getMessage());
 			return false;
 		}
@@ -681,7 +682,7 @@ public class Client {
 			/* no file proxy defined */
 			return false;
 		}
-		System.out.println("fileproxy Defined");
+		System.out.println("fileproxy defined");
 		File localFile = new File(local_path);
 		String remoteFilename = localFile.getName();
 		this.gui.status("upload: " + local_path + " to " + remoteFilename);
@@ -692,7 +693,8 @@ public class Client {
 			fileReaderStream.close();
 			return rc;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			log.error("Error on upload");
+			log.error(e.getMessage() );
 			System.out.println(e.getMessage());
 			return false;
 		}
