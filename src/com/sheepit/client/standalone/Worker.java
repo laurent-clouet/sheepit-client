@@ -86,7 +86,7 @@ public class Worker {
 	@Option(name = "-proxy", usage = "URL of the proxy", metaVar = "http://login:password@host:port", required = false)
 	private String proxy = null;
 	
-	@Option(name = "-file_proxy_url ftp://user:passwd@host:prot/path", usage = "Url for the ftp server ", required = false)
+	@Option(name = "-file_proxy_url", usage = "Url for the ftp server", metaVar = "ftp://user:passwd@host:prot/path", required = false)
 	private String file_proxy_url= null;
 
 	@Option(name = "-file_proxy_passive_mode", usage = " enable passive mode for ftp ", required = false)

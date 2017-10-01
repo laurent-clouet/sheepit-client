@@ -49,7 +49,7 @@ public class FileProxy {
 		
 		String authority_str = fileProxyUrl.getAuthority();
 		
-		if (authority_str.indexOf('@') > 0) {
+		if ((authority_str != null) && (authority_str.indexOf('@') > 0)){
 			String authority[] = authority_str.split("@")[0].split(":");
 			this.fileProxyUser = authority[0];
 			this.fileProxyPaswd = authority[1];
