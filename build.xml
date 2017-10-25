@@ -41,7 +41,8 @@
                debug="${compile.debug}"
                optimize="${compile.optimize}"
                deprecation="${compile.deprecation}"
-               includes="**">
+               includes="**"
+        	   includeantruntime="false">
                <classpath>
                      <pathelement location="extern/platform.jar"/>
                      <pathelement location="extern/jna.jar"/>

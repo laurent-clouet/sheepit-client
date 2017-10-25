@@ -1,12 +1,10 @@
 package com.sheepit.client;
 
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.StringBufferInputStream;
 import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -28,6 +26,14 @@ public class FileProxy {
 
 	private FTPClient ftpClient;
 
+	private void error(String msg) {
+		log.error("FTP: " + msg);
+	}
+	private void debug(String msg) {
+		log.debug("FTP: " + msg);
+		
+	}
+	
 	public FileProxy(Configuration config) {
 		this.fileProxyPort = config.getFileProxyPort();
 		this.fileProxyUser = config.getFileProxyUser();
@@ -36,14 +42,14 @@ public class FileProxy {
 		this.passive_mode = config.isFileProxyPassiveMode();
 
 		this.log = Log.getInstance(null);
-		log.debug("initialice FileProxy");
+		debug("initialice FileProxy");
 		this.fileProxyDirectory = "/";
 
 		URI fileProxyUrl ;
 		try {
 			fileProxyUrl = new URI(config.getFileProxyUrl());
 		} catch (URISyntaxException e) {
-			log.error("Url " + config.getFileProxyUrl() + " is not valid" );
+			error("Url " + config.getFileProxyUrl() + " is not valid" );
 			return;
 		}
 		
@@ -74,26 +80,26 @@ public class FileProxy {
 			e.printStackTrace();
 		}
 		
-		log.debug("FileProxy initalized");
+		debug("FileProxy initalized");
 	}
 
 	private boolean initConnection() throws SocketException, IOException {
 		if (fileProxyHost == null) {
-			log.error("noHost");
+			error("noHost");
 			return false;
 		}
 		if (ftpClient.isConnected()) {
-			log.debug("is connected");
-			return true;
+			debug("is connected");
+			//return true;
 		}
 
 		ftpClient.connect(fileProxyHost, fileProxyPort);
 	
-		log.debug("login with User: " + this.fileProxyUser + " passwd: " + this.fileProxyPaswd);
+		debug("login with User: " + this.fileProxyUser );
 		ftpClient.login(this.fileProxyUser, this.fileProxyPaswd);
 		int replyCode = ftpClient.getReplyCode();
 		if (!FTPReply.isPositiveCompletion(replyCode)) {
-			log.error("not connected " + ftpClient.getReplyString());
+			error("not connected " + ftpClient.getReplyString());
 			ftpClient.disconnect();
 			return false;
 		}
@@ -107,29 +113,29 @@ public class FileProxy {
 			ftpClient.changeWorkingDirectory(fileProxyDirectory);
 		}
 		
-		log.debug("connected");
+		debug("connected");
 		return true;
 	}
 
 	public boolean uploadFile(String remoteFilename, InputStream uploadStream) {
 		try {
-			log.debug("init connection");
+			debug("init connection");
 			if (!this.initConnection()) {
-				log.error("faild to init connection");
+				error("faild to init connection");
 				return false;
 				// transfer file
 			}
-			log.debug("staret upload");
+			debug("staret upload");
 			boolean rc = ftpClient.storeFile(remoteFilename, uploadStream);
-			log.debug("uploaded " + remoteFilename + ": " + rc);
-			log.debug(ftpClient.getReplyString());
+			debug("uploaded " + remoteFilename + ": " + rc);
+			debug(ftpClient.getReplyString());
 
 			String prepareFilename = remoteFilename + ".prepare";
 			ftpClient.deleteFile(prepareFilename);
 			return rc;
 		} catch (Exception e) {
-			log.error("failed to upload file");
-			log.error(e.getMessage() + e.getLocalizedMessage());
+			error("failed to upload file");
+			error(e.getMessage() + e.getLocalizedMessage());
 			return false;
 		}
 	}
@@ -142,14 +148,14 @@ public class FileProxy {
 			}
 			boolean download_succeeded = ftpClient.retrieveFile(remoteFilename, downloadStream);
 			if (download_succeeded) {
-				log.debug("download succeeded");
+				debug("download succeeded");
 				return download_succeeded;
 			} else {
 				return wait_for_upload(remoteFilename, downloadStream);
 			}
 		} catch (Exception e) {
-			log.error("downlaod failed");
-			log.error(e.getMessage());
+			error("downlaod failed");
+			error(e.getMessage());
 			return false;
 		}
 	}
