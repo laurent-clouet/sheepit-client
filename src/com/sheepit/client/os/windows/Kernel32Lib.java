@@ -21,7 +21,6 @@ import com.sun.jna.Library;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 import com.sun.jna.platform.win32.BaseTSD;
-import com.sun.jna.platform.win32.BaseTSD.DWORD_PTR;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinDef.DWORD;
 import com.sun.jna.platform.win32.WinNT;
@@ -211,14 +210,5 @@ public interface Kernel32Lib extends Library {
 	 * @param uMode The process error mode. This parameter can be one or more of the following values.
 	 */
 	public int SetErrorMode(DWORD uMode);
-	
-	/**
-	 * See : https://msdn.microsoft.com/en-us/library/windows/desktop/ms686247%28v=vs.85%29.aspx
-	 * 
-	 * @param hThread
-	 * @param dwThreadAffinityMask
-	 * @return If the function succeeds, the return value is the thread's previous affinity mask.
-	 */
-	public boolean SetProcessAffinityMask(HANDLE hProcess, DWORD_PTR dwProcessAffinityMask);
 	
 }

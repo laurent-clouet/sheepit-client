@@ -26,7 +26,6 @@ import java.util.List;
 
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
-import com.sun.jna.platform.win32.BaseTSD.DWORD_PTR;
 import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.Kernel32Util;
 import com.sun.jna.platform.win32.WinDef.DWORD;
@@ -120,20 +119,6 @@ public class WinProcess {
 	
 	public boolean setPriority(int priority) {
 		return this.kernel32lib.SetPriorityClass(this.handle, priority);
-	}
-	
-	public boolean setAffinity(int numberCores) {
-		// affects the process to a specific core/cpu, it will reduce the number of switch between core
-		// that way the machine will look "less busy" since default behavior for windows is to put 4 cores 
-		// at 25% instead of 1 core at 100% but from the user point of view, it introduce lag.
-		if (numberCores > 0) {
-			long coreAffinity = 0;
-			for (int i = 0; i < numberCores; i++) {
-				coreAffinity |= 1L << i;
-			}
-			return this.kernel32lib.SetProcessAffinityMask(this.handle, new DWORD_PTR(coreAffinity));
-		}
-		return false;
 	}
 	
 	private void terminate() {
