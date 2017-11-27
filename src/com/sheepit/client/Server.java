@@ -183,9 +183,8 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 		OS os = OS.getOS();
 		HttpURLConnection connection = null;
 		try {
-			String url_contents = String.format("%s%s?login=%s&password=%s&cpu_family=%s&cpu_model=%s&cpu_model_name=%s&cpu_cores=%s&os=%s&ram=%s&bits=%s&version=%s&hostname=%s&extras=%s", 
-				this.base_url,
-				"/server/config.php",
+			String url_remote = this.base_url + "/server/config.php";
+			String parameters = String.format("login=%s&password=%s&cpu_family=%s&cpu_model=%s&cpu_model_name=%s&cpu_cores=%s&os=%s&ram=%s&bits=%s&version=%s&hostname=%s&extras=%s", 
 				URLEncoder.encode(this.user_config.login(), "UTF-8"),
 				URLEncoder.encode(this.user_config.password(), "UTF-8"),
 				URLEncoder.encode(os.getCPU().family(), "UTF-8"),
@@ -198,9 +197,9 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				this.user_config.getJarVersion(),
 				URLEncoder.encode(this.user_config.getHostname(), "UTF-8"),
 				this.user_config.getExtras());
-			this.log.debug("Server::getConfiguration url " + url_contents);
+			this.log.debug("Server::getConfiguration url " + url_remote);
 			
-			connection = this.HTTPRequest(url_contents);
+			connection = this.HTTPRequest(url_remote, parameters);
 			int r = connection.getResponseCode();
 			String contentType = connection.getContentType();
 			
