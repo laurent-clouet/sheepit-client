@@ -346,10 +346,16 @@ public class Configuration {
 		List<File> files_local = new LinkedList<File>();
 		List<File> files = new LinkedList<File>();
 		if (this.workingDirectory != null) {
-			files.addAll(Arrays.asList(this.workingDirectory.listFiles()));
+			File[] filesInDirectory = this.workingDirectory.listFiles();
+			if (filesInDirectory != null) {
+				files.addAll(Arrays.asList(filesInDirectory));
+			}
 		}
 		if (this.storageDirectory != null) {
-			files.addAll(Arrays.asList(this.storageDirectory.listFiles()));
+			File[] filesInDirectory = this.storageDirectory.listFiles();
+			if (filesInDirectory != null) {
+				files.addAll(Arrays.asList(filesInDirectory));
+			}
 		}
 		
 		for (File file : files) {
