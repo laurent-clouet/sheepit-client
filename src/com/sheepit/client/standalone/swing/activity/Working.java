@@ -404,7 +404,7 @@ public class Working implements Activity {
 			if (client != null) {
 				Job job = client.getRenderingJob();
 				if (job != null) {
-					job.block();
+					job.block("blocked by user");
 				}
 			}
 		}

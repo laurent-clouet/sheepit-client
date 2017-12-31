@@ -47,11 +47,18 @@ public class Configuration {
 	private String login;
 	private String password;
 	private String proxy;
+	private String fileProxyUrl; 
+	private int fileProxyPort = 21; // deprecated  fileProxyUrl
+	private boolean fileProxyPassiveMode = false;
+	private String fileProxyUser; // deprecated fileProxyUrl
+	private String fileProxyPasswd; // deprecated fileProxyUrl
+	private int fileProxyMaxCacheWaitTime = 10;
 	private int maxUploadingJob;
 	private int nbCores;
-	private int maxMemory; // max memory allowed for render
-	private int maxRenderTime; // max render time per frame allowed
+	private int maxMemory; // max memory allowed for render in kB
+	private int maxRenderTime; // max render time per frame allowed in seconds 
 	private int priority;
+	private String block_list;
 	private ComputeType computeMethod;
 	private GPUDevice GPUDevice;
 	private boolean printLog;
@@ -126,6 +133,15 @@ public class Configuration {
 	
 	public void setMaxUploadingJob(int max) {
 		this.maxUploadingJob = max;
+	}
+	
+	public void setBlockList(String blockList) {
+		this.block_list = blockList;
+		BlockList.getInstance().setBlockList(blockList);
+	}
+	
+	public String getBlockList() {
+		return this.block_list;
 	}
 	
 	public void setUseNbCores(int nbcores) {
@@ -412,5 +428,65 @@ public class Configuration {
 			return cpu != null && cpu.haveData();
 		}
 		return false;
+	}
+
+
+	public String getFileProxyUrl() {
+		return fileProxyUrl;
+	}
+
+
+	public void setFileProxyUrl(String fileProxyUrl) {
+		this.fileProxyUrl = fileProxyUrl;
+	}
+
+
+	public String getFileProxyUser() {
+		return fileProxyUser;
+	}
+
+
+	public void setFileProxyUser(String fileProxyUser) {
+		this.fileProxyUser = fileProxyUser;
+	}
+
+
+	public String getFileProxyPasswd() {
+		return fileProxyPasswd;
+	}
+
+
+	public void setFileProxyPasswd(String fileProxyPasswd) {
+		this.fileProxyPasswd = fileProxyPasswd;
+	}
+
+
+	public int getFileProxyPort() {
+		return fileProxyPort;
+	}
+
+
+	public void setFileProxyPort(int fileProxyPort) {
+		this.fileProxyPort = fileProxyPort;
+	}
+
+
+	public int getFileProxyMaxCacheWaitTime() {
+		return fileProxyMaxCacheWaitTime;
+	}
+
+
+	public void setFileProxyMaxCacheWaitTime(int fileProxyMaxCacheWaitTime) {
+		this.fileProxyMaxCacheWaitTime = fileProxyMaxCacheWaitTime;
+	}
+
+
+	public boolean isFileProxyPassiveMode() {
+		return fileProxyPassiveMode;
+	}
+
+
+	public void setFileProxyPassiveMode(boolean fileProxyPassiveMode) {
+		this.fileProxyPassiveMode = fileProxyPassiveMode;
 	}
 }

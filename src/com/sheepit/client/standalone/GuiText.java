@@ -49,7 +49,6 @@ public class GuiText implements Gui {
 	@Override
 	public void start() {
 		if (client != null) {
-			
 			CLIInputObserver cli_input_observer = new CLIInputObserver(client);
 			cli_input_observer.addListener(new CLIInputActionHandler());
 			Thread cli_input_observer_thread = new Thread(cli_input_observer);

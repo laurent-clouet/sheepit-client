@@ -58,6 +58,10 @@ public class Worker {
 	@Option(name = "-max-uploading-job", usage = "", metaVar = "1", required = false)
 	private int max_upload = -1;
 	
+	
+	@Option(name = "-block_list", usage = "File where to store / load the list of blocked projects", metaVar = "blocklist.dat", required = false)
+	private String block_list = "blocklist.dat";
+	
 	@Option(name = "-gpu", usage = "CUDA name of the GPU used for the render, for example CUDA_0", metaVar = "CUDA_0", required = false)
 	private String gpu_device = null;
 	
@@ -82,6 +86,25 @@ public class Worker {
 	@Option(name = "-proxy", usage = "URL of the proxy", metaVar = "http://login:password@host:port", required = false)
 	private String proxy = null;
 	
+	@Option(name = "-file_proxy_url", usage = "Url for the ftp server", metaVar = "ftp://user:passwd@host:prot/path", required = false)
+	private String file_proxy_url= null;
+
+	@Option(name = "-file_proxy_passive_mode", usage = " enable passive mode for ftp ", required = false)
+	private boolean file_proxy_passive_mode = false;
+	
+	@Option(name = "-file_proxy_port", usage = "deprecated: see file_proxy_url",  metaVar = "21", required = false)
+	private String file_proxy_port = null;
+	
+	@Option(name = "-file_proxy_user", usage = "deprecated: see file_proxy_url", required = false)
+	private String file_proxy_user = null;
+	
+	@Option(name = "-file_proxy_password", usage = "deprecated: see file_proxy_url",  required = false)
+	private String file_proxy_password = null;
+	
+	@Option(name = "-file_proxy_max_cache_wait_time", usage = "Max Waittime in minutes for the cache to get a started file to be uploaded before starting to download the file from sheepit (timeout for double download prevention )",  metaVar = "10", required = false)
+	private String file_proxy_max_cache_wait_time = null;
+
+	
 	@Option(name = "-extras", usage = "Extras data push on the authentication request", required = false)
 	private String extras = null;
 	
@@ -100,7 +123,7 @@ public class Worker {
 	@Option(name = "--no-systray", usage = "Don't use systray", required = false)
 	private boolean no_systray = false;
 	
-	@Option(name = "-priority", usage = "Set render process priority (19 lowest to -19 highest)", required = false)
+	@Option(name = "-priority", usage = "Set render process priority (19 lowest to -19 highest [need root rights])", required = false)
 	private int priority = 19;
 	
 	public static void main(String[] args) {
@@ -125,6 +148,9 @@ public class Worker {
 		Configuration config = new Configuration(null, login, password);
 		config.setPrintLog(print_log);
 		config.setUsePriority(priority);
+		
+		config.setBlockList(block_list);
+		
 		
 		if (cache_dir != null) {
 			File a_dir = new File(cache_dir);
@@ -240,6 +266,26 @@ public class Worker {
 				System.exit(2);
 			}
 		}
+		
+		if(file_proxy_url != null) {
+			config.setFileProxyUrl(file_proxy_url);
+		}
+		if(file_proxy_passive_mode){
+			config.setFileProxyPassiveMode(file_proxy_passive_mode);
+		}
+		if(file_proxy_port != null) {
+			config.setFileProxyPort(Integer.parseInt(file_proxy_port));
+		}
+		if(file_proxy_user != null) {
+			config.setFileProxyUser(file_proxy_user);
+		}
+		if(file_proxy_password != null) {
+			config.setFileProxyPasswd(file_proxy_password);
+		}
+		if(file_proxy_max_cache_wait_time!= null) {
+			config.setFileProxyMaxCacheWaitTime(Integer.parseInt(file_proxy_max_cache_wait_time));
+		}
+	
 		
 		if (extras != null) {
 			config.setExtras(extras);

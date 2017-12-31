@@ -28,6 +28,8 @@ public class CLIInputActionHandler implements CLIInputListener {
 	@Override
 	public void commandEntered(Client client, String command) {
 		int priorityLength = "priority".length();
+		int blockTimeLength = "block_time".length();
+		int memoryLength = "memory".length();
 		
 		//prevent Null Pointer at next step
 		if (command == null) {
@@ -39,7 +41,7 @@ public class CLIInputActionHandler implements CLIInputListener {
 		if (command.equalsIgnoreCase("block")) {
 			Job job = client.getRenderingJob();
 			if (job != null) {
-				job.block();
+				job.block("blocked by user");
 			}
 		}
 		else if (command.equalsIgnoreCase("resume")) {
@@ -64,11 +66,18 @@ public class CLIInputActionHandler implements CLIInputListener {
 		else if ((command.length() > priorityLength) && (command.substring(0, priorityLength).equalsIgnoreCase("priority"))) {
 			changePriority(client, command.substring(priorityLength));
 		}
+		else if ((command.length() > blockTimeLength ) && (command.substring(0, blockTimeLength).equalsIgnoreCase("block_time"))) {
+			changeMaxRenderTime(client, command.substring(blockTimeLength));
+		}
+		else if ((command.length() > memoryLength) && (command.substring(0, memoryLength).equalsIgnoreCase("memory"))) {
+			changeMaxMem(client, command.substring(memoryLength));
+		} 
 		else {
-			System.out.println("Unknown command: " + command);
 			System.out.println("status: display client status");
 			System.out.println("priority <n>: set the priority for the next renderjob");
 			System.out.println("block:  block project");
+			System.out.println("block_time n: automated block projects needing more than n minutes to render. 0 disables");
+			System.out.println("memory n: automated block projects needing more than n megabytes RAM to render. 0 disables");
 			System.out.println("pause:  pause client requesting new jobs");
 			System.out.println("resume: resume after client was paused");
 			System.out.println("stop:   exit after frame was finished");
@@ -89,7 +98,7 @@ public class CLIInputActionHandler implements CLIInputListener {
 		}
 		
 	}
-
+	
 	void displayStatus(Client client) {
 		if (client.isSuspended()) {
 			System.out.println("Status: paused");
@@ -99,6 +108,30 @@ public class CLIInputActionHandler implements CLIInputListener {
 		}
 		else {
 			System.out.println("Status: will exit after the current frame");
+		}
+	}
+	
+	void changeMaxRenderTime(Client client, String newMaxRenderTime) {
+		Configuration config = client.getConfiguration();
+		if (config != null) {
+			try {
+				config.setMaxRenderTime(Integer.parseInt(newMaxRenderTime.trim()));
+			}
+			catch (NumberFormatException e) {
+				System.out.println("Invalid block_time: " + newMaxRenderTime);
+			}
+		}
+	}
+
+	void changeMaxMem(Client client, String newMaxMemory) {
+		Configuration config = client.getConfiguration();
+		if (config != null) {
+			try {
+				config.setMaxMemory(Integer.parseInt(newMaxMemory.trim()) * 1000);
+			}
+			catch (NumberFormatException e) {
+				System.out.println("Invalid maxMemory: " + newMaxMemory + "MB");
+			}
 		}
 	}
 }

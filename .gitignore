@@ -1,2 +1,9 @@
 build
 bin
+
+block.dat
+blocklist.dat
+run.cmd
+test.cmd
+test-data/
+.settings
