@@ -795,7 +795,7 @@ public class Client {
 		
 		// we can remove the frame file
 		File frame = new File(ajob.getOutputImagePath());
-		frame.deleteOnExit();
+		frame.delete();
 		ajob.setOutputImagePath(null);
 		
 		this.isValidatingJob = false;
