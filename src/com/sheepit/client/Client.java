@@ -29,6 +29,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ThreadLocalRandom;
 
 import com.sheepit.client.Error.ServerCode;
 import com.sheepit.client.Error.Type;
@@ -233,7 +234,7 @@ public class Client {
 					}
 				}
 				catch (FermeServerDown e) {
-					int wait = 15;
+					int wait = ThreadLocalRandom.current().nextInt(10, 30 + 1); // max is exclusive
 					int time_sleep = 1000 * 60 * wait;
 					this.gui.status(String.format("Can not connect to server. Please check your connectivity. Will retry in %s minutes", wait));
 					try {
@@ -245,7 +246,7 @@ public class Client {
 					continue; // go back to ask job
 				}
 				catch (FermeExceptionServerOverloaded e) {
-					int wait = 15;
+					int wait = ThreadLocalRandom.current().nextInt(10, 30 + 1); // max is exclusive
 					int time_sleep = 1000 * 60 * wait;
 					this.gui.status(String.format("Server is overloaded and cannot give frame to render. Will retry in %s minutes", wait));
 					try {
@@ -257,7 +258,7 @@ public class Client {
 					continue; // go back to ask job
 				}
 				catch (FermeExceptionServerInMaintenance e) {
-					int wait = 15;
+					int wait = ThreadLocalRandom.current().nextInt(20, 30 + 1); // max is exclusive
 					int time_sleep = 1000 * 60 * wait;
 					this.gui.status(String.format("Server is in maintenance and cannot give frame to render. Will retry in %s minutes", wait));
 					try {
@@ -269,7 +270,7 @@ public class Client {
 					continue; // go back to ask job
 				}
 				catch (FermeExceptionBadResponseFromServer e) {
-					int wait = 15;
+					int wait = ThreadLocalRandom.current().nextInt(15, 30 + 1); // max is exclusive
 					int time_sleep = 1000 * 60 * wait;
 					this.gui.status(String.format("Bad answer from server. Will retry in %s minutes", wait));
 					try {
@@ -291,9 +292,10 @@ public class Client {
 				}
 				
 				if (this.renderingJob == null) { // no job
-					int time_sleep = 1000 * 60 * 15;
+					int wait = ThreadLocalRandom.current().nextInt(10, 30 + 1); // max is exclusive
+					int time_sleep = 1000 * 60 * wait;
 					Date wakeup_time = new Date(new Date().getTime() + time_sleep);
-					this.gui.status(String.format("No job available. Sleeping for 15 minutes (will wake up at %tR)", wakeup_time));
+					this.gui.status(String.format("No job available. Sleeping for %d minutes (will wake up at %tR)", wait, wakeup_time));
 					this.gui.displayStats(new Stats());
 					this.suspended = true;
 					int time_slept = 0;
