@@ -1,6 +1,10 @@
 language: java
 script: ant
 
+os:
+  - linux
+  - osx
+
 # safelist
 branches:
   only:
