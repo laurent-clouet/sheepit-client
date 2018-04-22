@@ -713,6 +713,7 @@ public class Client {
 			// unzip the archive
 			ret = Utils.unzipFileIntoDirectory(renderer_archive, renderer_path, null);
 			if (ret != 0) {
+				this.log.error("Client::prepareWorkingDirectory, error(1) with Utils.unzipFileIntoDirectory(" + renderer_archive + ", " + renderer_path + ") returned " + ret);
 				this.gui.error("Client::prepareWorkingDirectory, error with Utils.unzipFileIntoDirectory of the renderer (returned " + ret + ")");
 				return -1;
 			}
@@ -740,6 +741,7 @@ public class Client {
 			// unzip the archive
 			ret = Utils.unzipFileIntoDirectory(scene_archive, scene_path, ajob.getSceneArchivePassword());
 			if (ret != 0) {
+				this.log.error("Client::prepareWorkingDirectory, error(2) with Utils.unzipFileIntoDirectory(" + scene_archive + ", " + scene_path + ") returned " + ret);
 				this.gui.error("Client::prepareWorkingDirectory, error with Utils.unzipFileIntoDirectory of the scene (returned " + ret + ")");
 				return -2;
 			}
