@@ -37,6 +37,7 @@ import java.util.regex.Pattern;
 
 import javax.xml.bind.DatatypeConverter;
 
+import net.lingala.zip4j.model.UnzipParameters;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
@@ -51,11 +52,13 @@ public class Utils {
 	public static int unzipFileIntoDirectory(String zipFileName_, String destinationDirectory, String password) throws FermeExceptionNoSpaceLeftOnDevice {
 		try {
 			ZipFile zipFile = new ZipFile(zipFileName_);
+			UnzipParameters unzipParameters = new UnzipParameters();
+			unzipParameters.setIgnoreDateTimeAttributes(true);
 			
 			if (password != null && zipFile.isEncrypted()) {
 				zipFile.setPassword(password);
 			}
-			zipFile.extractAll(destinationDirectory);
+			zipFile.extractAll(destinationDirectory, unzipParameters);
 		}
 		catch (ZipException e) {
 			e.printStackTrace();
