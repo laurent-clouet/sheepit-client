@@ -19,6 +19,7 @@
 
 package com.sheepit.client.hardware.gpu;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -81,7 +82,23 @@ public class GPU {
 			return false;
 		}
 		
+		HashMap<Integer, GPUDevice> devicesWithPciId = new HashMap<Integer, GPUDevice>(count.getValue());
 		for (int num = 0; num < count.getValue(); num++) {
+			IntByReference aDevice = new IntByReference();
+			
+			result =  cudalib.cuDeviceGet(aDevice, num);
+			if (result != CUresult.CUDA_SUCCESS) {
+				System.out.println("GPU::generate cuDeviceGet failed (ret: " + CUresult.stringFor(result) + ")");
+				continue;
+			}
+			
+			IntByReference pciBusId = new IntByReference();
+			result =  cudalib.cuDeviceGetAttribute(pciBusId, CUDeviceAttribute.CU_DEVICE_ATTRIBUTE_PCI_BUS_ID, aDevice.getValue());
+			if (result != CUresult.CUDA_SUCCESS) {
+				System.out.println("GPU::generate cuDeviceGetAttribute for CU_DEVICE_ATTRIBUTE_PCI_BUS_ID failed (ret: " + CUresult.stringFor(result) + ")");
+				continue;
+			}
+			
 			byte name[] = new byte[256];
 			
 			result = cudalib.cuDeviceGetName(name, 256, num);
@@ -104,8 +121,19 @@ public class GPU {
 				return false;
 			}
 			
-			devices.add(new GPUDevice(new String(name).trim(), ram.getValue(), "CUDA_" + Integer.toString(num)));
+			devicesWithPciId.put(pciBusId.getValue(), new GPUDevice(new String(name).trim(), ram.getValue(), "FAKE"));
 		}
+		
+		// generate proper cuda id
+		// in theory a set to environment "CUDA_DEVICE_ORDER=PCI_BUS_ID" should be enough but it didn't work
+		int i = 0;
+		for (HashMap.Entry<Integer, GPUDevice> entry : devicesWithPciId.entrySet()){
+			GPUDevice aDevice = entry.getValue();
+			aDevice.setCudaName("CUDA_" + Integer.toString(i));
+			devices.add(aDevice);
+			i++;
+		}
+		
 		return true;
 	}
 	
