@@ -22,6 +22,7 @@ package com.sheepit.client.hardware.gpu;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import com.sheepit.client.os.OS;
 import com.sun.jna.Native;
@@ -127,7 +128,7 @@ public class GPU {
 		// generate proper cuda id
 		// in theory a set to environment "CUDA_DEVICE_ORDER=PCI_BUS_ID" should be enough but it didn't work
 		int i = 0;
-		for (HashMap.Entry<Integer, GPUDevice> entry : devicesWithPciId.entrySet()){
+		for (Map.Entry<Integer, GPUDevice> entry : devicesWithPciId.entrySet()){
 			GPUDevice aDevice = entry.getValue();
 			aDevice.setCudaName("CUDA_" + Integer.toString(i));
 			devices.add(aDevice);
