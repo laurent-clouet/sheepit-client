@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014 Laurent CLOUET
+ * Copyright (C) 2018 Laurent CLOUET
  * Author Laurent CLOUET <laurent.clouet@nopnop.net>
  *
  * This program is free software; you can redistribute it and/or 
@@ -19,25 +19,23 @@
 
 package com.sheepit.client.hardware.gpu;
 
-import com.sun.jna.Library;
-import com.sun.jna.ptr.IntByReference;
-import com.sun.jna.ptr.LongByReference;
+/**
+ * CUDA Device properties. Taken directly from the online manual:
+ * https://docs.nvidia.com/cuda/cuda-driver-api
+ */
+public class CUDeviceAttribute {
+	/**
+	 * PCI bus ID of the device
+	 */
+	public static final int CU_DEVICE_ATTRIBUTE_PCI_BUS_ID = 33;
 
-public interface CUDA extends Library {
-	public int cuInit(int flags);
-	
-	/*
-	 * @return: CUDA_SUCCESS, CUDA_ERROR_DEINITIALIZED, CUDA_ERROR_NOT_INITIALIZED, CUDA_ERROR_INVALID_CONTEXT, CUDA_ERROR_INVALID_VALUE 
-	*/
-	public int cuDeviceGetCount(IntByReference count);
-	
-	public int cuDeviceGetName(byte[] name, int len, int dev);
-	
-	public int cuDeviceGet (IntByReference device, int  ordinal);
-	
-	public int cuDeviceGetAttribute (IntByReference pi, int attrib, int dev );
-	
-	public int cuDeviceTotalMem_v2(LongByReference bytes, int dev);
-	public int cuDeviceTotalMem(LongByReference bytes, int dev);
-	
+	/**
+	 * PCI device ID of the device
+	 */
+	public static final int CU_DEVICE_ATTRIBUTE_PCI_DEVICE_ID = 34;
+
+	/**
+	 * PCI domain ID of the device
+	 */
+	public static final int CU_DEVICE_ATTRIBUTE_PCI_DOMAIN_ID = 50;
 }
