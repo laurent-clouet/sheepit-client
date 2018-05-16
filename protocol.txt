@@ -11,7 +11,7 @@ Parameters as GET:
     * cpu_model: CPU's model, on linux it can be found in /proc/cpuinfo via the attribute "model".
     * cpu_model_name: CPU's model in human readable format, on linux it can be found in /proc/cpuinfo via the attribute "model name".
     * cpu_cores: Number of cores (or thread) available.
-    * ram: Memory available in kilobytes.
+    * ram: Memory available (in kilobytes).
     * ram_max: Maximum memory allowed for renderer (in kilobytes).
     * extras (optional): Extra data used for the configuration.
     * hostname (optional): Hostname of the machine, useful for distinguishing multiple machines with the same hardware configuration. Only used for display on the website.
