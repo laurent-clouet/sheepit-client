@@ -1,6 +1,6 @@
 === Session creation ===
 
-Url: Server url
+Url: Server url + "/server/config.php"
 Parameters as GET:
     * login: User's login in plain text.
     * password: User's password in plain text.
