@@ -30,6 +30,9 @@
                      <pathelement location="extern/jna.jar"/>
                      <pathelement location="extern/args4j.jar"/>
                      <pathelement location="extern/zip4j.jar"/>
+                     <pathelement location="extern/jaxb-api.jar"/>
+                     <pathelement location="extern/jaxb-core.jar"/>
+                     <pathelement location="extern/jaxb-impl.jar"/>
                </classpath>
         </javac>
         
@@ -37,6 +40,9 @@
             <filelist dir="." files="extern/jna.jar" />
             <filelist dir="." files="extern/args4j.jar" />
             <filelist dir="." files="extern/zip4j.jar" />
+            <filelist dir="." files="extern/jaxb-api.jar" />
+            <filelist dir="." files="extern/jaxb-core.jar" />
+            <filelist dir="." files="extern/jaxb-impl.jar" />
         </unjar>
         
         <copy file="resources/icon.png" tofile="build/icon.png" overwrite="true" />
