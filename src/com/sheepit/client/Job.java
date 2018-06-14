@@ -228,6 +228,13 @@ public class Job {
 		RenderProcess process = getProcessRender();
 		Timer timerOfMaxRenderTime = null;
 		String core_script = "";
+		// When sending Ctrl+C to the terminal it also get's sent to all subprocesses e.g. also the render process.
+		// The java program handles Ctrl+C but the renderer quits on Ctrl+C.
+		// This script causes the renderer to ignore Ctrl+C.
+		String ignore_signal_script= "import signal\n"
+			+ "def hndl(signum, frame):\n"
+			+ "    pass\n"
+			+ "signal.signal(signal.SIGINT, hndl)\n";
 		if (getUseGPU() && config.getGPUDevice() != null && config.getComputeMethod() != ComputeType.CPU) {
 			core_script = "sheepit_set_compute_device(\"CUDA\", \"GPU\", \"" + config.getGPUDevice().getCudaName() + "\")\n";
 			gui.setComputeMethod("GPU");
@@ -236,6 +243,8 @@ public class Job {
 			core_script = "sheepit_set_compute_device(\"NONE\", \"CPU\", \"CPU\")\n";
 			gui.setComputeMethod("CPU");
 		}
+		
+		core_script += ignore_signal_script;
 		core_script += String.format("bpy.context.scene.render.tile_x = %1$d\nbpy.context.scene.render.tile_y = %1$d\n", getTileSize());
 		File script_file = null;
 		String command1[] = getRenderCommand().split(" ");
