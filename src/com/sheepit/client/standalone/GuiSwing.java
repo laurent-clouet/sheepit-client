@@ -20,7 +20,6 @@
 package com.sheepit.client.standalone;
 
 import java.awt.AWTException;
-import java.awt.Container;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.MenuItem;
@@ -39,7 +38,6 @@ import java.util.TimerTask;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
@@ -60,7 +58,6 @@ public class GuiSwing extends JFrame implements Gui {
 	
 	private SystemTray sysTray;
 	private JPanel panel;
-	private JScrollPane scrollPane;
 	private Working activityWorking;
 	private Settings activitySettings;
 	private TrayIcon trayIcon;
@@ -130,8 +127,7 @@ public class GuiSwing extends JFrame implements Gui {
 		
 		panel = new JPanel();
 		panel.setLayout(new GridBagLayout());
-		scrollPane = new JScrollPane(panel);
-		setContentPane(this.scrollPane);
+		setContentPane(this.panel);
 		panel.setBorder(new EmptyBorder(20, 20, 20, 20));
 		
 		activityWorking = new Working(this);
@@ -338,11 +334,6 @@ public class GuiSwing extends JFrame implements Gui {
 		
 	}
 	
-	@Override
-	public Container getContentPane() {
-		return panel;
-	}
-
 	public class ThreadClient extends Thread {
 		@Override
 		public void run() {
