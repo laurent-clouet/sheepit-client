@@ -24,6 +24,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.DigestInputStream;
@@ -49,7 +51,7 @@ import com.sheepit.client.Error.ServerCode;
 import com.sheepit.client.exception.FermeExceptionNoSpaceLeftOnDevice;
 
 public class Utils {
-	public static int unzipFileIntoDirectory(String zipFileName_, String destinationDirectory, String password) throws FermeExceptionNoSpaceLeftOnDevice {
+	public static int unzipFileIntoDirectory(String zipFileName_, String destinationDirectory, String password, Log log) throws FermeExceptionNoSpaceLeftOnDevice {
 		try {
 			ZipFile zipFile = new ZipFile(zipFileName_);
 			UnzipParameters unzipParameters = new UnzipParameters();
@@ -61,7 +63,10 @@ public class Utils {
 			zipFile.extractAll(destinationDirectory, unzipParameters);
 		}
 		catch (ZipException e) {
-			e.printStackTrace();
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			e.printStackTrace(pw);
+			log.debug("Utils::unzipFileIntoDirectory(" + zipFileName_ + "," + destinationDirectory + ") exception " + e + " stacktrace: " + sw.toString());
 			return -1;
 		}
 		return 0;
