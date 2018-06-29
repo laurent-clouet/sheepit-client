@@ -730,6 +730,12 @@ public class Job {
 			// scandir: Cannot allocate memory
 			return Error.Type.RENDERER_OUT_OF_MEMORY;
 		}
+		else if (line.indexOf("EXCEPTION_ACCESS_VIOLATION") != -1) {
+			// Fra:638 Mem:342.17M (63.28M, Peak 735.33M) | Time:00:07.65 | Remaining:02:38.28 | Mem:246.91M, Peak:262.16M | scene_top_01_90, chip_top_view_scene_01 | Path Tracing Tile 57/2040, Denoised 0 tiles
+			// Fra:638 Mem:342.32M (63.28M, Peak 735.33M) | Time:00:07.70 | Remaining:02:38.20 | Mem:247.05M, Peak:262.16M | scene_top_01_90, chip_top_view_scene_01 | Path Tracing Tile 58/2040, Denoised 0 tiles
+			// Error: EXCEPTION_ACCESS_VIOLATION
+			return Error.Type.RENDERER_CRASHED;
+		}
 		else if (line.indexOf("Calloc returns null") != -1) {
 			// Fra:1 Mem:976.60M (0.00M, Peak 1000.54M) | Time:00:01.34 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Left
 			// Calloc returns null: len=7186416 in CDMLoopUV, total 2145859048
