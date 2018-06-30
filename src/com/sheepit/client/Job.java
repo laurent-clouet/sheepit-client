@@ -678,6 +678,22 @@ public class Job {
 			// http://www.blender.org/manual/render/cycles/gpu_rendering.html
 			return Error.Type.RENDERER_OUT_OF_VIDEO_MEMORY;
 		}
+		else if (line.indexOf("CUDA error: Launch failed in cuCtxSynchronize()") != -1) {
+			// Fra:60 Mem:278.24M (0.00M, Peak 644.01M) | Time:05:08.95 | Remaining:00:03.88 | Mem:210.79M, Peak:210.79M | Scene, W Laser | Path Tracing Tile 16/18, Sample 36/36
+			// Fra:60 Mem:278.24M (0.00M, Peak 644.01M) | Time:05:08.96 | Remaining:00:00.82 | Mem:211.04M, Peak:211.04M | Scene, W Laser | Path Tracing Tile 17/18, Sample 36/36
+			// Fra:60 Mem:278.24M (0.00M, Peak 644.01M) | Time:05:08.96 | Mem:211.11M, Peak:211.11M | Scene, W Laser | Path Tracing Tile 18/18
+			// Error: CUDA error: Launch failed in cuCtxSynchronize(), line 1372
+			// Fra:60 Mem:278.24M (0.00M, Peak 644.01M) | Time:05:08.96 | Mem:211.11M, Peak:211.11M | Scene, W Laser | Cancel | CUDA error: Launch failed in cuCtxSynchronize(), line 1372
+			// Cycles shader graph connect: can only connect closure to closure (Invert.Color to Mix Shader.Closure1).
+			// Cycles shader graph connect: can only connect closure to closure (Mix Shader.Closure to Bump.Normal).
+			// CUDA error: Launch failed in cuCtxSynchronize(), line 1372
+			// Refer to the Cycles GPU rendering documentation for possible solutions:
+			// https://docs.blender.org/manual/en/dev/render/cycles/gpu_rendering.html
+			// CUDA error: Launch failed in cuMemcpyDtoH((uchar*)mem.data_pointer + offset, (CUdeviceptr)(mem.device_pointer + offset), size), line 591
+			// CUDA error: Launch failed in cuMemcpyDtoH((uchar*)mem.data_pointer + offset, (CUdeviceptr)(mem.device_pointer + offset), size), line 591
+			// CUDA error: Launch failed in cuMemFree(cuda_device_ptr(mem.device_pointer)), line 615
+			return Error.Type.RENDERER_OUT_OF_VIDEO_MEMORY;
+		}
 		else if (line.indexOf("CUDA device supported only with compute capability") != -1) {
 			// found bundled python: /tmp/xx/2.73/python
 			// read blend: /tmp/xx/compute-method.blend
