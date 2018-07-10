@@ -752,6 +752,12 @@ public class Job {
 			// Error: EXCEPTION_ACCESS_VIOLATION
 			return Error.Type.RENDERER_CRASHED;
 		}
+		else if (line.indexOf("Fatal Python error: Py_Initialize") != -1) {
+			// Fatal Python error: Py_Initialize: unable to load the file system codec
+			// ImportError: No module named 'encodings'
+			// Current thread 0x0000388c (most recent call first):
+			return Error.Type.RENDERER_CRASHED_PYTHON_ERROR;
+		}
 		else if (line.indexOf("Calloc returns null") != -1) {
 			// Fra:1 Mem:976.60M (0.00M, Peak 1000.54M) | Time:00:01.34 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Left
 			// Calloc returns null: len=7186416 in CDMLoopUV, total 2145859048
