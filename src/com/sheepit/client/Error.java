@@ -36,6 +36,7 @@ public class Error {
 		CAN_NOT_CREATE_DIRECTORY(10),
 		NETWORK_ISSUE(11),
 		RENDERER_CRASHED(12),
+		RENDERER_CRASHED_PYTHON_ERROR(24),
 		RENDERER_OUT_OF_VIDEO_MEMORY(13),
 		RENDERER_OUT_OF_MEMORY(21),
 		RENDERER_KILLED(14),
@@ -160,6 +161,8 @@ public class Error {
 				return "Renderer has generated no output file, possibly a wrong project configuration or you are missing required libraries. Will try another project in a few minutes.";
 			case RENDERER_CRASHED:
 				return "Renderer has crashed. It's usually due to a bad project or not enough memory. There is nothing you can do about it. Will try another project in a few minutes.";
+			case RENDERER_CRASHED_PYTHON_ERROR:
+				return "Renderer has crashed due to Python error. Will try another project in a few minutes.";
 			case RENDERER_OUT_OF_VIDEO_MEMORY:
 				return "Renderer has crashed, due to not enough video memory (vram). There is nothing you can do about it. Will try another project in a few minutes.";
 			case RENDERER_OUT_OF_MEMORY:
