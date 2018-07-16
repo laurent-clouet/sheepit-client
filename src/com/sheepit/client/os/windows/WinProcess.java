@@ -21,6 +21,7 @@ package com.sheepit.client.os.windows;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,50 +62,51 @@ public class WinProcess {
 		}
 	}
 	
-	private static boolean processHasGetPid () {
+	private static boolean processHasGetPid() {
 		try {
-			if (Process.class.getMethod("pid", (Class<?>)null) != null) {
+			if (Process.class.getMethod("pid", null) != null) {
 				return true;
 			}
-		} catch (NoSuchMethodException | SecurityException e) {
+		}
+		catch (NoSuchMethodException | SecurityException e) {
 		}
 		return false;
 	}
-
-	private static long getPid (Process process) {
+	
+	private static long getPid(Process process) {
 		try {
-			return (long)Process.class.getMethod("pid", (Class<?>)null).invoke(process, null);
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
-			| SecurityException e) {
+			return (long) Process.class.getMethod("pid", null).invoke(process, null);
+		}
+		catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 		}
 		return 0;
 	}
-
-	private static WinNT.HANDLE getHandleByPid (int pid_) throws IOException {
-		WinNT.HANDLE handle = Kernel32.INSTANCE.OpenProcess(
-			0x0400 | // PROCESS_QUERY_INFORMATION
+	
+	private static WinNT.HANDLE getHandleByPid(int pid_) throws IOException {
+		WinNT.HANDLE handle = Kernel32.INSTANCE.OpenProcess(0x0400 | // PROCESS_QUERY_INFORMATION
 				0x0800 | // PROCESS_SUSPEND_RESUME
 				0x0001 | // PROCESS_TERMINATE
 				0x0200 | // PROCESS_SET_INFORMATION
 				0x00100000, // SYNCHRONIZE
-			false, pid_);
+				false, pid_);
 		if (handle == null) {
-			throw new IOException("OpenProcess failed: "
-				+ Kernel32Util.formatMessageFromLastErrorCode(Kernel32.INSTANCE.GetLastError()) + " (pid: " + pid_ + ")");
+			throw new IOException("OpenProcess failed: " + Kernel32Util.formatMessageFromLastErrorCode(Kernel32.INSTANCE.GetLastError()) + " (pid: " + pid_ + ")");
 		}
 		return handle;
 	}
-
-	public WinProcess (Process process)  {
+	
+	public WinProcess(Process process) {
 		this();
 		if (processHasGetPid()) {
-			int _pid = (int)getPid(process);
+			int _pid = (int) getPid(process);
 			try {
 				this.handle = getHandleByPid(_pid);
-			} catch (IOException e) {
+			}
+			catch (IOException e) {
 			}
 			this.pid = _pid;
-		} else {
+		}
+		else {
 			try {
 				Field f = process.getClass().getDeclaredField("handle");
 				f.setAccessible(true);
@@ -112,14 +114,17 @@ public class WinProcess {
 				this.handle = new WinNT.HANDLE();
 				this.handle.setPointer(Pointer.createConstant(val));
 				this.pid = Kernel32.INSTANCE.GetProcessId(this.handle);
-			} catch (NoSuchFieldException e) {
-			} catch (IllegalArgumentException e) {
-			} catch (IllegalAccessException e) {
+			}
+			catch (NoSuchFieldException e) {
+			}
+			catch (IllegalArgumentException e) {
+			}
+			catch (IllegalAccessException e) {
 			}
 		}
 	}
-
-	public WinProcess (int pid_) throws IOException {
+	
+	public WinProcess(int pid_) throws IOException {
 		this();
 		this.handle = getHandleByPid(pid_);
 		this.pid = pid_;
