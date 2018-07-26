@@ -84,7 +84,7 @@ public class OpenCL implements GPULister {
 			// get number of devices in platform
 			IntByReference device_count = new IntByReference();
 			
-			status = lib.clGetDeviceIDs(plateforms[i], OpenCLLib.CL_DEVICE_TYPE_ALL, 0, null, device_count);
+			status = lib.clGetDeviceIDs(plateforms[i], OpenCLLib.CL_DEVICE_TYPE_GPU, 0, null, device_count);
 			if (status != OpenCLLib.CL_SUCCESS) {
 				System.out.println("OpenCL::getGpus failed(F) status: " + status);
 				return null;
@@ -94,7 +94,7 @@ public class OpenCL implements GPULister {
 			
 			OpenCLLib.CLDeviceId.ByReference[] devices = (OpenCLLib.CLDeviceId.ByReference[]) e6ref4.toArray(device_count.getValue());
 			
-			status = lib.clGetDeviceIDs(plateforms[i], OpenCLLib.CL_DEVICE_TYPE_ALL, device_count.getValue(), devices, null);
+			status = lib.clGetDeviceIDs(plateforms[i], OpenCLLib.CL_DEVICE_TYPE_GPU, device_count.getValue(), devices, null);
 			if (status != OpenCLLib.CL_SUCCESS) {
 				System.out.println("OpenCL::getGpus failed(G) status: " + status);
 				return null;
@@ -102,8 +102,8 @@ public class OpenCL implements GPULister {
 			
 			for (int j = 0; j < device_count.getValue(); j++) {
 				String platform_vendor = getInfoPlatform(lib, plateforms[i], OpenCLLib.CL_PLATFORM_VENDOR);
-				if (platform_vendor != null && platform_vendor.toLowerCase().contains("nvidia") == false) { // avoid cuda/nvdia because on blender cuda is faster than opencl
-					String name = getInfodeviceString(lib, devices[j], OpenCLLib.CL_DEVICE_NAME);
+				if (platform_vendor != null && platform_vendor.toLowerCase().equals("advanced micro devices, inc.")) { // opencl is only used for amd gpus
+					String name = getInfodeviceString(lib, devices[j], OpenCLLib.CL_DEVICE_BOARD_NAME_AMD);
 					long vram = getInfodeviceLong(lib, devices[j], OpenCLLib.CL_DEVICE_GLOBAL_MEM_SIZE);
 					if (name != null && vram > 0) {
 						available_devices.add(new GPUDevice(TYPE, name, vram, TYPE + "_" + id));

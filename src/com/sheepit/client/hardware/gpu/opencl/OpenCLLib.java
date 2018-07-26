@@ -43,6 +43,7 @@ public interface OpenCLLib extends Library {
 	// cl_device_info
 	public static final int CL_DEVICE_NAME = 0x102B;
 	public static final int CL_DEVICE_GLOBAL_MEM_SIZE = 0x101F;
+	public static final int CL_DEVICE_BOARD_NAME_AMD = 0x4038;
 	
 	public int clGetPlatformIDs(int num_entries, CLPlatformId.ByReference[] platforms, IntByReference num_platforms);
 	
