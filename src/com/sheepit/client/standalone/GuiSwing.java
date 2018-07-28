@@ -62,6 +62,7 @@ public class GuiSwing extends JFrame implements Gui {
 	private Settings activitySettings;
 	private TrayIcon trayIcon;
 	private boolean useSysTray;
+	private String title;
 	
 	private int framesRendered;
 	
@@ -70,9 +71,10 @@ public class GuiSwing extends JFrame implements Gui {
 	
 	private ThreadClient threadClient;
 	
-	public GuiSwing(boolean useSysTray_) {
+	public GuiSwing(boolean useSysTray_, String title_) {
 		framesRendered = 0;
 		useSysTray = useSysTray_;
+		title = title_;
 		waitingForAuthentication = true;
 		
 		new Timer().scheduleAtFixedRate(new TimerTask() {
@@ -118,7 +120,7 @@ public class GuiSwing extends JFrame implements Gui {
 			setIconImage(img.getImage());
 		}
 		
-		setTitle("SheepIt Render Farm");
+		setTitle(title);
 		setSize(520, 680);
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

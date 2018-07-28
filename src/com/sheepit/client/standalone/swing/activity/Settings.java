@@ -611,9 +611,9 @@ public class Settings implements Activity {
 				cachePath = config.getStorageDir().getAbsolutePath();
 			}
 			
-			String hostnameText = null;
-			if (hostname.getText() != null && hostname.getText().equals(parent.getConfiguration().getHostname()) == false) {
-				hostnameText = hostname.getText();
+			String hostnameText = hostname.getText();
+			if (hostnameText == null || hostnameText.isEmpty()) {
+				hostnameText = parent.getConfiguration().getHostname();
 			}
 			
 			if (saveFile.isSelected()) {

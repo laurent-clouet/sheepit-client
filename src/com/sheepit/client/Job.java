@@ -2,7 +2,7 @@
  * Copyright (C) 2010-2014 Laurent CLOUET
  * Author Laurent CLOUET <laurent.clouet@nopnop.net>
  *
- * This program is free software; you can redistribute it and/or 
+ * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; version 2
  * of the License.
@@ -230,6 +230,13 @@ public class Job {
 		RenderProcess process = getProcessRender();
 		Timer timerOfMaxRenderTime = null;
 		String core_script = "";
+		// When sending Ctrl+C to the terminal it also get's sent to all subprocesses e.g. also the render process.
+		// The java program handles Ctrl+C but the renderer quits on Ctrl+C.
+		// This script causes the renderer to ignore Ctrl+C.
+		String ignore_signal_script= "import signal\n"
+			+ "def hndl(signum, frame):\n"
+			+ "    pass\n"
+			+ "signal.signal(signal.SIGINT, hndl)\n";
 		if (getUseGPU() && config.getGPUDevice() != null && config.getComputeMethod() != ComputeType.CPU) {
 			core_script = "sheepit_set_compute_device(\"" + config.getGPUDevice().getType() + "\", \"GPU\", \"" + config.getGPUDevice().getId() + "\")\n";
 		}
@@ -237,6 +244,8 @@ public class Job {
 			core_script = "sheepit_set_compute_device(\"NONE\", \"CPU\", \"CPU\")\n";
 			gui.setComputeMethod("CPU");
 		}
+		
+		core_script += ignore_signal_script;
 		core_script += String.format("bpy.context.scene.render.tile_x = %1$d\nbpy.context.scene.render.tile_y = %1$d\n", getTileSize());
 		File script_file = null;
 		String command1[] = getRenderCommand().split(" ");
@@ -253,6 +262,8 @@ public class Job {
 		new_env.put("BLENDER_USER_CONFIG", config.workingDirectory.getAbsolutePath().replace("\\", "\\\\"));
 		new_env.put("CORES", Integer.toString(config.getNbCores()));
 		new_env.put("PRIORITY", Integer.toString(config.getPriority()));
+		new_env.put("PYTHONPATH", ""); // make sure blender is using the embedded python, if not it could create "Fatal Python error: Py_Initialize"
+		new_env.put("PYTHONHOME", "");// make sure blender is using the embedded python, if not it could create "Fatal Python error: Py_Initialize"
 		if (getUseGPU() && config.getGPUDevice() != null && config.getComputeMethod() != ComputeType.CPU && OpenCL.TYPE.equals(config.getGPUDevice().getType())) {
 			new_env.put("CYCLES_OPENCL_SPLIT_KERNEL_TEST", "1");
 			this.updateRenderingStatusMethod = UPDATE_METHOD_BY_TILE; // don't display remaining time
@@ -343,6 +354,7 @@ public class Job {
 					updateRenderingMemoryPeak(line);
 					if (config.getMaxMemory() != -1 && process.getMemoryUsed() > config.getMaxMemory()) {
 						log.debug("Blocking render because process ram used (" + process.getMemoryUsed() + "k) is over user setting (" + config.getMaxMemory() + "k)");
+						OS.getOS().kill(process.getProcess());
 						process.finish();
 						if (script_file != null) {
 							script_file.delete();
@@ -695,6 +707,22 @@ public class Job {
 			// http://www.blender.org/manual/render/cycles/gpu_rendering.html
 			return Error.Type.RENDERER_OUT_OF_VIDEO_MEMORY;
 		}
+		else if (line.indexOf("CUDA error: Launch failed in cuCtxSynchronize()") != -1) {
+			// Fra:60 Mem:278.24M (0.00M, Peak 644.01M) | Time:05:08.95 | Remaining:00:03.88 | Mem:210.79M, Peak:210.79M | Scene, W Laser | Path Tracing Tile 16/18, Sample 36/36
+			// Fra:60 Mem:278.24M (0.00M, Peak 644.01M) | Time:05:08.96 | Remaining:00:00.82 | Mem:211.04M, Peak:211.04M | Scene, W Laser | Path Tracing Tile 17/18, Sample 36/36
+			// Fra:60 Mem:278.24M (0.00M, Peak 644.01M) | Time:05:08.96 | Mem:211.11M, Peak:211.11M | Scene, W Laser | Path Tracing Tile 18/18
+			// Error: CUDA error: Launch failed in cuCtxSynchronize(), line 1372
+			// Fra:60 Mem:278.24M (0.00M, Peak 644.01M) | Time:05:08.96 | Mem:211.11M, Peak:211.11M | Scene, W Laser | Cancel | CUDA error: Launch failed in cuCtxSynchronize(), line 1372
+			// Cycles shader graph connect: can only connect closure to closure (Invert.Color to Mix Shader.Closure1).
+			// Cycles shader graph connect: can only connect closure to closure (Mix Shader.Closure to Bump.Normal).
+			// CUDA error: Launch failed in cuCtxSynchronize(), line 1372
+			// Refer to the Cycles GPU rendering documentation for possible solutions:
+			// https://docs.blender.org/manual/en/dev/render/cycles/gpu_rendering.html
+			// CUDA error: Launch failed in cuMemcpyDtoH((uchar*)mem.data_pointer + offset, (CUdeviceptr)(mem.device_pointer + offset), size), line 591
+			// CUDA error: Launch failed in cuMemcpyDtoH((uchar*)mem.data_pointer + offset, (CUdeviceptr)(mem.device_pointer + offset), size), line 591
+			// CUDA error: Launch failed in cuMemFree(cuda_device_ptr(mem.device_pointer)), line 615
+			return Error.Type.RENDERER_OUT_OF_VIDEO_MEMORY;
+		}
 		else if (line.indexOf("CUDA device supported only with compute capability") != -1) {
 			// found bundled python: /tmp/xx/2.73/python
 			// read blend: /tmp/xx/compute-method.blend
@@ -746,6 +774,18 @@ public class Job {
 			// what(): std::bad_alloc
 			// scandir: Cannot allocate memory
 			return Error.Type.RENDERER_OUT_OF_MEMORY;
+		}
+		else if (line.indexOf("EXCEPTION_ACCESS_VIOLATION") != -1) {
+			// Fra:638 Mem:342.17M (63.28M, Peak 735.33M) | Time:00:07.65 | Remaining:02:38.28 | Mem:246.91M, Peak:262.16M | scene_top_01_90, chip_top_view_scene_01 | Path Tracing Tile 57/2040, Denoised 0 tiles
+			// Fra:638 Mem:342.32M (63.28M, Peak 735.33M) | Time:00:07.70 | Remaining:02:38.20 | Mem:247.05M, Peak:262.16M | scene_top_01_90, chip_top_view_scene_01 | Path Tracing Tile 58/2040, Denoised 0 tiles
+			// Error: EXCEPTION_ACCESS_VIOLATION
+			return Error.Type.RENDERER_CRASHED;
+		}
+		else if (line.indexOf("Fatal Python error: Py_Initialize") != -1) {
+			// Fatal Python error: Py_Initialize: unable to load the file system codec
+			// ImportError: No module named 'encodings'
+			// Current thread 0x0000388c (most recent call first):
+			return Error.Type.RENDERER_CRASHED_PYTHON_ERROR;
 		}
 		else if (line.indexOf("Calloc returns null") != -1) {
 			// Fra:1 Mem:976.60M (0.00M, Peak 1000.54M) | Time:00:01.34 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Left

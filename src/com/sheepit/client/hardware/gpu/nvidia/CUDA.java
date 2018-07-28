@@ -33,6 +33,11 @@ public interface CUDA extends Library {
 	
 	public int cuDeviceGetName(byte[] name, int len, int dev);
 	
+	public int cuDeviceGet (IntByReference device, int  ordinal);
+	
+	public int cuDeviceGetAttribute (IntByReference pi, int attrib, int dev );
+	
 	public int cuDeviceTotalMem_v2(LongByReference bytes, int dev);
 	public int cuDeviceTotalMem(LongByReference bytes, int dev);
+	
 }
