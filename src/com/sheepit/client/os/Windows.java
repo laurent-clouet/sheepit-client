@@ -103,6 +103,21 @@ public class Windows extends OS {
 	}
 	
 	@Override
+	public int getFreeMemory() {
+		try {
+			MEMORYSTATUSEX _memory = new MEMORYSTATUSEX();
+			if (Kernel32.INSTANCE.GlobalMemoryStatusEx(_memory)) {
+				return (int) (_memory.ullAvailPhys.longValue() / 1024); // size in KB
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}	
+		 
+		return -1;
+	}
+	
+	@Override
 	public String getCUDALib() {
 		return "nvcuda";
 	}

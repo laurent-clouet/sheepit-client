@@ -134,6 +134,11 @@ public class FreeBSD extends OS {
 	}
 	
 	@Override
+	public int getFreeMemory() {
+		return -1;
+	}
+	
+	@Override
 	public String getCUDALib() {
 		return "cuda";
 	}

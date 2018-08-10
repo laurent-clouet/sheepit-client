@@ -141,6 +141,11 @@ public class Mac extends OS {
 	}
 	
 	@Override
+	public int getFreeMemory() {
+		return -1;
+	}
+	
+	@Override
 	public Process exec(List<String> command, Map<String, String> env) throws IOException {
 		List<String> actual_command = command;
 		if (this.hasNiceBinary == null) {
