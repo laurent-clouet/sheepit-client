@@ -33,6 +33,8 @@ public abstract class OS {
 	
 	public abstract int getMemory();
 	
+	public abstract int getFreeMemory();
+	
 	public abstract String getRenderBinaryPath();
 	
 	public String getCUDALib() {
