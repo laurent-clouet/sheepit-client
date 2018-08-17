@@ -146,7 +146,7 @@ public class Settings implements Activity {
 		JLabel cacheLabel = new JLabel("Working directory:");
 		directory_panel.add(cacheLabel);
 		String destination = DUMMY_CACHE_DIR;
-		if (config.getUserSpecifiedACacheDir()) {
+		if (config.getUserHasSpecifiedACacheDir()) {
 			destination = config.getStorageDir().getName();
 		}
 		
@@ -607,7 +607,7 @@ public class Settings implements Activity {
 			parent.setCredentials(login.getText(), new String(password.getPassword()));
 			
 			String cachePath = null;
-			if (config.getUserSpecifiedACacheDir() && config.getStorageDir() != null) {
+			if (config.getUserHasSpecifiedACacheDir() && config.getStorageDir() != null) {
 				cachePath = config.getStorageDir().getAbsolutePath();
 			}
 			
