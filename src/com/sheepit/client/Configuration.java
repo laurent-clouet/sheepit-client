@@ -42,7 +42,7 @@ public class Configuration {
 	
 	public File workingDirectory;
 	public File storageDirectory; // for permanent storage (binary archive)
-	public boolean userSpecifiedACacheDir;
+	public boolean userHasSpecifiedACacheDir;
 	public String static_exeDirName;
 	private String login;
 	private String password;
@@ -75,7 +75,7 @@ public class Configuration {
 		this.priority = 19; // default lowest
 		this.computeMethod = null;
 		this.GPUDevice = null;
-		this.userSpecifiedACacheDir = false;
+		this.userHasSpecifiedACacheDir = false;
 		this.workingDirectory = null;
 		this.storageDirectory = null;
 		this.setCacheDir(cache_dir_);
@@ -193,7 +193,7 @@ public class Configuration {
 	public void setCacheDir(File cache_dir_) {
 		removeWorkingDirectory();
 		if (cache_dir_ == null) {
-			this.userSpecifiedACacheDir = false;
+			this.userHasSpecifiedACacheDir = false;
 			try {
 				this.workingDirectory = File.createTempFile("farm_", "");
 				this.workingDirectory.createNewFile(); // hoho...
@@ -212,7 +212,7 @@ public class Configuration {
 			}
 		}
 		else {
-			this.userSpecifiedACacheDir = true;
+			this.userHasSpecifiedACacheDir = true;
 			this.workingDirectory = cache_dir_;
 			this.storageDirectory = cache_dir_;
 		}
@@ -237,8 +237,8 @@ public class Configuration {
 		}
 	}
 	
-	public boolean getUserSpecifiedACacheDir() {
-		return this.userSpecifiedACacheDir;
+	public boolean getUserHasSpecifiedACacheDir() {
+		return this.userHasSpecifiedACacheDir;
 	}
 	
 	public void setExtras(String str) {
@@ -334,7 +334,7 @@ public class Configuration {
 	}
 	
 	public void removeWorkingDirectory() {
-		if (this.userSpecifiedACacheDir == true) {
+		if (this.userHasSpecifiedACacheDir) {
 			this.cleanWorkingDirectory();
 		}
 		else {
