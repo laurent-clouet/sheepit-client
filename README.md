@@ -8,7 +8,7 @@ SheepIt Render Farm Client is an *Open Source* client for the distributed render
 
 ## Compilation
 
-You need Java 1.7. OpenJDK and Oracle are both supported.
+You need Java 1.7 or more. (OpenJDK and Oracle are both supported).
 You also need [ant](http://ant.apache.org/).
 To create the jar file, simply type `ant` in the project's root directory.
 
