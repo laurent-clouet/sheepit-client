@@ -213,8 +213,10 @@ public class Configuration {
 		}
 		else {
 			this.userHasSpecifiedACacheDir = true;
-			this.workingDirectory = cache_dir_;
-			this.storageDirectory = cache_dir_;
+			this.workingDirectory = new File(cache_dir_.getAbsolutePath() + File.separator + "sheepit");
+			this.storageDirectory = new File(cache_dir_.getAbsolutePath() + File.separator + "sheepit_binary_cache");
+			this.workingDirectory.mkdir();
+			this.storageDirectory.mkdir();
 		}
 		
 	}
@@ -239,6 +241,16 @@ public class Configuration {
 	
 	public boolean getUserHasSpecifiedACacheDir() {
 		return this.userHasSpecifiedACacheDir;
+	}
+	
+	public File getCacheDirForSettings() {
+		if (this.getUserHasSpecifiedACacheDir() == false) {
+			return null;
+		}
+		else {
+			// when the user have a cache directory a "sheepit" and "sheepit_binary_cache" is be automaticaly added
+			return this.workingDirectory.getParentFile();
+		}
 	}
 	
 	public void setExtras(String str) {

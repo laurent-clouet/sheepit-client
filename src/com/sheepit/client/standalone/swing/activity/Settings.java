@@ -147,7 +147,7 @@ public class Settings implements Activity {
 		directory_panel.add(cacheLabel);
 		String destination = DUMMY_CACHE_DIR;
 		if (config.getUserHasSpecifiedACacheDir()) {
-			destination = config.getStorageDir().getName();
+			destination = config.getCacheDirForSettings().getName();
 		}
 		
 		JPanel cacheDirWrapper = new JPanel();
@@ -607,8 +607,8 @@ public class Settings implements Activity {
 			parent.setCredentials(login.getText(), new String(password.getPassword()));
 			
 			String cachePath = null;
-			if (config.getUserHasSpecifiedACacheDir() && config.getStorageDir() != null) {
-				cachePath = config.getStorageDir().getAbsolutePath();
+			if (config.getUserHasSpecifiedACacheDir() && config.getCacheDirForSettings() != null) {
+				cachePath = config.getCacheDirForSettings().getAbsolutePath();
 			}
 			
 			String hostnameText = hostname.getText();
