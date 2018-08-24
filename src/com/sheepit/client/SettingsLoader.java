@@ -92,7 +92,7 @@ public class SettingsLoader {
 		}
 		
 		if (gpu_ != null) {
-			gpu = gpu_.getCudaName();
+			gpu = gpu_.getId();
 		}
 	}
 	

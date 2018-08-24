@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package com.sheepit.client.hardware.gpu;
+package com.sheepit.client.hardware.gpu.nvidia;
 
 import com.sun.jna.Library;
 import com.sun.jna.ptr.IntByReference;

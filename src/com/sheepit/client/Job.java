@@ -42,11 +42,13 @@ import java.util.TimerTask;
 import com.sheepit.client.Configuration.ComputeType;
 import com.sheepit.client.Error.Type;
 import com.sheepit.client.hardware.gpu.GPUDevice;
+import com.sheepit.client.hardware.gpu.opencl.OpenCL;
 import com.sheepit.client.os.OS;
 
 public class Job {
 	public static final String UPDATE_METHOD_BY_REMAINING_TIME = "remainingtime";
 	public static final String UPDATE_METHOD_BLENDER_INTERNAL_BY_PART = "blenderinternal";
+	public static final String UPDATE_METHOD_BY_TILE = "by_tile";
 	
 	private String numFrame;
 	private String sceneMD5;
@@ -236,7 +238,7 @@ public class Job {
 			+ "    pass\n"
 			+ "signal.signal(signal.SIGINT, hndl)\n";
 		if (getUseGPU() && config.getGPUDevice() != null && config.getComputeMethod() != ComputeType.CPU) {
-			core_script = "sheepit_set_compute_device(\"CUDA\", \"GPU\", \"" + config.getGPUDevice().getCudaName() + "\")\n";
+			core_script = "sheepit_set_compute_device(\"" + config.getGPUDevice().getType() + "\", \"GPU\", \"" + config.getGPUDevice().getId() + "\")\n";
 			gui.setComputeMethod("GPU");
 		}
 		else {
@@ -263,6 +265,11 @@ public class Job {
 		new_env.put("PRIORITY", Integer.toString(config.getPriority()));
 		new_env.put("PYTHONPATH", ""); // make sure blender is using the embedded python, if not it could create "Fatal Python error: Py_Initialize"
 		new_env.put("PYTHONHOME", "");// make sure blender is using the embedded python, if not it could create "Fatal Python error: Py_Initialize"
+		
+		if (getUseGPU() && config.getGPUDevice() != null && config.getComputeMethod() != ComputeType.CPU && OpenCL.TYPE.equals(config.getGPUDevice().getType())) {
+			new_env.put("CYCLES_OPENCL_SPLIT_KERNEL_TEST", "1");
+			this.updateRenderingStatusMethod = UPDATE_METHOD_BY_TILE; // don't display remaining time
+		}
 		
 		for (String arg : command1) {
 			switch (arg) {
@@ -525,6 +532,28 @@ public class Job {
 					}
 				}
 			}
+		}
+		else if (getUpdateRenderingStatusMethod() == null || getUpdateRenderingStatusMethod().equals(Job.UPDATE_METHOD_BY_TILE)) {
+			String search = " Tile ";
+			int index = line.lastIndexOf(search);
+			if (index != -1) {
+				String buf = line.substring(index + search.length());
+				String[] parts = buf.split("/");
+				if (parts != null && parts.length == 2) {
+					try {
+						int current = Integer.parseInt(parts[0]);
+						int total = Integer.parseInt(parts[1]);
+						if (total != 0) {
+							gui.status(String.format("Rendering %s %%", (int) (100.0 * current / total)));
+							return;
+						}
+					}
+					catch (NumberFormatException e) {
+						System.out.println("Exception 94: " + e);
+					}
+				}
+			}
+			gui.status("Rendering");
 		}
 	}
 	

@@ -40,6 +40,8 @@ import com.sheepit.client.SettingsLoader;
 import com.sheepit.client.ShutdownHook;
 import com.sheepit.client.hardware.gpu.GPU;
 import com.sheepit.client.hardware.gpu.GPUDevice;
+import com.sheepit.client.hardware.gpu.nvidia.Nvidia;
+import com.sheepit.client.hardware.gpu.opencl.OpenCL;
 import com.sheepit.client.network.Proxy;
 
 public class Worker {
@@ -58,8 +60,11 @@ public class Worker {
 	@Option(name = "-max-uploading-job", usage = "", metaVar = "1", required = false)
 	private int max_upload = -1;
 	
-	@Option(name = "-gpu", usage = "CUDA name of the GPU used for the render, for example CUDA_0", metaVar = "CUDA_0", required = false)
+	@Option(name = "-gpu", usage = "Name of the GPU used for the render, for example CUDA_0 for Nvidia or OPENCL_0 for AMD/Intel card", metaVar = "CUDA_0", required = false)
 	private String gpu_device = null;
+	
+	@Option(name = "--no-gpu", usage = "Don't detect GPUs", required = false)
+	private boolean no_gpu_detection = false;
 	
 	@Option(name = "-compute-method", usage = "CPU: only use cpu, GPU: only use gpu, CPU_GPU: can use cpu and gpu (not at the same time) if -gpu is not use it will not use the gpu", metaVar = "CPU", required = false)
 	private String method = null;
@@ -128,6 +133,7 @@ public class Worker {
 		Configuration config = new Configuration(null, login, password);
 		config.setPrintLog(print_log);
 		config.setUsePriority(priority);
+		config.setDetectGPUs(! no_gpu_detection);
 		
 		if (cache_dir != null) {
 			File a_dir = new File(cache_dir);
@@ -146,16 +152,22 @@ public class Worker {
 		}
 		
 		if (gpu_device != null) {
-			String cuda_str = "CUDA_";
-			if (gpu_device.startsWith(cuda_str) == false) {
-				System.err.println("CUDA_DEVICE should look like 'CUDA_X' where X is a number");
+			if (gpu_device.startsWith(Nvidia.TYPE) == false && gpu_device.startsWith(OpenCL.TYPE) == false) {
+				System.err.println("CUDA_DEVICE should look like '" + Nvidia.TYPE + "_X' or '" + OpenCL.TYPE + "_X' where X is a number");
 				return;
 			}
+			String family = "";
 			try {
-				Integer.parseInt(gpu_device.substring(cuda_str.length()));
+				if (gpu_device.startsWith(Nvidia.TYPE)) {
+					family = Nvidia.TYPE;
+				}
+				else if (gpu_device.startsWith(OpenCL.TYPE)) {
+					family = OpenCL.TYPE;
+				}
+				Integer.parseInt(gpu_device.substring(family.length() + 1)); // for the _
 			}
 			catch (NumberFormatException en) {
-				System.err.println("CUDA_DEVICE should look like 'CUDA_X' where X is a number");
+				System.err.println("Gpu device code should look like '" + family + "_X' where X is a number");
 				return;
 			}
 			GPUDevice gpu = GPU.getGPUDevice(gpu_device);

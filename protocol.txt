@@ -79,6 +79,7 @@ Url: use the request type "request-job" from the configuration answer.
 Parameter as GET or POST:
     * computemethod: What compute types are available on this machine. 0 for CPU or GPU, 1 for CPU only, 2 for GPU only. 
     * cpu_cores: Number of cores currently available for rendering (optional).
+    * gpu_type: GPU's type, usually CUDA or OPENCL
     * gpu_model: Model name of the GPU available for rendering
     * gpu_ram: GPU memory size (in bytes)
 

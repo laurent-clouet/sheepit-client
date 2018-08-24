@@ -54,6 +54,7 @@ public class Configuration {
 	private int priority;
 	private ComputeType computeMethod;
 	private GPUDevice GPUDevice;
+	private boolean detectGPUs;
 	private boolean printLog;
 	public List<Pair<Calendar, Calendar>> requestTime;
 	private String extras;
@@ -76,6 +77,7 @@ public class Configuration {
 		this.computeMethod = null;
 		this.GPUDevice = null;
 		this.userHasSpecifiedACacheDir = false;
+		this.detectGPUs = true;
 		this.workingDirectory = null;
 		this.storageDirectory = null;
 		this.setCacheDir(cache_dir_);
@@ -122,6 +124,10 @@ public class Configuration {
 	
 	public GPUDevice getGPUDevice() {
 		return this.GPUDevice;
+	}
+	
+	public boolean getDetectGPUs() {
+		return this.detectGPUs;
 	}
 	
 	public void setMaxUploadingJob(int max) {
@@ -184,6 +190,10 @@ public class Configuration {
 	
 	public void setUseGPU(GPUDevice device) {
 		this.GPUDevice = device;
+	}
+	
+	public void setDetectGPUs(boolean val) {
+		this.detectGPUs = val;
 	}
 	
 	public void setComputeMethod(ComputeType meth) {

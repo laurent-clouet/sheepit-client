@@ -303,7 +303,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				}
 				catch (UnsupportedEncodingException e) {
 				}
-				url += "&gpu_model=" + gpu_model + "&gpu_ram=" + this.user_config.getGPUDevice().getMemory();
+				url += "&gpu_model=" + gpu_model + "&gpu_ram=" + this.user_config.getGPUDevice().getMemory() + "&gpu_type=" + this.user_config.getGPUDevice().getType();
 			}
 			
 			connection = this.HTTPRequest(url, this.generateXMLForMD5cache());

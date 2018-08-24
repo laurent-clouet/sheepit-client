@@ -28,6 +28,7 @@ import org.kohsuke.args4j.spi.OptionHandler;
 import org.kohsuke.args4j.spi.Parameters;
 import org.kohsuke.args4j.spi.Setter;
 
+import com.sheepit.client.Configuration;
 import com.sheepit.client.hardware.gpu.GPU;
 import com.sheepit.client.hardware.gpu.GPUDevice;
 
@@ -38,10 +39,10 @@ public class ListGpuParameterHandler<T> extends OptionHandler<T> {
 	
 	@Override
 	public int parseArguments(Parameters params) throws CmdLineException {
-		List<GPUDevice> gpus = GPU.listDevices();
+		List<GPUDevice> gpus = GPU.listDevices(new Configuration(null, null, null));
 		if (gpus != null) {
 			for (GPUDevice gpu : gpus) {
-				System.out.println("CUDA Name : " + gpu.getCudaName());
+				System.out.println("Id        : " + gpu.getId());
 				System.out.println("Model     : " + gpu.getModel());
 				System.out.println("Memory, MB: " + (int) (gpu.getMemory() / (1024 * 1024)));
 				System.out.println();

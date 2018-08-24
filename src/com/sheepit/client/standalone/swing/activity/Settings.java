@@ -99,7 +99,7 @@ public class Settings implements Activity {
 		Configuration config = parent.getConfiguration();
 		new SettingsLoader().merge(config);
 		
-		List<GPUDevice> gpus = GPU.listDevices();
+		List<GPUDevice> gpus = GPU.listDevices(config);
 		
 		GridBagConstraints constraints = new GridBagConstraints();
 		int currentRow = 0;
@@ -208,10 +208,10 @@ public class Settings implements Activity {
 		
 		for (GPUDevice gpu : gpus) {
 			JCheckBoxGPU gpuCheckBox = new JCheckBoxGPU(gpu);
-			gpuCheckBox.setToolTipText(gpu.getCudaName());
+			gpuCheckBox.setToolTipText(gpu.getId());
 			if (gpuChecked) {
 				GPUDevice config_gpu = config.getGPUDevice();
-				if (config_gpu != null && config_gpu.getCudaName().equals(gpu.getCudaName())) {
+				if (config_gpu != null && config_gpu.getId().equals(gpu.getId())) {
 					gpuCheckBox.setSelected(gpuChecked);
 				}
 			}

@@ -20,15 +20,25 @@
 package com.sheepit.client.hardware.gpu;
 
 public class GPUDevice {
+	private String type;
 	private String model;
 	private long memory; // in B
 	
-	private String cudaName;
+	private String id;
 	
-	public GPUDevice(String model, long ram, String cuda) {
+	public GPUDevice(String type, String model, long ram, String id) {
+		this.type = type;
 		this.model = model;
 		this.memory = ram;
-		this.cudaName = cuda;
+		this.id = id;
+	}
+	
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 	
 	public String getModel() {
@@ -47,17 +57,17 @@ public class GPUDevice {
 		this.memory = memory;
 	}
 	
-	public String getCudaName() {
-		return cudaName;
+	public String getId() {
+		return id;
 	}
 	
-	public void setCudaName(String cudaName) {
-		this.cudaName = cudaName;
+	public void setId(String id) {
+		this.id = id;
 	}
 	
 	@Override
 	public String toString() {
-		return "GPUDevice [model=" + model + ", memory=" + memory + ", cudaName=" + cudaName + "]";
+		return "GPUDevice [type=" + type + ", model='" + model + "', memory=" + memory + ", id=" + id + "]";
 	}
 	
 	public int getRecommandedTileSize() {
