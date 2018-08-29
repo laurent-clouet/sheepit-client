@@ -125,7 +125,7 @@ public class Linux extends OS {
 			while (scanner.hasNextLine()) {
 				String line = scanner.nextLine();
 				
-				if (line.startsWith("MemFree")) {
+				if (line.startsWith("MemAvailable")) {
 					String buf[] = line.split(":");
 					if (buf.length > 0) {
 						Integer buf2 = new Integer(buf[1].trim().split(" ")[0]);
