@@ -391,8 +391,8 @@ public class Client {
 		
 		if (this.renderingJob != null) {
 			if (this.renderingJob.getProcessRender().getProcess() != null) {
-				OS.getOS().kill(this.renderingJob.getProcessRender().getProcess());
 				this.renderingJob.setAskForRendererKill(true);
+				OS.getOS().kill(this.renderingJob.getProcessRender().getProcess());
 			}
 		}
 		
