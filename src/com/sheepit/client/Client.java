@@ -202,7 +202,7 @@ public class Client {
 					}
 				}
 				catch (FermeExceptionNoSession e) {
-					// User has no session need to re-authenticate
+					this.log.debug("User has no session need to re-authenticate");
 					ret = this.server.getConfiguration();
 					if (ret != Error.Type.OK) {
 						this.renderingJob = null;
