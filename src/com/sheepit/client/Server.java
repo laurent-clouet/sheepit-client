@@ -33,6 +33,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
+import java.net.CookieHandler;
+import java.net.CookieManager;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.NoRouteToHostException;
@@ -42,7 +44,6 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -88,7 +89,6 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 	private String base_url;
 	private Configuration user_config;
 	private Client client;
-	private ArrayList<String> cookies;
 	private HashMap<String, String> pages;
 	private Log log;
 	private long lastRequestTime;
@@ -100,10 +100,12 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 		this.user_config = user_config_;
 		this.client = client_;
 		this.pages = new HashMap<String, String>();
-		this.cookies = new ArrayList<String>();
 		this.log = Log.getInstance(this.user_config);
 		this.lastRequestTime = 0;
 		this.keepmealive_duration = 15 * 60 * 1000; // default 15min
+		
+		CookieManager cookies = new CookieManager();
+		CookieHandler.setDefault(cookies);
 	}
 	
 	public void run() {
@@ -512,9 +514,6 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 		connection.setDoOutput(true);
 		connection.setInstanceFollowRedirects(true);
 		connection.setRequestMethod("GET");
-		for (String cookie : this.cookies) {
-			connection.setRequestProperty("Cookie", cookie);
-		}
 		
 		if (url_.startsWith("https://")) {
 			try {
@@ -548,21 +547,6 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			out.write(data_);
 			out.flush();
 			out.close();
-		}
-		
-		String headerName = null;
-		for (int i = 1; (headerName = connection.getHeaderFieldKey(i)) != null; i++) {
-			if (headerName.equals("Set-Cookie")) {
-				String cookie = connection.getHeaderField(i);
-				
-				boolean cookieIsPresent = false;
-				for (String value : this.cookies) {
-					if (value.equalsIgnoreCase(cookie))
-						cookieIsPresent = true;
-				}
-				if (!cookieIsPresent)
-					this.cookies.add(cookie);
-			}
 		}
 		
 		// actually use the connection to, in case of timeout, generate an exception
@@ -648,9 +632,6 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			conn.setDoOutput(true);
 			conn.setInstanceFollowRedirects(true);
 			conn.setUseCaches(false);
-			for (String cookie : this.cookies) {
-				conn.setRequestProperty("Cookie", cookie);
-			}
 			
 			conn.setRequestMethod("POST");
 			conn.setRequestProperty("Connection", "Keep-Alive");
