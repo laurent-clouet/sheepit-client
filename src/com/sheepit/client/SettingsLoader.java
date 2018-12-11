@@ -124,7 +124,7 @@ public class SettingsLoader {
 			}
 			
 			if (cores != null) {
-				prop.setProperty("cpu-cores", cores);
+				prop.setProperty("cores", cores);
 			}
 			
 			if (ram != null) {
@@ -232,8 +232,12 @@ public class SettingsLoader {
 				this.gpu = prop.getProperty("compute-gpu");
 			}
 			
-			if (prop.containsKey("cpu-cores")) {
+			if (prop.containsKey("cpu-cores")) { // backward compatibility
 				this.cores = prop.getProperty("cpu-cores");
+			}
+			
+			if (prop.containsKey("cores")) {
+				this.cores = prop.getProperty("cores");
 			}
 			
 			if (prop.containsKey("ram")) {
