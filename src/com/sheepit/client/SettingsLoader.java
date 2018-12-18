@@ -351,7 +351,7 @@ public class SettingsLoader {
 			config.setMaxRenderTime(Integer.valueOf(renderTime));
 		}
 		
-		if (config.getUserHasSpecifiedACacheDir() == false && cacheDir != null && new File(cacheDir).exists()) {
+		if (config.getUserHasSpecifiedACacheDir() == false && cacheDir != null) {
 			config.setCacheDir(new File(cacheDir));
 		}
 		
