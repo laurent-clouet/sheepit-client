@@ -3,7 +3,6 @@ script: ant
 
 os:
   - linux
-  - osx
 
 # safelist
 branches:
