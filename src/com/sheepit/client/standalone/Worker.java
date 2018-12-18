@@ -291,6 +291,7 @@ public class Worker {
 				System.err.println("Aborting");
 				System.exit(2);
 			}
+			config.setConfigPath(config_file);
 			new SettingsLoader(config_file).merge(config);
 		}
 		

@@ -40,6 +40,7 @@ public class Configuration {
 		CPU_GPU, CPU, GPU
 	} // accept job for ...
 	
+	private String configFilePath;
 	public File workingDirectory;
 	public File storageDirectory; // for permanent storage (binary archive)
 	public boolean userHasSpecifiedACacheDir;
@@ -64,6 +65,7 @@ public class Configuration {
 	private String hostname;
 	
 	public Configuration(File cache_dir_, String login_, String password_) {
+		this.configFilePath = null;
 		this.login = login_;
 		this.password = password_;
 		this.proxy = null;
@@ -92,6 +94,14 @@ public class Configuration {
 	
 	public String toString() {
 		return String.format("Configuration (workingDirectory '%s')", this.workingDirectory.getAbsolutePath());
+	}
+
+	public String getConfigFilePath() {
+		return this.configFilePath;
+	}
+	
+	public void setConfigPath(String val) {
+		this.configFilePath = val;
 	}
 	
 	public String login() {

@@ -97,7 +97,7 @@ public class Settings implements Activity {
 	@Override
 	public void show() {
 		Configuration config = parent.getConfiguration();
-		new SettingsLoader().merge(config);
+		new SettingsLoader(config.getConfigFilePath()).merge(config);
 		
 		List<GPUDevice> gpus = GPU.listDevices(config);
 		
@@ -617,14 +617,7 @@ public class Settings implements Activity {
 			}
 			
 			if (saveFile.isSelected()) {
-				new SettingsLoader(login.getText(), new String(password.getPassword()), proxyText, hostnameText, method, selected_gpu, cpu_cores, max_ram, max_rendertime, cachePath, autoSignIn.isSelected(), GuiSwing.type, tile, priority.getValue()).saveFile();
-			}
-			else {
-				try {
-					new File(new SettingsLoader().getFilePath()).delete();
-				}
-				catch (SecurityException e3) {
-				}
+				new SettingsLoader(config.getConfigFilePath(), login.getText(), new String(password.getPassword()), proxyText, hostnameText, method, selected_gpu, cpu_cores, max_ram, max_rendertime, cachePath, autoSignIn.isSelected(), GuiSwing.type, tile, priority.getValue()).saveFile();
 			}
 		}
 	}

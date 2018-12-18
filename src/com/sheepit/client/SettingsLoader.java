@@ -55,16 +55,22 @@ public class SettingsLoader {
 	private String tileSize;
 	private int    priority;
 	
-	public SettingsLoader() {
-		path = getDefaultFilePath();
-	}
-	
 	public SettingsLoader(String path_) {
-		path = path_;
+		if (path_ == null) {
+			path = getDefaultFilePath();
+		}
+		else {
+			path = path_;
+		}
 	}
 	
-	public SettingsLoader(String login_, String password_, String proxy_, String hostname_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, int maxRam_, int maxRenderTime_, String cacheDir_, boolean autoSignIn_, String ui_, String tileSize_, int priority_) {
-		path = getDefaultFilePath();
+	public SettingsLoader(String path_, String login_, String password_, String proxy_, String hostname_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, int maxRam_, int maxRenderTime_, String cacheDir_, boolean autoSignIn_, String ui_, String tileSize_, int priority_) {
+		if (path_ == null) {
+			path = getDefaultFilePath();
+		}
+		else {
+			path = path_;
+		}
 		login = login_;
 		password = password_;
 		proxy = proxy_;
