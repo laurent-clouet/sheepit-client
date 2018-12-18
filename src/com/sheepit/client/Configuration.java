@@ -225,8 +225,8 @@ public class Configuration {
 			this.userHasSpecifiedACacheDir = true;
 			this.workingDirectory = new File(cache_dir_.getAbsolutePath() + File.separator + "sheepit");
 			this.storageDirectory = new File(cache_dir_.getAbsolutePath() + File.separator + "sheepit_binary_cache");
-			this.workingDirectory.mkdir();
-			this.storageDirectory.mkdir();
+			this.workingDirectory.mkdirs();
+			this.storageDirectory.mkdirs();
 		}
 		
 	}
