@@ -15,6 +15,7 @@ Parameters as GET:
     * ram_max: Maximum memory allowed for renderer (in kilobytes).
     * extras (optional): Extra data used for the configuration.
     * hostname (optional): Hostname of the machine, useful for distinguishing multiple machines with the same hardware configuration. Only used for display on the website.
+    * ui (optional): User interface used by the client, useful for statistics
 
 Answer in case of error:
 <?xml version="1.0" encoding="utf-8" ?>
