@@ -394,7 +394,20 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				}
 				Element renderer_node = (Element) ns.item(0);
 				
-				String script = "import bpy\nbpy.context.user_preferences.filepaths.temporary_directory = \"" + this.user_config.workingDirectory.getAbsolutePath().replace("\\", "\\\\") + "\"\n";
+				String script = "import bpy\n";
+				
+				// blender 2.7x
+				script += "try:\n";
+				script += "\tbpy.context.user_preferences.filepaths.temporary_directory = \"" + this.user_config.workingDirectory.getAbsolutePath().replace("\\", "\\\\") + "\"\n";
+				script += "except AttributeError:\n";
+				script += "\tpass\n";
+				
+				// blender 2.80
+				script += "try:\n";
+				script += "\tbpy.context.preferences.filepaths.temporary_directory = \"" + this.user_config.workingDirectory.getAbsolutePath().replace("\\", "\\\\") + "\"\n";
+				script += "except AttributeError:\n";
+				script += "\tpass\n";
+				
 				try {
 					ns = job_node.getElementsByTagName("script");
 					if (ns.getLength() != 0) {
