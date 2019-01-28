@@ -29,7 +29,7 @@ public class Error {
 		TOO_OLD_CLIENT(3),
 		SESSION_DISABLED(4),
 		RENDERER_NOT_AVAILABLE(5),
-		MISSING_RENDER(6),
+		MISSING_RENDERER(6),
 		MISSING_SCENE(7),
 		NOOUTPUTFILE(8),
 		DOWNLOAD_FILE(9),
@@ -181,6 +181,8 @@ public class Error {
 				return "The server has disabled your session. Your client may have generated a broken frame (GPU not compatible, not enough RAM/VRAM, etc).";
 			case RENDERER_NOT_AVAILABLE:
 				return "No renderer are available on the server for your machine.";
+			case MISSING_RENDERER:
+				return "Unable to locate the Blender renderer within the binary download.";
 			case OS_NOT_SUPPORTED:
 				return "Operating System not supported.";
 			case CPU_NOT_SUPPORTED:
