@@ -84,7 +84,7 @@ public class SettingsLoader {
 			cores = String.valueOf(cores_);
 		}
 		if (maxRam_ > 0) {
-			ram = String.valueOf(maxRam_);
+			ram = String.valueOf(maxRam_ * 1000);
 		}
 		if (maxRenderTime_ > 0) {
 			renderTime = String.valueOf(maxRenderTime_);
