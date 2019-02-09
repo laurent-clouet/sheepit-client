@@ -611,7 +611,7 @@ public class Client {
 		if (renderer_file.exists() == false) {
 			gui.setRenderingProjectName("");
 			this.log.error("Client::work job preparation failed (renderer file '" + renderer_file.getAbsolutePath() + "' does not exist)");
-			return Error.Type.MISSING_RENDER;
+			return Error.Type.MISSING_RENDERER;
 		}
 		
 		Error.Type err = ajob.render();
