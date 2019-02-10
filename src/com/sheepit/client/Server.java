@@ -373,6 +373,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				int credits_earned = 0;
 				int credits_earned_session = 0;
 				int waiting_project = 0;
+				int renderable_project = 0;
 				int connected_machine = 0;
 				if (a_node.hasAttribute("frame_remaining") && a_node.hasAttribute("credits_total") && a_node.hasAttribute("credits_session") && a_node.hasAttribute("waiting_project") && a_node.hasAttribute("connected_machine")) {
 					remaining_frames = Integer.parseInt(a_node.getAttribute("frame_remaining"));
@@ -380,6 +381,9 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 					credits_earned_session = Integer.parseInt(a_node.getAttribute("credits_session"));
 					waiting_project = Integer.parseInt(a_node.getAttribute("waiting_project"));
 					connected_machine = Integer.parseInt(a_node.getAttribute("connected_machine"));
+				}
+				if (a_node.hasAttribute("renderable_project")) {
+					renderable_project = Integer.parseInt(a_node.getAttribute("renderable_project"));
 				}
 				
 				ns = document.getElementsByTagName("job");
@@ -472,7 +476,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 						update_method
 						);
 				
-				this.client.getGui().displayStats(new Stats(remaining_frames, credits_earned, credits_earned_session, waiting_project, connected_machine));
+				this.client.getGui().displayStats(new Stats(remaining_frames, credits_earned, credits_earned_session, renderable_project, waiting_project, connected_machine));
 				
 				return a_job;
 			}
