@@ -69,6 +69,7 @@ public class Working implements Activity {
 	private JLabel currrent_project_progression_value;
 	private JLabel current_project_compute_method_value;
 	private JLabel user_info_points_total_value;
+	private JLabel renderable_projects_value;
 	private JLabel waiting_projects_value;
 	private JLabel connected_machines_value;
 	private JLabel user_info_total_rendertime_this_session_value;
@@ -85,6 +86,7 @@ public class Working implements Activity {
 		currrent_project_progression_value = new JLabel("");
 		current_project_compute_method_value = new JLabel("");
 		user_info_points_total_value = new JLabel("");
+		renderable_projects_value = new JLabel("");
 		waiting_projects_value = new JLabel("");
 		connected_machines_value = new JLabel("");
 		user_info_total_rendertime_this_session_value = new JLabel("");
@@ -126,12 +128,16 @@ public class Working implements Activity {
 		JLabel user_info_credits_this_session = new JLabel("Points earned: ", JLabel.TRAILING);
 		JLabel user_info_total_rendertime_this_session = new JLabel("Duration: ", JLabel.TRAILING);
 		JLabel user_info_rendered_frame_this_session = new JLabel("Rendered frames: ", JLabel.TRAILING);
+		JLabel global_static_renderable_project = new JLabel("Renderable projects: ", JLabel.TRAILING);
 		
 		session_info_panel.add(user_info_credits_this_session);
 		session_info_panel.add(creditEarned);
 		
 		session_info_panel.add(user_info_rendered_frame_this_session);
 		session_info_panel.add(renderedFrameContent);
+		
+		session_info_panel.add(global_static_renderable_project);
+		session_info_panel.add(renderable_projects_value);
 		
 		session_info_panel.add(user_info_total_rendertime_this_session);
 		session_info_panel.add(user_info_total_rendertime_this_session_value);
@@ -142,7 +148,7 @@ public class Working implements Activity {
 		
 		JLabel global_stats_machine_connected = new JLabel("Machines connected: ", JLabel.TRAILING);
 		JLabel global_stats_remaining_frame = new JLabel("Remaining frames: ", JLabel.TRAILING);
-		JLabel global_stats_waiting_project = new JLabel("Remaining projects: ", JLabel.TRAILING);
+		JLabel global_stats_waiting_project = new JLabel("Active projects: ", JLabel.TRAILING);
 		JLabel global_stats_user_points = new JLabel("User's points: ", JLabel.TRAILING);
 		
 		global_stats_panel.add(global_stats_waiting_project);
@@ -213,7 +219,7 @@ public class Working implements Activity {
 		widthLeftColumn = Spring.max(widthLeftColumn, getBestWidth(session_info_panel, 3, 2));
 		alignPanel(current_project_panel, 5, 2, widthLeftColumn);
 		alignPanel(global_stats_panel, 4, 2, widthLeftColumn);
-		alignPanel(session_info_panel, 3, 2, widthLeftColumn);
+		alignPanel(session_info_panel, 4, 2, widthLeftColumn);
 	}
 	
 	public void setStatus(String msg_) {
@@ -241,6 +247,7 @@ public class Working implements Activity {
 		remainingFrameContent.setText(df.format(stats.getRemainingFrame()));
 		creditEarned.setText(df.format(stats.getCreditsEarnedDuringSession()));
 		user_info_points_total_value.setText(df.format(stats.getCreditsEarned()));
+		renderable_projects_value.setText(df.format(stats.getRenderableProject()));
 		waiting_projects_value.setText(df.format(stats.getWaitingProject()));
 		connected_machines_value.setText(df.format(stats.getConnectedMachine()));
 		updateTime();

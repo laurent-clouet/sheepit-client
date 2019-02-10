@@ -23,13 +23,15 @@ public class Stats {
 	private int remainingFrame;
 	private int creditsEarned;
 	private int creditsEarnedSession;
+	private int renderableProject;
 	private int waitingProject;
 	private int connectedMachine;
 	
-	public Stats(int frame, int credits, int creditsSession, int waitings, int machines) {
+	public Stats(int frame, int credits, int creditsSession, int renderables, int waitings, int machines) {
 		remainingFrame = frame;
 		creditsEarned = credits;
 		creditsEarnedSession = creditsSession;
+		renderableProject = renderables;
 		waitingProject = waitings;
 		connectedMachine = machines;
 	}
@@ -38,6 +40,7 @@ public class Stats {
 		remainingFrame = 0;
 		creditsEarned = 0;
 		creditsEarnedSession = 0;
+		renderableProject = 0;
 		waitingProject = 0;
 		connectedMachine = 0;
 	}
@@ -54,6 +57,10 @@ public class Stats {
 		return creditsEarned;
 	}
 	
+	public int getRenderableProject() {
+		return renderableProject;
+	}
+	
 	public int getWaitingProject() {
 		return waitingProject;
 	}
@@ -64,6 +71,6 @@ public class Stats {
 	
 	@Override
 	public String toString() {
-		return "Stats [remainingFrame=" + remainingFrame + ", creditsEarned=" + creditsEarned + ", creditsEarnedSession=" + creditsEarnedSession + ", waitingProject=" + waitingProject + ", connectedMachine=" + connectedMachine + "]";
+		return "Stats [remainingFrame=" + remainingFrame + ", creditsEarned=" + creditsEarned + ", creditsEarnedSession=" + creditsEarnedSession + ", renderableProject=" + renderableProject + ", waitingProject=" + waitingProject + ", connectedMachine=" + connectedMachine + "]";
 	}
 }
