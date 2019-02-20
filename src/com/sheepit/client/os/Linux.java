@@ -88,7 +88,7 @@ public class Linux extends OS {
 	}
 	
 	@Override
-	public int getMemory() {
+	public long getMemory() {
 		try {
 			String filePath = "/proc/meminfo";
 			Scanner scanner = new Scanner(new File(filePath));
@@ -117,7 +117,7 @@ public class Linux extends OS {
 	}
 	
 	@Override
-	public int getFreeMemory() {
+	public long getFreeMemory() {
 		try {
 			String filePath = "/proc/meminfo";
 			Scanner scanner = new Scanner(new File(filePath));

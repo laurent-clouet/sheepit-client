@@ -290,8 +290,8 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 		HttpURLConnection connection = null;
 		try {
 			OS os = OS.getOS();
-			int maxMemory = this.user_config.getMaxMemory();
-			int freeMemory = os.getFreeMemory();
+			long maxMemory = this.user_config.getMaxMemory();
+			long freeMemory = os.getFreeMemory();
 			if (maxMemory < 0) {
 				maxMemory = freeMemory;
 			}

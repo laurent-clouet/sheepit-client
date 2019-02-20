@@ -111,7 +111,7 @@ public class FreeBSD extends OS {
 	}
 	
 	@Override
-	public int getMemory() {
+	public long getMemory() {
 		try {
 			Runtime r = Runtime.getRuntime();
 			Process p = r.exec("sysctl -n hw.usermem");
@@ -124,7 +124,7 @@ public class FreeBSD extends OS {
 				return 0;
 			}
 			Long mem_byte = Long.parseLong(line.trim());
-			return (int) (mem_byte / Long.valueOf(1024));
+			return mem_byte / Long.valueOf(1024);
 		}
 		catch (IOException e) {
 			Log.getInstance(null).debug("OS::FreeBSD::getMemory exception " + e);
@@ -134,7 +134,7 @@ public class FreeBSD extends OS {
 	}
 	
 	@Override
-	public int getFreeMemory() {
+	public long getFreeMemory() {
 		return -1;
 	}
 	
