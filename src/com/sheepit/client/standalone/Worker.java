@@ -38,6 +38,7 @@ import com.sheepit.client.Log;
 import com.sheepit.client.Pair;
 import com.sheepit.client.SettingsLoader;
 import com.sheepit.client.ShutdownHook;
+import com.sheepit.client.Utils;
 import com.sheepit.client.hardware.gpu.GPU;
 import com.sheepit.client.hardware.gpu.GPUDevice;
 import com.sheepit.client.hardware.gpu.nvidia.Nvidia;
@@ -72,8 +73,8 @@ public class Worker {
 	@Option(name = "-cores", usage = "Number of cores/threads to use for the render", metaVar = "3", required = false)
 	private int nb_cores = -1;
 	
-	@Option(name = "-memory", usage = "Maximum memory allow to be used by renderer (in MB)", required = false)
-	private long max_ram = -1;
+	@Option(name = "-memory", usage = "Maximum memory allow to be used by renderer, number with unit (800M, 2G, ...)", required = false)
+	private String max_ram = null;
 	
 	@Option(name = "-rendertime", usage = "Maximum time allow for each frame (in minute)", required = false)
 	private int max_rendertime = -1;
@@ -219,8 +220,14 @@ public class Worker {
 			config.setUseNbCores(nb_cores);
 		}
 		
-		if (max_ram > 0) {
-			config.setMaxMemory(max_ram * 1000);
+		if (max_ram != null) {
+			try {
+				config.setMaxMemory(Utils.parseNumber(max_ram) / 1000); // internal value are in kB
+			}
+			catch (java.lang.IllegalStateException e) {
+				System.err.println("Error: failed to parse memory parameter");
+				return;
+			}
 		}
 		
 		if (max_rendertime > 0) {
