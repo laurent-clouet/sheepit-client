@@ -146,6 +146,10 @@ public class Utils {
 		file.delete();
 	}
 	
+	/**
+	 * Parse a number string to a number.
+	 * Input can be as "32", "10k", "100K", "100G", "1.3G", "0.4T"
+	 */
 	public static long parseNumber(String in) {
 		in = in.trim();
 		in = in.replaceAll(",", ".");
@@ -158,18 +162,22 @@ public class Utils {
 		m.find();
 		int scale = 1;
 		switch (m.group(2).charAt(0)) {
-			case 'G':
-				scale *= 1000;
-			case 'g':
-				scale *= 1000;
-			case 'M':
-				scale *= 1000;
-			case 'm':
-				scale *= 1000;
-			case 'K':
+			case 'T':
+			case 't':
+				scale = 1000 * 1000 * 1000 * 1000;
 				break;
-			default:
-				return 0;
+			case 'G':
+			case 'g':
+				scale = 1000 * 1000 * 1000;
+				break;
+			case 'M':
+			case 'm':
+				scale = 1000 * 1000;
+				break;
+			case 'K':
+			case 'k':
+				scale = 1000;
+				break;
 		}
 		return Math.round(Double.parseDouble(m.group(1)) * scale);
 	}

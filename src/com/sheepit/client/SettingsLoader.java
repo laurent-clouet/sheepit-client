@@ -84,7 +84,7 @@ public class SettingsLoader {
 			cores = String.valueOf(cores_);
 		}
 		if (maxRam_ > 0) {
-			ram = String.valueOf(maxRam_);
+			ram = String.valueOf(maxRam_) + "k";
 		}
 		if (maxRenderTime_ > 0) {
 			renderTime = String.valueOf(maxRenderTime_);
@@ -350,7 +350,7 @@ public class SettingsLoader {
 		}
 		
 		if (config.getMaxMemory() == -1 && ram != null) {
-			config.setMaxMemory(Long.valueOf(ram));
+			config.setMaxMemory(Utils.parseNumber(ram) / 1000); // internal ram value is in kB
 		}
 		
 		if (config.getMaxRenderTime() == -1 && renderTime != null) {

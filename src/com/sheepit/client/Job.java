@@ -565,7 +565,7 @@ public class Job {
 				int end = element.indexOf(')');
 				if (end > 0) {
 					try {
-						long mem = Utils.parseNumber(element.substring(1, end).trim());
+						long mem = Utils.parseNumber(element.substring(1, end).trim()) / 1000; // internal use of ram is in kB
 						if (mem > getProcessRender().getMemoryUsed()) {
 							getProcessRender().setMemoryUsed(mem);
 						}
@@ -580,7 +580,7 @@ public class Job {
 					int end = element.indexOf('|');
 					if (end > 0) {
 						try {
-							long mem = Utils.parseNumber(element.substring(1, end).trim());
+							long mem = Utils.parseNumber(element.substring(1, end).trim()) / 1000; // internal use of ram is in kB
 							if (mem > getProcessRender().getMemoryUsed()) {
 								getProcessRender().setMemoryUsed(mem);
 							}
