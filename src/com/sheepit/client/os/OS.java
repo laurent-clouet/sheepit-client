@@ -31,9 +31,9 @@ public abstract class OS {
 	
 	public abstract CPU getCPU();
 	
-	public abstract int getMemory();
+	public abstract long getMemory();
 	
-	public abstract int getFreeMemory();
+	public abstract long getFreeMemory();
 	
 	public abstract String getRenderBinaryPath();
 	

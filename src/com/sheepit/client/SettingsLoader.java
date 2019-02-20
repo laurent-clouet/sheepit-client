@@ -64,7 +64,7 @@ public class SettingsLoader {
 		}
 	}
 	
-	public SettingsLoader(String path_, String login_, String password_, String proxy_, String hostname_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, int maxRam_, int maxRenderTime_, String cacheDir_, boolean autoSignIn_, String ui_, String tileSize_, int priority_) {
+	public SettingsLoader(String path_, String login_, String password_, String proxy_, String hostname_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, long maxRam_, int maxRenderTime_, String cacheDir_, boolean autoSignIn_, String ui_, String tileSize_, int priority_) {
 		if (path_ == null) {
 			path = getDefaultFilePath();
 		}
@@ -350,7 +350,7 @@ public class SettingsLoader {
 		}
 		
 		if (config.getMaxMemory() == -1 && ram != null) {
-			config.setMaxMemory(Integer.valueOf(ram));
+			config.setMaxMemory(Long.valueOf(ram));
 		}
 		
 		if (config.getMaxRenderTime() == -1 && renderTime != null) {

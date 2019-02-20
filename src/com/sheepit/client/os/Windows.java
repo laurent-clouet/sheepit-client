@@ -89,11 +89,11 @@ public class Windows extends OS {
 	}
 	
 	@Override
-	public int getMemory() {
+	public long getMemory() {
 		try {
 			MEMORYSTATUSEX _memory = new MEMORYSTATUSEX();
 			if (Kernel32.INSTANCE.GlobalMemoryStatusEx(_memory)) {
-				return (int) (_memory.ullTotalPhys.longValue() / 1024); // size in KB
+				return _memory.ullTotalPhys.longValue() / 1024; // size in KB
 			}
 		}
 		catch (Exception e) {
@@ -103,11 +103,11 @@ public class Windows extends OS {
 	}
 	
 	@Override
-	public int getFreeMemory() {
+	public long getFreeMemory() {
 		try {
 			MEMORYSTATUSEX _memory = new MEMORYSTATUSEX();
 			if (Kernel32.INSTANCE.GlobalMemoryStatusEx(_memory)) {
-				return (int) (_memory.ullAvailPhys.longValue() / 1024); // size in KB
+				return _memory.ullAvailPhys.longValue() / 1024; // size in KB
 			}
 		}
 		catch (Exception e) {

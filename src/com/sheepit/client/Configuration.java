@@ -50,7 +50,7 @@ public class Configuration {
 	private String proxy;
 	private int maxUploadingJob;
 	private int nbCores;
-	private int maxMemory; // max memory allowed for render
+	private long maxMemory; // max memory allowed for render
 	private int maxRenderTime; // max render time per frame allowed
 	private int priority;
 	private ComputeType computeMethod;
@@ -152,11 +152,11 @@ public class Configuration {
 		return this.nbCores;
 	}
 	
-	public void setMaxMemory(int max) {
+	public void setMaxMemory(long max) {
 		this.maxMemory = max;
 	}
 	
-	public int getMaxMemory() {
+	public long getMaxMemory() {
 		return this.maxMemory;
 	}
 	

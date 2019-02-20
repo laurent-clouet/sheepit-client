@@ -98,7 +98,7 @@ public class Mac extends OS {
 	}
 	
 	@Override
-	public int getMemory() {
+	public long getMemory() {
 		String command = "sysctl hw.memsize";
 		
 		Process p = null;
@@ -113,7 +113,7 @@ public class Mac extends OS {
 				if (line.startsWith(option)) {
 					String memory = line.substring(option.length()).trim(); // memory in bytes
 					
-					return (int) (Long.parseLong(memory) / 1024);
+					return Long.parseLong(memory) / 1024;
 				}
 			}
 			input.close();
@@ -141,7 +141,7 @@ public class Mac extends OS {
 	}
 	
 	@Override
-	public int getFreeMemory() {
+	public long getFreeMemory() {
 		return -1;
 	}
 	

@@ -73,7 +73,7 @@ public class Worker {
 	private int nb_cores = -1;
 	
 	@Option(name = "-memory", usage = "Maximum memory allow to be used by renderer (in MB)", required = false)
-	private int max_ram = -1;
+	private long max_ram = -1;
 	
 	@Option(name = "-rendertime", usage = "Maximum time allow for each frame (in minute)", required = false)
 	private int max_rendertime = -1;

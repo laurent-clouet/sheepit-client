@@ -256,7 +256,7 @@ public class Settings implements Activity {
 		
 		// max ram allowed to render
 		OS os = OS.getOS();
-		int all_ram = os.getMemory();
+		int all_ram = (int) os.getMemory();
 		ram = new JSlider(0, all_ram);
 		int step = 1000000;
 		double display = (double)all_ram / (double)step;
@@ -272,7 +272,7 @@ public class Settings implements Activity {
 		ram.setLabelTable(labelTable);
 		ram.setPaintTicks(true);
 		ram.setPaintLabels(true);
-		ram.setValue(config.getMaxMemory() != -1 ? config.getMaxMemory() : os.getMemory());
+		ram.setValue((int)(config.getMaxMemory() != -1 ? config.getMaxMemory() : os.getMemory()));
 		JLabel ramLabel = new JLabel("Memory:");
 		
 		compute_devices_constraints.weightx = 1.0 / gpus.size();
@@ -558,7 +558,7 @@ public class Settings implements Activity {
 				config.setUseNbCores(cpu_cores);
 			}
 			
-			int max_ram = -1;
+			long max_ram = -1;
 			if (ram != null) {
 				max_ram = ram.getValue();
 			}
