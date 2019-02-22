@@ -621,6 +621,10 @@ public class Client {
 		gui.setComputeMethod("");
 		if (err != Error.Type.OK) {
 			this.log.error("Client::work problem with runRenderer (ret " + err + ")");
+			if (err == Error.Type.RENDERER_CRASHED_PYTHON_ERROR) {
+				this.log.error("Client::work failed with python error, cleaning directory in hope to recover");
+				this.config.cleanWorkingDirectory();
+			}
 			return err;
 		}
 		
