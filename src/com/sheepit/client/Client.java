@@ -604,13 +604,15 @@ public class Client {
 		
 		if (scene_file.exists() == false) {
 			gui.setRenderingProjectName("");
-			this.log.error("Client::work job preparation failed (scene file '" + scene_file.getAbsolutePath() + "' does not exist)");
+			this.log.error("Client::work job preparation failed (scene file '" + scene_file.getAbsolutePath() + "' does not exist), cleaning directory in hope to recover");
+			this.config.cleanWorkingDirectory();
 			return Error.Type.MISSING_SCENE;
 		}
 		
 		if (renderer_file.exists() == false) {
 			gui.setRenderingProjectName("");
-			this.log.error("Client::work job preparation failed (renderer file '" + renderer_file.getAbsolutePath() + "' does not exist)");
+			this.log.error("Client::work job preparation failed (renderer file '" + renderer_file.getAbsolutePath() + "' does not exist), cleaning directory in hope to recover");
+			this.config.cleanWorkingDirectory();
 			return Error.Type.MISSING_RENDERER;
 		}
 		
