@@ -417,6 +417,8 @@ public class Client {
 		}
 		
 		this.server = null;
+
+		this.config.directoryLock.unlock();
 		
 		return 0;
 	}
