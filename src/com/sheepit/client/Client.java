@@ -162,8 +162,13 @@ public class Client {
 						// wait
 						Date now = new Date();
 						this.gui.status(String.format("Waiting until %tR before requesting job", next_request));
+						long wait = next_request.getTimeInMillis() - now.getTime();
+						if (wait < 0) {
+							// it means the client has to wait until the next day
+							wait += 24*3600*1000;
+						}
 						try {
-							Thread.sleep(next_request.getTimeInMillis() - now.getTime());
+							Thread.sleep(wait);
 						}
 						catch (InterruptedException e3) {
 							
@@ -551,15 +556,8 @@ public class Client {
 				if (start.before(now) && now.before(end)) {
 					return null;
 				}
-				if (start.after(now)) {
-					if (next == null) {
-						next = start;
-					}
-					else {
-						if (start.before(next)) {
-							next = start;
-						}
-					}
+				if (next == null || (start.before(next) && start.after(now))) {
+					next = start;
 				}
 			}
 			
