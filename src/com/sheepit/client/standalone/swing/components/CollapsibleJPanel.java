@@ -17,7 +17,7 @@ public class CollapsibleJPanel extends JPanel {
     private boolean isCompnentsVisible = true;
     private int originalHeight;
     private String borderTitle = "";
-    private int COLLAPSED_HEIGHT = 20;
+    private int COLLAPSED_HEIGHT = 22;
     private boolean[] originalVisibilty;
 
     public CollapsibleJPanel(LayoutManager layoutManager) {
@@ -103,7 +103,7 @@ public class CollapsibleJPanel extends JPanel {
         if (border instanceof TitledBorder && (borderTitle == "")) {
             borderTitle = ((TitledBorder) border).getTitle();
 
-            ((TitledBorder) border).setTitle(borderTitle + " - ");
+            ((TitledBorder) border).setTitle(" - " + borderTitle);
         }
 
         super.setBorder(border);
