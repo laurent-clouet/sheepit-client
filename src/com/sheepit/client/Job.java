@@ -570,7 +570,7 @@ public class Job {
 							getProcessRender().setMemoryUsed(mem);
 						}
 					}
-					catch (IllegalStateException e) {
+					catch (IllegalStateException | NumberFormatException e) {
 						// failed to parseNumber
 					}
 				}
@@ -585,7 +585,7 @@ public class Job {
 								getProcessRender().setMemoryUsed(mem);
 							}
 						}
-						catch (IllegalStateException e) {
+						catch (IllegalStateException | NumberFormatException e) {
 							// failed to parseNumber
 						}
 					}
