@@ -57,6 +57,7 @@ import com.sheepit.client.hardware.gpu.GPUDevice;
 import com.sheepit.client.network.Proxy;
 import com.sheepit.client.os.OS;
 import com.sheepit.client.standalone.GuiSwing;
+import com.sheepit.client.standalone.swing.components.CollapsibleJPanel;
 
 public class Settings implements Activity {
 	private static final String DUMMY_CACHE_DIR = "Auto detected";
@@ -115,7 +116,7 @@ public class Settings implements Activity {
 		++currentRow;
 		
 		// authentication
-		JPanel authentication_panel = new JPanel(new GridLayout(2, 2));
+		CollapsibleJPanel authentication_panel = new CollapsibleJPanel(new GridLayout(2, 2));
 		authentication_panel.setBorder(BorderFactory.createTitledBorder("Authentication"));
 		
 		JLabel loginLabel = new JLabel("Username:");
@@ -141,7 +142,7 @@ public class Settings implements Activity {
 		parent.getContentPane().add(authentication_panel, constraints);
 		
 		// directory
-		JPanel directory_panel = new JPanel(new GridLayout(1, 3));
+		CollapsibleJPanel directory_panel = new CollapsibleJPanel(new GridLayout(1, 3));
 		directory_panel.setBorder(BorderFactory.createTitledBorder("Cache"));
 		JLabel cacheLabel = new JLabel("Working directory:");
 		directory_panel.add(cacheLabel);
@@ -175,7 +176,7 @@ public class Settings implements Activity {
 		// compute devices
 		GridBagLayout gridbag = new GridBagLayout();
 		GridBagConstraints compute_devices_constraints = new GridBagConstraints();
-		JPanel compute_devices_panel = new JPanel(gridbag);
+		CollapsibleJPanel compute_devices_panel = new CollapsibleJPanel(gridbag);
 		
 		compute_devices_panel.setBorder(BorderFactory.createTitledBorder("Compute devices"));
 		
@@ -320,7 +321,7 @@ public class Settings implements Activity {
 		parent.getContentPane().add(compute_devices_panel, constraints);
 		
 		// other
-		JPanel advanced_panel = new JPanel(new GridLayout(5, 2));
+		CollapsibleJPanel advanced_panel = new CollapsibleJPanel(new GridLayout(5, 2));
 		advanced_panel.setBorder(BorderFactory.createTitledBorder("Advanced options"));
 		
 		JLabel proxyLabel = new JLabel("Proxy:");
@@ -379,6 +380,7 @@ public class Settings implements Activity {
 		constraints.gridy = currentRow;
 		constraints.gridwidth = 2;
 		parent.getContentPane().add(advanced_panel, constraints);
+		advanced_panel.setCollapsed(true);
 		
 		// general settings
 		JPanel general_panel = new JPanel(new GridLayout(1, 2));
