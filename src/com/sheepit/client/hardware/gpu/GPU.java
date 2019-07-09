@@ -74,8 +74,8 @@ public class GPU {
 		return devices;
 	}
 	
-	public static GPUDevice getGPUDevice(String device_model) {
-		if (device_model == null) {
+	public static GPUDevice getGPUDevice(String deviceId) {
+		if (deviceId == null) {
 			return null;
 		}
 		
@@ -88,7 +88,7 @@ public class GPU {
 		}
 		
 		for (GPUDevice dev : devices) {
-			if (device_model.equals(dev.getId()) || device_model.equals(dev.getModel())) {
+			if (deviceId.equals(dev.getId()) || deviceId.equals(dev.getOldId())) {
 				return dev;
 			}
 		}

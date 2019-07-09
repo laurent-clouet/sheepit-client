@@ -66,7 +66,7 @@ public class Nvidia implements GPULister {
 		
 		List<GPUDevice> devices = new LinkedList<GPUDevice>();
 		
-		HashMap<Integer, GPUDevice> devicesWithPciId = new HashMap<Integer, GPUDevice>(count.getValue());
+		HashMap<String, GPUDevice> devicesWithPciId = new HashMap<String, GPUDevice>(count.getValue());
 		for (int num = 0; num < count.getValue(); num++) {
 			IntByReference aDevice = new IntByReference();
 			
@@ -76,10 +76,22 @@ public class Nvidia implements GPULister {
 				continue;
 			}
 			
+			IntByReference pciDomainId = new IntByReference();
 			IntByReference pciBusId = new IntByReference();
+			IntByReference pciDeviceId = new IntByReference();
+			result =  cudalib.cuDeviceGetAttribute(pciDomainId, CUDeviceAttribute.CU_DEVICE_ATTRIBUTE_PCI_DOMAIN_ID, aDevice.getValue());
+			if (result != CUresult.CUDA_SUCCESS) {
+				System.out.println("Nvidia::getGpus cuDeviceGetAttribute for CU_DEVICE_ATTRIBUTE_PCI_DOMAIN_ID failed (ret: " + CUresult.stringFor(result) + ")");
+				continue;
+			}
 			result =  cudalib.cuDeviceGetAttribute(pciBusId, CUDeviceAttribute.CU_DEVICE_ATTRIBUTE_PCI_BUS_ID, aDevice.getValue());
 			if (result != CUresult.CUDA_SUCCESS) {
 				System.out.println("Nvidia::getGpus cuDeviceGetAttribute for CU_DEVICE_ATTRIBUTE_PCI_BUS_ID failed (ret: " + CUresult.stringFor(result) + ")");
+				continue;
+			}
+			result =  cudalib.cuDeviceGetAttribute(pciDeviceId, CUDeviceAttribute.CU_DEVICE_ATTRIBUTE_PCI_DEVICE_ID, aDevice.getValue());
+			if (result != CUresult.CUDA_SUCCESS) {
+				System.out.println("Nvidia::getGpus cuDeviceGetAttribute for CU_DEVICE_ATTRIBUTE_PCI_DEVICE_ID failed (ret: " + CUresult.stringFor(result) + ")");
 				continue;
 			}
 			
@@ -105,18 +117,24 @@ public class Nvidia implements GPULister {
 				return null;
 			}
 			
-			devicesWithPciId.put(pciBusId.getValue(), new GPUDevice(TYPE, new String(name).trim(), ram.getValue(), "FAKE"));
+			String blenderId = String.format("CUDA_%s_%04x:%02x:%02x",
+					new String(name).trim(),
+					pciDomainId.getValue(),
+					pciBusId.getValue(),
+					pciDeviceId.getValue());
+			devicesWithPciId.put(Integer.toString(pciBusId.getValue()), new GPUDevice(TYPE, new String(name).trim(), ram.getValue(), blenderId));
 		}
 		
-		// generate proper cuda id
+		// for backward compatibility generate a CUDA_N id
 		// in theory a set to environment "CUDA_DEVICE_ORDER=PCI_BUS_ID" should be enough but it didn't work
 		int i = 0;
-		for (Map.Entry<Integer, GPUDevice> entry : devicesWithPciId.entrySet()){
+		for (Map.Entry<String, GPUDevice> entry : devicesWithPciId.entrySet()){
 			GPUDevice aDevice = entry.getValue();
-			aDevice.setId(TYPE + "_" + Integer.toString(i));
+			aDevice.setOldId(TYPE + "_" + Integer.toString(i));
 			devices.add(aDevice);
 			i++;
 		}
+		
 		return devices;
 	}
 	

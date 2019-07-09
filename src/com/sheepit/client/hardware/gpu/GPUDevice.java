@@ -26,6 +26,8 @@ public class GPUDevice {
 	
 	private String id;
 	
+	private String oldId; // for backward compatibility
+	
 	public GPUDevice(String type, String model, long ram, String id) {
 		this.type = type;
 		this.model = model;
@@ -63,6 +65,14 @@ public class GPUDevice {
 	
 	public void setId(String id) {
 		this.id = id;
+	}
+	
+	public String getOldId() {
+		return oldId;
+	}
+	
+	public void setOldId(String id) {
+		this.oldId = id;
 	}
 	
 	@Override
