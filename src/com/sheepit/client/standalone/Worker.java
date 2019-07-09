@@ -154,26 +154,17 @@ public class Worker {
 		
 		if (gpu_device != null) {
 			if (gpu_device.startsWith(Nvidia.TYPE) == false && gpu_device.startsWith(OpenCL.TYPE) == false) {
-				System.err.println("CUDA_DEVICE should look like '" + Nvidia.TYPE + "_X' or '" + OpenCL.TYPE + "_X' where X is a number");
-				return;
+				System.err.println("GPU_ID should look like '" + Nvidia.TYPE + "_X' or '" + OpenCL.TYPE + "_X' more info on gpus available with --show-gpu");
+				System.exit(2);
 			}
 			String family = "";
-			try {
-				if (gpu_device.startsWith(Nvidia.TYPE)) {
-					family = Nvidia.TYPE;
-				}
-				else if (gpu_device.startsWith(OpenCL.TYPE)) {
-					family = OpenCL.TYPE;
-				}
-				Integer.parseInt(gpu_device.substring(family.length() + 1)); // for the _
-			}
-			catch (NumberFormatException en) {
-				System.err.println("Gpu device code should look like '" + family + "_X' where X is a number");
+			if (gpu_device.startsWith(Nvidia.TYPE) == false && gpu_device.startsWith(OpenCL.TYPE) == false) {
+				System.err.println("GPU_ID should look like '" + Nvidia.TYPE + "_X' or '" + OpenCL.TYPE + "_X' more info on gpus available with --show-gpu");
 				return;
 			}
 			GPUDevice gpu = GPU.getGPUDevice(gpu_device);
 			if (gpu == null) {
-				System.err.println("GPU unknown");
+				System.err.println("GPU unknown, list of available gpus can be display with --show-gpu");
 				System.exit(2);
 			}
 			config.setUseGPU(gpu);
