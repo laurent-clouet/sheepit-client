@@ -38,6 +38,7 @@ import java.net.CookieManager;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.NoRouteToHostException;
+import java.net.UnknownHostException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.security.KeyManagementException;
@@ -265,6 +266,10 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 		}
 		catch (ConnectException e) {
 			this.log.error("Server::getConfiguration error ConnectException " + e);
+			return Error.Type.NETWORK_ISSUE;
+		}
+		catch (UnknownHostException e) {
+			this.log.error("Server::getConfiguration: exception UnknownHostException " + e);
 			return Error.Type.NETWORK_ISSUE;
 		}
 		catch (UnsupportedEncodingException e) {
@@ -502,6 +507,9 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			throw e;
 		}
 		catch (NoRouteToHostException e) {
+			throw new FermeServerDown();
+		}
+		catch (UnknownHostException e) {
 			throw new FermeServerDown();
 		}
 		catch (Exception e) {
