@@ -725,6 +725,18 @@ public class Job {
 			// CUDA error: Launch failed in cuMemFree(cuda_device_ptr(mem.device_pointer)), line 615
 			return Error.Type.RENDERER_OUT_OF_VIDEO_MEMORY;
 		}
+		else if (line.indexOf("CUDA error: Illegal address in cuCtxSynchronize()") != -1) {
+			// Fra:124 Mem:434.77M (0.00M, Peak 435.34M) | Time:25:50.81 | Remaining:01:10:05.16 | Mem:175.14M, Peak:265.96M | Scene, RenderLayer | Path Tracing Tile 34/135, Sample 800/800, Denoised 17 tiles
+			// Fra:124 Mem:432.71M (0.00M, Peak 435.34M) | Time:25:50.81 | Remaining:01:10:04.95 | Mem:264.84M, Peak:266.90M | Scene, RenderLayer | Path Tracing Tile 34/135, Sample 800/800, Denoised 18 tiles
+			// Fra:124 Mem:434.77M (0.00M, Peak 435.34M) | Time:25:50.82 | Remaining:01:07:20.83 | Mem:266.90M, Peak:266.90M | Scene, RenderLayer | Path Tracing Tile 35/135, Sample 800/800, Denoised 18 tiles
+			// Fra:124 Mem:432.71M (0.00M, Peak 435.34M) | Time:25:50.82 | Remaining:01:07:20.63 | Mem:356.60M, Peak:358.67M | Scene, RenderLayer | Path Tracing Tile 35/135, Sample 800/800, Denoised 19 tiles
+			// Fra:124 Mem:434.77M (0.00M, Peak 435.34M) | Time:25:50.82 | Remaining:01:04:45.63 | Mem:358.67M, Peak:358.67M | Scene, RenderLayer | Path Tracing Tile 36/135, Sample 800/800, Denoised 19 tiles
+			// Fra:124 Mem:432.71M (0.00M, Peak 435.34M) | Time:25:50.82 | Remaining:01:04:45.45 | Mem:448.37M, Peak:450.43M | Scene, RenderLayer | Path Tracing Tile 36/135, Sample 800/800, Denoised 20 tiles
+			// Fra:124 Mem:434.77M (0.00M, Peak 435.34M) | Time:25:50.83 | Remaining:01:02:18.83 | Mem:450.43M, Peak:450.43M | Scene, RenderLayer | Path Tracing Tile 37/135, Sample 800/800, Denoised 20 tiles
+			// CUDA error: Illegal address in cuCtxSynchronize(), line 1372
+			// Refer to the Cycles GPU rendering documentation for possible solutions:
+			return Error.Type.RENDERER_OUT_OF_VIDEO_MEMORY;
+		}
 		else if (line.indexOf("CUDA device supported only with compute capability") != -1) {
 			// found bundled python: /tmp/xx/2.73/python
 			// read blend: /tmp/xx/compute-method.blend
