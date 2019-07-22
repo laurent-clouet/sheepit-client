@@ -3,6 +3,7 @@ script: ant
 
 os:
   - linux
+dist: trusty
 
 # safelist
 branches:
