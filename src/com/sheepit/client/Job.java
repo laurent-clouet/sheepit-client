@@ -483,7 +483,7 @@ public class Job {
 			if (index != -1) {
 				String buf = line.substring(index + search.length());
 				String[] parts = buf.split("-");
-				if (parts != null && parts.length == 2) {
+				if (parts.length == 2) {
 					try {
 						int current = Integer.parseInt(parts[0]);
 						int total = Integer.parseInt(parts[1]);
@@ -533,13 +533,13 @@ public class Job {
 				}
 			}
 		}
-		else if (getUpdateRenderingStatusMethod() == null || getUpdateRenderingStatusMethod().equals(Job.UPDATE_METHOD_BY_TILE)) {
+		else if (getUpdateRenderingStatusMethod().equals(Job.UPDATE_METHOD_BY_TILE)) {
 			String search = " Tile ";
 			int index = line.lastIndexOf(search);
 			if (index != -1) {
 				String buf = line.substring(index + search.length());
 				String[] parts = buf.split("/");
-				if (parts != null && parts.length == 2) {
+				if (parts.length == 2) {
 					try {
 						int current = Integer.parseInt(parts[0]);
 						int total = Integer.parseInt(parts[1]);
@@ -593,10 +593,10 @@ public class Job {
 			}
 		}
 	}
-	
+
 	private Type detectError(String line) {
 		
-		if (line.indexOf("CUDA error: Out of memory") != -1) {
+		if (line.contains("CUDA error: Out of memory")) {
 			// Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Mem:470.26M, Peak:470.26M | Scene, RenderLayer | Updating Device | Writing constant memory
 			// Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Mem:470.26M, Peak:470.26M | Scene, RenderLayer | Path Tracing Tile 0/135, Sample 0/200
 			// Fra:151 Mem:405.91M (0.00M, Peak 633.81M) | Mem:470.82M, Peak:470.82M | Scene, RenderLayer | Path Tracing Tile 1/135, Sample 0/200
@@ -615,7 +615,7 @@ public class Job {
 			// Blender quit
 			return Type.RENDERER_OUT_OF_VIDEO_MEMORY;
 		}
-		else if (line.indexOf("CUDA error at cuCtxCreate: Out of memory") != -1) {
+		else if (line.contains("CUDA error at cuCtxCreate: Out of memory")) {
 			// renderer output
 			// CUDA error at cuCtxCreate: Out of memory
 			// Refer to the Cycles GPU rendering documentation for possible solutions:
@@ -638,7 +638,7 @@ public class Job {
 			// end of rendering
 			return Type.RENDERER_OUT_OF_VIDEO_MEMORY;
 		}
-		else if (line.indexOf("CUDA error: Launch exceeded timeout in") != -1) {
+		else if (line.contains("CUDA error: Launch exceeded timeout in")) {
 			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:01:08.44 | Mem:176.04M, Peak:199.23M | Scene, RenderLayer | Path Tracing Tile 2/24, Sample 10/14
 			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:01:07.08 | Mem:175.48M, Peak:199.23M | Scene, RenderLayer | Path Tracing Tile 2/24, Sample 14/14
 			// Fra:420 Mem:102.41M (0.00M, Peak 215.18M) | Remaining:01:07.11 | Mem:176.04M, Peak:199.23M | Scene, RenderLayer | Path Tracing Tile 3/24, Sample 0/14
@@ -698,7 +698,7 @@ public class Job {
 			// end of rendering
 			return Type.RENDERER_OUT_OF_VIDEO_MEMORY;
 		}
-		else if (line.indexOf("CUDA error: Invalid value in cuTexRefSetAddress(") != -1) {
+		else if (line.contains("CUDA error: Invalid value in cuTexRefSetAddress(")) {
 			// Fra:83 Mem:1201.77M (0.00M, Peak 1480.94M) | Time:00:59.30 | Mem:894.21M, Peak:894.21M | color 3, RenderLayer | Updating Mesh | Copying Strands to device
 			// Fra:83 Mem:1316.76M (0.00M, Peak 1480.94M) | Time:01:02.84 | Mem:1010.16M, Peak:1010.16M | color 3, RenderLayer | Cancel | CUDA error: Invalid value in cuTexRefSetAddress(NULL, texref, cuda_device_ptr(mem.device_pointer), size)
 			// Error: CUDA error: Invalid value in cuTexRefSetAddress(NULL, texref, cuda_device_ptr(mem.device_pointer), size)
@@ -709,7 +709,7 @@ public class Job {
 			// http://www.blender.org/manual/render/cycles/gpu_rendering.html
 			return Error.Type.RENDERER_OUT_OF_VIDEO_MEMORY;
 		}
-		else if (line.indexOf("CUDA error: Launch failed in cuCtxSynchronize()") != -1) {
+		else if (line.contains("CUDA error: Launch failed in cuCtxSynchronize()")) {
 			// Fra:60 Mem:278.24M (0.00M, Peak 644.01M) | Time:05:08.95 | Remaining:00:03.88 | Mem:210.79M, Peak:210.79M | Scene, W Laser | Path Tracing Tile 16/18, Sample 36/36
 			// Fra:60 Mem:278.24M (0.00M, Peak 644.01M) | Time:05:08.96 | Remaining:00:00.82 | Mem:211.04M, Peak:211.04M | Scene, W Laser | Path Tracing Tile 17/18, Sample 36/36
 			// Fra:60 Mem:278.24M (0.00M, Peak 644.01M) | Time:05:08.96 | Mem:211.11M, Peak:211.11M | Scene, W Laser | Path Tracing Tile 18/18
@@ -725,7 +725,7 @@ public class Job {
 			// CUDA error: Launch failed in cuMemFree(cuda_device_ptr(mem.device_pointer)), line 615
 			return Error.Type.RENDERER_OUT_OF_VIDEO_MEMORY;
 		}
-		else if (line.indexOf("CUDA error: Illegal address in cuCtxSynchronize()") != -1) {
+		else if (line.contains("CUDA error: Illegal address in cuCtxSynchronize()")) {
 			// Fra:124 Mem:434.77M (0.00M, Peak 435.34M) | Time:25:50.81 | Remaining:01:10:05.16 | Mem:175.14M, Peak:265.96M | Scene, RenderLayer | Path Tracing Tile 34/135, Sample 800/800, Denoised 17 tiles
 			// Fra:124 Mem:432.71M (0.00M, Peak 435.34M) | Time:25:50.81 | Remaining:01:10:04.95 | Mem:264.84M, Peak:266.90M | Scene, RenderLayer | Path Tracing Tile 34/135, Sample 800/800, Denoised 18 tiles
 			// Fra:124 Mem:434.77M (0.00M, Peak 435.34M) | Time:25:50.82 | Remaining:01:07:20.83 | Mem:266.90M, Peak:266.90M | Scene, RenderLayer | Path Tracing Tile 35/135, Sample 800/800, Denoised 18 tiles
@@ -737,7 +737,7 @@ public class Job {
 			// Refer to the Cycles GPU rendering documentation for possible solutions:
 			return Error.Type.RENDERER_OUT_OF_VIDEO_MEMORY;
 		}
-		else if (line.indexOf("CUDA device supported only with compute capability") != -1) {
+		else if (line.contains("CUDA device supported only with compute capability")) {
 			// found bundled python: /tmp/xx/2.73/python
 			// read blend: /tmp/xx/compute-method.blend
 			// Fra:340 Mem:7.64M (0.00M, Peak 8.23M) | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Sun
@@ -758,7 +758,7 @@ public class Job {
 			// Blender quit
 			return Type.GPU_NOT_SUPPORTED;
 		}
-		else if (line.indexOf("terminate called after throwing an instance of 'boost::filesystem::filesystem_error'") != -1) {
+		else if (line.contains("terminate called after throwing an instance of 'boost::filesystem::filesystem_error'")) {
 			// Fra:2103 Mem:29.54M (0.00M, Peak 29.54M) | Time:00:00.24 | Mem:1.64M, Peak:1.64M | Scene, RenderLayer | Updating Mesh | Computing attributes
 			// Fra:2103 Mem:29.54M (0.00M, Peak 29.54M) | Time:00:00.24 | Mem:1.64M, Peak:1.64M | Scene, RenderLayer | Updating Mesh | Copying Attributes to device
 			// Fra:2103 Mem:29.54M (0.00M, Peak 29.54M) | Time:00:00.24 | Mem:1.97M, Peak:1.97M | Scene, RenderLayer | Updating Scene BVH | Building
@@ -771,7 +771,7 @@ public class Job {
 			//   what():  boost::filesystem::create_directory: Permission denied: "/var/local/cache"
 			return Error.Type.NOOUTPUTFILE;
 		}
-		else if (line.indexOf("terminate called after throwing an instance of 'std::bad_alloc'") != -1) {
+		else if (line.contains("terminate called after throwing an instance of 'std::bad_alloc'")) {
 			// Fra:80 Mem:1333.02M (0.00M, Peak 1651.23M) | Mem:780.37M, Peak:780.37M | Scene, RenderLayer | Updating Mesh BVH Plane.083 171/2 | Building BVH
 			// Fra:80 Mem:1333.02M (0.00M, Peak 1651.23M) | Mem:780.37M, Peak:780.37M | Scene, RenderLayer | Updating Mesh BVH Mesh 172/2 | Building BVH
 			// Fra:80 Mem:1333.02M (0.00M, Peak 1651.23M) | Mem:780.37M, Peak:780.37M | Scene, RenderLayer | Updating Mesh BVH Mesh 172/2 | Packing BVH triangles and strands
@@ -782,26 +782,26 @@ public class Job {
 			//   what():  std::bad_alloc
 			return Error.Type.RENDERER_OUT_OF_MEMORY;
 		}
-		else if (line.indexOf("what(): std::bad_alloc") != -1) {
+		else if (line.contains("what(): std::bad_alloc")) {
 			// Fra:7 Mem:1247.01M (0.00M, Peak 1247.01M) | Time:00:28.84 | Mem:207.63M, Peak:207.63M | Scene, RenderLayer | Updating Scene BVH | Building BVH 93%, duplicates 0%terminate called recursively
 			// terminate called after throwing an instance of 'St9bad_alloc'
 			// what(): std::bad_alloc
 			// scandir: Cannot allocate memory
 			return Error.Type.RENDERER_OUT_OF_MEMORY;
 		}
-		else if (line.indexOf("EXCEPTION_ACCESS_VIOLATION") != -1) {
+		else if (line.contains("EXCEPTION_ACCESS_VIOLATION")) {
 			// Fra:638 Mem:342.17M (63.28M, Peak 735.33M) | Time:00:07.65 | Remaining:02:38.28 | Mem:246.91M, Peak:262.16M | scene_top_01_90, chip_top_view_scene_01 | Path Tracing Tile 57/2040, Denoised 0 tiles
 			// Fra:638 Mem:342.32M (63.28M, Peak 735.33M) | Time:00:07.70 | Remaining:02:38.20 | Mem:247.05M, Peak:262.16M | scene_top_01_90, chip_top_view_scene_01 | Path Tracing Tile 58/2040, Denoised 0 tiles
 			// Error: EXCEPTION_ACCESS_VIOLATION
 			return Error.Type.RENDERER_CRASHED;
 		}
-		else if (line.indexOf("Fatal Python error: Py_Initialize") != -1) {
+		else if (line.contains("Fatal Python error: Py_Initialize")) {
 			// Fatal Python error: Py_Initialize: unable to load the file system codec
 			// ImportError: No module named 'encodings'
 			// Current thread 0x0000388c (most recent call first):
 			return Error.Type.RENDERER_CRASHED_PYTHON_ERROR;
 		}
-		else if (line.indexOf("Calloc returns null") != -1) {
+		else if (line.contains("Calloc returns null")) {
 			// Fra:1 Mem:976.60M (0.00M, Peak 1000.54M) | Time:00:01.34 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Left
 			// Calloc returns null: len=7186416 in CDMLoopUV, total 2145859048
 			// Calloc returns null: len=7186416 in CDMLoopUV, total 2145859048
@@ -809,7 +809,7 @@ public class Job {
 			// Writing: /home/user/.sheepit/LEFT packed.crash.txt
 			return Error.Type.RENDERER_OUT_OF_MEMORY;
 		}
-		else if (line.indexOf("Malloc returns null") != -1) {
+		else if (line.contains("Malloc returns null")) {
 			// Fra:1 Mem:976.60M (0.00M, Peak 1000.54M) | Time:00:01.34 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Left
 			// Calloc returns null: len=7186416 in CDMLoopUV, total 2145859048
 			// Calloc returns null: len=7186416 in CDMLoopUV, total 2145859048
@@ -817,7 +817,7 @@ public class Job {
 			// Writing: /home/user/.sheepit/LEFT packed.crash.txt
 			return Error.Type.RENDERER_OUT_OF_MEMORY;
 		}
-		else if (line.indexOf("CUDA kernel compilation failed") != -1) {
+		else if (line.contains("CUDA kernel compilation failed")) {
 			// Fra:1 Mem:200.70M (0.00M, Peak 378.15M) | Time:00:01.02 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Sun.001
 			// Fra:1 Mem:200.70M (0.00M, Peak 378.15M) | Time:00:01.02 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Sun.002
 			// Fra:1 Mem:200.70M (0.00M, Peak 378.15M) | Time:00:01.02 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Initializing
