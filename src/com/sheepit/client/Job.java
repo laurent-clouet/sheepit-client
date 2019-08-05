@@ -817,7 +817,7 @@ public class Job {
 			// Writing: /home/user/.sheepit/LEFT packed.crash.txt
 			return Error.Type.RENDERER_OUT_OF_MEMORY;
 		}
-		else if (line.indexOf("CUDA kernel compilation failed") != -1 || line.indexOf("Refer to the Cycles GPU rendering documentation for possible solutions:") != -1) {
+		else if (line.indexOf("CUDA kernel compilation failed") != -1) {
 			// Fra:1 Mem:200.70M (0.00M, Peak 378.15M) | Time:00:01.02 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Sun.001
 			// Fra:1 Mem:200.70M (0.00M, Peak 378.15M) | Time:00:01.02 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Synchronizing object | Sun.002
 			// Fra:1 Mem:200.70M (0.00M, Peak 378.15M) | Time:00:01.02 | Mem:0.00M, Peak:0.00M | Scene, RenderLayer | Initializing
