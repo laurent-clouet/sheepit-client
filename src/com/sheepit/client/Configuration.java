@@ -417,7 +417,7 @@ public class Configuration {
 		InputStream versionStream = Client.class.getResourceAsStream(versionPath);
 		if (versionStream == null) {
 			System.err.println("Configuration::getJarVersion Failed to get version file");
-			return "";
+			return "5.0.0";
 		}
 		
 		try {
@@ -429,7 +429,7 @@ public class Configuration {
 		}
 		catch (IOException ex) {
 			System.err.println("Configuration::getJarVersion error while reading manifest file (" + versionPath + "): " + ex.getMessage());
-			return "";
+			return "5.0.0";
 		}
 	}
 	
