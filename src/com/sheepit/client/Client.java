@@ -618,7 +618,6 @@ public class Client {
 
 		Observer removeSceneDirectoryOnceRenderHasStartedObserver = new Observer() {
 			@Override public void update(Observable observable, Object o) {
-				System.out.println("Client::work got an event");
 				removeSceneDirectory(ajob);
 			}
 		};
