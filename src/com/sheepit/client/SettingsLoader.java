@@ -312,10 +312,10 @@ public class SettingsLoader {
 		
 		loadFile();
 		
-		if (config.login().isEmpty() && login != null) {
+		if (config.getLogin().isEmpty() && login != null) {
 			config.setLogin(login);
 		}
-		if (config.password().isEmpty() && password != null) {
+		if (config.getPassword().isEmpty() && password != null) {
 			config.setPassword(password);
 		}
 		
@@ -342,11 +342,11 @@ public class SettingsLoader {
 		if (config.getGPUDevice() == null && gpu != null) {
 			GPUDevice device = GPU.getGPUDevice(gpu);
 			if (device != null) {
-				config.setUseGPU(device);
+				config.setGPUDevice(device);
 			}
 		}
 		if (config.getNbCores() == -1 && cores != null) {
-			config.setUseNbCores(Integer.valueOf(cores));
+			config.setNbCores(Integer.valueOf(cores));
 		}
 		
 		if (config.getMaxMemory() == -1 && ram != null) {
@@ -357,7 +357,7 @@ public class SettingsLoader {
 			config.setMaxRenderTime(Integer.valueOf(renderTime));
 		}
 		
-		if (config.getUserHasSpecifiedACacheDir() == false && cacheDir != null) {
+		if (config.isUserHasSpecifiedACacheDir() == false && cacheDir != null) {
 			config.setCacheDir(new File(cacheDir));
 		}
 		

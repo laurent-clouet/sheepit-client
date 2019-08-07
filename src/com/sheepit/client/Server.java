@@ -188,8 +188,8 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 		try {
 			String url_remote = this.base_url + "/server/config.php";
 			String parameters = String.format("login=%s&password=%s&cpu_family=%s&cpu_model=%s&cpu_model_name=%s&cpu_cores=%s&os=%s&ram=%s&bits=%s&version=%s&hostname=%s&ui=%s&extras=%s", 
-				URLEncoder.encode(this.user_config.login(), "UTF-8"),
-				URLEncoder.encode(this.user_config.password(), "UTF-8"),
+				URLEncoder.encode(this.user_config.getLogin(), "UTF-8"),
+				URLEncoder.encode(this.user_config.getPassword(), "UTF-8"),
 				URLEncoder.encode(os.getCPU().family(), "UTF-8"),
 				URLEncoder.encode(os.getCPU().model(), "UTF-8"),
 				URLEncoder.encode(os.getCPU().name(), "UTF-8"),
@@ -407,13 +407,13 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				
 				// blender 2.7x
 				script += "try:\n";
-				script += "\tbpy.context.user_preferences.filepaths.temporary_directory = \"" + this.user_config.workingDirectory.getAbsolutePath().replace("\\", "\\\\") + "\"\n";
+				script += "\tbpy.context.user_preferences.filepaths.temporary_directory = \"" + this.user_config.getWorkingDirectory().getAbsolutePath().replace("\\", "\\\\") + "\"\n";
 				script += "except AttributeError:\n";
 				script += "\tpass\n";
 				
 				// blender 2.80
 				script += "try:\n";
-				script += "\tbpy.context.preferences.filepaths.temporary_directory = \"" + this.user_config.workingDirectory.getAbsolutePath().replace("\\", "\\\\") + "\"\n";
+				script += "\tbpy.context.preferences.filepaths.temporary_directory = \"" + this.user_config.getWorkingDirectory().getAbsolutePath().replace("\\", "\\\\") + "\"\n";
 				script += "except AttributeError:\n";
 				script += "\tpass\n";
 				
@@ -917,7 +917,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				for (int i = 0; i < ns.getLength(); ++i) {
 					Element file_node = (Element) ns.item(i);
 					if (file_node.hasAttribute("md5") && file_node.hasAttribute("action") && file_node.getAttribute("action").equals("delete")) {
-						String path = this.user_config.workingDirectory.getAbsolutePath() + File.separatorChar + file_node.getAttribute("md5");
+						String path = this.user_config.getWorkingDirectory().getAbsolutePath() + File.separatorChar + file_node.getAttribute("md5");
 						this.log.debug("Server::handleFileMD5DeleteDocument delete old file " + path);
 						File file_to_delete = new File(path + ".zip");
 						file_to_delete.delete();

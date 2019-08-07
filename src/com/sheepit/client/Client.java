@@ -47,16 +47,19 @@ import com.sheepit.client.exception.FermeExceptionSessionDisabled;
 import com.sheepit.client.exception.FermeServerDown;
 import com.sheepit.client.os.OS;
 
+import lombok.Data;
+
+@Data
 public class Client {
 	private Gui gui;
 	private Server server;
-	private Configuration config;
+	private Configuration configuration;
 	private Log log;
 	private Job renderingJob;
 	private Job previousJob;
 	private BlockingQueue<Job> jobsToValidate;
 	private boolean isValidatingJob;
-	private long start_time;
+	private long startTime;
 	
 	private boolean disableErrorSending;
 	private boolean running;
@@ -64,10 +67,10 @@ public class Client {
 	
 	private int maxDownloadFileAttempts = 5;
 	
-	public Client(Gui gui_, Configuration config, String url_) {
-		this.config = config;
-		this.server = new Server(url_, this.config, this);
-		this.log = Log.getInstance(this.config);
+	public Client(Gui gui_, Configuration configuration, String url_) {
+		this.configuration = configuration;
+		this.server = new Server(url_, this.configuration, this);
+		this.log = Log.getInstance(this.configuration);
 		this.gui = gui_;
 		this.renderingJob = null;
 		this.previousJob = null;
@@ -80,40 +83,16 @@ public class Client {
 	}
 	
 	public String toString() {
-		return String.format("Client (config %s, server %s)", this.config, this.server);
-	}
-	
-	public Job getRenderingJob() {
-		return this.renderingJob;
-	}
-	
-	public Gui getGui() {
-		return this.gui;
-	}
-	
-	public Configuration getConfiguration() {
-		return this.config;
-	}
-	
-	public Server getServer() {
-		return this.server;
-	}
-	
-	public Log getLog() {
-		return this.log;
-	}
-	
-	public long getStartTime() {
-		return this.start_time;
+		return String.format("Client (configuration %s, server %s)", this.configuration, this.server);
 	}
 	
 	public int run() {
-		if (this.config.checkOSisSupported() == false) {
+		if (this.configuration.checkOSisSupported() == false) {
 			this.gui.error(Error.humanString(Error.Type.OS_NOT_SUPPORTED));
 			return -3;
 		}
 		
-		if (this.config.checkCPUisSupported() == false) {
+		if (this.configuration.checkCPUisSupported() == false) {
 			this.gui.error(Error.humanString(Error.Type.CPU_NOT_SUPPORTED));
 			return -4;
 		}
@@ -125,7 +104,7 @@ public class Client {
 			step = this.log.newCheckPoint();
 			this.gui.status("Starting");
 			
-			this.config.cleanWorkingDirectory();
+			this.configuration.cleanWorkingDirectory();
 			
 			Error.Type ret;
 			ret = this.server.getConfiguration();
@@ -138,7 +117,7 @@ public class Client {
 				return -1;
 			}
 			
-			this.start_time = new Date().getTime();
+			this.startTime = new Date().getTime();
 			this.server.start(); // for staying alive
 			
 			// create a thread which will send the frame
@@ -215,7 +194,7 @@ public class Client {
 						this.renderingJob = null;
 					}
 					else {
-						this.start_time = new Date().getTime(); // reset start session time because the server did it
+						this.startTime = new Date().getTime(); // reset start session time because the server did it
 						try {
 							Calendar next_request = this.nextJobRequest();
 							if (next_request != null) {
@@ -345,7 +324,7 @@ public class Client {
 					continue;
 				}
 				
-				if (this.renderingJob.simultaneousUploadIsAllowed() == false) { // power or compute_method job, need to upload right away
+				if (this.renderingJob.isSynchronousUpload() == false) { // power or compute_method job, need to upload right away
 					ret = confirmJob(this.renderingJob);
 					if (ret != Error.Type.OK) {
 						gui.error("Client::run problem with confirmJob (returned " + ret + ")");
@@ -403,8 +382,8 @@ public class Client {
 			}
 		}
 		
-		// 		this.config.workingDirectory.delete();
-		this.config.removeWorkingDirectory();
+		// 		this.configuration.workingDirectory.delete();
+		this.configuration.removeWorkingDirectory();
 		
 		if (this.server == null) {
 			return 0;
@@ -428,10 +407,6 @@ public class Client {
 		return 0;
 	}
 	
-	public boolean isSuspended() {
-		return this.suspended;
-	}
-	
 	public void suspend() {
 		suspended = true;
 	}
@@ -449,10 +424,6 @@ public class Client {
 	public void cancelStop() {
 		this.log.debug("Client::cancelStop");
 		this.running = true;
-	}
-	
-	public boolean isRunning() {
-		return this.running;
 	}
 	
 	public int senderLoop() {
@@ -538,13 +509,13 @@ public class Client {
 	 * @return the date of the next request, or null if there is not delay (null <=> now)
 	 */
 	public Calendar nextJobRequest() {
-		if (this.config.requestTime == null) {
+		if (this.configuration.getRequestTime() == null) {
 			return null;
 		}
 		else {
 			Calendar next = null;
 			Calendar now = Calendar.getInstance();
-			for (Pair<Calendar, Calendar> interval : this.config.requestTime) {
+			for (Pair<Calendar, Calendar> interval : this.configuration.getRequestTime()) {
 				Calendar start = (Calendar) now.clone();
 				Calendar end = (Calendar) now.clone();
 				start.set(Calendar.SECOND, 00);
@@ -605,14 +576,14 @@ public class Client {
 		if (scene_file.exists() == false) {
 			gui.setRenderingProjectName("");
 			this.log.error("Client::work job preparation failed (scene file '" + scene_file.getAbsolutePath() + "' does not exist), cleaning directory in hope to recover");
-			this.config.cleanWorkingDirectory();
+			this.configuration.cleanWorkingDirectory();
 			return Error.Type.MISSING_SCENE;
 		}
 		
 		if (renderer_file.exists() == false) {
 			gui.setRenderingProjectName("");
 			this.log.error("Client::work job preparation failed (renderer file '" + renderer_file.getAbsolutePath() + "' does not exist), cleaning directory in hope to recover");
-			this.config.cleanWorkingDirectory();
+			this.configuration.cleanWorkingDirectory();
 			return Error.Type.MISSING_RENDERER;
 		}
 
@@ -631,7 +602,7 @@ public class Client {
 			this.log.error("Client::work problem with runRenderer (ret " + err + ")");
 			if (err == Error.Type.RENDERER_CRASHED_PYTHON_ERROR) {
 				this.log.error("Client::work failed with python error, cleaning directory in hope to recover");
-				this.config.cleanWorkingDirectory();
+				this.configuration.cleanWorkingDirectory();
 			}
 			return err;
 		}
@@ -646,7 +617,7 @@ public class Client {
 	}
 	
 	protected int downloadExecutable(Job ajob) throws FermeExceptionNoSpaceLeftOnDevice {
-		return this.downloadFile(ajob, ajob.getRendererArchivePath(), ajob.getRenderMd5(), String.format("%s?type=binary&job=%s", this.server.getPage("download-archive"), ajob.getId()), "renderer");
+		return this.downloadFile(ajob, ajob.getRendererArchivePath(), ajob.getRendererMD5(), String.format("%s?type=binary&job=%s", this.server.getPage("download-archive"), ajob.getId()), "renderer");
 	}
 	
 	private int downloadFile(Job ajob, String local_path, String md5_server, String url, String download_type) throws FermeExceptionNoSpaceLeftOnDevice {
@@ -757,7 +728,7 @@ public class Client {
 			scene_path_file.mkdir();
 			
 			// unzip the archive
-			ret = Utils.unzipFileIntoDirectory(scene_archive, scene_path, ajob.getSceneArchivePassword(), log);
+			ret = Utils.unzipFileIntoDirectory(scene_archive, scene_path, ajob.getPassword(), log);
 			if (ret != 0) {
 				this.log.error("Client::prepareWorkingDirectory, error(2) with Utils.unzipFileIntoDirectory(" + scene_archive + ", " + scene_path + ") returned " + ret);
 				this.gui.error("Client::prepareWorkingDirectory, error with Utils.unzipFileIntoDirectory of the scene (returned " + ret + ")");
@@ -825,15 +796,11 @@ public class Client {
 		return Error.Type.OK;
 	}
 	
-	public Job getPreviousJob() {
-		return this.previousJob;
-	}
-	
 	protected boolean shouldWaitBeforeRender() {
 		int concurrent_job = this.jobsToValidate.size();
 		if (this.isValidatingJob) {
 			concurrent_job++;
 		}
-		return (concurrent_job >= this.config.maxUploadingJob());
+		return (concurrent_job >= this.configuration.getMaxUploadingJob());
 	}
 }

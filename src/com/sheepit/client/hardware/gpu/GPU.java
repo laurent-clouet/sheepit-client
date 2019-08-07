@@ -63,7 +63,7 @@ public class GPU {
 	
 	public static List<GPUDevice> listDevices(Configuration config) {
 		if (devices == null) {
-			if (config.getDetectGPUs()) {
+			if (config.isDetectGPUs()) {
 				generate();
 			}
 			else {
