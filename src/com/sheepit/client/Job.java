@@ -347,7 +347,6 @@ public class Job {
 				}, config.getMaxRenderTime() * 1000 + 2000); // +2s to be sure the delay is over
 			}
 			
-			long last_update_status = 0;
 			log.debug("renderer output");
 			try {
 				while ((line = input.readLine()) != null) {
@@ -364,10 +363,7 @@ public class Job {
 						return Error.Type.RENDERER_OUT_OF_MEMORY;
 					}
 					
-					if ((new Date().getTime() - last_update_status) > 2000) { // only call the update every two seconds
-						updateRenderingStatus(line);
-						last_update_status = new Date().getTime();
-					}
+					updateRenderingStatus(line);
 					Type error = detectError(line);
 					if (error != Error.Type.OK) {
 						if (script_file != null) {
