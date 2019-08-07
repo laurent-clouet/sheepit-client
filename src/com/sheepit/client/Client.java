@@ -27,6 +27,8 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadLocalRandom;
@@ -565,7 +567,7 @@ public class Client {
 		}
 	}
 	
-	public Error.Type work(Job ajob) {
+	public Error.Type work(final Job ajob) {
 		int ret;
 		
 		gui.setRenderingProjectName(ajob.getName());
@@ -613,8 +615,15 @@ public class Client {
 			this.config.cleanWorkingDirectory();
 			return Error.Type.MISSING_RENDERER;
 		}
-		
-		Error.Type err = ajob.render();
+
+		Observer removeSceneDirectoryOnceRenderHasStartedObserver = new Observer() {
+			@Override public void update(Observable observable, Object o) {
+				System.out.println("Client::work got an event");
+				removeSceneDirectory(ajob);
+			}
+		};
+
+		Error.Type err = ajob.render(removeSceneDirectoryOnceRenderHasStartedObserver);
 		gui.setRenderingProjectName("");
 		gui.setRemainingTime("");
 		gui.setRenderingTime("");
