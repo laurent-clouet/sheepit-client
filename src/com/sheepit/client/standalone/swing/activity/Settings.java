@@ -121,12 +121,12 @@ public class Settings implements Activity {
 		
 		JLabel loginLabel = new JLabel("Username:");
 		login = new JTextField();
-		login.setText(parent.getConfiguration().login());
+		login.setText(parent.getConfiguration().getLogin());
 		login.setColumns(20);
 		login.addKeyListener(new CheckCanStart());
 		JLabel passwordLabel = new JLabel("Password:");
 		password = new JPasswordField();
-		password.setText(parent.getConfiguration().password());
+		password.setText(parent.getConfiguration().getPassword());
 		password.setColumns(10);
 		password.addKeyListener(new CheckCanStart());
 		
@@ -147,7 +147,7 @@ public class Settings implements Activity {
 		JLabel cacheLabel = new JLabel("Working directory:");
 		directory_panel.add(cacheLabel);
 		String destination = DUMMY_CACHE_DIR;
-		if (config.getUserHasSpecifiedACacheDir()) {
+		if (config.isUserHasSpecifiedACacheDir()) {
 			destination = config.getCacheDirForSettings().getName();
 		}
 		
@@ -388,7 +388,7 @@ public class Settings implements Activity {
 		saveFile = new JCheckBox("Save settings", true);
 		general_panel.add(saveFile);
 		
-		autoSignIn = new JCheckBox("Auto sign in", config.getAutoSignIn());
+		autoSignIn = new JCheckBox("Auto sign in", config.isAutoSignIn());
 		autoSignIn.addActionListener(new AutoSignInChangeAction());
 		general_panel.add(autoSignIn);
 		
@@ -413,7 +413,7 @@ public class Settings implements Activity {
 		constraints.gridy = currentRow;
 		parent.getContentPane().add(saveButton, constraints);
 		
-		if (haveAutoStarted == false && config.getAutoSignIn() && checkDisplaySaveButton()) {
+		if (haveAutoStarted == false && config.isAutoSignIn() && checkDisplaySaveButton()) {
 			// auto start
 			haveAutoStarted = true;
 			new SaveAction().actionPerformed(null);
@@ -548,7 +548,7 @@ public class Settings implements Activity {
 			config.setComputeMethod(method);
 			
 			if (selected_gpu != null) {
-				config.setUseGPU(selected_gpu);
+				config.setGPUDevice(selected_gpu);
 			}
 			
 			int cpu_cores = -1;
@@ -557,7 +557,7 @@ public class Settings implements Activity {
 			}
 			
 			if (cpu_cores > 0) {
-				config.setUseNbCores(cpu_cores);
+				config.setNbCores(cpu_cores);
 			}
 			
 			long max_ram = -1;
@@ -609,7 +609,7 @@ public class Settings implements Activity {
 			parent.setCredentials(login.getText(), new String(password.getPassword()));
 			
 			String cachePath = null;
-			if (config.getUserHasSpecifiedACacheDir() && config.getCacheDirForSettings() != null) {
+			if (config.isUserHasSpecifiedACacheDir() && config.getCacheDirForSettings() != null) {
 				cachePath = config.getCacheDirForSettings().getAbsolutePath();
 			}
 			

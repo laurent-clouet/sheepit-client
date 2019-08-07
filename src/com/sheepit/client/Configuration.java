@@ -34,17 +34,19 @@ import java.util.List;
 import com.sheepit.client.hardware.cpu.CPU;
 import com.sheepit.client.hardware.gpu.GPUDevice;
 import com.sheepit.client.os.OS;
+import lombok.Data;
 
+@Data
 public class Configuration {
 	public enum ComputeType {
 		CPU_GPU, CPU, GPU
 	} // accept job for ...
 	
 	private String configFilePath;
-	public File workingDirectory;
-	public File storageDirectory; // for permanent storage (binary archive)
-	public boolean userHasSpecifiedACacheDir;
-	public String static_exeDirName;
+	private File workingDirectory;
+	private File storageDirectory; // for permanent storage (binary archive)
+	private boolean userHasSpecifiedACacheDir;
+	private String static_exeDirName;
 	private String login;
 	private String password;
 	private String proxy;
@@ -57,7 +59,7 @@ public class Configuration {
 	private GPUDevice GPUDevice;
 	private boolean detectGPUs;
 	private boolean printLog;
-	public List<Pair<Calendar, Calendar>> requestTime;
+	private List<Pair<Calendar, Calendar>> requestTime;
 	private String extras;
 	private boolean autoSignIn;
 	private String UIType;
@@ -96,78 +98,6 @@ public class Configuration {
 		return String.format("Configuration (workingDirectory '%s')", this.workingDirectory.getAbsolutePath());
 	}
 
-	public String getConfigFilePath() {
-		return this.configFilePath;
-	}
-	
-	public void setConfigPath(String val) {
-		this.configFilePath = val;
-	}
-	
-	public String login() {
-		return this.login;
-	}
-	
-	public void setLogin(String login_) {
-		this.login = login_;
-	}
-	
-	public String password() {
-		return this.password;
-	}
-	
-	public void setPassword(String password_) {
-		this.password = password_;
-	}
-	
-	public String getProxy() {
-		return this.proxy;
-	}
-	
-	public void setProxy(String url) {
-		this.proxy = url;
-	}
-	
-	public int maxUploadingJob() {
-		return this.maxUploadingJob;
-	}
-	
-	public GPUDevice getGPUDevice() {
-		return this.GPUDevice;
-	}
-	
-	public boolean getDetectGPUs() {
-		return this.detectGPUs;
-	}
-	
-	public void setMaxUploadingJob(int max) {
-		this.maxUploadingJob = max;
-	}
-	
-	public void setUseNbCores(int nbcores) {
-		this.nbCores = nbcores;
-	}
-	
-	public int getNbCores() {
-		return this.nbCores;
-	}
-	
-	public void setMaxMemory(long max) {
-		this.maxMemory = max;
-	}
-	
-	public long getMaxMemory() {
-		return this.maxMemory;
-	}
-	
-	public void setMaxRenderTime(int max) {
-		this.maxRenderTime = max;
-	}
-	
-	public int getMaxRenderTime() {
-		return this.maxRenderTime;
-	}
-	
 	public void setUsePriority(int priority) {
 		if (priority > 19)
 			priority = 19;
@@ -178,36 +108,8 @@ public class Configuration {
 		
 	}
 	
-	public int getPriority() {
-		return this.priority;
-	}
-	
-	public void setPrintLog(boolean val) {
-		this.printLog = val;
-	}
-	
-	public boolean getPrintLog() {
-		return this.printLog;
-	}
-	
 	public int computeMethodToInt() {
 		return this.computeMethod.ordinal();
-	}
-	
-	public ComputeType getComputeMethod() {
-		return this.computeMethod;
-	}
-	
-	public void setUseGPU(GPUDevice device) {
-		this.GPUDevice = device;
-	}
-	
-	public void setDetectGPUs(boolean val) {
-		this.detectGPUs = val;
-	}
-	
-	public void setComputeMethod(ComputeType meth) {
-		this.computeMethod = meth;
 	}
 	
 	public void setCacheDir(File cache_dir_) {
@@ -259,58 +161,14 @@ public class Configuration {
 		}
 	}
 	
-	public boolean getUserHasSpecifiedACacheDir() {
-		return this.userHasSpecifiedACacheDir;
-	}
-	
 	public File getCacheDirForSettings() {
-		if (this.getUserHasSpecifiedACacheDir() == false) {
+		if (this.userHasSpecifiedACacheDir == false) {
 			return null;
 		}
 		else {
 			// when the user have a cache directory a "sheepit" and "sheepit_binary_cache" is be automaticaly added
 			return this.workingDirectory.getParentFile();
 		}
-	}
-	
-	public void setExtras(String str) {
-		this.extras = str;
-	}
-	
-	public String getExtras() {
-		return this.extras;
-	}
-	
-	public void setAutoSignIn(boolean v) {
-		this.autoSignIn = v;
-	}
-	
-	public boolean getAutoSignIn() {
-		return this.autoSignIn;
-	}
-	
-	public void setUIType(String ui) {
-		this.UIType = ui;
-	}
-	
-	public String getUIType() {
-		return this.UIType;
-	}
-	
-	public void setTileSize(int size) {
-		this.tileSize = size;
-	}
-	
-	public int getTileSize() {
-		return this.tileSize;
-	}
-	
-	public void setHostname(String hostname_) {
-		this.hostname = hostname_;
-	}
-	
-	public String getHostname() {
-		return this.hostname;
 	}
 	
 	public String getDefaultHostname() {

@@ -46,17 +46,20 @@ import com.sheepit.client.Error.Type;
 import com.sheepit.client.hardware.gpu.GPUDevice;
 import com.sheepit.client.hardware.gpu.opencl.OpenCL;
 import com.sheepit.client.os.OS;
+import lombok.Data;
+import lombok.Getter;
 
+@Data
 public class Job {
 	public static final String UPDATE_METHOD_BY_REMAINING_TIME = "remainingtime";
 	public static final String UPDATE_METHOD_BLENDER_INTERNAL_BY_PART = "blenderinternal";
 	public static final String UPDATE_METHOD_BY_TILE = "by_tile";
 	
-	private String numFrame;
+	private String frameNumber;
 	private String sceneMD5;
 	private String rendererMD5;
 	private String id;
-	private String pictureFilename;
+	private String outputImagePath;
 	private String path; // path inside of the archive
 	private String rendererCommand;
 	private String script;
@@ -71,13 +74,13 @@ public class Job {
 	private boolean userBlockJob;
 	private boolean serverBlockJob;
 	private Gui gui;
-	private Configuration config;
+	private Configuration configuration;
 	private Log log;
 	
 	public Job(Configuration config_, Gui gui_, Log log_, String id_, String frame_, String path_, boolean use_gpu, String command_, String script_, String sceneMd5_, String rendererMd5_, String name_, String password_, String extras_, boolean synchronous_upload_, String update_method_) {
-		config = config_;
+		configuration = config_;
 		id = id_;
-		numFrame = frame_;
+		frameNumber = frame_;
 		path = path_;
 		useGPU = use_gpu;
 		rendererCommand = command_;
@@ -88,7 +91,7 @@ public class Job {
 		extras = extras_;
 		synchronousUpload = synchronous_upload_;
 		gui = gui_;
-		pictureFilename = null;
+		outputImagePath = null;
 		script = script_;
 		updateRenderingStatusMethod = update_method_;
 		askForRendererKill = false;
@@ -112,83 +115,7 @@ public class Job {
 	}
 	
 	public String toString() {
-		return String.format("Job (numFrame '%s' sceneMD5 '%s' rendererMD5 '%s' ID '%s' pictureFilename '%s' jobPath '%s' gpu %s name '%s' extras '%s' updateRenderingStatusMethod '%s' render %s)", numFrame, sceneMD5, rendererMD5, id, pictureFilename, path, useGPU, name, extras, updateRenderingStatusMethod, render);
-	}
-	
-	public String getId() {
-		return id;
-	}
-	
-	public String getFrameNumber() {
-		return numFrame;
-	}
-	
-	public String getExtras() {
-		return extras;
-	}
-	
-	public String getScript() {
-		return script;
-	}
-	
-	public String getSceneMD5() {
-		return sceneMD5;
-	}
-	
-	public String getRenderMd5() {
-		return rendererMD5;
-	}
-	
-	public String getPath() {
-		return path;
-	}
-	
-	public String getUpdateRenderingStatusMethod() {
-		return updateRenderingStatusMethod;
-	}
-	
-	public void setAskForRendererKill(boolean val) {
-		askForRendererKill = val;
-	}
-	
-	public boolean getAskForRendererKill() {
-		return askForRendererKill;
-	}
-	
-	public void setUserBlockJob(boolean val) {
-		userBlockJob = val;
-	}
-	
-	public boolean getUserBlockJob() {
-		return userBlockJob;
-	}
-	
-	public void setServerBlockJob(boolean val) {
-		serverBlockJob = val;
-	}
-	
-	public boolean getServerBlockJob() {
-		return serverBlockJob;
-	}
-	
-	public String getRenderCommand() {
-		return rendererCommand;
-	}
-	
-	public boolean getUseGPU() {
-		return useGPU;
-	}
-	
-	public String getName() {
-		return name;
-	}
-	
-	public void setOutputImagePath(String path) {
-		pictureFilename = path;
-	}
-	
-	public String getOutputImagePath() {
-		return pictureFilename;
+		return String.format("Job (numFrame '%s' sceneMD5 '%s' rendererMD5 '%s' ID '%s' pictureFilename '%s' jobPath '%s' gpu %s name '%s' extras '%s' updateRenderingStatusMethod '%s' render %s)", frameNumber, sceneMD5, rendererMD5, id, outputImagePath, path, useGPU, name, extras, updateRenderingStatusMethod, render);
 	}
 	
 	public String getPrefixOutputImage() {
@@ -196,7 +123,7 @@ public class Job {
 	}
 	
 	public String getRendererDirectory() {
-		return config.workingDirectory.getAbsolutePath() + File.separator + rendererMD5;
+		return configuration.getWorkingDirectory().getAbsolutePath() + File.separator + rendererMD5;
 	}
 	
 	public String getRendererPath() {
@@ -204,11 +131,11 @@ public class Job {
 	}
 	
 	public String getRendererArchivePath() {
-		return config.getStorageDir().getAbsolutePath() + File.separator + rendererMD5 + ".zip";
+		return configuration.getStorageDir().getAbsolutePath() + File.separator + rendererMD5 + ".zip";
 	}
 	
 	public String getSceneDirectory() {
-		return config.workingDirectory.getAbsolutePath() + File.separator + sceneMD5;
+		return configuration.getWorkingDirectory().getAbsolutePath() + File.separator + sceneMD5;
 	}
 	
 	public String getScenePath() {
@@ -216,15 +143,7 @@ public class Job {
 	}
 	
 	public String getSceneArchivePath() {
-		return config.workingDirectory.getAbsolutePath() + File.separator + sceneMD5 + ".zip";
-	}
-	
-	public String getSceneArchivePassword() {
-		return password;
-	}
-	
-	public boolean simultaneousUploadIsAllowed() {
-		return synchronousUpload;
+		return configuration.getWorkingDirectory().getAbsolutePath() + File.separator + sceneMD5 + ".zip";
 	}
 	
 	public Error.Type render(Observer renderStarted) {
@@ -239,8 +158,8 @@ public class Job {
 			+ "def hndl(signum, frame):\n"
 			+ "    pass\n"
 			+ "signal.signal(signal.SIGINT, hndl)\n";
-		if (getUseGPU() && config.getGPUDevice() != null && config.getComputeMethod() != ComputeType.CPU) {
-			core_script = "sheepit_set_compute_device(\"" + config.getGPUDevice().getType() + "\", \"GPU\", \"" + config.getGPUDevice().getId() + "\")\n";
+		if (isUseGPU() && configuration.getGPUDevice() != null && configuration.getComputeMethod() != ComputeType.CPU) {
+			core_script = "sheepit_set_compute_device(\"" + configuration.getGPUDevice().getType() + "\", \"GPU\", \"" + configuration.getGPUDevice().getId() + "\")\n";
 			gui.setComputeMethod("GPU");
 		}
 		else {
@@ -251,10 +170,10 @@ public class Job {
 		core_script += ignore_signal_script;
 		core_script += String.format("bpy.context.scene.render.tile_x = %1$d\nbpy.context.scene.render.tile_y = %1$d\n", getTileSize());
 		File script_file = null;
-		String command1[] = getRenderCommand().split(" ");
+		String command1[] = getRendererCommand().split(" ");
 		int size_command = command1.length + 2; // + 2 for script
 		
-		if (config.getNbCores() > 0) { // user has specified something
+		if (configuration.getNbCores() > 0) { // user has specified something
 			size_command += 2;
 		}
 		
@@ -262,13 +181,13 @@ public class Job {
 		
 		Map<String, String> new_env = new HashMap<String, String>();
 		
-		new_env.put("BLENDER_USER_CONFIG", config.workingDirectory.getAbsolutePath().replace("\\", "\\\\"));
-		new_env.put("CORES", Integer.toString(config.getNbCores()));
-		new_env.put("PRIORITY", Integer.toString(config.getPriority()));
+		new_env.put("BLENDER_USER_CONFIG", configuration.getWorkingDirectory().getAbsolutePath().replace("\\", "\\\\"));
+		new_env.put("CORES", Integer.toString(configuration.getNbCores()));
+		new_env.put("PRIORITY", Integer.toString(configuration.getPriority()));
 		new_env.put("PYTHONPATH", ""); // make sure blender is using the embedded python, if not it could create "Fatal Python error: Py_Initialize"
 		new_env.put("PYTHONHOME", "");// make sure blender is using the embedded python, if not it could create "Fatal Python error: Py_Initialize"
 		
-		if (getUseGPU() && config.getGPUDevice() != null && config.getComputeMethod() != ComputeType.CPU && OpenCL.TYPE.equals(config.getGPUDevice().getType())) {
+		if (isUseGPU() && configuration.getGPUDevice() != null && configuration.getComputeMethod() != ComputeType.CPU && OpenCL.TYPE.equals(configuration.getGPUDevice().getType())) {
 			new_env.put("CYCLES_OPENCL_SPLIT_KERNEL_TEST", "1");
 			this.updateRenderingStatusMethod = UPDATE_METHOD_BY_TILE; // don't display remaining time
 		}
@@ -280,7 +199,7 @@ public class Job {
 					command.add("-P");
 					
 					try {
-						script_file = File.createTempFile("script_", "", config.workingDirectory);
+						script_file = File.createTempFile("script_", "", configuration.getWorkingDirectory());
 						File file = new File(script_file.getAbsolutePath());
 						FileWriter txt;
 						txt = new FileWriter(file);
@@ -305,13 +224,13 @@ public class Job {
 				case ".e":
 					command.add(getRendererPath());
 					// the number of cores has to be put after the binary and before the scene arg
-					if (config.getNbCores() > 0) {
+					if (configuration.getNbCores() > 0) {
 						command.add("-t");
-						command.add(Integer.toString(config.getNbCores()));
+						command.add(Integer.toString(configuration.getNbCores()));
 					}
 					break;
 				case ".o":
-					command.add(config.workingDirectory.getAbsolutePath() + File.separator + getPrefixOutputImage());
+					command.add(configuration.getWorkingDirectory().getAbsolutePath() + File.separator + getPrefixOutputImage());
 					break;
 				case ".f":
 					command.add(getFrameNumber());
@@ -327,12 +246,12 @@ public class Job {
 			String line;
 			log.debug(command.toString());
 			OS os = OS.getOS();
-			process.setCoresUsed(config.getNbCores());
+			process.setCoresUsed(configuration.getNbCores());
 			process.start();
 			getProcessRender().setProcess(os.exec(command, new_env));
 			BufferedReader input = new BufferedReader(new InputStreamReader(getProcessRender().getProcess().getInputStream()));
 			
-			if (config.getMaxRenderTime() > 0) {
+			if (configuration.getMaxRenderTime() > 0) {
 				timerOfMaxRenderTime = new Timer();
 				timerOfMaxRenderTime.schedule(new TimerTask() {
 					@Override
@@ -340,14 +259,14 @@ public class Job {
 						RenderProcess process = getProcessRender();
 						if (process != null) {
 							long duration = (new Date().getTime() - process.getStartTime() ) / 1000; // in seconds
-							if (config.getMaxRenderTime() > 0 &&  duration > config.getMaxRenderTime()) {
+							if (configuration.getMaxRenderTime() > 0 &&  duration > configuration.getMaxRenderTime()) {
 								log.debug("Killing render because process duration");
 								OS.getOS().kill(process.getProcess());
 								setAskForRendererKill(true);
 							}
 						}
 					}
-				}, config.getMaxRenderTime() * 1000 + 2000); // +2s to be sure the delay is over
+				}, configuration.getMaxRenderTime() * 1000 + 2000); // +2s to be sure the delay is over
 			}
 			
 			log.debug("renderer output");
@@ -356,8 +275,8 @@ public class Job {
 					log.debug(line);
 					
 					updateRenderingMemoryPeak(line);
-					if (config.getMaxMemory() != -1 && process.getMemoryUsed() > config.getMaxMemory()) {
-						log.debug("Blocking render because process ram used (" + process.getMemoryUsed() + "k) is over user setting (" + config.getMaxMemory() + "k)");
+					if (configuration.getMaxMemory() != -1 && process.getMemoryUsed() > configuration.getMaxMemory()) {
+						log.debug("Blocking render because process ram used (" + process.getMemoryUsed() + "k) is over user setting (" + configuration.getMaxMemory() + "k)");
 						OS.getOS().kill(process.getProcess());
 						process.finish();
 						if (script_file != null) {
@@ -416,24 +335,24 @@ public class Job {
 			}
 		};
 		
-		File[] files = config.workingDirectory.listFiles(textFilter);
-		
-		if (getAskForRendererKill()) {
+		File[] files = configuration.getWorkingDirectory().listFiles(textFilter);
+
+		if (isAskForRendererKill()) {
 			log.debug("Job::render been asked to end render");
 			
 			long duration = (new Date().getTime() - process.getStartTime() ) / 1000; // in seconds
-			if (config.getMaxRenderTime() > 0 && duration > config.getMaxRenderTime()) {
-				log.debug("Render killed because process duration (" + duration + "s) is over user setting (" + config.getMaxRenderTime() + "s)");
+			if (configuration.getMaxRenderTime() > 0 && duration > configuration.getMaxRenderTime()) {
+				log.debug("Render killed because process duration (" + duration + "s) is over user setting (" + configuration.getMaxRenderTime() + "s)");
 				return Error.Type.RENDERER_KILLED_BY_USER_OVER_TIME;
 			}
 			
 			if (files.length != 0) {
 				new File(files[0].getAbsolutePath()).delete();
 			}
-			if (getServerBlockJob()) {
+			if (isServerBlockJob()) {
 				return Error.Type.RENDERER_KILLED_BY_SERVER;
 			}
-			if (getUserBlockJob()) {
+			if (isUserBlockJob()) {
 				return Error.Type.RENDERER_KILLED_BY_USER;
 			}
 			return Error.Type.RENDERER_KILLED;
@@ -449,7 +368,7 @@ public class Job {
 			catch (Exception e) {
 				e.printStackTrace();
 			}
-			File crash_file = new File(config.workingDirectory + File.separator + basename + ".crash.txt");
+			File crash_file = new File(configuration.getWorkingDirectory() + File.separator + basename + ".crash.txt");
 			if (crash_file.exists()) {
 				log.error("Job::render crash file found => the renderer crashed");
 				crash_file.delete();
@@ -844,20 +763,22 @@ public class Job {
 	}
 	
 	public int getTileSize() {
-		if (config.getTileSize() == -1) { // not set
+		if (configuration.getTileSize() == -1) { // not set
 			int size = 32; // CPU
-			GPUDevice gpu = this.config.getGPUDevice();
-			if (getUseGPU() && gpu != null) {
+			GPUDevice gpu = this.configuration.getGPUDevice();
+			if (isUseGPU() && gpu != null) {
 				return gpu.getRecommandedTileSize();
 			}
 			return size;
 		}
 		else {
-			return config.getTileSize();
+			return configuration.getTileSize();
 		}
 	}
 
 	public static class renderStartedObservable extends Observable {
+
+		@Getter
 		private boolean isStarted;
 
 		public renderStartedObservable(Observer observer) {
@@ -869,10 +790,6 @@ public class Job {
 			setChanged();
 			notifyObservers();
 			isStarted = true;
-		}
-
-		public boolean isStarted() {
-			return isStarted;
 		}
 	}
 }

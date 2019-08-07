@@ -167,13 +167,13 @@ public class Worker {
 				System.err.println("GPU unknown, list of available gpus can be display with --show-gpu");
 				System.exit(2);
 			}
-			config.setUseGPU(gpu);
+			config.setGPUDevice(gpu);
 		}
 		
 		if (request_time != null) {
 			String[] intervals = request_time.split(",");
 			if (intervals != null) {
-				config.requestTime = new LinkedList<Pair<Calendar, Calendar>>();
+				config.setRequestTime(new LinkedList<Pair<Calendar, Calendar>>());
 				
 				SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 				for (String interval : intervals) {
@@ -192,7 +192,7 @@ public class Worker {
 						}
 						
 						if (start.before(end)) {
-							config.requestTime.add(new Pair<Calendar, Calendar>(start, end));
+							config.getRequestTime().add(new Pair<Calendar, Calendar>(start, end));
 						}
 						else {
 							System.err.println("Error: wrong request time " + times[0] + " is after " + times[1]);
@@ -208,7 +208,7 @@ public class Worker {
 			return;
 		}
 		else {
-			config.setUseNbCores(nb_cores);
+			config.setNbCores(nb_cores);
 		}
 		
 		if (max_ram != null) {
@@ -274,7 +274,7 @@ public class Worker {
 			System.exit(2);
 		}
 		else if (compute_method == ComputeType.CPU) {
-			config.setUseGPU(null); // remove the GPU
+			config.setGPUDevice(null); // remove the GPU
 		}
 		
 		config.setComputeMethod(compute_method);
@@ -289,7 +289,7 @@ public class Worker {
 				System.err.println("Aborting");
 				System.exit(2);
 			}
-			config.setConfigPath(config_file);
+			config.setConfigFilePath(config_file);
 			new SettingsLoader(config_file).merge(config);
 		}
 		
@@ -302,7 +302,7 @@ public class Worker {
 		}
 		switch (type) {
 			case GuiTextOneLine.type:
-				if (config.getPrintLog()) {
+				if (config.isPrintLog()) {
 					System.out.println("OneLine UI can not be used if verbose mode is enabled");
 					System.exit(2);
 				}

@@ -19,47 +19,26 @@
 
 package com.sheepit.client;
 
+import lombok.Data;
+
 import java.util.Date;
 
+@Data
 public class RenderProcess {
-	private long start;
-	private long end;
-	private int remainingDuration;
+	private long startTime;
+	private long endTime;
+	private int remainingDuration; // in seconds
 	private long memoryUsed; // in kB
 	private int coresUsed;
 	private Process process;
 	
 	public RenderProcess() {
 		process = null;
-		start = -1;
-		end = -1;
+		startTime = -1;
+		endTime = -1;
 		memoryUsed = 0;
 		coresUsed = 0;
 		remainingDuration = 0;
-	}
-	
-	public void setMemoryUsed(long val) {
-		memoryUsed = val;
-	}
-	
-	public long getMemoryUsed() {
-		return memoryUsed;
-	}
-	
-	public void setCoresUsed(int val) {
-		coresUsed = val;
-	}
-	
-	public int getCoresUsed() {
-		return coresUsed;
-	}
-	
-	public long getStartTime() {
-		return start;
-	}
-	
-	public long getEndTime() {
-		return end;
 	}
 	
 	/**
@@ -67,34 +46,22 @@ public class RenderProcess {
 	 * @return duration in seconds
 	 */
 	public int getDuration() {
-		if (start != -1 && end != -1) {
-			return (int) ((end - start) / 1000);
+		if (startTime != -1 && endTime != -1) {
+			return (int) ((endTime - startTime) / 1000);
 		}
-		else if (start != -1) {
-			return (int) ((new Date().getTime() - start) / 1000);
+		else if (startTime != -1) {
+			return (int) ((new Date().getTime() - startTime) / 1000);
 		}
 		return 0;
 	}
 	
-	/**
-	 * 
-	 * @return duration in seconds
-	 */
-	public int getRemainingDuration() {
-		return remainingDuration;
-	}
-	
-	public void setRemainingDuration(int val) {
-		remainingDuration = val;
-	}
-	
 	public void finish() {
-		end = new Date().getTime();
+		endTime = new Date().getTime();
 		process = null;
 	}
 	
 	public void start() {
-		start = new Date().getTime();
+		startTime = new Date().getTime();
 	}
 	
 	public int exitValue() {
@@ -117,13 +84,5 @@ public class RenderProcess {
 			value = 0;
 		}
 		return value;
-	}
-	
-	public void setProcess(Process val) {
-		process = val;
-	}
-	
-	public Process getProcess() {
-		return process;
 	}
 }

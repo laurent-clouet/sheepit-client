@@ -89,7 +89,7 @@ public class Log {
 		if (instance == null) {
 			boolean print = false;
 			if (config != null) {
-				print = config.getPrintLog();
+				print = config.isPrintLog();
 			}
 			instance = new Log(print);
 		}
