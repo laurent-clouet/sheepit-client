@@ -487,6 +487,7 @@ public class Job {
 							long end_render = (new Date().getTime() - this.render.getStartTime()) * total / current;
 							Date date = new Date(end_render);
 							gui.setRemainingTime(String.format("%s %% (%s)", (int) (100.0 - 100.0 * current / total), Utils.humanDuration(date)));
+							getProcessRender().setRemainingDuration((int) (date.getTime() / 1000));
 							return;
 						}
 					}
