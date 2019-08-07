@@ -627,6 +627,8 @@ public class Client {
 			}
 			return err;
 		}
+
+		removeSceneDirectory(ajob);
 		
 		return Error.Type.OK;
 	}
@@ -698,6 +700,10 @@ public class Client {
 		}
 		
 		return true;
+	}
+
+	protected void removeSceneDirectory(Job ajob) {
+		Utils.delete(new File(ajob.getSceneDirectory()));
 	}
 	
 	protected int prepareWorkingDirectory(Job ajob) throws FermeExceptionNoSpaceLeftOnDevice {
