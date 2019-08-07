@@ -70,10 +70,14 @@ public class Job {
 	private boolean serverBlockJob;
 	private Gui gui;
 	private Configuration config;
+	private Client client;
 	private Log log;
+
+	private boolean directoryRemoved;
 	
-	public Job(Configuration config_, Gui gui_, Log log_, String id_, String frame_, String path_, boolean use_gpu, String command_, String script_, String sceneMd5_, String rendererMd5_, String name_, String password_, String extras_, boolean synchronous_upload_, String update_method_) {
+	public Job(Configuration config_, Client client_, Gui gui_, Log log_, String id_, String frame_, String path_, boolean use_gpu, String command_, String script_, String sceneMd5_, String rendererMd5_, String name_, String password_, String extras_, boolean synchronous_upload_, String update_method_) {
 		config = config_;
+		client = client_;
 		id = id_;
 		numFrame = frame_;
 		path = path_;
@@ -94,6 +98,7 @@ public class Job {
 		serverBlockJob = false;
 		log = log_;
 		render = new RenderProcess();
+		directoryRemoved = false;
 	}
 	
 	public void block() {
@@ -370,6 +375,11 @@ public class Job {
 							script_file.delete();
 						}
 						return error;
+					}
+
+					if (directoryRemoved == false && (process.getMemoryUsed() > 0 || process.getRemainingDuration() > 0)) {
+						client.removeSceneDirectory(this);
+						directoryRemoved = true;
 					}
 				}
 				input.close();
