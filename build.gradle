@@ -1,0 +1,51 @@
+buildscript {
+	repositories {
+		jcenter()
+	}
+	dependencies {
+		classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
+	}
+}
+apply plugin: 'java'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+sourceCompatibility = '1.7'
+targetCompatibility = '1.7'
+
+repositories {
+	jcenter()
+	mavenCentral()
+}
+
+dependencies {
+	compile 'org.projectlombok:lombok:1.18.8'
+	compile 'org.kohsuke.args4j:args4j-maven-plugin:2.0.31'
+	compile 'net.lingala.zip4j:zip4j:1.3.2'
+	compile 'net.java.dev.jna:jna-platform:4.0.0'
+	compile 'net.java.dev.jna:jna:4.0.0'
+	compile 'javax.xml.bind:jaxb-api:2.3.1'
+}
+
+jar {
+	manifest {
+		attributes "Main-Class": "com.sheepit.client.standalone.Worker"
+	}
+	
+	from {
+		configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+	}
+}
+
+sourceSets {
+	main {
+		java {
+			srcDirs = ['src']
+		}
+	}
+	
+	test {
+		java {
+			srcDirs = ['test']
+		}
+	}
+}
