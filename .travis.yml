@@ -1,12 +1,8 @@
 language: java
-script: ant
 
 os:
   - linux
 
-before_install:
-  - sudo apt-get update
-  - sudo apt-get install -y ant
 
 # safelist
 branches:
