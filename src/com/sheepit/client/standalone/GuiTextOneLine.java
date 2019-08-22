@@ -158,6 +158,11 @@ public class GuiTextOneLine implements Gui {
 		return client;
 	}
 	
+	@Override
+	public void successfulAuthenticationEvent(String publickey) {
+	
+	}
+	
 	private void updateLine() {
 		int charToRemove = line.length();
 		

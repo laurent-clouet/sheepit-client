@@ -185,6 +185,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 	public Error.Type getConfiguration() {
 		OS os = OS.getOS();
 		HttpURLConnection connection = null;
+		String publickey = null;
 		try {
 			String url_remote = this.base_url + "/server/config.php";
 			String parameters = String.format("login=%s&password=%s&cpu_family=%s&cpu_model=%s&cpu_model_name=%s&cpu_cores=%s&os=%s&ram=%s&bits=%s&version=%s&hostname=%s&ui=%s&extras=%s", 
@@ -241,6 +242,16 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				}
 				config_node = (Element) ns.item(0);
 				
+				if (config_node.hasAttribute("publickey")) {
+					publickey = config_node.getAttribute("publickey");
+					if (publickey.isEmpty()) {
+						publickey = null;
+					}
+					else {
+						this.user_config.setPassword(publickey);
+					}
+				}
+				
 				ns = config_node.getElementsByTagName("request");
 				if (ns.getLength() == 0) {
 					this.log.error("getConfiguration error: failed to parse XML, node 'config' has no child node 'request'");
@@ -285,6 +296,9 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				connection.disconnect();
 			}
 		}
+		
+		this.client.getGui().successfulAuthenticationEvent(publickey);
+		
 		return Error.Type.OK;
 	}
 	

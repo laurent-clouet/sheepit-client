@@ -45,13 +45,15 @@ import javax.swing.border.EmptyBorder;
 import com.sheepit.client.Client;
 import com.sheepit.client.Configuration;
 import com.sheepit.client.Gui;
+import com.sheepit.client.SettingsLoader;
 import com.sheepit.client.Stats;
 import com.sheepit.client.standalone.swing.activity.Settings;
 import com.sheepit.client.standalone.swing.activity.Working;
+import lombok.Setter;
 
 public class GuiSwing extends JFrame implements Gui {
 	public static final String type = "swing";
-	
+
 	public enum ActivityType {
 		WORKING, SETTINGS
 	}
@@ -68,6 +70,9 @@ public class GuiSwing extends JFrame implements Gui {
 	
 	private boolean waitingForAuthentication;
 	private Client client;
+
+	@Setter
+	private SettingsLoader settingsLoader;
 	
 	private ThreadClient threadClient;
 	
@@ -221,6 +226,16 @@ public class GuiSwing extends JFrame implements Gui {
 	
 	public Configuration getConfiguration() {
 		return client.getConfiguration();
+	}
+
+	@Override
+	public void successfulAuthenticationEvent(String publickey) {
+		if (settingsLoader != null) {
+			if (publickey != null) {
+				settingsLoader.setPassword(publickey);
+			}
+			settingsLoader.saveFile();
+		}
 	}
 	
 	public void setCredentials(String contentLogin, String contentPassword) {
