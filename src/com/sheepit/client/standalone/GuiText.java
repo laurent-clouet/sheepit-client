@@ -145,4 +145,8 @@ public class GuiText implements Gui {
 		return client;
 	}
 	
+	@Override
+	public void successfulAuthenticationEvent(String publickey) {
+	
+	}
 }

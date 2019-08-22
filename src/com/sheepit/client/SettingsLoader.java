@@ -36,12 +36,16 @@ import com.sheepit.client.Configuration;
 import com.sheepit.client.Configuration.ComputeType;
 import com.sheepit.client.hardware.gpu.GPU;
 import com.sheepit.client.hardware.gpu.GPUDevice;
+import lombok.Setter;
 
 public class SettingsLoader {
 	private String path;
 	
 	private String login;
+	
+	@Setter
 	private String password;
+	
 	private String proxy;
 	private String hostname;
 	private String computeMethod;

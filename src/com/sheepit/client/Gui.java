@@ -38,6 +38,8 @@ public interface Gui {
 	
 	public void AddFrameRendered();
 	
+	public void successfulAuthenticationEvent(String publickey);
+	
 	public void setClient(Client cli);
 	
 	public void setComputeMethod(String computeMethod_);
