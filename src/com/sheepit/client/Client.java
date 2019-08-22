@@ -570,7 +570,7 @@ public class Client {
 			return Error.Type.NO_SPACE_LEFT_ON_DEVICE;
 		}
 		
-		File scene_file = new File(ajob.getScenePath());
+		final File scene_file = new File(ajob.getScenePath());
 		File renderer_file = new File(ajob.getRendererPath());
 		
 		if (scene_file.exists() == false) {
@@ -589,7 +589,9 @@ public class Client {
 
 		Observer removeSceneDirectoryOnceRenderHasStartedObserver = new Observer() {
 			@Override public void update(Observable observable, Object o) {
-				removeSceneDirectory(ajob);
+				// only remove the .blend since it's most important data
+				// and it's the only file we are sure will not be needed anymore
+				scene_file.delete();
 			}
 		};
 
