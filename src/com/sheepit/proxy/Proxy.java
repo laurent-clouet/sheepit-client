@@ -151,7 +151,7 @@ class Proxy extends AbstractHandler implements HostnameVerifier, X509TrustManage
 		if (requestFromClient.getContentType() != null) {
 			request.setRequestProperty("Content-type", requestFromClient.getContentType());
 		}
-		request.setRequestMethod(requestFromClient.getMethod());
+		request.setRequestProperty("X-HTTP-Method-Override", requestFromClient.getMethod());
 		
 		Cookie[] cookies = requestFromClient.getCookies();
 		if (cookies != null) {
