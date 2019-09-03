@@ -45,8 +45,8 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.net.ssl.HostnameVerifier;
@@ -56,21 +56,14 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+import com.sheepit.client.datamodel.CacheFileMD5;
+import com.sheepit.client.datamodel.FileMD5;
+import com.sheepit.client.datamodel.HeartBeatInfos;
+import com.sheepit.client.datamodel.JobInfos;
+import com.sheepit.client.datamodel.JobValidation;
+import com.sheepit.client.datamodel.ServerConfig;
+import org.simpleframework.xml.core.Persister;
 
 import com.sheepit.client.Configuration.ComputeType;
 import com.sheepit.client.Error.ServerCode;
@@ -88,9 +81,9 @@ import com.sheepit.client.os.OS;
 
 public class Server extends Thread implements HostnameVerifier, X509TrustManager {
 	private String base_url;
+	private ServerConfig serverConfig;
 	private Configuration user_config;
 	private Client client;
-	private HashMap<String, String> pages;
 	private Log log;
 	private long lastRequestTime;
 	private int keepmealive_duration; // time in ms
@@ -100,7 +93,6 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 		this.base_url = url_;
 		this.user_config = user_config_;
 		this.client = client_;
-		this.pages = new HashMap<String, String>();
 		this.log = Log.getInstance(this.user_config);
 		this.lastRequestTime = 0;
 		this.keepmealive_duration = 15 * 60 * 1000; // default 15min
@@ -135,9 +127,9 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 					if (connection.getResponseCode() == HttpURLConnection.HTTP_OK && connection.getContentType().startsWith("text/xml")) {
 						DataInputStream in = new DataInputStream(connection.getInputStream());
 						try {
-							Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(in);
-							ServerCode ret = Utils.statusIsOK(document, "keepmealive");
-							if (ret == ServerCode.KEEPMEALIVE_STOP_RENDERING) {
+							HeartBeatInfos heartBeartInfos = new Persister().read(HeartBeatInfos.class, in);
+							ServerCode serverCode = ServerCode.fromInt(heartBeartInfos.getStatus());
+							if (serverCode == ServerCode.KEEPMEALIVE_STOP_RENDERING) {
 								this.log.debug("Server::stayAlive server asked to kill local render process");
 								// kill the current process, it will generate an error but it's okay
 								if (this.client != null && this.client.getRenderingJob() != null && this.client.getRenderingJob().getProcessRender().getProcess() != null) {
@@ -147,9 +139,8 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 								}
 							}
 						}
-						catch (SAXException e) {
-						}
-						catch (ParserConfigurationException e) {
+						catch (Exception e) { // for the read
+							this.log.debug("Server::stayAlive Exception " + e);
 						}
 					}
 				}
@@ -179,7 +170,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 	}
 	
 	public String toString() {
-		return String.format("Server (base_url '%s', user_config %s, pages %s", this.base_url, this.user_config, this.pages);
+		return String.format("Server (base_url '%s', user_config %s", this.base_url, this.user_config);
 	}
 	
 	public Error.Type getConfiguration() {
@@ -210,69 +201,19 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			
 			if (r == HttpURLConnection.HTTP_OK && contentType.startsWith("text/xml")) {
 				DataInputStream in = new DataInputStream(connection.getInputStream());
-				Document document = null;
+				serverConfig = new Persister().read(ServerConfig.class, in);
 				
-				try {
-					document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(in);
-				}
-				catch (SAXException e) {
-					this.log.error("getConfiguration error: failed to parse XML SAXException " + e);
-					return Error.Type.WRONG_CONFIGURATION;
-				}
-				catch (IOException e) {
-					this.log.error("getConfiguration error: failed to parse XML IOException " + e);
-					return Error.Type.WRONG_CONFIGURATION;
-				}
-				catch (ParserConfigurationException e) {
-					this.log.error("getConfiguration error: failed to parse XML ParserConfigurationException " + e);
-					return Error.Type.WRONG_CONFIGURATION;
+				if (ServerCode.fromInt(serverConfig.getStatus()) != ServerCode.OK) {
+					return Error.ServerCodeToType(ServerCode.fromInt(serverConfig.getStatus()));
 				}
 				
-				ServerCode ret = Utils.statusIsOK(document, "config");
-				if (ret != ServerCode.OK) {
-					return Error.ServerCodeToType(ret);
+				publickey = serverConfig.getPublickey();
+				if (publickey.isEmpty()) {
+					publickey = null;
 				}
-				
-				Element config_node = null;
-				NodeList ns = null;
-				ns = document.getElementsByTagName("config");
-				if (ns.getLength() == 0) {
-					this.log.error("getConfiguration error: failed to parse XML, no node 'config'");
-					return Error.Type.WRONG_CONFIGURATION;
+				else {
+					this.user_config.setPassword(publickey);
 				}
-				config_node = (Element) ns.item(0);
-				
-				if (config_node.hasAttribute("publickey")) {
-					publickey = config_node.getAttribute("publickey");
-					if (publickey.isEmpty()) {
-						publickey = null;
-					}
-					else {
-						this.user_config.setPassword(publickey);
-					}
-				}
-				
-				ns = config_node.getElementsByTagName("request");
-				if (ns.getLength() == 0) {
-					this.log.error("getConfiguration error: failed to parse XML, node 'config' has no child node 'request'");
-					return Error.Type.WRONG_CONFIGURATION;
-				}
-				for (int i = 0; i < ns.getLength(); i++) {
-					Element element = (Element) ns.item(i);
-					if (element.hasAttribute("type") && element.hasAttribute("path")) {
-						this.pages.put(element.getAttribute("type"), element.getAttribute("path"));
-						if (element.getAttribute("type").equals("keepmealive") && element.hasAttribute("max-period")) {
-							this.keepmealive_duration = (Integer.parseInt(element.getAttribute("max-period")) - 120) * 1000; // put 2min of safety net
-						}
-					}
-				}
-			}
-			else if (r == HttpURLConnection.HTTP_OK && contentType.startsWith("text/html")) {
-				return Error.Type.ERROR_BAD_RESPONSE;
-			}
-			else {
-				this.log.error("Server::getConfiguration: Invalid response " + contentType + " " + r);
-				return Error.Type.WRONG_CONFIGURATION;
 			}
 		}
 		catch (ConnectException e) {
@@ -289,6 +230,10 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 		}
 		catch (IOException e) {
 			this.log.error("Server::getConfiguration: exception IOException " + e);
+			return Error.Type.UNKNOWN;
+		}
+		catch (Exception e) {
+			this.log.error("Server::getConfiguration: exception Exception " + e);
 			return Error.Type.UNKNOWN;
 		}
 		finally {
@@ -335,90 +280,36 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			
 			if (r == HttpURLConnection.HTTP_OK && contentType.startsWith("text/xml")) {
 				DataInputStream in = new DataInputStream(connection.getInputStream());
-				Document document = null;
-				try {
-					document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(in);
-				}
-				catch (SAXException e) {
-					throw new FermeException("error requestJob: parseXML failed, SAXException " + e);
-				}
-				catch (IOException e) {
-					throw new FermeException("error requestJob: parseXML failed IOException " + e);
-				}
-				catch (ParserConfigurationException e) {
-					throw new FermeException("error requestJob: parseXML failed ParserConfigurationException " + e);
-				}
-				
-				ServerCode ret = Utils.statusIsOK(document, "jobrequest");
-				if (ret != ServerCode.OK) {
-					if (ret == ServerCode.JOB_REQUEST_NOJOB) {
-						handleFileMD5DeleteDocument(document, "jobrequest");
-						return null;
+
+				JobInfos jobData = new Persister().read(JobInfos.class, in);
+
+				handleFileMD5DeleteDocument(jobData.getFileMD5s());
+
+				ServerCode serverCode = ServerCode.fromInt(jobData.getStatus());
+				if (serverCode != ServerCode.OK) {
+					switch (serverCode) {
+						case JOB_REQUEST_NOJOB:
+							return null;
+						case JOB_REQUEST_ERROR_NO_RENDERING_RIGHT:
+							throw new FermeExceptionNoRightToRender();
+						case JOB_REQUEST_ERROR_DEAD_SESSION:
+							throw new FermeExceptionNoSession();
+						case JOB_REQUEST_ERROR_SESSION_DISABLED:
+							throw new FermeExceptionSessionDisabled();
+						case JOB_REQUEST_ERROR_INTERNAL_ERROR:
+							throw new FermeExceptionBadResponseFromServer();
+						case JOB_REQUEST_ERROR_RENDERER_NOT_AVAILABLE:
+							throw new FermeExceptionNoRendererAvailable();
+						case JOB_REQUEST_SERVER_IN_MAINTENANCE:
+							throw new FermeExceptionServerInMaintenance();
+						case JOB_REQUEST_SERVER_OVERLOADED:
+							throw new FermeExceptionServerOverloaded();
+						default:
+							throw new FermeException("error requestJob: status is not ok (it's " + serverCode + ")");
 					}
-					else if (ret == ServerCode.JOB_REQUEST_ERROR_NO_RENDERING_RIGHT) {
-						throw new FermeExceptionNoRightToRender();
-					}
-					else if (ret == ServerCode.JOB_REQUEST_ERROR_DEAD_SESSION) {
-						throw new FermeExceptionNoSession();
-					}
-					else if (ret == ServerCode.JOB_REQUEST_ERROR_RENDERER_NOT_AVAILABLE) {
-						throw new FermeExceptionNoRendererAvailable();
-					}
-					else if (ret == ServerCode.JOB_REQUEST_ERROR_SESSION_DISABLED) {
-						throw new FermeExceptionSessionDisabled();
-					}
-					else if (ret == ServerCode.JOB_REQUEST_SERVER_IN_MAINTENANCE) {
-						throw new FermeExceptionServerInMaintenance();
-					}
-					else if (ret == ServerCode.JOB_REQUEST_SERVER_OVERLOADED) {
-						throw new FermeExceptionServerOverloaded();
-					}
-					this.log.error("Server::requestJob: Utils.statusIsOK(document, 'jobrequest') -> ret " + ret);
-					throw new FermeException("error requestJob: status is not ok (it's " + ret + ")");
 				}
-				
-				handleFileMD5DeleteDocument(document, "jobrequest");
-				
-				Element a_node = null;
-				NodeList ns = null;
-				
-				ns = document.getElementsByTagName("stats");
-				if (ns.getLength() == 0) {
-					throw new FermeException("error requestJob: parseXML failed, no 'frame' node");
-				}
-				a_node = (Element) ns.item(0);
-				
-				int remaining_frames = 0;
-				int credits_earned = 0;
-				int credits_earned_session = 0;
-				int waiting_project = 0;
-				int renderable_project = 0;
-				int connected_machine = 0;
-				if (a_node.hasAttribute("frame_remaining") && a_node.hasAttribute("credits_total") && a_node.hasAttribute("credits_session") && a_node.hasAttribute("waiting_project") && a_node.hasAttribute("connected_machine")) {
-					remaining_frames = Integer.parseInt(a_node.getAttribute("frame_remaining"));
-					credits_earned = Integer.parseInt(a_node.getAttribute("credits_total"));
-					credits_earned_session = Integer.parseInt(a_node.getAttribute("credits_session"));
-					waiting_project = Integer.parseInt(a_node.getAttribute("waiting_project"));
-					connected_machine = Integer.parseInt(a_node.getAttribute("connected_machine"));
-				}
-				if (a_node.hasAttribute("renderable_project")) {
-					renderable_project = Integer.parseInt(a_node.getAttribute("renderable_project"));
-				}
-				
-				ns = document.getElementsByTagName("job");
-				if (ns.getLength() == 0) {
-					throw new FermeException("error requestJob: parseXML failed, no 'job' node");
-				}
-				Element job_node = (Element) ns.item(0);
-				
-				ns = job_node.getElementsByTagName("renderer");
-				if (ns.getLength() == 0) {
-					throw new FermeException("error requestJob: parseXML failed, node 'job' have no sub-node 'renderer'");
-				}
-				Element renderer_node = (Element) ns.item(0);
-				
+
 				String script = "import bpy\n";
-				
 				// blender 2.7x
 				script += "try:\n";
 				script += "\tbpy.context.user_preferences.filepaths.temporary_directory = \"" + this.user_config.getWorkingDirectory().getAbsolutePath().replace("\\", "\\\\") + "\"\n";
@@ -431,71 +322,34 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				script += "except AttributeError:\n";
 				script += "\tpass\n";
 				
-				try {
-					ns = job_node.getElementsByTagName("script");
-					if (ns.getLength() != 0) {
-						Element a_node3 = (Element) ns.item(0);
-						script += a_node3.getTextContent();
-					}
-				}
-				catch (Exception e) {
-					StringWriter sw = new StringWriter();
-					PrintWriter pw = new PrintWriter(sw);
-					e.printStackTrace(pw);
-					this.log.debug("Server::requestJob Exception " + e + " stacktrace: " + sw.toString());
-				}
-				
-				String[] job_node_require_attribute = { "id", "archive_md5", "path", "use_gpu", "frame", "name", "extras", "password" };
-				String[] renderer_node_require_attribute = { "md5", "commandline" };
-				
-				for (String e : job_node_require_attribute) {
-					if (job_node.hasAttribute(e) == false) {
-						throw new FermeException("error requestJob: parseXML failed, job_node have to attribute '" + e + "'");
-					}
-				}
-				
-				for (String e : renderer_node_require_attribute) {
-					if (renderer_node.hasAttribute(e) == false) {
-						throw new FermeException("error requestJob: parseXML failed, renderer_node have to attribute '" + e + "'");
-					}
-				}
-				
-				boolean use_gpu = (job_node.getAttribute("use_gpu").compareTo("1") == 0);
-				boolean synchronous_upload = true;
-				if (job_node.hasAttribute("synchronous_upload")) {
-					synchronous_upload = (job_node.getAttribute("synchronous_upload").compareTo("1") == 0);
-				}
-				
-				String frame_extras = "";
-				if (job_node.hasAttribute("extras")) {
-					frame_extras = job_node.getAttribute("extras");
-				}
-				
-				String update_method = null;
-				if (renderer_node.hasAttribute("update_method")) {
-					update_method = renderer_node.getAttribute("update_method");
-				}
-				
+				script += jobData.getRenderTask().getScript();
+
 				Job a_job = new Job(
 						this.user_config,
 						this.client.getGui(),
 						this.client.getLog(),
-						job_node.getAttribute("id"),
-						job_node.getAttribute("frame"),
-						job_node.getAttribute("path").replace("/", File.separator),
-						use_gpu,
-						renderer_node.getAttribute("commandline"),
+						jobData.getRenderTask().getId(),
+						jobData.getRenderTask().getFrame(),
+						jobData.getRenderTask().getPath().replace("/", File.separator),
+						jobData.getRenderTask().getUseGpu() == 1,
+						jobData.getRenderTask().getRendererInfos().getCommandline(),
 						script,
-						job_node.getAttribute("archive_md5"),
-						renderer_node.getAttribute("md5"),
-						job_node.getAttribute("name"),
-						job_node.getAttribute("password"),
-						frame_extras,
-						synchronous_upload,
-						update_method
-						);
+						jobData.getRenderTask().getArchive_md5(),
+						jobData.getRenderTask().getRendererInfos().getMd5(),
+						jobData.getRenderTask().getName(),
+						jobData.getRenderTask().getPassword(),
+						jobData.getRenderTask().getExtras(),
+						jobData.getRenderTask().getSynchronous_upload().equals("1"),
+						jobData.getRenderTask().getRendererInfos().getUpdate_method()
+				);
 				
-				this.client.getGui().displayStats(new Stats(remaining_frames, credits_earned, credits_earned_session, renderable_project, waiting_project, connected_machine));
+				this.client.getGui().displayStats(new Stats(
+						jobData.getSessionStats().getRemainingFrames(),
+						jobData.getSessionStats().getPointsEarnedByUser(),
+						jobData.getSessionStats().getPointsEarnedOnSession(),
+						jobData.getSessionStats().getRenderableProjects(),
+						jobData.getSessionStats().getWaitingProjects(),
+						jobData.getSessionStats().getConnectedMachines()));
 				
 				return a_job;
 			}
@@ -539,7 +393,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 		}
 		throw new FermeException("error requestJob, end of function");
 	}
-	
+
 	public HttpURLConnection HTTPRequest(String url_) throws IOException {
 		return this.HTTPRequest(url_, null);
 	}
@@ -786,39 +640,22 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				this.log.debug("Server::HTTPSendFile IOException " + e + " stacktrace: " + sw.toString());
 				return ServerCode.UNKNOWN;
 			}
-			Document document = null;
+
 			try {
-				document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(in);
+				JobValidation jobValidation = new Persister().read(JobValidation.class, in);
+				
+				this.lastRequestTime = new Date().getTime();
+
+				ServerCode serverCode = ServerCode.fromInt(jobValidation.getStatus());
+				if (serverCode != ServerCode.OK) {
+					this.log.error("Server::HTTPSendFile wrong status (is " + serverCode + ")");
+					return serverCode;
+				}
 			}
-			catch (SAXException e) {
-				StringWriter sw = new StringWriter();
-				PrintWriter pw = new PrintWriter(sw);
-				e.printStackTrace(pw);
-				this.log.debug("Server::HTTPSendFile SAXException " + e + " stacktrace: " + sw.toString());
-				return ServerCode.UNKNOWN;
-			}
-			catch (IOException e) {
-				StringWriter sw = new StringWriter();
-				PrintWriter pw = new PrintWriter(sw);
-				e.printStackTrace(pw);
-				this.log.debug("Server::HTTPSendFile IOException " + e + " stacktrace: " + sw.toString());
-				return ServerCode.UNKNOWN;
-			}
-			catch (ParserConfigurationException e) {
-				StringWriter sw = new StringWriter();
-				PrintWriter pw = new PrintWriter(sw);
-				e.printStackTrace(pw);
-				this.log.debug("Server::HTTPSendFile ParserConfigurationException " + e + " stacktrace: " + sw.toString());
-				return ServerCode.UNKNOWN;
+			catch (Exception e) { // for the .read
+				e.printStackTrace();
 			}
 			
-			this.lastRequestTime = new Date().getTime();
-			
-			ServerCode ret1 = Utils.statusIsOK(document, "jobvalidate");
-			if (ret1 != ServerCode.OK) {
-				this.log.error("Server::HTTPSendFile wrong status (is " + ret1 + ")");
-				return ret1;
-			}
 			return ServerCode.OK;
 		}
 		else if (r == HttpURLConnection.HTTP_OK && contentType.startsWith("text/html")) {
@@ -878,73 +715,54 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 	}
 	
 	private String generateXMLForMD5cache() {
-		String xml_str = null;
-		try {
-			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-			Document document_cache = docBuilder.newDocument();
-			
-			Element rootElement = document_cache.createElement("cache");
-			document_cache.appendChild(rootElement);
-			
-			List<File> local_files = this.user_config.getLocalCacheFiles();
-			for (File local_file : local_files) {
-				Element node_file = document_cache.createElement("file");
-				rootElement.appendChild(node_file);
-				try {
-					String extension = local_file.getName().substring(local_file.getName().lastIndexOf('.')).toLowerCase();
-					String name = local_file.getName().substring(0, local_file.getName().length() - 1 * extension.length());
-					if (extension.equals(".zip")) {
-						node_file.setAttribute("md5", name);
-					}
-				}
-				catch (StringIndexOutOfBoundsException e) { // because the file does not have an . his path
+		List<FileMD5> md5s = new ArrayList<>();
+		for (File local_file : this.user_config.getLocalCacheFiles()) {
+			try {
+				String extension = local_file.getName().substring(local_file.getName().lastIndexOf('.')).toLowerCase();
+				String name = local_file.getName().substring(0, local_file.getName().length() - 1 * extension.length());
+				if (extension.equals(".zip")) {
+					// node_file.setAttribute("md5", name);
+					FileMD5 fileMD5 = new FileMD5();
+					fileMD5.setMd5(name);
+					
+					md5s.add(fileMD5);
 				}
 			}
-			
-			TransformerFactory tf = TransformerFactory.newInstance();
-			Transformer transformer = tf.newTransformer();
-			transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-			StringWriter writer = new StringWriter();
-			transformer.transform(new DOMSource(document_cache), new StreamResult(writer));
-			xml_str = writer.getBuffer().toString();
+			catch (StringIndexOutOfBoundsException e) { // because the file does not have an . its path
+			}
 		}
-		catch (TransformerConfigurationException e) {
-			this.log.debug("Server::generateXMLForMD5cache " + e);
+
+		CacheFileMD5 cache = new CacheFileMD5();
+		cache.setMd5s(md5s);
+
+		final Persister persister = new Persister();
+		try (StringWriter writer = new StringWriter()) {
+			persister.write(cache, writer);
+			return writer.toString();
 		}
-		catch (TransformerException e) {
-			this.log.debug("Server::generateXMLForMD5cache " + e);
+		catch (final Exception e) {
+			log.debug("Failed to dump md5s " + e);
+			return "";
 		}
-		catch (ParserConfigurationException e) {
-			this.log.debug("Server::generateXMLForMD5cache " + e);
-		}
-		
-		return xml_str;
 	}
-	
-	private void handleFileMD5DeleteDocument(Document document, String root_nodename) {
-		NodeList ns = document.getElementsByTagName(root_nodename);
-		if (ns.getLength() > 0) {
-			Element root_node = (Element) ns.item(0);
-			ns = root_node.getElementsByTagName("file");
-			if (ns.getLength() > 0) {
-				for (int i = 0; i < ns.getLength(); ++i) {
-					Element file_node = (Element) ns.item(i);
-					if (file_node.hasAttribute("md5") && file_node.hasAttribute("action") && file_node.getAttribute("action").equals("delete")) {
-						String path = this.user_config.getWorkingDirectory().getAbsolutePath() + File.separatorChar + file_node.getAttribute("md5");
-						this.log.debug("Server::handleFileMD5DeleteDocument delete old file " + path);
-						File file_to_delete = new File(path + ".zip");
-						file_to_delete.delete();
-						Utils.delete(new File(path));
-					}
+
+	private void handleFileMD5DeleteDocument(List<FileMD5> fileMD5s) {
+		if (fileMD5s != null && fileMD5s.isEmpty() == false) {
+			for(FileMD5 fileMD5 : fileMD5s) {
+				if ("delete".equals(fileMD5.getAction()) && fileMD5.getMd5() != null && fileMD5.getMd5().isEmpty() == false) {
+					String path = this.user_config.getWorkingDirectory().getAbsolutePath() + File.separatorChar + fileMD5.getMd5();
+					this.log.debug("Server::handleFileMD5DeleteDocument delete old file " + path);
+					File file_to_delete = new File(path + ".zip");
+					file_to_delete.delete();
+					Utils.delete(new File(path));
 				}
 			}
 		}
 	}
 	
 	public String getPage(String key) {
-		if (this.pages.containsKey(key)) {
-			return this.base_url + this.pages.get(key);
+		if (this.serverConfig != null) {
+			return this.base_url + this.serverConfig.getRequestEndPoint(key).getPath();
 		}
 		return "";
 	}
