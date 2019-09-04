@@ -168,7 +168,7 @@ public class Job {
 		}
 		
 		core_script += ignore_signal_script;
-		core_script += String.format("bpy.context.scene.render.tile_x = %1$d\nbpy.context.scene.render.tile_y = %1$d\n", getTileSize());
+		core_script += String.format("bpy.context.scene.render.tile_x = %1$d\nbpy.context.scene.render.tile_y = %1$d\n", 32);
 		File script_file = null;
 		String command1[] = getRendererCommand().split(" ");
 		int size_command = command1.length + 2; // + 2 for script
@@ -760,20 +760,6 @@ public class Job {
 			return Error.Type.GPU_NOT_SUPPORTED;
 		}
 		return Type.OK;
-	}
-	
-	public int getTileSize() {
-		if (configuration.getTileSize() == -1) { // not set
-			int size = 32; // CPU
-			GPUDevice gpu = this.configuration.getGPUDevice();
-			if (isUseGPU() && gpu != null) {
-				return gpu.getRecommandedTileSize();
-			}
-			return size;
-		}
-		else {
-			return configuration.getTileSize();
-		}
 	}
 
 	public static class renderStartedObservable extends Observable {
