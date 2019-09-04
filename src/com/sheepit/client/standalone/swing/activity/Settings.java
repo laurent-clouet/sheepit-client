@@ -84,10 +84,6 @@ public class Settings implements Activity {
 	
 	private boolean haveAutoStarted;
 	
-	private JTextField tileSizeValue;
-	private JLabel tileSizeLabel;
-	private JCheckBox customTileSize;
-	
 	public Settings(GuiSwing parent_) {
 		parent = parent_;
 		cacheDir = null;
@@ -321,7 +317,7 @@ public class Settings implements Activity {
 		parent.getContentPane().add(compute_devices_panel, constraints);
 		
 		// other
-		CollapsibleJPanel advanced_panel = new CollapsibleJPanel(new GridLayout(5, 2));
+		CollapsibleJPanel advanced_panel = new CollapsibleJPanel(new GridLayout(3, 2));
 		advanced_panel.setBorder(BorderFactory.createTitledBorder("Advanced options"));
 		
 		JLabel proxyLabel = new JLabel("Proxy:");
@@ -350,30 +346,6 @@ public class Settings implements Activity {
 		
 		advanced_panel.add(renderTimeLabel);
 		advanced_panel.add(renderTime);
-		
-		JLabel customTileSizeLabel = new JLabel("Custom render tile size:");
-		customTileSize = new JCheckBox("", config.getTileSize() != -1);
-		advanced_panel.add(customTileSizeLabel);
-		advanced_panel.add(customTileSize);
-		
-		customTileSize.addActionListener(new TileSizeChange());
-		tileSizeLabel = new JLabel("Tile Size:");
-		
-		tileSizeValue = new JTextField();
-		int fromConfig = parent.getConfiguration().getTileSize();
-		if (fromConfig == -1) {
-			if (parent.getConfiguration().getGPUDevice() != null) {
-				fromConfig = parent.getConfiguration().getGPUDevice().getRecommandedTileSize();
-			}
-			else {
-				fromConfig = 32;
-			}
-		}
-		tileSizeValue.setText(Integer.toString(fromConfig));
-		hideCustomTileSize(config.getTileSize() != -1, false);
-		
-		advanced_panel.add(tileSizeLabel);
-		advanced_panel.add(tileSizeValue);
 		
 		currentRow++;
 		constraints.gridx = 0;
@@ -420,14 +392,6 @@ public class Settings implements Activity {
 		}
 	}
 	
-	public void hideCustomTileSize(boolean hidden, boolean displayWarning) {
-		tileSizeValue.setVisible(hidden);
-		tileSizeLabel.setVisible(hidden);
-		if (customTileSize.isSelected() == true && displayWarning) {
-			JOptionPane.showMessageDialog(parent.getContentPane(), "<html>These settings should only be changed if you are an advanced user.<br /> Improper settings may lead to invalid and slower renders!</html>", "Warning: Advanced Users Only!", JOptionPane.WARNING_MESSAGE);
-		}
-	}
-	
 	public boolean checkDisplaySaveButton() {
 		boolean selected = useCPU.isSelected();
 		for (JCheckBoxGPU box : useGPUs) {
@@ -438,15 +402,7 @@ public class Settings implements Activity {
 		if (login.getText().isEmpty() || password.getPassword().length == 0 || Proxy.isValidURL(proxy.getText()) == false) {
 			selected = false;
 		}
-		
-		if (customTileSize.isSelected()) {
-			try {
-				Integer.parseInt(tileSizeValue.getText().replaceAll(",", ""));
-			}
-			catch (NumberFormatException e) {
-				selected = false;
-			}
-		}
+
 		saveButton.setEnabled(selected);
 		return selected;
 	}
@@ -493,15 +449,6 @@ public class Settings implements Activity {
 			if (autoSignIn.isSelected()) {
 				saveFile.setSelected(true);
 			}
-		}
-	}
-	
-	class TileSizeChange implements ActionListener {
-		
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			boolean custom = customTileSize.isSelected();
-			hideCustomTileSize(custom, true);
 		}
 	}
 	
@@ -590,22 +537,6 @@ public class Settings implements Activity {
 				}
 			}
 			
-			String tile = null;
-			if (customTileSize.isSelected() && tileSizeValue != null) {
-				try {
-					tile = tileSizeValue.getText().replaceAll(",", "");
-					config.setTileSize(Integer.parseInt(tile));
-				}
-				catch (NumberFormatException e1) {
-					System.err.println("Error: wrong tile format");
-					System.err.println(e1);
-					System.exit(2);
-				}
-			}
-			else {
-				config.setTileSize(-1); // no tile
-			}
-			
 			parent.setCredentials(login.getText(), new String(password.getPassword()));
 			
 			String cachePath = null;
@@ -619,7 +550,7 @@ public class Settings implements Activity {
 			}
 			
 			if (saveFile.isSelected()) {
-				parent.setSettingsLoader(new SettingsLoader(config.getConfigFilePath(), login.getText(), new String(password.getPassword()), proxyText, hostnameText, method, selected_gpu, cpu_cores, max_ram, max_rendertime, cachePath, autoSignIn.isSelected(), GuiSwing.type, tile, priority.getValue()));
+				parent.setSettingsLoader(new SettingsLoader(config.getConfigFilePath(), login.getText(), new String(password.getPassword()), proxyText, hostnameText, method, selected_gpu, cpu_cores, max_ram, max_rendertime, cachePath, autoSignIn.isSelected(), GuiSwing.type, priority.getValue()));
 			}
 		}
 	}

@@ -63,7 +63,6 @@ public class Configuration {
 	private String extras;
 	private boolean autoSignIn;
 	private String UIType;
-	private int tileSize;
 	private String hostname;
 	
 	public Configuration(File cache_dir_, String login_, String password_) {
@@ -90,7 +89,6 @@ public class Configuration {
 		this.extras = "";
 		this.autoSignIn = false;
 		this.UIType = null;
-		this.tileSize = -1; // ie not set
 	}
 	
 	

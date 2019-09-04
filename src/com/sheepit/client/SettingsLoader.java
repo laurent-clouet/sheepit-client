@@ -56,7 +56,6 @@ public class SettingsLoader {
 	private String cacheDir;
 	private String autoSignIn;
 	private String ui;
-	private String tileSize;
 	private int    priority;
 	
 	public SettingsLoader(String path_) {
@@ -68,7 +67,7 @@ public class SettingsLoader {
 		}
 	}
 	
-	public SettingsLoader(String path_, String login_, String password_, String proxy_, String hostname_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, long maxRam_, int maxRenderTime_, String cacheDir_, boolean autoSignIn_, String ui_, String tileSize_, int priority_) {
+	public SettingsLoader(String path_, String login_, String password_, String proxy_, String hostname_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, long maxRam_, int maxRenderTime_, String cacheDir_, boolean autoSignIn_, String ui_, int priority_) {
 		if (path_ == null) {
 			path = getDefaultFilePath();
 		}
@@ -82,7 +81,6 @@ public class SettingsLoader {
 		cacheDir = cacheDir_;
 		autoSignIn = String.valueOf(autoSignIn_);
 		ui = ui_;
-		tileSize = tileSize_;
 		priority = priority_;
 		if (cores_ > 0) {
 			cores = String.valueOf(cores_);
@@ -169,10 +167,6 @@ public class SettingsLoader {
 				prop.setProperty("ui", ui);
 			}
 			
-			if (tileSize != null) {
-				prop.setProperty("tile-size", tileSize);
-			}
-			
 			prop.store(output, null);
 		}
 		catch (IOException io) {
@@ -215,7 +209,6 @@ public class SettingsLoader {
 		this.cacheDir = null;
 		this.autoSignIn = null;
 		this.ui = null;
-		this.tileSize = null;
 		this.priority = 19; // must be the same default as Configuration
 		this.ram = null;
 		this.renderTime = null;
@@ -280,10 +273,6 @@ public class SettingsLoader {
 			
 			if (prop.containsKey("ui")) {
 				this.ui = prop.getProperty("ui");
-			}
-			
-			if (prop.containsKey("tile-size")) {
-				this.tileSize = prop.getProperty("tile-size");
 			}
 			
 			if (prop.containsKey("priority")) {
@@ -367,10 +356,6 @@ public class SettingsLoader {
 		
 		if (config.getUIType() == null && ui != null) {
 			config.setUIType(ui);
-		}
-		
-		if (config.getTileSize() == -1 && tileSize != null) {
-			config.setTileSize(Integer.valueOf(tileSize));
 		}
 		
 		config.setAutoSignIn(Boolean.valueOf(autoSignIn));
