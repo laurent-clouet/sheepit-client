@@ -479,6 +479,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 			}
 			fos.close();
 			inStrm.close();
+			gui_.status(String.format(status_, 100));
 			long end = new Date().getTime();
 			this.log.debug(String.format("File downloaded at %.1f kB/s, written %d B", ((float) (size / 1000)) / ((float) (end - start) / 1000), written));
 			this.lastRequestTime = new Date().getTime();
