@@ -284,6 +284,16 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				JobInfos jobData = new Persister().read(JobInfos.class, in);
 
 				handleFileMD5DeleteDocument(jobData.getFileMD5s());
+				
+				if (jobData.getSessionStats() != null) {
+					this.client.getGui().displayStats(new Stats(
+							jobData.getSessionStats().getRemainingFrames(),
+							jobData.getSessionStats().getPointsEarnedByUser(),
+							jobData.getSessionStats().getPointsEarnedOnSession(),
+							jobData.getSessionStats().getRenderableProjects(),
+							jobData.getSessionStats().getWaitingProjects(),
+							jobData.getSessionStats().getConnectedMachines()));
+				}
 
 				ServerCode serverCode = ServerCode.fromInt(jobData.getStatus());
 				if (serverCode != ServerCode.OK) {
@@ -342,14 +352,6 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 						jobData.getRenderTask().getSynchronous_upload().equals("1"),
 						jobData.getRenderTask().getRendererInfos().getUpdate_method()
 				);
-				
-				this.client.getGui().displayStats(new Stats(
-						jobData.getSessionStats().getRemainingFrames(),
-						jobData.getSessionStats().getPointsEarnedByUser(),
-						jobData.getSessionStats().getPointsEarnedOnSession(),
-						jobData.getSessionStats().getRenderableProjects(),
-						jobData.getSessionStats().getWaitingProjects(),
-						jobData.getSessionStats().getConnectedMachines()));
 				
 				return a_job;
 			}

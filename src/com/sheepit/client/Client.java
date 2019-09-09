@@ -282,7 +282,6 @@ public class Client {
 					int time_sleep = 1000 * 60 * wait;
 					Date wakeup_time = new Date(new Date().getTime() + time_sleep);
 					this.gui.status(String.format("No job available. Sleeping for %d minutes (will wake up at %tR)", wait, wakeup_time));
-					this.gui.displayStats(new Stats());
 					this.suspended = true;
 					int time_slept = 0;
 					while (time_slept < time_sleep && this.running == true) {
