@@ -49,6 +49,7 @@ import com.sheepit.client.SettingsLoader;
 import com.sheepit.client.Stats;
 import com.sheepit.client.standalone.swing.activity.Settings;
 import com.sheepit.client.standalone.swing.activity.Working;
+import lombok.Getter;
 import lombok.Setter;
 
 public class GuiSwing extends JFrame implements Gui {
@@ -71,6 +72,7 @@ public class GuiSwing extends JFrame implements Gui {
 	private boolean waitingForAuthentication;
 	private Client client;
 
+	@Getter
 	@Setter
 	private SettingsLoader settingsLoader;
 	

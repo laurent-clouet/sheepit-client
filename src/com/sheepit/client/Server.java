@@ -63,6 +63,7 @@ import com.sheepit.client.datamodel.HeartBeatInfos;
 import com.sheepit.client.datamodel.JobInfos;
 import com.sheepit.client.datamodel.JobValidation;
 import com.sheepit.client.datamodel.ServerConfig;
+import lombok.Getter;
 import org.simpleframework.xml.core.Persister;
 
 import com.sheepit.client.Configuration.ComputeType;
@@ -81,7 +82,10 @@ import com.sheepit.client.os.OS;
 
 public class Server extends Thread implements HostnameVerifier, X509TrustManager {
 	private String base_url;
+
+	@Getter
 	private ServerConfig serverConfig;
+
 	private Configuration user_config;
 	private Client client;
 	private Log log;

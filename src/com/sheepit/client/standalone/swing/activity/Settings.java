@@ -551,6 +551,12 @@ public class Settings implements Activity {
 			
 			if (saveFile.isSelected()) {
 				parent.setSettingsLoader(new SettingsLoader(config.getConfigFilePath(), login.getText(), new String(password.getPassword()), proxyText, hostnameText, method, selected_gpu, cpu_cores, max_ram, max_rendertime, cachePath, autoSignIn.isSelected(), GuiSwing.type, priority.getValue()));
+				
+				// wait for successful authentication (to store the public key)
+				// or do we already have one?
+				if (parent.getClient().getServer().getServerConfig() != null && parent.getClient().getServer().getServerConfig().getPublickey() != null) {
+					parent.getSettingsLoader().saveFile();
+				}
 			}
 		}
 	}
