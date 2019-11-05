@@ -157,7 +157,7 @@ class Proxy extends AbstractHandler implements HostnameVerifier, X509TrustManage
 		if (cookies != null) {
 			String cookie_str = "";
 			for (Cookie c : cookies) {
-				cookie_str += c.getName() + "=" + c.getValue() + ":";
+				cookie_str += c.getName() + "=" + c.getValue() + ";";
 			}
 			if (cookie_str.isEmpty() == false) {
 				cookie_str = cookie_str.substring(0, cookie_str.length() - 1); // remove the :
