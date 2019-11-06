@@ -35,6 +35,11 @@ public class GPUDevice {
 		this.id = id;
 	}
 	
+	public GPUDevice(String type, String model, long ram, String id, String oldId) {
+		this(type, model, ram, id);
+		this.oldId = oldId;
+	}
+	
 	public String getType() {
 		return type;
 	}

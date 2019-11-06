@@ -1,11 +1,8 @@
 package com.sheepit.client.hardware.gpu.nvidia;
 
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import com.sheepit.client.hardware.gpu.nvidia.CUDeviceAttribute;
 import com.sheepit.client.hardware.gpu.GPUDevice;
 import com.sheepit.client.hardware.gpu.GPULister;
 import com.sheepit.client.os.OS;
@@ -64,9 +61,8 @@ public class Nvidia implements GPULister {
 			return null;
 		}
 		
-		List<GPUDevice> devices = new LinkedList<GPUDevice>();
-		
-		HashMap<String, GPUDevice> devicesWithPciId = new HashMap<String, GPUDevice>(count.getValue());
+		List<GPUDevice> devices = new ArrayList<>(count.getValue());
+
 		for (int num = 0; num < count.getValue(); num++) {
 			IntByReference aDevice = new IntByReference();
 			
@@ -122,17 +118,10 @@ public class Nvidia implements GPULister {
 					pciDomainId.getValue(),
 					pciBusId.getValue(),
 					pciDeviceId.getValue());
-			devicesWithPciId.put(Integer.toString(pciBusId.getValue()), new GPUDevice(TYPE, new String(name).trim(), ram.getValue(), blenderId));
-		}
-		
-		// for backward compatibility generate a CUDA_N id
-		// in theory a set to environment "CUDA_DEVICE_ORDER=PCI_BUS_ID" should be enough but it didn't work
-		int i = 0;
-		for (Map.Entry<String, GPUDevice> entry : devicesWithPciId.entrySet()){
-			GPUDevice aDevice = entry.getValue();
-			aDevice.setOldId(TYPE + "_" + Integer.toString(i));
-			devices.add(aDevice);
-			i++;
+			GPUDevice gpu = new GPUDevice(TYPE, new String(name).trim(), ram.getValue(), blenderId);
+			// for backward compatibility generate a CUDA_N id
+			gpu.setOldId(TYPE + "_" + num);
+			devices.add(gpu);
 		}
 		
 		return devices;
