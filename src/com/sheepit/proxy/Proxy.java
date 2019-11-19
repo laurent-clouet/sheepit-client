@@ -59,8 +59,9 @@ class Proxy extends AbstractHandler implements HostnameVerifier, X509TrustManage
 	
 	public void handle_archive_download(String target, Request baseRequest, HttpServletRequest requestFromClient, HttpServletResponse responseToClient) throws IOException, ServletException {
 		String newURL = baseUrlServer + requestFromClient.getRequestURI() + (requestFromClient.getQueryString() != null ? "?" + requestFromClient.getQueryString() : "");
-		
-		System.out.println("------------------------handle_archive_download START " + newURL + " ----------------------------------");
+		String shortURL = requestFromClient.getRequestURI() + (requestFromClient.getQueryString() != null ? "?" + requestFromClient.getQueryString() : "");
+
+		System.out.println("<--download " + shortURL + " "); // reduced for less line wrapping
 		try {
 			String type = "";
 			String job = "";
@@ -197,8 +198,9 @@ class Proxy extends AbstractHandler implements HostnameVerifier, X509TrustManage
 	
 	public void handle_forward_request(String target, Request baseRequest, HttpServletRequest requestFromClient, HttpServletResponse responseToClient) throws IOException, ServletException {
 		String newURL = baseUrlServer + requestFromClient.getRequestURI() + (requestFromClient.getQueryString() != null ? "?" + requestFromClient.getQueryString() : "");
+		String shortURL = requestFromClient.getRequestURI() + (requestFromClient.getQueryString() != null ? "?" + requestFromClient.getQueryString() : "");
 		
-		System.out.println("------------------------handle_forward_request START " + newURL + " ----------------------------------");
+		System.out.println("--> request " + shortURL + " ");  // reduced for less line wrapping
 		HttpURLConnection requestToServer = this.createRequestToServer(newURL, requestFromClient);
 		
 		// client data to server input
