@@ -106,9 +106,11 @@ public class OpenCL implements GPULister {
 			
 			for (int j = 0; j < device_count.getValue(); j++) {
 				String name = getInfodeviceString(lib, devices[j], OpenCLLib.CL_DEVICE_BOARD_NAME_AMD);
+				String platform_name = getInfoPlatform(lib, plateforms[i], OpenCLLib.CL_PLATFORM_NAME);
 				long vram = getInfodeviceLong(lib, devices[j], OpenCLLib.CL_DEVICE_GLOBAL_MEM_SIZE);
 				if (name != null && vram > 0) {
-					GPUDevice gpu = new GPUDevice(TYPE, new String(name).trim(), vram, getBlenderId(lib, devices[j]));
+					GPUDevice gpu = new GPUDevice(TYPE, new String(name.trim()), vram,
+						"OPENCL_" + platform_name + "_" + name + "_" + getBlenderId(lib, devices[j]));
 					gpu.setOldId(TYPE + "_" + id);
 					available_devices.add(gpu);
 				}
