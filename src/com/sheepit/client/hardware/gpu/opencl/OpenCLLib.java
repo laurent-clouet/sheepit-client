@@ -32,6 +32,7 @@ public interface OpenCLLib extends Library {
 	public static final int CL_DEVICE_NOT_FOUND = -1;
 	
 	public static final int CL_PLATFORM_VENDOR = 0x0903;
+	public static final int CL_PLATFORM_NAME = 0x0902;
 	
 	// cl_device_type
 	public static final int CL_DEVICE_TYPE_DEFAULT = (1 << 0);
