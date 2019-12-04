@@ -109,8 +109,11 @@ public class OpenCL implements GPULister {
 				String platform_name = getInfoPlatform(lib, plateforms[i], OpenCLLib.CL_PLATFORM_NAME);
 				long vram = getInfodeviceLong(lib, devices[j], OpenCLLib.CL_DEVICE_GLOBAL_MEM_SIZE);
 				if (name != null && vram > 0) {
-					GPUDevice gpu = new GPUDevice(TYPE, new String(name.trim()), vram,
-						"OPENCL_" + platform_name + "_" + name + "_" + getBlenderId(lib, devices[j]));
+					if (name.contains("Vega")) {
+						name += " " + getInfodeviceLong(lib, devices[j], OpenCLLib.CL_DEVICE_MAX_COMPUTE_UNITS);
+					}
+					String blender_device_id = TYPE + "_" + platform_name + "_" + name + "_" + getBlenderId(lib, devices[j]);
+					GPUDevice gpu = new GPUDevice(TYPE, name, vram, blender_device_id);
 					gpu.setOldId(TYPE + "_" + id);
 					available_devices.add(gpu);
 				}
@@ -163,7 +166,7 @@ public class OpenCL implements GPULister {
 	private static String getBlenderId(OpenCLLib lib, CLDeviceId.ByReference device) {
 		byte topology[] = new byte[24];
 		
-		int status = lib.clGetDeviceInfo(device, 0x4037, 24, topology, null);
+		int status = lib.clGetDeviceInfo(device, lib.CL_DEVICE_TOPOLOGY_AMD, 24, topology, null);
 		if (status != OpenCLLib.CL_SUCCESS) {
 			System.out.println("OpenCL::getBlenderId failed(I) status: " + status);
 			return "";
