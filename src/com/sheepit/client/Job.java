@@ -161,7 +161,7 @@ public class Job {
 		core_script = "import re\n"
 				+ "ver = float(bpy.app.version_string.split(' ')[0])\n"
 				+ "cardId = '" + configuration.getGPUDevice().getId() + "'\n"
-				+ "if(ver <= 2.79):\n"
+				+ "if((ver <= 2.79) and (\"Vega\" in cardId)):\n"
 				+ "    cardId = re.sub(' 64', '', cardId)\n"
 				+ "    cardId = re.sub(' 56', '', cardId)\n";
 		if (isUseGPU() && configuration.getGPUDevice() != null && configuration.getComputeMethod() != ComputeType.CPU) {
