@@ -158,20 +158,16 @@ public class Job {
 			+ "def hndl(signum, frame):\n"
 			+ "    pass\n"
 			+ "signal.signal(signal.SIGINT, hndl)\n";
-		core_script = "import re\n"
-				+ "ver = float(bpy.app.version_string.split(' ')[0])\n"
-				+ "cardId = '" + configuration.getGPUDevice().getId() + "'\n"
-				+ "if((ver <= 2.79) and (\"Vega\" in cardId)):\n"
-				+ "    cardId = re.sub(' 64', '', cardId)\n"
-				+ "    cardId = re.sub(' 56', '', cardId)\n";
 		if (isUseGPU() && configuration.getGPUDevice() != null && configuration.getComputeMethod() != ComputeType.CPU) {
+			core_script = "import re\n"
+					+ "ver = float(bpy.app.version_string.split(' ')[0])\n"
+					+ "cardId = '" + configuration.getGPUDevice().getId() + "'\n"
+					+ "if((ver <= 2.79) and (\"Vega\" in cardId)):\n"
+					+ "    cardId = re.sub(' 64', '', cardId)\n"
+					+ "    cardId = re.sub(' 56', '', cardId)\n";
 			core_script += "sheepit_set_compute_device(\"" + configuration.getGPUDevice().getType() + "\", \"GPU\", cardId)\n";
 			gui.setComputeMethod("GPU");
 		}
-		/*if (isUseGPU() && configuration.getGPUDevice() != null && configuration.getComputeMethod() != ComputeType.CPU) {
-			core_script = "sheepit_set_compute_device(\"" + configuration.getGPUDevice().getType() + "\", \"GPU\", \"" + configuration.getGPUDevice().getId() + "\")\n";
-			gui.setComputeMethod("GPU");
-		}*/
 		else {
 			core_script = "sheepit_set_compute_device(\"NONE\", \"CPU\", \"CPU\")\n";
 			gui.setComputeMethod("CPU");
