@@ -109,7 +109,7 @@ public class OpenCL implements GPULister {
 				String platform_name = getInfoPlatform(lib, plateforms[i], OpenCLLib.CL_PLATFORM_NAME);
 				long vram = getInfodeviceLong(lib, devices[j], OpenCLLib.CL_DEVICE_GLOBAL_MEM_SIZE);
 				if (name != null && vram > 0) {
-					if (name.contains("Vega")) {
+					if (name.equals("Radeon RX Vega")) {
 						name += " " + getInfodeviceLong(lib, devices[j], OpenCLLib.CL_DEVICE_MAX_COMPUTE_UNITS);
 					}
 					String blender_device_id = TYPE + "_" + platform_name + "_" + name + "_" + getBlenderId(lib, devices[j]);
