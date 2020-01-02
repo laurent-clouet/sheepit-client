@@ -106,9 +106,13 @@ public class OpenCL implements GPULister {
 			
 			for (int j = 0; j < device_count.getValue(); j++) {
 				String name = getInfodeviceString(lib, devices[j], OpenCLLib.CL_DEVICE_BOARD_NAME_AMD);
+				String platform_name = getInfoPlatform(lib, plateforms[i], OpenCLLib.CL_PLATFORM_NAME);
 				long vram = getInfodeviceLong(lib, devices[j], OpenCLLib.CL_DEVICE_GLOBAL_MEM_SIZE);
 				if (name != null && vram > 0) {
-					GPUDevice gpu = new GPUDevice(TYPE, new String(name).trim(), vram, getBlenderId(lib, devices[j]));
+					if (name.equals("Radeon RX Vega")) {
+						name += " " + getInfodeviceLong(lib, devices[j], OpenCLLib.CL_DEVICE_MAX_COMPUTE_UNITS);
+					}
+					GPUDevice gpu = new GPUDevice(TYPE, name, vram, getBlenderId(lib, devices[j], platform_name, name));
 					gpu.setOldId(TYPE + "_" + id);
 					available_devices.add(gpu);
 				}
@@ -158,15 +162,15 @@ public class OpenCL implements GPULister {
 		return new String(name).trim();
 	}
 	
-	private static String getBlenderId(OpenCLLib lib, CLDeviceId.ByReference device) {
+	private static String getBlenderId(OpenCLLib lib, CLDeviceId.ByReference device, String platform, String name) {
 		byte topology[] = new byte[24];
 		
-		int status = lib.clGetDeviceInfo(device, 0x4037, 24, topology, null);
+		int status = lib.clGetDeviceInfo(device, lib.CL_DEVICE_TOPOLOGY_AMD, 24, topology, null);
 		if (status != OpenCLLib.CL_SUCCESS) {
 			System.out.println("OpenCL::getBlenderId failed(I) status: " + status);
 			return "";
 		}
-		
-		return String.format("%02x:%02x.%01x", topology[21], topology[22], topology[23]);
+
+		return String.format("%s_%s_%s_%02x:%02x.%01x", TYPE, platform, name, topology[21], topology[22], topology[23]);
 	}
 }

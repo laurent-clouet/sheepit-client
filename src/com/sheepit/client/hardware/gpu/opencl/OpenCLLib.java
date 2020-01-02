@@ -32,6 +32,7 @@ public interface OpenCLLib extends Library {
 	public static final int CL_DEVICE_NOT_FOUND = -1;
 	
 	public static final int CL_PLATFORM_VENDOR = 0x0903;
+	public static final int CL_PLATFORM_NAME = 0x0902;
 	
 	// cl_device_type
 	public static final int CL_DEVICE_TYPE_DEFAULT = (1 << 0);
@@ -43,8 +44,12 @@ public interface OpenCLLib extends Library {
 	
 	// cl_device_info
 	public static final int CL_DEVICE_NAME = 0x102B;
+	public static final int CL_DEVICE_VENDOR = 0x102C;
+	public static final int CL_DEVICE_VERSION = 0x102D;
+	public static final int CL_DEVICE_MAX_COMPUTE_UNITS = 0x1002;
 	public static final int CL_DEVICE_GLOBAL_MEM_SIZE = 0x101F;
 	public static final int CL_DEVICE_BOARD_NAME_AMD = 0x4038;
+	public static final int CL_DEVICE_TOPOLOGY_AMD = 0x4037;
 	
 	public int clGetPlatformIDs(int num_entries, CLPlatformId.ByReference[] platforms, IntByReference num_platforms);
 	
