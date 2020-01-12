@@ -387,12 +387,14 @@ public class Client {
 		if (this.server == null) {
 			return 0;
 		}
-		
-		try {
-			this.server.HTTPRequest(this.server.getPage("logout"));
-		}
-		catch (IOException e) {
-			// nothing to do: if the logout failed that's ok
+
+		if (this.server.getPage("logout").isEmpty() == false) {
+			try {
+				this.server.HTTPRequest(this.server.getPage("logout"));
+			}
+			catch (IOException e) {
+				// nothing to do: if the logout failed that's ok
+			}
 		}
 		this.server.interrupt();
 		try {

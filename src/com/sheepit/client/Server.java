@@ -62,6 +62,7 @@ import com.sheepit.client.datamodel.FileMD5;
 import com.sheepit.client.datamodel.HeartBeatInfos;
 import com.sheepit.client.datamodel.JobInfos;
 import com.sheepit.client.datamodel.JobValidation;
+import com.sheepit.client.datamodel.RequestEndPoint;
 import com.sheepit.client.datamodel.ServerConfig;
 import lombok.Getter;
 import org.simpleframework.xml.core.Persister;
@@ -769,7 +770,10 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 	
 	public String getPage(String key) {
 		if (this.serverConfig != null) {
-			return this.base_url + this.serverConfig.getRequestEndPoint(key).getPath();
+			RequestEndPoint endpoint = this.serverConfig.getRequestEndPoint(key);
+			if (endpoint != null) {
+				return this.base_url + endpoint.getPath();
+			}
 		}
 		return "";
 	}
