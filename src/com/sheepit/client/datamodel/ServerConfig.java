@@ -16,7 +16,7 @@ public class ServerConfig {
 	@Getter
 	private int status;
 	
-	@Attribute
+	@Attribute(required = false)
 	@Getter
 	private String publickey;
 	
