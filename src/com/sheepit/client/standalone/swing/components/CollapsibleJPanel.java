@@ -139,6 +139,15 @@ public class CollapsibleJPanel extends JPanel {
 		super.setBorder(border);
 	}
 
+	public void refreshBorderTitleColor(Color themeForegroundColor) {
+		this.themeForegroundColor = themeForegroundColor;
+
+		((TitledBorder) this.getBorder()).setTitleColor(this.themeForegroundColor);
+
+		if (!isComponentsVisible) {
+			setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(this.themeForegroundColor, new Color(0,0,0,0)), " + " + borderTitle), this.themeForegroundColor);
+		}
+	}
 
 	public class onClickHandler implements MouseListener {
 		@Override
