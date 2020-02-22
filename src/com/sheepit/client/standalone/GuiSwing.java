@@ -128,7 +128,7 @@ public class GuiSwing extends JFrame implements Gui {
 		}
 		
 		setTitle(title);
-		setSize(520, 760);
+		setSize(520, 880);
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
