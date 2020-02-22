@@ -32,7 +32,7 @@ import javax.swing.border.TitledBorder;
 
 public class CollapsibleJPanel extends JPanel {
 	
-	private boolean isCompnentsVisible = true;
+	private boolean isComponentsVisible = true;
 	private int originalHeight;
 	private String borderTitle = "";
 	private int COLLAPSED_HEIGHT = 22;
@@ -55,7 +55,7 @@ public class CollapsibleJPanel extends JPanel {
 	}
 	
 	public void toggleCollapsed() {
-		if (isCompnentsVisible) {
+		if (isComponentsVisible) {
 			setCollapsed(true);
 		}
 		else {
@@ -85,7 +85,7 @@ public class CollapsibleJPanel extends JPanel {
 			setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), " + " + borderTitle), this.themeForegroundColor);
 
 		// Update flag
-		isCompnentsVisible = false;
+		isComponentsVisible = false;
 	}
 	
 	private void showComponents() {
@@ -102,7 +102,7 @@ public class CollapsibleJPanel extends JPanel {
 		setBorder(BorderFactory.createTitledBorder(" - " + borderTitle), this.themeForegroundColor);
 
 		// Update flag
-		isCompnentsVisible = true;
+		isComponentsVisible = true;
 	}
 	
 	private void setHeight(int height) {
