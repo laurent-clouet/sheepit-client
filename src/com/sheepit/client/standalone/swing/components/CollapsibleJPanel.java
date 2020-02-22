@@ -17,6 +17,8 @@
  */
 package com.sheepit.client.standalone.swing.components;
 
+
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.LayoutManager;
@@ -35,6 +37,8 @@ public class CollapsibleJPanel extends JPanel {
 	private String borderTitle = "";
 	private int COLLAPSED_HEIGHT = 22;
 	private boolean[] originalVisibilty;
+
+	private Color themeForegroundColor;
 	
 	public CollapsibleJPanel(LayoutManager layoutManager) {
 		setLayout(layoutManager);
@@ -60,7 +64,6 @@ public class CollapsibleJPanel extends JPanel {
 	}
 	
 	private void hideComponents() {
-		
 		Component[] components = getComponents();
 		
 		originalVisibilty = new boolean[components.length];
@@ -74,15 +77,18 @@ public class CollapsibleJPanel extends JPanel {
 		setHeight(COLLAPSED_HEIGHT);
 		
 		// Add '+' char to end of border title
-		//setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), borderTitle + " + "));
-		setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), " + " + borderTitle));
-		
+		// If background is black, then create the etched border in white colour (only required with black background)
+		// Light mode works fine without specifying the highlight colour
+		if (this.themeForegroundColor == Color.white)
+			setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(this.themeForegroundColor, Color.black), " + " + borderTitle), this.themeForegroundColor);
+		else
+			setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), " + " + borderTitle), this.themeForegroundColor);
+
 		// Update flag
 		isCompnentsVisible = false;
 	}
 	
 	private void showComponents() {
-		
 		Component[] components = getComponents();
 		
 		// Set all components in panel to visible
@@ -93,8 +99,8 @@ public class CollapsibleJPanel extends JPanel {
 		setHeight(originalHeight);
 		
 		// Add '-' char to end of border title
-		setBorder(BorderFactory.createTitledBorder(" - " + borderTitle));
-		
+		setBorder(BorderFactory.createTitledBorder(" - " + borderTitle), this.themeForegroundColor);
+
 		// Update flag
 		isCompnentsVisible = true;
 	}
@@ -107,7 +113,6 @@ public class CollapsibleJPanel extends JPanel {
 	
 	@Override
 	public Component add(Component component) { // Need this to get the original height of panel
-		
 		Component returnComponent = super.add(component);
 		
 		originalHeight = getPreferredSize().height;
@@ -115,20 +120,25 @@ public class CollapsibleJPanel extends JPanel {
 		return returnComponent;
 	}
 	
-	@Override
-	public void setBorder(Border border) { // Need this to get the border title
-		
-		if (border instanceof TitledBorder && (borderTitle == "")) {
-			borderTitle = ((TitledBorder) border).getTitle();
-			
-			((TitledBorder) border).setTitle(" - " + borderTitle);
+	public void setBorder(Border border, Color themeForegroundColor) { // Need this to get the border title
+		// Update the class value to use it when showing/hiding components
+		this.themeForegroundColor = themeForegroundColor;
+
+		if (border instanceof TitledBorder) {
+			if (borderTitle.equals("")) {
+				borderTitle = ((TitledBorder) border).getTitle();
+
+				((TitledBorder) border).setTitle(" - " + borderTitle);
+			}
+
+			((TitledBorder) border).setTitleColor(themeForegroundColor);
 		}
-		
+
 		super.setBorder(border);
 	}
-	
+
+
 	public class onClickHandler implements MouseListener {
-		
 		@Override
 		public void mouseClicked(MouseEvent e) {
 		}
@@ -151,6 +161,5 @@ public class CollapsibleJPanel extends JPanel {
 		@Override
 		public void mouseReleased(MouseEvent e) {
 		}
-		
 	}
 }
