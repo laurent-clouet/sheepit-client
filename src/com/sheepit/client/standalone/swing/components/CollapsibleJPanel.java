@@ -79,10 +79,12 @@ public class CollapsibleJPanel extends JPanel {
 		// Add '+' char to end of border title
 		// If background is black, then create the etched border in white colour (only required with black background)
 		// Light mode works fine without specifying the highlight colour
-		if (this.themeForegroundColor == Color.white)
-			setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(this.themeForegroundColor, Color.black), " + " + borderTitle), this.themeForegroundColor);
-		else
+		if (this.themeForegroundColor == Color.white) {
+			// Set the shadow transparent by setting the alpha of black colour (new Color(r, g, b, alpha)
+			setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(this.themeForegroundColor, new Color(0,0,0,0)), " + " + borderTitle), this.themeForegroundColor);
+		} else {
 			setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), " + " + borderTitle), this.themeForegroundColor);
+		}
 
 		// Update flag
 		isComponentsVisible = false;
