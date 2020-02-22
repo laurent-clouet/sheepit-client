@@ -34,6 +34,7 @@ import java.util.List;
 import com.sheepit.client.hardware.cpu.CPU;
 import com.sheepit.client.hardware.gpu.GPUDevice;
 import com.sheepit.client.os.OS;
+
 import lombok.Data;
 
 @Data
@@ -63,6 +64,7 @@ public class Configuration {
 	private String extras;
 	private boolean autoSignIn;
 	private String UIType;
+	private String theme;
 	private String hostname;
 	
 	public Configuration(File cache_dir_, String login_, String password_) {
@@ -89,6 +91,7 @@ public class Configuration {
 		this.extras = "";
 		this.autoSignIn = false;
 		this.UIType = null;
+		this.theme = null;
 	}
 	
 	
@@ -279,9 +282,8 @@ public class Configuration {
 		try {
 			InputStreamReader reader = new InputStreamReader(versionStream);
 			BufferedReader in = new BufferedReader(reader);
-			String version = in.readLine();
-			
-			return version;
+
+			return in.readLine();
 		}
 		catch (IOException ex) {
 			System.err.println("Configuration::getJarVersion error while reading manifest file (" + versionPath + "): " + ex.getMessage());
