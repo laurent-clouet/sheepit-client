@@ -19,11 +19,7 @@
 
 package com.sheepit.client.standalone.swing.activity;
 
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -42,12 +38,15 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Spring;
 import javax.swing.SpringLayout;
+import javax.swing.border.TitledBorder;
 
 import com.sheepit.client.Client;
 import com.sheepit.client.Job;
 import com.sheepit.client.Server;
 import com.sheepit.client.Stats;
 import com.sheepit.client.Utils;
+
+import com.sheepit.client.Configuration;
 import com.sheepit.client.standalone.GuiSwing;
 import com.sheepit.client.standalone.GuiSwing.ActivityType;
 
@@ -74,50 +73,87 @@ public class Working implements Activity {
 	
 	public Working(GuiSwing parent_) {
 		parent = parent_;
-		
-		statusContent                    = new JLabel("Init");
-		renderedFrameContent             = new JLabel("");
-		remainingFrameContent            = new JLabel("");
-		creditEarned                     = new JLabel("");
-		currentProjectNameValue          = new JLabel("");
-		currentProjectDurationValue      = new JLabel("");
-		currrentProjectProgressionValue  = new JLabel("");
-		currentProjectComputeMethodValue = new JLabel("");
-		userInfoPointsTotalValue         = new JLabel("");
-		renderableProjectsValue          = new JLabel("");
-		waitingProjectsValue             = new JLabel("");
-		connectedMachinesValue           = new JLabel("");
+
+		statusContent                           = new JLabel("Init");
+		currentProjectNameValue                 = new JLabel("");
+		currentProjectDurationValue             = new JLabel("");
+		currrentProjectProgressionValue         = new JLabel("");
+		currentProjectComputeMethodValue        = new JLabel("");
+
+		waitingProjectsValue                    = new JLabel("");
+		connectedMachinesValue                  = new JLabel("");
+		remainingFrameContent                   = new JLabel("");
+		userInfoPointsTotalValue                = new JLabel("");
+
+
+		creditEarned                            = new JLabel("");
+		renderedFrameContent                    = new JLabel("");
+		renderableProjectsValue                 = new JLabel("");
 		userInfoTotalRenderTimeThisSessionValue = new JLabel("");
-		lastRenderTime                   = new JLabel("");
-		lastRender                       = new JLabel("");
+
+		lastRenderTime                          = new JLabel("");
+		lastRender                              = new JLabel("");
 	}
 	
 	@Override
 	public void show() {
+		Configuration config = parent.getConfiguration();
+
+		Color backgroundColor = config.getThemedBackgroundColor();
+		Color foregroundColor = config.getThemedForegroundColor();
+
+		// Image logo
+		ImageIcon image   = new ImageIcon(getClass().getResource(config.getThemedSheepItLogo()));
+		JLabel labelImage = new JLabel(image);
+		labelImage.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		parent.getContentPane().add(labelImage);
+
 		// current project
-		JPanel current_project_panel = new JPanel(new SpringLayout());
-		current_project_panel.setBorder(BorderFactory.createTitledBorder("Project"));
+		JPanel currentProjectPanel = new JPanel(new SpringLayout());
+
+		TitledBorder titledBorder = BorderFactory.createTitledBorder("Project");
+		titledBorder.setTitleColor(foregroundColor);
+
+		currentProjectPanel.setBorder(titledBorder);
+		currentProjectPanel.setBackground(backgroundColor);
+
+		// Configure the right theme for Project panel's data fields
+		statusContent.setForeground(foregroundColor);
+		currentProjectNameValue.setForeground(foregroundColor);
+		currentProjectDurationValue.setForeground(foregroundColor);
+		currrentProjectProgressionValue.setForeground(foregroundColor);
+		currentProjectComputeMethodValue.setForeground(foregroundColor);
+
+		JLabel currentProjectStatusLabel = new JLabel("Status: ", JLabel.TRAILING);
+		currentProjectStatusLabel.setForeground(foregroundColor);
+
+		JLabel currentProjectNameLabel = new JLabel("Name: ", JLabel.TRAILING);
+		currentProjectNameLabel.setForeground(foregroundColor);
+
+		JLabel currentProjectDurationLabel = new JLabel("Rendering for: ", JLabel.TRAILING);
+		currentProjectDurationLabel.setForeground(foregroundColor);
+
+		JLabel currentProjectProgressionLabel = new JLabel("Remaining: ", JLabel.TRAILING);
+		currentProjectProgressionLabel.setForeground(foregroundColor);
+
+		JLabel currentProjectComputeMethodLabel = new JLabel("Compute method: ", JLabel.TRAILING);
+		currentProjectComputeMethodLabel.setForeground(foregroundColor);
+
+		currentProjectPanel.add(currentProjectStatusLabel);
+		currentProjectPanel.add(statusContent);
 		
-		JLabel current_project_status = new JLabel("Status: ", JLabel.TRAILING);
-		JLabel current_project_name = new JLabel("Name: ", JLabel.TRAILING);
-		JLabel current_project_duration = new JLabel("Rendering for: ", JLabel.TRAILING);
-		JLabel current_project_progression = new JLabel("Remaining: ", JLabel.TRAILING);
-		JLabel current_project_compute_method_label = new JLabel("Compute method: ", JLabel.TRAILING);
+		currentProjectPanel.add(currentProjectNameLabel);
+		currentProjectPanel.add(currentProjectNameValue);
 		
-		current_project_panel.add(current_project_status);
-		current_project_panel.add(statusContent);
+		currentProjectPanel.add(currentProjectDurationLabel);
+		currentProjectPanel.add(currentProjectDurationValue);
 		
-		current_project_panel.add(current_project_name);
-		current_project_panel.add(currentProjectNameValue);
+		currentProjectPanel.add(currentProjectProgressionLabel);
+		currentProjectPanel.add(currrentProjectProgressionValue);
 		
-		current_project_panel.add(current_project_duration);
-		current_project_panel.add(currentProjectDurationValue);
-		
-		current_project_panel.add(current_project_progression);
-		current_project_panel.add(currrentProjectProgressionValue);
-		
-		current_project_panel.add(current_project_compute_method_label);
-		current_project_panel.add(currentProjectComputeMethodValue);
+		currentProjectPanel.add(currentProjectComputeMethodLabel);
+		currentProjectPanel.add(currentProjectComputeMethodValue);
 		
 		// user info
 		JPanel session_info_panel = new JPanel(new SpringLayout());
@@ -171,10 +207,7 @@ public class Working implements Activity {
 		last_frame_panel.add(lastRenderTime);
 		last_frame_panel.add(lastRender);
 		
-		ImageIcon image = new ImageIcon(getClass().getResource("/title.png"));
-		JLabel labelImage = new JLabel(image);
-		labelImage.setAlignmentX(Component.CENTER_ALIGNMENT);
-		parent.getContentPane().add(labelImage);
+
 		
 		JPanel buttonsPanel = new JPanel(new GridLayout(2, 2));
 		
@@ -206,16 +239,16 @@ public class Working implements Activity {
 		global_constraints.weightx = 1;
 		global_constraints.gridx = 0;
 		
-		parent.getContentPane().add(current_project_panel, global_constraints);
+		parent.getContentPane().add(currentProjectPanel, global_constraints);
 		parent.getContentPane().add(global_stats_panel, global_constraints);
 		parent.getContentPane().add(session_info_panel, global_constraints);
 		parent.getContentPane().add(last_frame_panel, global_constraints);
 		parent.getContentPane().add(buttonsPanel, global_constraints);
 		
-		Spring widthLeftColumn = getBestWidth(current_project_panel, 4, 2);
+		Spring widthLeftColumn = getBestWidth(currentProjectPanel, 4, 2);
 		widthLeftColumn = Spring.max(widthLeftColumn, getBestWidth(global_stats_panel, 4, 2));
 		widthLeftColumn = Spring.max(widthLeftColumn, getBestWidth(session_info_panel, 3, 2));
-		alignPanel(current_project_panel, 5, 2, widthLeftColumn);
+		alignPanel(currentProjectPanel, 5, 2, widthLeftColumn);
 		alignPanel(global_stats_panel, 4, 2, widthLeftColumn);
 		alignPanel(session_info_panel, 4, 2, widthLeftColumn);
 	}
