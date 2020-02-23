@@ -111,13 +111,15 @@ public class Settings implements Activity {
 		GridBagConstraints constraints = new GridBagConstraints();
 
 		int currentRow = 0;
-		ImageIcon image = new ImageIcon(getClass().getResource("/title.png"));
+
+		ImageIcon image = new ImageIcon(getClass().getResource(config.getThemedSheepItLogo())));
 		constraints.fill = GridBagConstraints.CENTER;
 		
 		JLabel labelImage = new JLabel(image);
 		constraints.gridwidth = 2;
 		constraints.gridx = 0;
 		constraints.gridy = currentRow;
+
 		parent.getContentPane().add(labelImage, constraints);
 		
 		currentRow++;

@@ -327,4 +327,15 @@ public class Configuration {
 		else
 			return Color.darkGray;
 	}
+
+	public String getThemedSheepItLogo() {
+		return getThemedSheepItLogo(this.theme);
+	}
+
+	public String getThemedSheepItLogo(String requestedTheme) {
+		if (requestedTheme.equals("dark"))
+			return "/title_inverted.png";
+		else
+			return "/title.png";
+	}
 }
