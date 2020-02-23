@@ -76,13 +76,13 @@ public class Worker {
 	@Option(name = "-memory", usage = "Maximum memory allow to be used by renderer, number with unit (800M, 2G, ...)", required = false)
 	private String max_ram = null;
 	
-	@Option(name = "-rendertime", usage = "Maximum time allow for each frame (in minute)", required = false)
+	@Option(name = "-rendertime", usage = "Maximum time allow for each frame (in minutes)", required = false)
 	private int max_rendertime = -1;
 	
 	@Option(name = "--verbose", usage = "Display log", required = false)
 	private boolean print_log = false;
 	
-	@Option(name = "-request-time", usage = "H1:M1-H2:M2,H3:M3-H4:M4 Use the 24h format. For example to request job between 2am-8.30am and 5pm-11pm you should do --request-time 2:00-8:30,17:00-23:00 Caution, it's the requesting job time to get a project not the working time", metaVar = "2:00-8:30,17:00-23:00", required = false)
+	@Option(name = "-request-time", usage = "H1:M1-H2:M2,H3:M3-H4:M4 Use the 24h format. For example to request job between 2am-8.30am and 5pm-11pm you should do --request-time 2:00-8:30,17:00-23:00 Caution, it's the requesting job time to get a project, not the working time", metaVar = "2:00-8:30,17:00-23:00", required = false)
 	private String request_time = null;
 	
 	@Option(name = "-proxy", usage = "URL of the proxy", metaVar = "http://login:password@host:port", required = false)
