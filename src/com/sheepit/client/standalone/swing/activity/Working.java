@@ -232,24 +232,34 @@ public class Working implements Activity {
 		sessionInfoPanel.add(userInfoTotalRenderTimeThisSessionValue);
 		
 		// last frame
-		JPanel last_frame_panel = new JPanel();
-		last_frame_panel.setLayout(new BoxLayout(last_frame_panel, BoxLayout.Y_AXIS));
-		last_frame_panel.setBorder(BorderFactory.createTitledBorder("Last rendered frame"));
+		JPanel lastFramePanel = new JPanel();
+		lastFramePanel.setLayout(new BoxLayout(lastFramePanel, BoxLayout.Y_AXIS));
+
+		titledBorder = BorderFactory.createTitledBorder("Last rendered frame");
+		titledBorder.setTitleColor(foregroundColor);
+
+		lastFramePanel.setBorder(titledBorder);
+		lastFramePanel.setBackground(backgroundColor);
+
+		lastRenderTime.setForeground(foregroundColor);
+
 		lastRender.setIcon(new ImageIcon(new BufferedImage(200, 120, BufferedImage.TYPE_INT_ARGB)));
 		lastRender.setAlignmentX(Component.CENTER_ALIGNMENT);
 		lastRenderTime.setAlignmentX(Component.CENTER_ALIGNMENT);
-		last_frame_panel.add(lastRenderTime);
-		last_frame_panel.add(lastRender);
-		
 
-		
+		lastFramePanel.add(lastRenderTime);
+		lastFramePanel.add(lastRender);
+
+		// Buttons that "do things"
 		JPanel buttonsPanel = new JPanel(new GridLayout(2, 2));
 		
 		JButton settingsButton = new JButton("Settings");
 		settingsButton.addActionListener(new SettingsAction());
 		
 		pauseButton = new JButton("Pause");
+
 		Client client = parent.getClient();
+
 		if (client != null && client.isSuspended()) {
 			pauseButton.setText("Resume");
 		}
@@ -276,7 +286,7 @@ public class Working implements Activity {
 		parent.getContentPane().add(currentProjectPanel, global_constraints);
 		parent.getContentPane().add(globalStatsPanel, global_constraints);
 		parent.getContentPane().add(sessionInfoPanel, global_constraints);
-		parent.getContentPane().add(last_frame_panel, global_constraints);
+		parent.getContentPane().add(lastFramePanel, global_constraints);
 		parent.getContentPane().add(buttonsPanel, global_constraints);
 		
 		Spring widthLeftColumn = getBestWidth(currentProjectPanel, 4, 2);
