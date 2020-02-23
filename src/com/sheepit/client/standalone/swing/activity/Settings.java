@@ -19,13 +19,14 @@
 
 package com.sheepit.client.standalone.swing.activity;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.Hashtable;
@@ -35,6 +36,7 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -43,6 +45,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JRadioButton;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
@@ -77,7 +80,11 @@ public class Settings implements Activity {
 	private JSlider priority;
 	private JTextField proxy;
 	private JTextField hostname;
-	
+
+	private ButtonGroup modesOptionsGroup;
+	private JRadioButton lightModeOption;
+	private JRadioButton darkModeOption;
+
 	private JCheckBox saveFile;
 	private JCheckBox autoSignIn;
 	JButton saveButton;
@@ -95,7 +102,10 @@ public class Settings implements Activity {
 	public void show() {
 		Configuration config = parent.getConfiguration();
 		new SettingsLoader(config.getConfigFilePath()).merge(config);
-		
+
+		Color backgroundColor = config.getThemedBackgroundColor();
+		Color foregroundColor = config.getThemedForegroundColor();
+
 		List<GPUDevice> gpus = GPU.listDevices(config);
 		
 		GridBagConstraints constraints = new GridBagConstraints();
@@ -171,7 +181,7 @@ public class Settings implements Activity {
 		constraints.gridwidth = 2;
 		
 		parent.getContentPane().add(directoryPanel, constraints);
-		
+
 		// compute devices
 		GridBagLayout gridbag = new GridBagLayout();
 		GridBagConstraints computeDevicesConstraints = new GridBagConstraints();

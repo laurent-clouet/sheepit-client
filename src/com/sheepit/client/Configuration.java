@@ -19,6 +19,7 @@
 
 package com.sheepit.client;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -26,6 +27,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import javax.swing.UIManager;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.LinkedList;
@@ -302,5 +304,27 @@ public class Configuration {
 			return cpu != null && cpu.haveData();
 		}
 		return false;
+	}
+
+	public Color getThemedBackgroundColor() {
+		return getThemedBackgroundColor(this.theme);
+	}
+
+	public Color getThemedBackgroundColor(String requestedTheme) {
+		if (requestedTheme.equals("dark"))
+			return Color.black;
+		else
+			return UIManager.getColor("Panel.background");
+	}
+
+	public Color getThemedForegroundColor() {
+		return getThemedForegroundColor(this.theme);
+	}
+
+	public Color getThemedForegroundColor(String requestedTheme) {
+		if (requestedTheme.equals("dark"))
+			return Color.white;
+		else
+			return Color.darkGray;
 	}
 }
