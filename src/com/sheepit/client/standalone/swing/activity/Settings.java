@@ -112,7 +112,7 @@ public class Settings implements Activity {
 
 		int currentRow = 0;
 
-		ImageIcon image = new ImageIcon(getClass().getResource(config.getThemedSheepItLogo())));
+		ImageIcon image = new ImageIcon(getClass().getResource(config.getThemedSheepItLogo()));
 		constraints.fill = GridBagConstraints.CENTER;
 		
 		JLabel labelImage = new JLabel(image);
@@ -122,11 +122,9 @@ public class Settings implements Activity {
 
 		parent.getContentPane().add(labelImage, constraints);
 		
-		currentRow++;
-		
 		// authentication
 		CollapsibleJPanel authPanel = new CollapsibleJPanel(new GridLayout(2, 2));
-		authPanel.setBorder(BorderFactory.createTitledBorder("Authentication"));
+		authPanel.setBorder(BorderFactory.createTitledBorder("Authentication"), foregroundColor);
 		
 		JLabel loginLabel = new JLabel("Username:");
 		login = new JTextField();
@@ -134,30 +132,35 @@ public class Settings implements Activity {
 		login.setColumns(20);
 		login.addKeyListener(new CheckCanStart());
 
+		authPanel.add(loginLabel);
+		authPanel.add(login);
+
 		JLabel passwordLabel = new JLabel("Password:");
 		password = new JPasswordField();
 		password.setText(parent.getConfiguration().getPassword());
 		password.setColumns(10);
 		password.addKeyListener(new CheckCanStart());
 		
-		authPanel.add(loginLabel);
-		authPanel.add(login);
-		
 		authPanel.add(passwordLabel);
 		authPanel.add(password);
-		
+
+		currentRow++;
 		constraints.gridx = 0;
 		constraints.gridy = currentRow;
 		constraints.fill = GridBagConstraints.HORIZONTAL;
+
 		parent.getContentPane().add(authPanel, constraints);
-		
+
 		// directory
 		CollapsibleJPanel directoryPanel = new CollapsibleJPanel(new GridLayout(1, 3));
-		directoryPanel.setBorder(BorderFactory.createTitledBorder("Cache"));
+		directoryPanel.setBorder(BorderFactory.createTitledBorder("Cache"), foregroundColor);
 
 		JLabel cacheLabel = new JLabel("Working directory:");
+
 		directoryPanel.add(cacheLabel);
+
 		String destination = DUMMY_CACHE_DIR;
+
 		if (config.isUserHasSpecifiedACacheDir()) {
 			destination = config.getCacheDirForSettings().getName();
 		}
@@ -165,14 +168,16 @@ public class Settings implements Activity {
 		JPanel cacheDirWrapper = new JPanel();
 		cacheDirWrapper.setLayout(new BoxLayout(cacheDirWrapper, BoxLayout.LINE_AXIS));
 		cacheDirText = new JLabel(destination);
+
 		cacheDirWrapper.add(cacheDirText);
-		
 		cacheDirWrapper.add(Box.createHorizontalGlue());
 		
 		cacheDirChooser = new JFileChooser();
 		cacheDirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
 		JButton openButton = new JButton("...");
 		openButton.addActionListener(new ChooseFileAction());
+
 		cacheDirWrapper.add(openButton);
 		
 		directoryPanel.add(cacheDirWrapper);
@@ -189,7 +194,7 @@ public class Settings implements Activity {
 		GridBagConstraints computeDevicesConstraints = new GridBagConstraints();
 		CollapsibleJPanel computeDevicesPanel = new CollapsibleJPanel(gridbag);
 		
-		computeDevicesPanel.setBorder(BorderFactory.createTitledBorder("Compute devices"));
+		computeDevicesPanel.setBorder(BorderFactory.createTitledBorder("Compute devices"), foregroundColor);
 		
 		ComputeType method = config.getComputeMethod();
 
@@ -334,7 +339,7 @@ public class Settings implements Activity {
 		
 		// other
 		CollapsibleJPanel advancedPanel = new CollapsibleJPanel(new GridLayout(3, 2));
-		advancedPanel.setBorder(BorderFactory.createTitledBorder("Advanced options"));
+		advancedPanel.setBorder(BorderFactory.createTitledBorder("Advanced options"), foregroundColor);
 		
 		JLabel proxyLabel = new JLabel("Proxy:");
 		proxyLabel.setToolTipText("http://login:password@host:port");
