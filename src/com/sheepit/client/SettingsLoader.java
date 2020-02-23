@@ -56,6 +56,7 @@ public class SettingsLoader {
 	private String cacheDir;
 	private String autoSignIn;
 	private String ui;
+	private String theme;
 	private int    priority;
 	
 	public SettingsLoader(String path_) {
@@ -67,13 +68,14 @@ public class SettingsLoader {
 		}
 	}
 	
-	public SettingsLoader(String path_, String login_, String password_, String proxy_, String hostname_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, long maxRam_, int maxRenderTime_, String cacheDir_, boolean autoSignIn_, String ui_, int priority_) {
+	public SettingsLoader(String path_, String login_, String password_, String proxy_, String hostname_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, long maxRam_, int maxRenderTime_, String cacheDir_, boolean autoSignIn_, String ui_, String theme_, int priority_) {
 		if (path_ == null) {
 			path = getDefaultFilePath();
 		}
 		else {
 			path = path_;
 		}
+
 		login = login_;
 		password = password_;
 		proxy = proxy_;
@@ -81,6 +83,7 @@ public class SettingsLoader {
 		cacheDir = cacheDir_;
 		autoSignIn = String.valueOf(autoSignIn_);
 		ui = ui_;
+		theme = theme_;
 		priority = priority_;
 		if (cores_ > 0) {
 			cores = String.valueOf(cores_);
@@ -115,9 +118,10 @@ public class SettingsLoader {
 	public void saveFile() {
 		Properties prop = new Properties();
 		OutputStream output = null;
+
 		try {
 			output = new FileOutputStream(path);
-			prop.setProperty("priority", new Integer(priority).toString());
+			prop.setProperty("priority", Integer.toString(priority));
 			
 			if (cacheDir != null) {
 				prop.setProperty("cache-dir", cacheDir);
@@ -166,6 +170,10 @@ public class SettingsLoader {
 			if (ui != null) {
 				prop.setProperty("ui", ui);
 			}
+
+			if (theme != null) {
+				prop.setProperty("theme", theme);
+			}
 			
 			prop.store(output, null);
 		}
@@ -209,6 +217,7 @@ public class SettingsLoader {
 		this.cacheDir = null;
 		this.autoSignIn = null;
 		this.ui = null;
+		this.theme = null;
 		this.priority = 19; // must be the same default as Configuration
 		this.ram = null;
 		this.renderTime = null;
@@ -216,7 +225,7 @@ public class SettingsLoader {
 		if (new File(path).exists() == false) {
 			return;
 		}
-		
+
 		Properties prop = new Properties();
 		InputStream input = null;
 		try {
@@ -274,7 +283,14 @@ public class SettingsLoader {
 			if (prop.containsKey("ui")) {
 				this.ui = prop.getProperty("ui");
 			}
-			
+
+			if (prop.containsKey("theme")) {
+				this.theme = prop.getProperty("theme");
+			} else {
+				// If no theme is found in the configuration, then default to light mode
+				this.theme = "light";
+			}
+
 			if (prop.containsKey("priority")) {
 				this.priority = Integer.parseInt(prop.getProperty("priority"));
 			}
@@ -357,7 +373,11 @@ public class SettingsLoader {
 		if (config.getUIType() == null && ui != null) {
 			config.setUIType(ui);
 		}
-		
+
+		if (config.getTheme() == null && theme != null) {
+			config.setTheme(theme);
+		}
+
 		config.setAutoSignIn(Boolean.valueOf(autoSignIn));
 	}
 	

@@ -151,6 +151,36 @@ public class Settings implements Activity {
 
 		parent.getContentPane().add(authPanel, constraints);
 
+		// Theme selection panel
+		CollapsibleJPanel themePanel = new CollapsibleJPanel(new GridLayout(1, 3));
+		themePanel.setBorder(BorderFactory.createTitledBorder("Theme"), foregroundColor);
+
+		modesOptionsGroup = new ButtonGroup();
+
+		lightModeOption = new JRadioButton("Light");
+		lightModeOption.setForeground(foregroundColor);
+		lightModeOption.setActionCommand("light");
+		lightModeOption.setSelected(config.getTheme().equals("light"));
+
+		darkModeOption = new JRadioButton("Dark");
+		darkModeOption.setForeground(foregroundColor);
+		darkModeOption.setActionCommand("dark");
+		darkModeOption.setSelected(config.getTheme().equals("dark"));
+
+		themePanel.add(lightModeOption);
+		themePanel.add(darkModeOption);
+
+		// Group both radio buttons to allow only one selected
+		modesOptionsGroup.add(lightModeOption);
+		modesOptionsGroup.add(darkModeOption);
+
+		currentRow++;
+		constraints.gridx = 0;
+		constraints.gridy = currentRow;
+		constraints.gridwidth = 2;
+
+		parent.getContentPane().add(themePanel, constraints);
+
 		// directory
 		CollapsibleJPanel directoryPanel = new CollapsibleJPanel(new GridLayout(1, 3));
 		directoryPanel.setBorder(BorderFactory.createTitledBorder("Cache"), foregroundColor);
@@ -566,7 +596,21 @@ public class Settings implements Activity {
 			}
 			
 			if (saveFile.isSelected()) {
-				parent.setSettingsLoader(new SettingsLoader(config.getConfigFilePath(), login.getText(), new String(password.getPassword()), proxyText, hostnameText, method, selectedGPU, cpuCores, maxRAM, maxRendertime, cachePath, autoSignIn.isSelected(), GuiSwing.type, priority.getValue()));
+				parent.setSettingsLoader(new SettingsLoader(config.getConfigFilePath(),
+						login.getText(),
+						new String(password.getPassword()),
+						proxyText,
+						hostnameText,
+						method,
+						selectedGPU,
+						cpuCores,
+						maxRAM,
+						maxRendertime,
+						cachePath,
+						autoSignIn.isSelected(),
+						GuiSwing.type,
+						modesOptionsGroup.getSelection().getActionCommand(), 	// selected theme
+						priority.getValue()));
 				
 				// wait for successful authentication (to store the public key)
 				// or do we already have one?
