@@ -120,13 +120,17 @@ public class Settings implements Activity {
 		constraints.gridx = 0;
 		constraints.gridy = currentRow;
 
+		parent.getContentPane().setBackground(backgroundColor);
 		parent.getContentPane().add(labelImage, constraints);
 		
 		// authentication
 		CollapsibleJPanel authPanel = new CollapsibleJPanel(new GridLayout(2, 2));
 		authPanel.setBorder(BorderFactory.createTitledBorder("Authentication"), foregroundColor);
+		authPanel.setBackground(backgroundColor);
 		
 		JLabel loginLabel = new JLabel("Username:");
+		loginLabel.setForeground(foregroundColor);
+
 		login = new JTextField();
 		login.setText(parent.getConfiguration().getLogin());
 		login.setColumns(20);
@@ -136,6 +140,8 @@ public class Settings implements Activity {
 		authPanel.add(login);
 
 		JLabel passwordLabel = new JLabel("Password:");
+		passwordLabel.setForeground(foregroundColor);
+
 		password = new JPasswordField();
 		password.setText(parent.getConfiguration().getPassword());
 		password.setColumns(10);
@@ -154,6 +160,7 @@ public class Settings implements Activity {
 		// Theme selection panel
 		CollapsibleJPanel themePanel = new CollapsibleJPanel(new GridLayout(1, 3));
 		themePanel.setBorder(BorderFactory.createTitledBorder("Theme"), foregroundColor);
+		themePanel.setBackground(backgroundColor);
 
 		modesOptionsGroup = new ButtonGroup();
 
@@ -184,8 +191,10 @@ public class Settings implements Activity {
 		// directory
 		CollapsibleJPanel directoryPanel = new CollapsibleJPanel(new GridLayout(1, 3));
 		directoryPanel.setBorder(BorderFactory.createTitledBorder("Cache"), foregroundColor);
+		directoryPanel.setBackground(backgroundColor);
 
 		JLabel cacheLabel = new JLabel("Working directory:");
+		cacheLabel.setForeground(foregroundColor);
 
 		directoryPanel.add(cacheLabel);
 
@@ -223,12 +232,15 @@ public class Settings implements Activity {
 		GridBagLayout gridbag = new GridBagLayout();
 		GridBagConstraints computeDevicesConstraints = new GridBagConstraints();
 		CollapsibleJPanel computeDevicesPanel = new CollapsibleJPanel(gridbag);
+		computeDevicesPanel.setBackground(backgroundColor);
 		
 		computeDevicesPanel.setBorder(BorderFactory.createTitledBorder("Compute devices"), foregroundColor);
 		
 		ComputeType method = config.getComputeMethod();
 
 		useCPU = new JCheckBox("CPU");
+		useCPU.setForeground(foregroundColor);
+
 		boolean gpuChecked = false;
 		
 		if (method == ComputeType.CPU_GPU) {
@@ -243,6 +255,7 @@ public class Settings implements Activity {
 			useCPU.setSelected(false);
 			gpuChecked = true;
 		}
+
 		useCPU.addActionListener(new CpuChangeAction());
 		
 		computeDevicesConstraints.gridx = 1;
@@ -252,29 +265,38 @@ public class Settings implements Activity {
 		computeDevicesConstraints.weighty = 1.0;
 		
 		gridbag.setConstraints(useCPU, computeDevicesConstraints);
+
 		computeDevicesPanel.add(useCPU);
 		
 		for (GPUDevice gpu : gpus) {
 			JCheckBoxGPU gpuCheckBox = new JCheckBoxGPU(gpu);
+			gpuCheckBox.setForeground(foregroundColor);
+
 			gpuCheckBox.setToolTipText(gpu.getId());
+
 			if (gpuChecked) {
 				GPUDevice configGPU = config.getGPUDevice();
+
 				if (configGPU != null && configGPU.getId().equals(gpu.getId())) {
 					gpuCheckBox.setSelected(gpuChecked);
 				}
 			}
+
 			gpuCheckBox.addActionListener(new GpuChangeAction());
 			
 			computeDevicesConstraints.gridy++;
 			gridbag.setConstraints(gpuCheckBox, computeDevicesConstraints);
+
 			computeDevicesPanel.add(gpuCheckBox);
 			useGPUs.add(gpuCheckBox);
 		}
 		
 		CPU cpu = new CPU();
+
 		if (cpu.cores() > 1) { // if only one core is available, no need to show the choice
 			double step = 1;
 			double display = (double)cpu.cores() / step;
+
 			while (display > 10) {
 				step += 1.0;
 				display = (double)cpu.cores() / step;
@@ -286,19 +308,24 @@ public class Settings implements Activity {
 			cpuCores.setPaintTicks(true);
 			cpuCores.setPaintLabels(true);
 			cpuCores.setValue(config.getNbCores() != -1 ? config.getNbCores() : cpuCores.getMaximum());
+			cpuCores.setForeground(foregroundColor);
+
 			JLabel coreLabel = new JLabel("CPU cores:");
-			
+			coreLabel.setForeground(foregroundColor);
+
 			computeDevicesConstraints.weightx = 1.0 / gpus.size();
 			computeDevicesConstraints.gridx = 0;
 			computeDevicesConstraints.gridy++;
 			
 			gridbag.setConstraints(coreLabel, computeDevicesConstraints);
+
 			computeDevicesPanel.add(coreLabel);
 			
 			computeDevicesConstraints.gridx = 1;
 			computeDevicesConstraints.weightx = 1.0;
 			
 			gridbag.setConstraints(cpuCores, computeDevicesConstraints);
+
 			computeDevicesPanel.add(cpuCores);
 		}
 		
@@ -308,71 +335,93 @@ public class Settings implements Activity {
 		ram = new JSlider(0, allRAM);
 		int step = 1000000;
 		double display = (double)allRAM / (double)step;
+
 		while (display > 10) {
 			step += 1000000;
 			display = (double)allRAM / (double)step;
 		}
+
 		Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
+
 		for (int g = 0; g < allRAM; g += step) {
-			labelTable.put(g, new JLabel("" + (g / 1000000)));
+			JLabel ramValueLabel = new JLabel("" + (g / 1000000));
+			ramValueLabel.setForeground(foregroundColor);
+
+			labelTable.put(g, ramValueLabel);
 		}
+
 		ram.setMajorTickSpacing(step);
 		ram.setLabelTable(labelTable);
 		ram.setPaintTicks(true);
 		ram.setPaintLabels(true);
 		ram.setValue((int)(config.getMaxMemory() != -1 ? config.getMaxMemory() : os.getMemory()));
+		ram.setForeground(foregroundColor);
+
 		JLabel ramLabel = new JLabel("Memory:");
-		
+		ramLabel.setForeground(foregroundColor);
+
 		computeDevicesConstraints.weightx = 1.0 / gpus.size();
 		computeDevicesConstraints.gridx = 0;
 		computeDevicesConstraints.gridy++;
 		
 		gridbag.setConstraints(ramLabel, computeDevicesConstraints);
+
 		computeDevicesPanel.add(ramLabel);
 		
 		computeDevicesConstraints.gridx = 1;
 		computeDevicesConstraints.weightx = 1.0;
 		
 		gridbag.setConstraints(ram, computeDevicesConstraints);
+
 		computeDevicesPanel.add(ram);
 		
 		parent.getContentPane().add(computeDevicesPanel, constraints);
 		
 		// priority
 		boolean highPrioritySupport = os.getSupportHighPriority();
+
 		priority = new JSlider(highPrioritySupport ? -19 : 0, 19);
 		priority.setMajorTickSpacing(19);
 		priority.setMinorTickSpacing(1);
 		priority.setPaintTicks(true);
 		priority.setPaintLabels(true);
 		priority.setValue(config.getPriority());
+		priority.setForeground(foregroundColor);
+
 		JLabel priorityLabel = new JLabel(highPrioritySupport ? "Priority (High <-> Low):" : "Priority (Normal <-> Low):" );
-		
+		priorityLabel.setForeground(foregroundColor);
+
 		computeDevicesConstraints.weightx = 1.0 / gpus.size();
 		computeDevicesConstraints.gridx = 0;
 		computeDevicesConstraints.gridy++;
 		
 		gridbag.setConstraints(priorityLabel, computeDevicesConstraints);
+
 		computeDevicesPanel.add(priorityLabel);
 		
 		computeDevicesConstraints.gridx = 1;
 		computeDevicesConstraints.weightx = 1.0;
 		
 		gridbag.setConstraints(priority, computeDevicesConstraints);
+
 		computeDevicesPanel.add(priority);
 		
 		currentRow++;
 		constraints.gridx = 0;
 		constraints.gridy = currentRow;
 		constraints.gridwidth = 2;
+
 		parent.getContentPane().add(computeDevicesPanel, constraints);
 		
 		// other
 		CollapsibleJPanel advancedPanel = new CollapsibleJPanel(new GridLayout(3, 2));
 		advancedPanel.setBorder(BorderFactory.createTitledBorder("Advanced options"), foregroundColor);
+		advancedPanel.setBackground(backgroundColor);
 		
 		JLabel proxyLabel = new JLabel("Proxy:");
+		proxyLabel.setForeground(foregroundColor);
 		proxyLabel.setToolTipText("http://login:password@host:port");
+
 		proxy = new JTextField();
 		proxy.setToolTipText("http://login:password@host:port");
 		proxy.setText(parent.getConfiguration().getProxy());
@@ -382,6 +431,8 @@ public class Settings implements Activity {
 		advancedPanel.add(proxy);
 		
 		JLabel hostnameLabel = new JLabel("Computer name:");
+		hostnameLabel.setForeground(foregroundColor);
+
 		hostname = new JTextField();
 		hostname.setText(parent.getConfiguration().getHostname());
 		
@@ -389,10 +440,14 @@ public class Settings implements Activity {
 		advancedPanel.add(hostname);
 		
 		JLabel renderTimeLabel = new JLabel("Max time per frame (in minute):");
+		renderTimeLabel.setForeground(foregroundColor);
+
 		int val = 0;
+
 		if (parent.getConfiguration().getMaxRenderTime() > 0) {
 			val = parent.getConfiguration().getMaxRenderTime() / 60;
 		}
+
 		renderTime = new JSpinner(new SpinnerNumberModel(val,0,1000,1));
 		
 		advancedPanel.add(renderTimeLabel);
@@ -402,38 +457,52 @@ public class Settings implements Activity {
 		constraints.gridx = 0;
 		constraints.gridy = currentRow;
 		constraints.gridwidth = 2;
+
 		parent.getContentPane().add(advancedPanel, constraints);
-		advancedPanel.setCollapsed(true);
-		
+
+		advancedPanel.setCollapsed(true); 		// Show the panel collapsed to the user
+
 		// general settings
 		JPanel generalPanel = new JPanel(new GridLayout(1, 2));
-		
+		generalPanel.setBackground(backgroundColor);
+
 		saveFile = new JCheckBox("Save settings", true);
+		saveFile.setForeground(foregroundColor);
+
 		generalPanel.add(saveFile);
 		
 		autoSignIn = new JCheckBox("Auto sign in", config.isAutoSignIn());
+		autoSignIn.setForeground(foregroundColor);
 		autoSignIn.addActionListener(new AutoSignInChangeAction());
+
 		generalPanel.add(autoSignIn);
 		
 		currentRow++;
 		constraints.gridx = 0;
 		constraints.gridy = currentRow;
 		constraints.gridwidth = 2;
+
 		parent.getContentPane().add(generalPanel, constraints);
 		
 		String buttonText = "Start";
+
 		if (parent.getClient() != null) {
 			if (parent.getClient().isRunning()) {
 				buttonText = "Save";
 			}
 		}
+
 		saveButton = new JButton(buttonText);
+
 		checkDisplaySaveButton();
+
 		saveButton.addActionListener(new SaveAction());
+
 		currentRow++;
 		constraints.gridwidth = 2;
 		constraints.gridx = 0;
 		constraints.gridy = currentRow;
+
 		parent.getContentPane().add(saveButton, constraints);
 		
 		if (!haveAutoStarted && config.isAutoSignIn() && checkDisplaySaveButton()) {
@@ -445,16 +514,19 @@ public class Settings implements Activity {
 	
 	public boolean checkDisplaySaveButton() {
 		boolean selected = useCPU.isSelected();
+
 		for (JCheckBoxGPU box : useGPUs) {
 			if (box.isSelected()) {
 				selected = true;
 			}
 		}
+
 		if (login.getText().isEmpty() || password.getPassword().length == 0 || !Proxy.isValidURL(proxy.getText())) {
 			selected = false;
 		}
 
 		saveButton.setEnabled(selected);
+
 		return selected;
 	}
 	
@@ -462,7 +534,9 @@ public class Settings implements Activity {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			JOptionPane.showMessageDialog(parent.getContentPane(), "<html>The working directory has to be dedicated directory. <br />Caution, everything not related to SheepIt-Renderfarm will be removed.<br />You should create a directory specifically for it.</html>", "Warning: files will be removed!", JOptionPane.WARNING_MESSAGE);
+
 			int returnVal = cacheDirChooser.showOpenDialog(parent.getContentPane());
+
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				cacheDir = cacheDirChooser.getSelectedFile();
 				cacheDirText.setText(cacheDir.getName());
@@ -485,6 +559,7 @@ public class Settings implements Activity {
 					box.setSelected(false);
 				}
 			}
+
 			checkDisplaySaveButton();
 		}
 	}
@@ -506,12 +581,14 @@ public class Settings implements Activity {
 			}
 			
 			Configuration config = parent.getConfiguration();
+
 			if (config == null) {
 				return;
 			}
 			
 			if (cacheDir != null) {
 				File fromConfig = config.getStorageDir();
+
 				if (fromConfig != null && !fromConfig.getAbsolutePath().equals(cacheDir.getAbsolutePath())) {
 					config.setCacheDir(cacheDir);
 				}
@@ -521,6 +598,7 @@ public class Settings implements Activity {
 			}
 			
 			GPUDevice selectedGPU = null;
+
 			for (JCheckBoxGPU box : useGPUs) {
 				if (box.isSelected()) {
 					selectedGPU = box.getGPUDevice();
@@ -538,6 +616,7 @@ public class Settings implements Activity {
 			else if (useCPU.isSelected() && selectedGPU != null) {
 				method = ComputeType.CPU_GPU;
 			}
+
 			config.setComputeMethod(method);
 			
 			if (selectedGPU != null) {
@@ -545,6 +624,7 @@ public class Settings implements Activity {
 			}
 			
 			int cpuCores = -1;
+
 			if (Settings.this.cpuCores != null) {
 				cpuCores = Settings.this.cpuCores.getValue();
 			}
@@ -554,6 +634,7 @@ public class Settings implements Activity {
 			}
 			
 			long maxRAM = -1;
+
 			if (ram != null) {
 				maxRAM = ram.getValue();
 			}
@@ -563,6 +644,7 @@ public class Settings implements Activity {
 			}
 			
 			int maxRendertime = -1;
+
 			if (renderTime != null) {
 				maxRendertime = (Integer)renderTime.getValue() * 60;
 				config.setMaxRenderTime(maxRendertime);
@@ -571,6 +653,7 @@ public class Settings implements Activity {
 			config.setUsePriority(priority.getValue());
 			
 			String proxyText = null;
+
 			if (proxy != null) {
 				try {
 					Proxy.set(proxy.getText());
@@ -586,11 +669,13 @@ public class Settings implements Activity {
 			parent.setCredentials(login.getText(), new String(password.getPassword()));
 			
 			String cachePath = null;
+
 			if (config.isUserHasSpecifiedACacheDir() && config.getCacheDirForSettings() != null) {
 				cachePath = config.getCacheDirForSettings().getAbsolutePath();
 			}
 			
 			String hostnameText = hostname.getText();
+
 			if (hostnameText == null || hostnameText.isEmpty()) {
 				hostnameText = parent.getConfiguration().getHostname();
 			}
