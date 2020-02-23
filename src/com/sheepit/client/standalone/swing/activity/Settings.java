@@ -653,7 +653,10 @@ public class Settings implements Activity {
 			if (config == null) {
 				return;
 			}
-			
+
+			if (modesOptionsGroup.getSelection().getActionCommand() != null)
+				config.setTheme(modesOptionsGroup.getSelection().getActionCommand());
+
 			if (cacheDir != null) {
 				File fromConfig = config.getStorageDir();
 
