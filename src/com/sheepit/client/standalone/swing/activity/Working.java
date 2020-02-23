@@ -85,7 +85,6 @@ public class Working implements Activity {
 		remainingFrameContent                   = new JLabel("");
 		userInfoPointsTotalValue                = new JLabel("");
 
-
 		creditEarned                            = new JLabel("");
 		renderedFrameContent                    = new JLabel("");
 		renderableProjectsValue                 = new JLabel("");
@@ -164,7 +163,7 @@ public class Working implements Activity {
 		globalStatsPanel.setBorder(titledBorder);
 		globalStatsPanel.setBackground(backgroundColor);
 
-		// Data fields theme
+		// Theme the data fields
 		waitingProjectsValue.setForeground(foregroundColor);
 		connectedMachinesValue.setForeground(foregroundColor);
 		remainingFrameContent.setForeground(foregroundColor);
@@ -194,26 +193,43 @@ public class Working implements Activity {
 		globalStatsPanel.add(globalStatsUserPoints);
 		globalStatsPanel.add(userInfoPointsTotalValue);
 
-		// user info
-		JPanel session_info_panel = new JPanel(new SpringLayout());
-		session_info_panel.setBorder(BorderFactory.createTitledBorder("Session infos"));
+		// session/user info
+		JPanel sessionInfoPanel = new JPanel(new SpringLayout());
+
+		titledBorder = BorderFactory.createTitledBorder("Session infos");
+		titledBorder.setTitleColor(foregroundColor);
+
+		sessionInfoPanel.setBorder(titledBorder);
+		sessionInfoPanel.setBackground(backgroundColor);
+
+		creditEarned.setForeground(foregroundColor);
+		renderedFrameContent.setForeground(foregroundColor);
+		renderableProjectsValue.setForeground(foregroundColor);
+		userInfoTotalRenderTimeThisSessionValue.setForeground(foregroundColor);
+
+		JLabel userInfoCreditsThisSession = new JLabel("Points earned: ", JLabel.TRAILING);
+		userInfoCreditsThisSession.setForeground(foregroundColor);
+
+		JLabel userInfoRenderedFrameThisSession = new JLabel("Rendered frames: ", JLabel.TRAILING);
+		userInfoRenderedFrameThisSession.setForeground(foregroundColor);
+
+		JLabel globalStaticRenderableProject = new JLabel("Renderable projects: ", JLabel.TRAILING);
+		globalStaticRenderableProject.setForeground(foregroundColor);
+
+		JLabel userInfoTotalRendertimeThisSession = new JLabel("Duration: ", JLabel.TRAILING);
+		userInfoTotalRendertimeThisSession.setForeground(foregroundColor);
+
+		sessionInfoPanel.add(userInfoCreditsThisSession);
+		sessionInfoPanel.add(creditEarned);
 		
-		JLabel user_info_credits_this_session = new JLabel("Points earned: ", JLabel.TRAILING);
-		JLabel user_info_total_rendertime_this_session = new JLabel("Duration: ", JLabel.TRAILING);
-		JLabel user_info_rendered_frame_this_session = new JLabel("Rendered frames: ", JLabel.TRAILING);
-		JLabel global_static_renderable_project = new JLabel("Renderable projects: ", JLabel.TRAILING);
+		sessionInfoPanel.add(userInfoRenderedFrameThisSession);
+		sessionInfoPanel.add(renderedFrameContent);
 		
-		session_info_panel.add(user_info_credits_this_session);
-		session_info_panel.add(creditEarned);
+		sessionInfoPanel.add(globalStaticRenderableProject);
+		sessionInfoPanel.add(renderableProjectsValue);
 		
-		session_info_panel.add(user_info_rendered_frame_this_session);
-		session_info_panel.add(renderedFrameContent);
-		
-		session_info_panel.add(global_static_renderable_project);
-		session_info_panel.add(renderableProjectsValue);
-		
-		session_info_panel.add(user_info_total_rendertime_this_session);
-		session_info_panel.add(userInfoTotalRenderTimeThisSessionValue);
+		sessionInfoPanel.add(userInfoTotalRendertimeThisSession);
+		sessionInfoPanel.add(userInfoTotalRenderTimeThisSessionValue);
 		
 		// last frame
 		JPanel last_frame_panel = new JPanel();
@@ -259,16 +275,16 @@ public class Working implements Activity {
 		
 		parent.getContentPane().add(currentProjectPanel, global_constraints);
 		parent.getContentPane().add(globalStatsPanel, global_constraints);
-		parent.getContentPane().add(session_info_panel, global_constraints);
+		parent.getContentPane().add(sessionInfoPanel, global_constraints);
 		parent.getContentPane().add(last_frame_panel, global_constraints);
 		parent.getContentPane().add(buttonsPanel, global_constraints);
 		
 		Spring widthLeftColumn = getBestWidth(currentProjectPanel, 4, 2);
 		widthLeftColumn = Spring.max(widthLeftColumn, getBestWidth(globalStatsPanel, 4, 2));
-		widthLeftColumn = Spring.max(widthLeftColumn, getBestWidth(session_info_panel, 3, 2));
+		widthLeftColumn = Spring.max(widthLeftColumn, getBestWidth(sessionInfoPanel, 3, 2));
 		alignPanel(currentProjectPanel, 5, 2, widthLeftColumn);
 		alignPanel(globalStatsPanel, 4, 2, widthLeftColumn);
-		alignPanel(session_info_panel, 4, 2, widthLeftColumn);
+		alignPanel(sessionInfoPanel, 4, 2, widthLeftColumn);
 	}
 	
 	public void setStatus(String msg_) {
@@ -299,6 +315,7 @@ public class Working implements Activity {
 		renderableProjectsValue.setText(df.format(stats.getRenderableProject()));
 		waitingProjectsValue.setText(df.format(stats.getWaitingProject()));
 		connectedMachinesValue.setText(df.format(stats.getConnectedMachine()));
+
 		updateTime();
 	}
 	
