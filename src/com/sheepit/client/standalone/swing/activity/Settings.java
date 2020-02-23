@@ -99,6 +99,7 @@ public class Settings implements Activity {
 		List<GPUDevice> gpus = GPU.listDevices(config);
 		
 		GridBagConstraints constraints = new GridBagConstraints();
+
 		int currentRow = 0;
 		ImageIcon image = new ImageIcon(getClass().getResource("/title.png"));
 		constraints.fill = GridBagConstraints.CENTER;
@@ -109,39 +110,41 @@ public class Settings implements Activity {
 		constraints.gridy = currentRow;
 		parent.getContentPane().add(labelImage, constraints);
 		
-		++currentRow;
+		currentRow++;
 		
 		// authentication
-		CollapsibleJPanel authentication_panel = new CollapsibleJPanel(new GridLayout(2, 2));
-		authentication_panel.setBorder(BorderFactory.createTitledBorder("Authentication"));
+		CollapsibleJPanel authPanel = new CollapsibleJPanel(new GridLayout(2, 2));
+		authPanel.setBorder(BorderFactory.createTitledBorder("Authentication"));
 		
 		JLabel loginLabel = new JLabel("Username:");
 		login = new JTextField();
 		login.setText(parent.getConfiguration().getLogin());
 		login.setColumns(20);
 		login.addKeyListener(new CheckCanStart());
+
 		JLabel passwordLabel = new JLabel("Password:");
 		password = new JPasswordField();
 		password.setText(parent.getConfiguration().getPassword());
 		password.setColumns(10);
 		password.addKeyListener(new CheckCanStart());
 		
-		authentication_panel.add(loginLabel);
-		authentication_panel.add(login);
+		authPanel.add(loginLabel);
+		authPanel.add(login);
 		
-		authentication_panel.add(passwordLabel);
-		authentication_panel.add(password);
+		authPanel.add(passwordLabel);
+		authPanel.add(password);
 		
 		constraints.gridx = 0;
 		constraints.gridy = currentRow;
 		constraints.fill = GridBagConstraints.HORIZONTAL;
-		parent.getContentPane().add(authentication_panel, constraints);
+		parent.getContentPane().add(authPanel, constraints);
 		
 		// directory
-		CollapsibleJPanel directory_panel = new CollapsibleJPanel(new GridLayout(1, 3));
-		directory_panel.setBorder(BorderFactory.createTitledBorder("Cache"));
+		CollapsibleJPanel directoryPanel = new CollapsibleJPanel(new GridLayout(1, 3));
+		directoryPanel.setBorder(BorderFactory.createTitledBorder("Cache"));
+
 		JLabel cacheLabel = new JLabel("Working directory:");
-		directory_panel.add(cacheLabel);
+		directoryPanel.add(cacheLabel);
 		String destination = DUMMY_CACHE_DIR;
 		if (config.isUserHasSpecifiedACacheDir()) {
 			destination = config.getCacheDirForSettings().getName();
@@ -160,23 +163,24 @@ public class Settings implements Activity {
 		openButton.addActionListener(new ChooseFileAction());
 		cacheDirWrapper.add(openButton);
 		
-		directory_panel.add(cacheDirWrapper);
+		directoryPanel.add(cacheDirWrapper);
 		
 		currentRow++;
 		constraints.gridx = 0;
 		constraints.gridy = currentRow;
 		constraints.gridwidth = 2;
 		
-		parent.getContentPane().add(directory_panel, constraints);
+		parent.getContentPane().add(directoryPanel, constraints);
 		
 		// compute devices
 		GridBagLayout gridbag = new GridBagLayout();
-		GridBagConstraints compute_devices_constraints = new GridBagConstraints();
-		CollapsibleJPanel compute_devices_panel = new CollapsibleJPanel(gridbag);
+		GridBagConstraints computeDevicesConstraints = new GridBagConstraints();
+		CollapsibleJPanel computeDevicesPanel = new CollapsibleJPanel(gridbag);
 		
-		compute_devices_panel.setBorder(BorderFactory.createTitledBorder("Compute devices"));
+		computeDevicesPanel.setBorder(BorderFactory.createTitledBorder("Compute devices"));
 		
 		ComputeType method = config.getComputeMethod();
+
 		useCPU = new JCheckBox("CPU");
 		boolean gpuChecked = false;
 		
@@ -194,29 +198,29 @@ public class Settings implements Activity {
 		}
 		useCPU.addActionListener(new CpuChangeAction());
 		
-		compute_devices_constraints.gridx = 1;
-		compute_devices_constraints.gridy = 0;
-		compute_devices_constraints.fill = GridBagConstraints.BOTH;
-		compute_devices_constraints.weightx = 1.0;
-		compute_devices_constraints.weighty = 1.0;
+		computeDevicesConstraints.gridx = 1;
+		computeDevicesConstraints.gridy = 0;
+		computeDevicesConstraints.fill = GridBagConstraints.BOTH;
+		computeDevicesConstraints.weightx = 1.0;
+		computeDevicesConstraints.weighty = 1.0;
 		
-		gridbag.setConstraints(useCPU, compute_devices_constraints);
-		compute_devices_panel.add(useCPU);
+		gridbag.setConstraints(useCPU, computeDevicesConstraints);
+		computeDevicesPanel.add(useCPU);
 		
 		for (GPUDevice gpu : gpus) {
 			JCheckBoxGPU gpuCheckBox = new JCheckBoxGPU(gpu);
 			gpuCheckBox.setToolTipText(gpu.getId());
 			if (gpuChecked) {
-				GPUDevice config_gpu = config.getGPUDevice();
-				if (config_gpu != null && config_gpu.getId().equals(gpu.getId())) {
+				GPUDevice configGPU = config.getGPUDevice();
+				if (configGPU != null && configGPU.getId().equals(gpu.getId())) {
 					gpuCheckBox.setSelected(gpuChecked);
 				}
 			}
 			gpuCheckBox.addActionListener(new GpuChangeAction());
 			
-			compute_devices_constraints.gridy++;
-			gridbag.setConstraints(gpuCheckBox, compute_devices_constraints);
-			compute_devices_panel.add(gpuCheckBox);
+			computeDevicesConstraints.gridy++;
+			gridbag.setConstraints(gpuCheckBox, computeDevicesConstraints);
+			computeDevicesPanel.add(gpuCheckBox);
 			useGPUs.add(gpuCheckBox);
 		}
 		
@@ -237,33 +241,33 @@ public class Settings implements Activity {
 			cpuCores.setValue(config.getNbCores() != -1 ? config.getNbCores() : cpuCores.getMaximum());
 			JLabel coreLabel = new JLabel("CPU cores:");
 			
-			compute_devices_constraints.weightx = 1.0 / gpus.size();
-			compute_devices_constraints.gridx = 0;
-			compute_devices_constraints.gridy++;
+			computeDevicesConstraints.weightx = 1.0 / gpus.size();
+			computeDevicesConstraints.gridx = 0;
+			computeDevicesConstraints.gridy++;
 			
-			gridbag.setConstraints(coreLabel, compute_devices_constraints);
-			compute_devices_panel.add(coreLabel);
+			gridbag.setConstraints(coreLabel, computeDevicesConstraints);
+			computeDevicesPanel.add(coreLabel);
 			
-			compute_devices_constraints.gridx = 1;
-			compute_devices_constraints.weightx = 1.0;
+			computeDevicesConstraints.gridx = 1;
+			computeDevicesConstraints.weightx = 1.0;
 			
-			gridbag.setConstraints(cpuCores, compute_devices_constraints);
-			compute_devices_panel.add(cpuCores);
+			gridbag.setConstraints(cpuCores, computeDevicesConstraints);
+			computeDevicesPanel.add(cpuCores);
 		}
 		
 		// max ram allowed to render
 		OS os = OS.getOS();
-		int all_ram = (int) os.getMemory();
-		ram = new JSlider(0, all_ram);
+		int allRAM = (int) os.getMemory();
+		ram = new JSlider(0, allRAM);
 		int step = 1000000;
-		double display = (double)all_ram / (double)step;
+		double display = (double)allRAM / (double)step;
 		while (display > 10) {
 			step += 1000000;
-			display = (double)all_ram / (double)step;
+			display = (double)allRAM / (double)step;
 		}
 		Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
-		for (int g = 0; g < all_ram; g += step) {
-			labelTable.put(new Integer(g), new JLabel("" + (g / 1000000)));
+		for (int g = 0; g < allRAM; g += step) {
+			labelTable.put(g, new JLabel("" + (g / 1000000)));
 		}
 		ram.setMajorTickSpacing(step);
 		ram.setLabelTable(labelTable);
@@ -272,53 +276,53 @@ public class Settings implements Activity {
 		ram.setValue((int)(config.getMaxMemory() != -1 ? config.getMaxMemory() : os.getMemory()));
 		JLabel ramLabel = new JLabel("Memory:");
 		
-		compute_devices_constraints.weightx = 1.0 / gpus.size();
-		compute_devices_constraints.gridx = 0;
-		compute_devices_constraints.gridy++;
+		computeDevicesConstraints.weightx = 1.0 / gpus.size();
+		computeDevicesConstraints.gridx = 0;
+		computeDevicesConstraints.gridy++;
 		
-		gridbag.setConstraints(ramLabel, compute_devices_constraints);
-		compute_devices_panel.add(ramLabel);
+		gridbag.setConstraints(ramLabel, computeDevicesConstraints);
+		computeDevicesPanel.add(ramLabel);
 		
-		compute_devices_constraints.gridx = 1;
-		compute_devices_constraints.weightx = 1.0;
+		computeDevicesConstraints.gridx = 1;
+		computeDevicesConstraints.weightx = 1.0;
 		
-		gridbag.setConstraints(ram, compute_devices_constraints);
-		compute_devices_panel.add(ram);
+		gridbag.setConstraints(ram, computeDevicesConstraints);
+		computeDevicesPanel.add(ram);
 		
-		parent.getContentPane().add(compute_devices_panel, constraints);
+		parent.getContentPane().add(computeDevicesPanel, constraints);
 		
 		// priority
-		boolean high_priority_support = os.getSupportHighPriority();
-		priority = new JSlider(high_priority_support ? -19 : 0, 19);
+		boolean highPrioritySupport = os.getSupportHighPriority();
+		priority = new JSlider(highPrioritySupport ? -19 : 0, 19);
 		priority.setMajorTickSpacing(19);
 		priority.setMinorTickSpacing(1);
 		priority.setPaintTicks(true);
 		priority.setPaintLabels(true);
 		priority.setValue(config.getPriority());
-		JLabel priorityLabel = new JLabel(high_priority_support ? "Priority (High <-> Low):" : "Priority (Normal <-> Low):" );
+		JLabel priorityLabel = new JLabel(highPrioritySupport ? "Priority (High <-> Low):" : "Priority (Normal <-> Low):" );
 		
-		compute_devices_constraints.weightx = 1.0 / gpus.size();
-		compute_devices_constraints.gridx = 0;
-		compute_devices_constraints.gridy++;
+		computeDevicesConstraints.weightx = 1.0 / gpus.size();
+		computeDevicesConstraints.gridx = 0;
+		computeDevicesConstraints.gridy++;
 		
-		gridbag.setConstraints(priorityLabel, compute_devices_constraints);
-		compute_devices_panel.add(priorityLabel);
+		gridbag.setConstraints(priorityLabel, computeDevicesConstraints);
+		computeDevicesPanel.add(priorityLabel);
 		
-		compute_devices_constraints.gridx = 1;
-		compute_devices_constraints.weightx = 1.0;
+		computeDevicesConstraints.gridx = 1;
+		computeDevicesConstraints.weightx = 1.0;
 		
-		gridbag.setConstraints(priority, compute_devices_constraints);
-		compute_devices_panel.add(priority);
+		gridbag.setConstraints(priority, computeDevicesConstraints);
+		computeDevicesPanel.add(priority);
 		
 		currentRow++;
 		constraints.gridx = 0;
 		constraints.gridy = currentRow;
 		constraints.gridwidth = 2;
-		parent.getContentPane().add(compute_devices_panel, constraints);
+		parent.getContentPane().add(computeDevicesPanel, constraints);
 		
 		// other
-		CollapsibleJPanel advanced_panel = new CollapsibleJPanel(new GridLayout(3, 2));
-		advanced_panel.setBorder(BorderFactory.createTitledBorder("Advanced options"));
+		CollapsibleJPanel advancedPanel = new CollapsibleJPanel(new GridLayout(3, 2));
+		advancedPanel.setBorder(BorderFactory.createTitledBorder("Advanced options"));
 		
 		JLabel proxyLabel = new JLabel("Proxy:");
 		proxyLabel.setToolTipText("http://login:password@host:port");
@@ -327,15 +331,15 @@ public class Settings implements Activity {
 		proxy.setText(parent.getConfiguration().getProxy());
 		proxy.addKeyListener(new CheckCanStart());
 		
-		advanced_panel.add(proxyLabel);
-		advanced_panel.add(proxy);
+		advancedPanel.add(proxyLabel);
+		advancedPanel.add(proxy);
 		
 		JLabel hostnameLabel = new JLabel("Computer name:");
 		hostname = new JTextField();
 		hostname.setText(parent.getConfiguration().getHostname());
 		
-		advanced_panel.add(hostnameLabel);
-		advanced_panel.add(hostname);
+		advancedPanel.add(hostnameLabel);
+		advancedPanel.add(hostname);
 		
 		JLabel renderTimeLabel = new JLabel("Max time per frame (in minute):");
 		int val = 0;
@@ -344,31 +348,31 @@ public class Settings implements Activity {
 		}
 		renderTime = new JSpinner(new SpinnerNumberModel(val,0,1000,1));
 		
-		advanced_panel.add(renderTimeLabel);
-		advanced_panel.add(renderTime);
+		advancedPanel.add(renderTimeLabel);
+		advancedPanel.add(renderTime);
 		
 		currentRow++;
 		constraints.gridx = 0;
 		constraints.gridy = currentRow;
 		constraints.gridwidth = 2;
-		parent.getContentPane().add(advanced_panel, constraints);
-		advanced_panel.setCollapsed(true);
+		parent.getContentPane().add(advancedPanel, constraints);
+		advancedPanel.setCollapsed(true);
 		
 		// general settings
-		JPanel general_panel = new JPanel(new GridLayout(1, 2));
+		JPanel generalPanel = new JPanel(new GridLayout(1, 2));
 		
 		saveFile = new JCheckBox("Save settings", true);
-		general_panel.add(saveFile);
+		generalPanel.add(saveFile);
 		
 		autoSignIn = new JCheckBox("Auto sign in", config.isAutoSignIn());
 		autoSignIn.addActionListener(new AutoSignInChangeAction());
-		general_panel.add(autoSignIn);
+		generalPanel.add(autoSignIn);
 		
 		currentRow++;
 		constraints.gridx = 0;
 		constraints.gridy = currentRow;
 		constraints.gridwidth = 2;
-		parent.getContentPane().add(general_panel, constraints);
+		parent.getContentPane().add(generalPanel, constraints);
 		
 		String buttonText = "Start";
 		if (parent.getClient() != null) {
@@ -385,7 +389,7 @@ public class Settings implements Activity {
 		constraints.gridy = currentRow;
 		parent.getContentPane().add(saveButton, constraints);
 		
-		if (haveAutoStarted == false && config.isAutoSignIn() && checkDisplaySaveButton()) {
+		if (!haveAutoStarted && config.isAutoSignIn() && checkDisplaySaveButton()) {
 			// auto start
 			haveAutoStarted = true;
 			new SaveAction().actionPerformed(null);
@@ -399,7 +403,7 @@ public class Settings implements Activity {
 				selected = true;
 			}
 		}
-		if (login.getText().isEmpty() || password.getPassword().length == 0 || Proxy.isValidURL(proxy.getText()) == false) {
+		if (login.getText().isEmpty() || password.getPassword().length == 0 || !Proxy.isValidURL(proxy.getText())) {
 			selected = false;
 		}
 
@@ -408,21 +412,18 @@ public class Settings implements Activity {
 	}
 	
 	class ChooseFileAction implements ActionListener {
-		
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			JOptionPane.showMessageDialog(parent.getContentPane(), "<html>The working directory has to be dedicated directory. <br />Caution, everything not related to SheepIt-Renderfarm will be removed.<br />You should create a directory specifically for it.</html>", "Warning: files will be removed!", JOptionPane.WARNING_MESSAGE);
 			int returnVal = cacheDirChooser.showOpenDialog(parent.getContentPane());
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
-				File file = cacheDirChooser.getSelectedFile();
-				cacheDir = file;
+				cacheDir = cacheDirChooser.getSelectedFile();
 				cacheDirText.setText(cacheDir.getName());
 			}
 		}
 	}
 	
 	class CpuChangeAction implements ActionListener {
-		
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			checkDisplaySaveButton();
@@ -430,11 +431,10 @@ public class Settings implements Activity {
 	}
 	
 	class GpuChangeAction implements ActionListener {
-		
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			for (JCheckBox box : useGPUs) {
-				if (box.equals(e.getSource()) == false) {
+				if (!box.equals(e.getSource())) {
 					box.setSelected(false);
 				}
 			}
@@ -443,7 +443,6 @@ public class Settings implements Activity {
 	}
 	
 	class AutoSignInChangeAction implements ActionListener {
-		
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (autoSignIn.isSelected()) {
@@ -453,7 +452,6 @@ public class Settings implements Activity {
 	}
 	
 	class SaveAction implements ActionListener {
-		
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (parent == null) {
@@ -467,7 +465,7 @@ public class Settings implements Activity {
 			
 			if (cacheDir != null) {
 				File fromConfig = config.getStorageDir();
-				if (fromConfig != null && fromConfig.getAbsolutePath().equals(cacheDir.getAbsolutePath()) == false) {
+				if (fromConfig != null && !fromConfig.getAbsolutePath().equals(cacheDir.getAbsolutePath())) {
 					config.setCacheDir(cacheDir);
 				}
 				else {
@@ -475,51 +473,52 @@ public class Settings implements Activity {
 				}
 			}
 			
-			GPUDevice selected_gpu = null;
+			GPUDevice selectedGPU = null;
 			for (JCheckBoxGPU box : useGPUs) {
 				if (box.isSelected()) {
-					selected_gpu = box.getGPUDevice();
+					selectedGPU = box.getGPUDevice();
 				}
 			}
 			
 			ComputeType method = ComputeType.CPU;
-			if (useCPU.isSelected() && selected_gpu == null) {
+
+			if (useCPU.isSelected() && selectedGPU == null) {
 				method = ComputeType.CPU;
 			}
-			else if (useCPU.isSelected() == false && selected_gpu != null) {
+			else if (!useCPU.isSelected() && selectedGPU != null) {
 				method = ComputeType.GPU;
 			}
-			else if (useCPU.isSelected() && selected_gpu != null) {
+			else if (useCPU.isSelected() && selectedGPU != null) {
 				method = ComputeType.CPU_GPU;
 			}
 			config.setComputeMethod(method);
 			
-			if (selected_gpu != null) {
-				config.setGPUDevice(selected_gpu);
+			if (selectedGPU != null) {
+				config.setGPUDevice(selectedGPU);
 			}
 			
-			int cpu_cores = -1;
-			if (cpuCores != null) {
-				cpu_cores = cpuCores.getValue();
+			int cpuCores = -1;
+			if (Settings.this.cpuCores != null) {
+				cpuCores = Settings.this.cpuCores.getValue();
 			}
 			
-			if (cpu_cores > 0) {
-				config.setNbCores(cpu_cores);
+			if (cpuCores > 0) {
+				config.setNbCores(cpuCores);
 			}
 			
-			long max_ram = -1;
+			long maxRAM = -1;
 			if (ram != null) {
-				max_ram = ram.getValue();
+				maxRAM = ram.getValue();
 			}
 			
-			if (max_ram > 0) {
-				config.setMaxMemory(max_ram);
+			if (maxRAM > 0) {
+				config.setMaxMemory(maxRAM);
 			}
 			
-			int max_rendertime = -1;
+			int maxRendertime = -1;
 			if (renderTime != null) {
-				max_rendertime = (Integer)renderTime.getValue() * 60;
-				config.setMaxRenderTime(max_rendertime);
+				maxRendertime = (Integer)renderTime.getValue() * 60;
+				config.setMaxRenderTime(maxRendertime);
 			}
 			
 			config.setUsePriority(priority.getValue());
@@ -550,7 +549,7 @@ public class Settings implements Activity {
 			}
 			
 			if (saveFile.isSelected()) {
-				parent.setSettingsLoader(new SettingsLoader(config.getConfigFilePath(), login.getText(), new String(password.getPassword()), proxyText, hostnameText, method, selected_gpu, cpu_cores, max_ram, max_rendertime, cachePath, autoSignIn.isSelected(), GuiSwing.type, priority.getValue()));
+				parent.setSettingsLoader(new SettingsLoader(config.getConfigFilePath(), login.getText(), new String(password.getPassword()), proxyText, hostnameText, method, selectedGPU, cpuCores, maxRAM, maxRendertime, cachePath, autoSignIn.isSelected(), GuiSwing.type, priority.getValue()));
 				
 				// wait for successful authentication (to store the public key)
 				// or do we already have one?
@@ -575,7 +574,6 @@ public class Settings implements Activity {
 	}
 	
 	public class CheckCanStart implements KeyListener {
-		
 		@Override
 		public void keyPressed(KeyEvent arg0) {
 		}
