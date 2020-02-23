@@ -93,7 +93,10 @@ public class Worker {
 	
 	@Option(name = "-ui", usage = "Specify the user interface to use, default '" + GuiSwing.type + "', available '" + GuiTextOneLine.type + "', '" + GuiText.type + "', '" + GuiSwing.type + "' (graphical)", required = false)
 	private String ui_type = null;
-	
+
+	@Option(name = "-theme", usage = "Specify the theme to use, default 'light" + "', available 'light' (light mode), 'dark' (dark mode)", required = false)
+	private String theme = null;
+
 	@Option(name = "-config", usage = "Specify the configuration file", required = false)
 	private String config_file = null;
 	
@@ -281,6 +284,15 @@ public class Worker {
 		
 		if (ui_type != null) {
 			config.setUIType(ui_type);
+		}
+
+		if (theme != null) {
+			if (!theme.equals("light") && !theme.equals("dark")) {
+				System.err.println("Invalid theme '" + theme + "' specified. Applying default 'light' mode instead.");
+				theme = "light";
+			}
+
+			config.setTheme(theme);
 		}
 		
 		if (config_file != null) {
