@@ -19,9 +19,11 @@
 
 package com.sheepit.client.standalone.swing.activity;
 
-import java.awt.Color;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.GridBagConstraints;
@@ -29,6 +31,8 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.io.File;
 import java.net.MalformedURLException;
+import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
@@ -168,11 +172,13 @@ public class Settings implements Activity {
 		lightModeOption.setForeground(foregroundColor);
 		lightModeOption.setActionCommand("light");
 		lightModeOption.setSelected(config.getTheme().equals("light"));
+		lightModeOption.addActionListener(new ApplyThemeAction("light"));
 
 		darkModeOption = new JRadioButton("Dark");
 		darkModeOption.setForeground(foregroundColor);
 		darkModeOption.setActionCommand("dark");
 		darkModeOption.setSelected(config.getTheme().equals("dark"));
+		darkModeOption.addActionListener(new ApplyThemeAction("dark"));
 
 		themePanel.add(lightModeOption);
 		themePanel.add(darkModeOption);
@@ -511,7 +517,69 @@ public class Settings implements Activity {
 			new SaveAction().actionPerformed(null);
 		}
 	}
-	
+
+	class ApplyThemeAction implements ActionListener {
+		String selectedTheme;
+
+		public ApplyThemeAction(String selectedTheme) {
+			this.selectedTheme = selectedTheme;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			Configuration config = parent.getConfiguration();
+
+			// Cache the theme colours
+			Color backgroundColor = config.getThemedBackgroundColor(this.selectedTheme);
+			Color foregroundColor = config.getThemedForegroundColor(this.selectedTheme);
+
+			// Set the background of the Content Pane
+			parent.getContentPane().setBackground(backgroundColor);
+
+			ImageIcon image = new ImageIcon(getClass().getResource(config.getThemedSheepItLogo(this.selectedTheme)));
+
+			// Replace the logo in light/dark mode. The image is the first element of the Content Pane, so we refer to it
+			// directly. Not the most elegant approach but is safe.
+			((JLabel) parent.getContentPane().getComponent(0)).setIcon(image);
+
+			// Replace the back and foreground colours of all the elements in the screen.
+			for (Component comp : parent.getContentPane().getComponents()) {
+				comp.setBackground(backgroundColor);
+				comp.setForeground(foregroundColor);
+
+				// All button's text is black regardless of the theme
+				if (comp instanceof JButton)
+					comp.setForeground(Color.black);
+
+				// If a JPanel, change the background, title and lines and traverse all the internal components
+				else if (comp instanceof JPanel) {
+					if (comp instanceof CollapsibleJPanel)
+						((CollapsibleJPanel) comp).refreshBorderTitleColor(foregroundColor);
+
+					for (Component obj : ((JPanel) comp).getComponents()) {
+						// If the object is a slider with custor slider labels (ie RAM slider) then we must change
+						// each individual JLabels
+						if (obj instanceof JSlider) {
+							Dictionary labelList = ((JSlider) obj).getLabelTable();
+							Enumeration idx = labelList.keys();
+
+							while (idx.hasMoreElements()) {
+								((JLabel) labelList.get(idx.nextElement())).setForeground(foregroundColor);
+							}
+						}
+
+						// If the object is a text field then set black as fixed text colour (regardless the theme)
+						if ((obj instanceof JTextField))
+							obj.setForeground(Color.black);
+						else
+							// Otherwise, whatever correspond to the selected theme
+							obj.setForeground(foregroundColor);
+					}
+				}
+			}
+		}
+	}
+
 	public boolean checkDisplaySaveButton() {
 		boolean selected = useCPU.isSelected();
 
@@ -705,7 +773,7 @@ public class Settings implements Activity {
 			}
 		}
 	}
-	
+
 	class JCheckBoxGPU extends JCheckBox {
 		private GPUDevice gpu;
 		
@@ -732,6 +800,6 @@ public class Settings implements Activity {
 		@Override
 		public void keyTyped(KeyEvent arg0) {
 		}
-		
+
 	}
 }
