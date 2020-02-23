@@ -45,11 +45,9 @@ import javax.swing.SpringLayout;
 
 import com.sheepit.client.Client;
 import com.sheepit.client.Job;
-import com.sheepit.client.RenderProcess;
 import com.sheepit.client.Server;
 import com.sheepit.client.Stats;
 import com.sheepit.client.Utils;
-import com.sheepit.client.os.OS;
 import com.sheepit.client.standalone.GuiSwing;
 import com.sheepit.client.standalone.GuiSwing.ActivityType;
 
@@ -64,34 +62,34 @@ public class Working implements Activity {
 	private JLabel creditEarned;
 	private JButton pauseButton;
 	private JButton exitAfterFrame;
-	private JLabel current_project_name_value;
-	private JLabel current_project_duration_value;
-	private JLabel currrent_project_progression_value;
-	private JLabel current_project_compute_method_value;
-	private JLabel user_info_points_total_value;
-	private JLabel renderable_projects_value;
-	private JLabel waiting_projects_value;
-	private JLabel connected_machines_value;
-	private JLabel user_info_total_rendertime_this_session_value;
+	private JLabel currentProjectNameValue;
+	private JLabel currentProjectDurationValue;
+	private JLabel currrentProjectProgressionValue;
+	private JLabel currentProjectComputeMethodValue;
+	private JLabel userInfoPointsTotalValue;
+	private JLabel renderableProjectsValue;
+	private JLabel waitingProjectsValue;
+	private JLabel connectedMachinesValue;
+	private JLabel userInfoTotalRenderTimeThisSessionValue;
 	
 	public Working(GuiSwing parent_) {
 		parent = parent_;
 		
-		statusContent = new JLabel("Init");
-		renderedFrameContent = new JLabel("");
-		remainingFrameContent = new JLabel("");
-		creditEarned = new JLabel("");
-		current_project_name_value = new JLabel("");
-		current_project_duration_value = new JLabel("");
-		currrent_project_progression_value = new JLabel("");
-		current_project_compute_method_value = new JLabel("");
-		user_info_points_total_value = new JLabel("");
-		renderable_projects_value = new JLabel("");
-		waiting_projects_value = new JLabel("");
-		connected_machines_value = new JLabel("");
-		user_info_total_rendertime_this_session_value = new JLabel("");
-		lastRenderTime = new JLabel("");
-		lastRender = new JLabel("");
+		statusContent                    = new JLabel("Init");
+		renderedFrameContent             = new JLabel("");
+		remainingFrameContent            = new JLabel("");
+		creditEarned                     = new JLabel("");
+		currentProjectNameValue          = new JLabel("");
+		currentProjectDurationValue      = new JLabel("");
+		currrentProjectProgressionValue  = new JLabel("");
+		currentProjectComputeMethodValue = new JLabel("");
+		userInfoPointsTotalValue         = new JLabel("");
+		renderableProjectsValue          = new JLabel("");
+		waitingProjectsValue             = new JLabel("");
+		connectedMachinesValue           = new JLabel("");
+		userInfoTotalRenderTimeThisSessionValue = new JLabel("");
+		lastRenderTime                   = new JLabel("");
+		lastRender                       = new JLabel("");
 	}
 	
 	@Override
@@ -110,16 +108,16 @@ public class Working implements Activity {
 		current_project_panel.add(statusContent);
 		
 		current_project_panel.add(current_project_name);
-		current_project_panel.add(current_project_name_value);
+		current_project_panel.add(currentProjectNameValue);
 		
 		current_project_panel.add(current_project_duration);
-		current_project_panel.add(current_project_duration_value);
+		current_project_panel.add(currentProjectDurationValue);
 		
 		current_project_panel.add(current_project_progression);
-		current_project_panel.add(currrent_project_progression_value);
+		current_project_panel.add(currrentProjectProgressionValue);
 		
 		current_project_panel.add(current_project_compute_method_label);
-		current_project_panel.add(current_project_compute_method_value);
+		current_project_panel.add(currentProjectComputeMethodValue);
 		
 		// user info
 		JPanel session_info_panel = new JPanel(new SpringLayout());
@@ -137,10 +135,10 @@ public class Working implements Activity {
 		session_info_panel.add(renderedFrameContent);
 		
 		session_info_panel.add(global_static_renderable_project);
-		session_info_panel.add(renderable_projects_value);
+		session_info_panel.add(renderableProjectsValue);
 		
 		session_info_panel.add(user_info_total_rendertime_this_session);
-		session_info_panel.add(user_info_total_rendertime_this_session_value);
+		session_info_panel.add(userInfoTotalRenderTimeThisSessionValue);
 		
 		// global stats
 		JPanel global_stats_panel = new JPanel(new SpringLayout());
@@ -152,16 +150,16 @@ public class Working implements Activity {
 		JLabel global_stats_user_points = new JLabel("User's points: ", JLabel.TRAILING);
 		
 		global_stats_panel.add(global_stats_waiting_project);
-		global_stats_panel.add(waiting_projects_value);
+		global_stats_panel.add(waitingProjectsValue);
 		
 		global_stats_panel.add(global_stats_machine_connected);
-		global_stats_panel.add(connected_machines_value);
+		global_stats_panel.add(connectedMachinesValue);
 		
 		global_stats_panel.add(global_stats_remaining_frame);
 		global_stats_panel.add(remainingFrameContent);
 		
 		global_stats_panel.add(global_stats_user_points);
-		global_stats_panel.add(user_info_points_total_value);
+		global_stats_panel.add(userInfoPointsTotalValue);
 		
 		// last frame
 		JPanel last_frame_panel = new JPanel();
@@ -227,42 +225,42 @@ public class Working implements Activity {
 	}
 	
 	public void setRenderingProjectName(String msg_) {
-		current_project_name_value.setText("<html>" + (msg_.length() > 26 ? msg_.substring(0, 26) : msg_) + "</html>");
+		currentProjectNameValue.setText("<html>" + (msg_.length() > 26 ? msg_.substring(0, 26) : msg_) + "</html>");
 	}
 	
 	public void setRemainingTime(String time_) {
-		currrent_project_progression_value.setText("<html>" + time_ + "</html>");
+		currrentProjectProgressionValue.setText("<html>" + time_ + "</html>");
 	}
 	
 	public void setRenderingTime(String time_) {
-		current_project_duration_value.setText("<html>" + time_ + "</html>");
+		currentProjectDurationValue.setText("<html>" + time_ + "</html>");
 	}
 	
 	public void setComputeMethod(String computeMethod_) {
-		this.current_project_compute_method_value.setText(computeMethod_);
+		this.currentProjectComputeMethodValue.setText(computeMethod_);
 	}
 	
 	public void displayStats(Stats stats) {
 		DecimalFormat df = new DecimalFormat("##,##,##,##,##,##,##0");
 		remainingFrameContent.setText(df.format(stats.getRemainingFrame()));
 		creditEarned.setText(df.format(stats.getCreditsEarnedDuringSession()));
-		user_info_points_total_value.setText(df.format(stats.getCreditsEarned()));
-		renderable_projects_value.setText(df.format(stats.getRenderableProject()));
-		waiting_projects_value.setText(df.format(stats.getWaitingProject()));
-		connected_machines_value.setText(df.format(stats.getConnectedMachine()));
+		userInfoPointsTotalValue.setText(df.format(stats.getCreditsEarned()));
+		renderableProjectsValue.setText(df.format(stats.getRenderableProject()));
+		waitingProjectsValue.setText(df.format(stats.getWaitingProject()));
+		connectedMachinesValue.setText(df.format(stats.getConnectedMachine()));
 		updateTime();
 	}
 	
 	public void updateTime() {
 		if (this.parent.getClient().getStartTime() != 0) {
-			user_info_total_rendertime_this_session_value.setText(Utils.humanDuration(new Date((new Date().getTime() - this.parent.getClient().getStartTime()))));
+			userInfoTotalRenderTimeThisSessionValue.setText(Utils.humanDuration(new Date((new Date().getTime() - this.parent.getClient().getStartTime()))));
 		}
 		Job job = this.parent.getClient().getRenderingJob();
 		if (job != null && job.getProcessRender() != null && job.getProcessRender().getStartTime() > 0) {
-			current_project_duration_value.setText("<html>" + Utils.humanDuration(new Date((new Date().getTime() - job.getProcessRender().getStartTime()))) + "</html>");
+			currentProjectDurationValue.setText("<html>" + Utils.humanDuration(new Date((new Date().getTime() - job.getProcessRender().getStartTime()))) + "</html>");
 		}
 		else {
-			current_project_duration_value.setText("");
+			currentProjectDurationValue.setText("");
 		}
 	}
 	
