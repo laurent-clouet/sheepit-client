@@ -154,7 +154,46 @@ public class Working implements Activity {
 		
 		currentProjectPanel.add(currentProjectComputeMethodLabel);
 		currentProjectPanel.add(currentProjectComputeMethodValue);
-		
+
+		// global stats
+		JPanel globalStatsPanel = new JPanel(new SpringLayout());
+
+		titledBorder = BorderFactory.createTitledBorder("Global stats");
+		titledBorder.setTitleColor(foregroundColor);
+
+		globalStatsPanel.setBorder(titledBorder);
+		globalStatsPanel.setBackground(backgroundColor);
+
+		// Data fields theme
+		waitingProjectsValue.setForeground(foregroundColor);
+		connectedMachinesValue.setForeground(foregroundColor);
+		remainingFrameContent.setForeground(foregroundColor);
+		userInfoPointsTotalValue.setForeground(foregroundColor);
+
+		JLabel globalStatsMachineConnected = new JLabel("Machines connected: ", JLabel.TRAILING);
+		globalStatsMachineConnected.setForeground(foregroundColor);
+
+		JLabel globalStatsRemainingFrame = new JLabel("Remaining frames: ", JLabel.TRAILING);
+		globalStatsRemainingFrame.setForeground(foregroundColor);
+
+		JLabel globalStatsWaitingProject = new JLabel("Active projects: ", JLabel.TRAILING);
+		globalStatsWaitingProject.setForeground(foregroundColor);
+
+		JLabel globalStatsUserPoints = new JLabel("User's points: ", JLabel.TRAILING);
+		globalStatsUserPoints.setForeground(foregroundColor);
+
+		globalStatsPanel.add(globalStatsWaitingProject);
+		globalStatsPanel.add(waitingProjectsValue);
+
+		globalStatsPanel.add(globalStatsMachineConnected);
+		globalStatsPanel.add(connectedMachinesValue);
+
+		globalStatsPanel.add(globalStatsRemainingFrame);
+		globalStatsPanel.add(remainingFrameContent);
+
+		globalStatsPanel.add(globalStatsUserPoints);
+		globalStatsPanel.add(userInfoPointsTotalValue);
+
 		// user info
 		JPanel session_info_panel = new JPanel(new SpringLayout());
 		session_info_panel.setBorder(BorderFactory.createTitledBorder("Session infos"));
@@ -175,27 +214,6 @@ public class Working implements Activity {
 		
 		session_info_panel.add(user_info_total_rendertime_this_session);
 		session_info_panel.add(userInfoTotalRenderTimeThisSessionValue);
-		
-		// global stats
-		JPanel global_stats_panel = new JPanel(new SpringLayout());
-		global_stats_panel.setBorder(BorderFactory.createTitledBorder("Global stats"));
-		
-		JLabel global_stats_machine_connected = new JLabel("Machines connected: ", JLabel.TRAILING);
-		JLabel global_stats_remaining_frame = new JLabel("Remaining frames: ", JLabel.TRAILING);
-		JLabel global_stats_waiting_project = new JLabel("Active projects: ", JLabel.TRAILING);
-		JLabel global_stats_user_points = new JLabel("User's points: ", JLabel.TRAILING);
-		
-		global_stats_panel.add(global_stats_waiting_project);
-		global_stats_panel.add(waitingProjectsValue);
-		
-		global_stats_panel.add(global_stats_machine_connected);
-		global_stats_panel.add(connectedMachinesValue);
-		
-		global_stats_panel.add(global_stats_remaining_frame);
-		global_stats_panel.add(remainingFrameContent);
-		
-		global_stats_panel.add(global_stats_user_points);
-		global_stats_panel.add(userInfoPointsTotalValue);
 		
 		// last frame
 		JPanel last_frame_panel = new JPanel();
@@ -240,16 +258,16 @@ public class Working implements Activity {
 		global_constraints.gridx = 0;
 		
 		parent.getContentPane().add(currentProjectPanel, global_constraints);
-		parent.getContentPane().add(global_stats_panel, global_constraints);
+		parent.getContentPane().add(globalStatsPanel, global_constraints);
 		parent.getContentPane().add(session_info_panel, global_constraints);
 		parent.getContentPane().add(last_frame_panel, global_constraints);
 		parent.getContentPane().add(buttonsPanel, global_constraints);
 		
 		Spring widthLeftColumn = getBestWidth(currentProjectPanel, 4, 2);
-		widthLeftColumn = Spring.max(widthLeftColumn, getBestWidth(global_stats_panel, 4, 2));
+		widthLeftColumn = Spring.max(widthLeftColumn, getBestWidth(globalStatsPanel, 4, 2));
 		widthLeftColumn = Spring.max(widthLeftColumn, getBestWidth(session_info_panel, 3, 2));
 		alignPanel(currentProjectPanel, 5, 2, widthLeftColumn);
-		alignPanel(global_stats_panel, 4, 2, widthLeftColumn);
+		alignPanel(globalStatsPanel, 4, 2, widthLeftColumn);
 		alignPanel(session_info_panel, 4, 2, widthLeftColumn);
 	}
 	
