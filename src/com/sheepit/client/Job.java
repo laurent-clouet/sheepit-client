@@ -40,6 +40,8 @@ import java.util.Observer;
 import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import com.sheepit.client.Configuration.ComputeType;
 import com.sheepit.client.Error.Type;
@@ -271,9 +273,17 @@ public class Job {
 			
 			log.debug("renderer output");
 			try {
+				int progress = -1;
+
+				Pattern renderStart  = Pattern.compile("Waiting for render to start");
+				Pattern tilePattern  = Pattern.compile(" ([0-9]+)\\/([0-9]+) ");
+				Pattern rendedFinish = Pattern.compile("Blender quit");
+
 				while ((line = input.readLine()) != null) {
 					log.debug(line);
-					
+
+					progress = computeRenderingProgress(line, renderStart, tilePattern, rendedFinish, progress);
+
 					updateRenderingMemoryPeak(line);
 					if (configuration.getMaxMemory() != -1 && process.getMemoryUsed() > configuration.getMaxMemory()) {
 						log.debug("Blocking render because process ram used (" + process.getMemoryUsed() + "k) is over user setting (" + configuration.getMaxMemory() + "k)");
@@ -397,7 +407,34 @@ public class Job {
 		
 		return Error.Type.OK;
 	}
-	
+
+	private int computeRenderingProgress(String line, Pattern renderStartPattern, Pattern tilePattern, Pattern renderEndPattern, int currentProgress) {
+		Matcher standardTileInfo = tilePattern.matcher(line);
+		Matcher isStarted  = renderStartPattern.matcher(line);
+		Matcher isFinished = renderEndPattern.matcher(line);
+		int newProgress = currentProgress;
+
+		if (standardTileInfo.find()) {
+			int tileJustProcessed = Integer.parseInt(standardTileInfo.group(1));
+			int totalTilesInJob  = Integer.parseInt(standardTileInfo.group(2));
+
+			newProgress = Math.abs((tileJustProcessed * 100) / totalTilesInJob);
+		}
+		else if (isStarted.find()) {
+			newProgress = 0;
+		}
+		else if (isFinished.find()) {
+			newProgress = -1;
+		}
+
+		// Only update the tray icon if percentage has changed
+		if (newProgress != currentProgress) {
+			gui.updateTrayIcon(newProgress);
+		}
+
+		return newProgress;
+	}
+
 	private void updateRenderingStatus(String line) {
 		if (getUpdateRenderingStatusMethod() != null && getUpdateRenderingStatusMethod().equals(Job.UPDATE_METHOD_BLENDER_INTERNAL_BY_PART)) {
 			String search = " Part ";
