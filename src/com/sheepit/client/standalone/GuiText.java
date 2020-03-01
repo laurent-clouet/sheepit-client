@@ -88,7 +88,11 @@ public class GuiText implements Gui {
 	public void stop() {
 		Runtime.getRuntime().halt(0);
 	}
-	
+
+	@Override
+	public void updateTrayIcon(Integer percentage) {
+	}
+
 	@Override
 	public void status(String msg_) {
 		System.out.println(msg_);
