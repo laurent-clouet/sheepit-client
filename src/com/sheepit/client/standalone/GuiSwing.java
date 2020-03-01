@@ -129,14 +129,15 @@ public class GuiSwing extends JFrame implements Gui {
 			}
 		}
 
+		// load the images sprite and split into individual images
 		URL spriteSequenceUrl = getClass().getResource("/icon-sprites.png");
 
 		if (spriteSequenceUrl != null) {
 			try {
 				iconSprites = ImageIO.read(spriteSequenceUrl);
-				trayIconSprites = new BufferedImage[101 * 1];			// sprite is 101 images in 1 column
+				trayIconSprites = new BufferedImage[101 * 1];			// sprite sheet has 101 images in 1 column
 
-				setIconImage(extractImageFromSprite(0));	// sprite 0 is standard Sheep It! icon
+				setIconImage(extractImageFromSprite(-1));	// sprite 0 is standard Sheep It! icon
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -318,8 +319,9 @@ public class GuiSwing extends JFrame implements Gui {
 	
 	public TrayIcon getTrayIcon() {
 		final PopupMenu trayMenu = new PopupMenu();
-		
-		Image img = extractImageFromSprite(0);
+
+		// on start, show the base icon
+		Image img = extractImageFromSprite(-1);
 		final TrayIcon icon = new TrayIcon(img);
 		
 		MenuItem exit = new MenuItem("Exit");
@@ -366,7 +368,14 @@ public class GuiSwing extends JFrame implements Gui {
 	}
 
 	private Image extractImageFromSprite(int spriteNumber) {
-		ImageIcon img = new ImageIcon(iconSprites.getSubimage(0, spriteNumber * 114, 114, 114));
+		// Sprite structure
+		// Image 0: base sprite
+		// Images 1-101: progress bar percentage from 0 to 100
+		//
+		// Always add +1 to the icon requested.
+		// -1 turns into 0 (base sprite with no progress bar)
+		// 0 to 101 turns into 1 to 101 (progress sequence starts in sprite 1 and ends on sprite 101)
+		ImageIcon img = new ImageIcon(iconSprites.getSubimage(0, (spriteNumber + 1) * 114, 114, 114));
 
 		return img.getImage();
 	}
