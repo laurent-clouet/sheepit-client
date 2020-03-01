@@ -380,7 +380,16 @@ public class GuiSwing extends JFrame implements Gui {
 		return img.getImage();
 	}
 
+	@Override
 	public void updateTrayIcon(Integer percentage) {
+		// update the app icon on the app bar
+		Image img = extractImageFromSprite(percentage);
+		setIconImage(img);
+
+		// if the app supports the system tray, update as well
+		if (sysTray != null && SystemTray.isSupported()) {
+			trayIcon.setImage(img);
+		}
 	}
 
 	public class ThreadClient extends Thread {
