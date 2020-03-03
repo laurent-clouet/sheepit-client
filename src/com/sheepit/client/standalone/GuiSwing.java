@@ -388,7 +388,11 @@ public class GuiSwing extends JFrame implements Gui {
 
 		// if the app supports the system tray, update as well
 		if (sysTray != null && SystemTray.isSupported()) {
-			trayIcon.setImage(img);
+			if (trayIcon != null) {
+				trayIcon.setImage(img);
+				trayIcon.setImageAutoSize(true);		// use this method to ensure that icon is refreshed when on
+														// the tray
+			}
 		}
 	}
 
