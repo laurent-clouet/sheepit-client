@@ -309,6 +309,10 @@ public class Job {
 						if (script_file != null) {
 							script_file.delete();
 						}
+
+						// Put back base icon
+						gui.updateTrayIcon(Job.SHOW_BASE_ICON);
+
 						return error;
 					}
 
@@ -322,6 +326,10 @@ public class Job {
 				// most likely The handle is invalid
 				log.error("Job::render exception(B) (silent error) " + err1);
 			}
+
+			// Put back base icon
+			gui.updateTrayIcon(Job.SHOW_BASE_ICON);
+
 			log.debug("end of rendering");
 		}
 		catch (Exception err) {
