@@ -277,7 +277,7 @@ public class Job {
 			try {
 				int progress = -1;
 
-				Pattern tilePattern  = Pattern.compile(" ([0-9]+)\\/([0-9]+) ");
+				Pattern tilePattern  = Pattern.compile(" ([0-9]+)\\s?\\/\\s?([0-9]+) ");
 
 				// Initialise the progress bar in the icon (0% completed at this time)
 				gui.updateTrayIcon(0);
