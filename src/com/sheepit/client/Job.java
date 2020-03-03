@@ -56,7 +56,9 @@ public class Job {
 	public static final String UPDATE_METHOD_BY_REMAINING_TIME = "remainingtime";
 	public static final String UPDATE_METHOD_BLENDER_INTERNAL_BY_PART = "blenderinternal";
 	public static final String UPDATE_METHOD_BY_TILE = "by_tile";
-	
+
+	public static final int SHOW_BASE_ICON = -1;
+
 	private String frameNumber;
 	private String sceneMD5;
 	private String rendererMD5;
@@ -275,14 +277,15 @@ public class Job {
 			try {
 				int progress = -1;
 
-				Pattern renderStart  = Pattern.compile("Waiting for render to start");
 				Pattern tilePattern  = Pattern.compile(" ([0-9]+)\\/([0-9]+) ");
-				Pattern rendedFinish = Pattern.compile("Blender quit");
+
+				// Initialise the progress bar in the icon (0% completed at this time)
+				gui.updateTrayIcon(0);
 
 				while ((line = input.readLine()) != null) {
 					log.debug(line);
 
-					progress = computeRenderingProgress(line, renderStart, tilePattern, rendedFinish, progress);
+					progress = computeRenderingProgress(line, tilePattern, progress);
 
 					updateRenderingMemoryPeak(line);
 					if (configuration.getMaxMemory() != -1 && process.getMemoryUsed() > configuration.getMaxMemory()) {
@@ -292,6 +295,11 @@ public class Job {
 						if (script_file != null) {
 							script_file.delete();
 						}
+
+						// Once the process is finished (either finished successfully or with an error) move back to
+						// base icon (isolated S with no progress bar)
+						gui.updateTrayIcon(Job.SHOW_BASE_ICON);
+
 						return Error.Type.RENDERER_OUT_OF_MEMORY;
 					}
 					
@@ -408,10 +416,8 @@ public class Job {
 		return Error.Type.OK;
 	}
 
-	private int computeRenderingProgress(String line, Pattern renderStartPattern, Pattern tilePattern, Pattern renderEndPattern, int currentProgress) {
+	private int computeRenderingProgress(String line, Pattern tilePattern, int currentProgress) {
 		Matcher standardTileInfo = tilePattern.matcher(line);
-		Matcher isStarted  = renderStartPattern.matcher(line);
-		Matcher isFinished = renderEndPattern.matcher(line);
 		int newProgress = currentProgress;
 
 		if (standardTileInfo.find()) {
@@ -419,12 +425,6 @@ public class Job {
 			int totalTilesInJob  = Integer.parseInt(standardTileInfo.group(2));
 
 			newProgress = Math.abs((tileJustProcessed * 100) / totalTilesInJob);
-		}
-		else if (isStarted.find()) {
-			newProgress = 0;
-		}
-		else if (isFinished.find()) {
-			newProgress = -1;
 		}
 
 		// Only update the tray icon if percentage has changed
