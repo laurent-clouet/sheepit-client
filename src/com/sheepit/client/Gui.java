@@ -25,7 +25,9 @@ public interface Gui {
 	public void stop();
 	
 	public void status(String msg_);
-	
+
+	public void updateTrayIcon(Integer percentage_);
+
 	public void setRenderingProjectName(String name_);
 	
 	public void setRemainingTime(String time_);

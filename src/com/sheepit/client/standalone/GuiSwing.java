@@ -31,9 +31,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowStateListener;
+import java.awt.image.BufferedImage;
 import java.net.URL;
+import java.nio.Buffer;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import java.io.IOException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -41,6 +45,7 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
+import javax.imageio.ImageIO;
 
 import com.sheepit.client.Client;
 import com.sheepit.client.Configuration;
@@ -71,6 +76,9 @@ public class GuiSwing extends JFrame implements Gui {
 	
 	private boolean waitingForAuthentication;
 	private Client client;
+
+	private BufferedImage iconSprites;
+	private BufferedImage[] trayIconSprites;
 
 	@Getter
 	@Setter
@@ -120,13 +128,21 @@ public class GuiSwing extends JFrame implements Gui {
 				sysTray = null;
 			}
 		}
-		
-		URL iconUrl = getClass().getResource("/icon.png");
-		if (iconUrl != null) {
-			ImageIcon img = new ImageIcon(iconUrl);
-			setIconImage(img.getImage());
+
+		// load the images sprite and split into individual images
+		URL spriteSequenceUrl = getClass().getResource("/icon-sprites.png");
+
+		if (spriteSequenceUrl != null) {
+			try {
+				iconSprites = ImageIO.read(spriteSequenceUrl);
+				trayIconSprites = new BufferedImage[101 * 1];			// sprite sheet has 101 images in 1 column
+
+				setIconImage(extractImageFromSprite(-1));	// sprite 0 is standard Sheep It! icon
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
-		
+
 		setTitle(title);
 		setSize(520, 760);
 		
@@ -303,9 +319,9 @@ public class GuiSwing extends JFrame implements Gui {
 	
 	public TrayIcon getTrayIcon() {
 		final PopupMenu trayMenu = new PopupMenu();
-		
-		URL iconUrl = getClass().getResource("/icon.png");
-		Image img = Toolkit.getDefaultToolkit().getImage(iconUrl);
+
+		// on start, show the base icon
+		Image img = extractImageFromSprite(-1);
 		final TrayIcon icon = new TrayIcon(img);
 		
 		MenuItem exit = new MenuItem("Exit");
@@ -350,7 +366,36 @@ public class GuiSwing extends JFrame implements Gui {
 		return icon;
 		
 	}
-	
+
+	private Image extractImageFromSprite(int spriteNumber) {
+		// Sprite structure
+		// Image 0: base sprite
+		// Images 1-101: progress bar percentage from 0 to 100
+		//
+		// Always add +1 to the icon requested.
+		// -1 turns into 0 (base sprite with no progress bar)
+		// 0 to 101 turns into 1 to 101 (progress sequence starts in sprite 1 and ends on sprite 101)
+		ImageIcon img = new ImageIcon(iconSprites.getSubimage(0, (spriteNumber + 1) * 114, 114, 114));
+
+		return img.getImage();
+	}
+
+	@Override
+	public void updateTrayIcon(Integer percentage) {
+		// update the app icon on the app bar
+		Image img = extractImageFromSprite(percentage);
+		setIconImage(img);
+
+		// if the app supports the system tray, update as well
+		if (sysTray != null && SystemTray.isSupported()) {
+			if (trayIcon != null) {
+				trayIcon.setImage(img);
+				trayIcon.setImageAutoSize(true);		// use this method to ensure that icon is refreshed when on
+														// the tray
+			}
+		}
+	}
+
 	public class ThreadClient extends Thread {
 		@Override
 		public void run() {

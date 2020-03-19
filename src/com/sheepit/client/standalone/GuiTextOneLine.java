@@ -94,7 +94,11 @@ public class GuiTextOneLine implements Gui {
 	public void stop() {
 		Runtime.getRuntime().halt(0);
 	}
-	
+
+	@Override
+	public void updateTrayIcon(Integer percentage) {
+	}
+
 	@Override
 	public void status(String msg_) {
 		status = msg_;

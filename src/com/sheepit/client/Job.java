@@ -40,6 +40,8 @@ import java.util.Observer;
 import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import com.sheepit.client.Configuration.ComputeType;
 import com.sheepit.client.Error.Type;
@@ -54,7 +56,9 @@ public class Job {
 	public static final String UPDATE_METHOD_BY_REMAINING_TIME = "remainingtime";
 	public static final String UPDATE_METHOD_BLENDER_INTERNAL_BY_PART = "blenderinternal";
 	public static final String UPDATE_METHOD_BY_TILE = "by_tile";
-	
+
+	public static final int SHOW_BASE_ICON = -1;
+
 	private String frameNumber;
 	private String sceneMD5;
 	private String rendererMD5;
@@ -271,9 +275,18 @@ public class Job {
 			
 			log.debug("renderer output");
 			try {
+				int progress = -1;
+
+				Pattern tilePattern  = Pattern.compile(" ([0-9]+)\\s?\\/\\s?([0-9]+) ");
+
+				// Initialise the progress bar in the icon (0% completed at this time)
+				gui.updateTrayIcon(0);
+
 				while ((line = input.readLine()) != null) {
 					log.debug(line);
-					
+
+					progress = computeRenderingProgress(line, tilePattern, progress);
+
 					updateRenderingMemoryPeak(line);
 					if (configuration.getMaxMemory() != -1 && process.getMemoryUsed() > configuration.getMaxMemory()) {
 						log.debug("Blocking render because process ram used (" + process.getMemoryUsed() + "k) is over user setting (" + configuration.getMaxMemory() + "k)");
@@ -282,6 +295,11 @@ public class Job {
 						if (script_file != null) {
 							script_file.delete();
 						}
+
+						// Once the process is finished (either finished successfully or with an error) move back to
+						// base icon (isolated S with no progress bar)
+						gui.updateTrayIcon(Job.SHOW_BASE_ICON);
+
 						return Error.Type.RENDERER_OUT_OF_MEMORY;
 					}
 					
@@ -291,6 +309,10 @@ public class Job {
 						if (script_file != null) {
 							script_file.delete();
 						}
+
+						// Put back base icon
+						gui.updateTrayIcon(Job.SHOW_BASE_ICON);
+
 						return error;
 					}
 
@@ -304,6 +326,10 @@ public class Job {
 				// most likely The handle is invalid
 				log.error("Job::render exception(B) (silent error) " + err1);
 			}
+
+			// Put back base icon
+			gui.updateTrayIcon(Job.SHOW_BASE_ICON);
+
 			log.debug("end of rendering");
 		}
 		catch (Exception err) {
@@ -397,7 +423,26 @@ public class Job {
 		
 		return Error.Type.OK;
 	}
-	
+
+	private int computeRenderingProgress(String line, Pattern tilePattern, int currentProgress) {
+		Matcher standardTileInfo = tilePattern.matcher(line);
+		int newProgress = currentProgress;
+
+		if (standardTileInfo.find()) {
+			int tileJustProcessed = Integer.parseInt(standardTileInfo.group(1));
+			int totalTilesInJob  = Integer.parseInt(standardTileInfo.group(2));
+
+			newProgress = Math.abs((tileJustProcessed * 100) / totalTilesInJob);
+		}
+
+		// Only update the tray icon if percentage has changed
+		if (newProgress != currentProgress) {
+			gui.updateTrayIcon(newProgress);
+		}
+
+		return newProgress;
+	}
+
 	private void updateRenderingStatus(String line) {
 		if (getUpdateRenderingStatusMethod() != null && getUpdateRenderingStatusMethod().equals(Job.UPDATE_METHOD_BLENDER_INTERNAL_BY_PART)) {
 			String search = " Part ";
