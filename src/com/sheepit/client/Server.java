@@ -38,6 +38,7 @@ import java.net.CookieManager;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.NoRouteToHostException;
+import java.net.URLDecoder;
 import java.net.UnknownHostException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -184,7 +185,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 		String publickey = null;
 		try {
 			String url_remote = this.base_url + "/server/config.php";
-			String parameters = String.format("login=%s&password=%s&cpu_family=%s&cpu_model=%s&cpu_model_name=%s&cpu_cores=%s&os=%s&ram=%s&bits=%s&version=%s&hostname=%s&ui=%s&extras=%s", 
+			String parameters = String.format("login=%s&password=%s&cpu_family=%s&cpu_model=%s&cpu_model_name=%s&cpu_cores=%s&os=%s&ram=%s&bits=%s&version=%s&hostname=%s&ui=%s&extras=%s",
 				URLEncoder.encode(this.user_config.getLogin(), "UTF-8"),
 				URLEncoder.encode(this.user_config.getPassword(), "UTF-8"),
 				URLEncoder.encode(os.getCPU().family(), "UTF-8"),
@@ -339,6 +340,8 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				
 				script += jobData.getRenderTask().getScript();
 
+				String validationUrl = URLDecoder.decode(jobData.getRenderTask().getValidationUrl());
+
 				Job a_job = new Job(
 						this.user_config,
 						this.client.getGui(),
@@ -348,6 +351,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 						jobData.getRenderTask().getPath().replace("/", File.separator),
 						jobData.getRenderTask().getUseGpu() == 1,
 						jobData.getRenderTask().getRendererInfos().getCommandline(),
+						validationUrl,
 						script,
 						jobData.getRenderTask().getArchive_md5(),
 						jobData.getRenderTask().getRendererInfos().getMd5(),
