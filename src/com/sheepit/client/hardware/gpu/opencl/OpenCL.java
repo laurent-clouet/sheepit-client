@@ -40,7 +40,7 @@ public class OpenCL implements GPULister {
 		
 		String path = "OpenCL";
 		try {
-			lib = (OpenCLLib) Native.loadLibrary(path, OpenCLLib.class);
+			lib = (OpenCLLib) Native.load(path, OpenCLLib.class);
 		}
 		catch (java.lang.UnsatisfiedLinkError e) {
 			System.out.println("OpenCL::getGpus failed(A) to load OpenCL lib (path: " + path + ")");

@@ -22,7 +22,7 @@ public class Nvidia implements GPULister {
 		}
 		CUDA cudalib = null;
 		try {
-			cudalib = (CUDA) Native.loadLibrary(path, CUDA.class);
+			cudalib = (CUDA) Native.load(path, CUDA.class);
 		}
 		catch (java.lang.UnsatisfiedLinkError e) {
 			return null;

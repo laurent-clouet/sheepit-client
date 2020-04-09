@@ -127,7 +127,7 @@ public class Windows extends OS {
 		// disable a popup because the renderer might crash (seg fault)
 		Kernel32Lib kernel32lib = null;
 		try {
-			kernel32lib = (Kernel32Lib) Native.loadLibrary(Kernel32Lib.path, Kernel32Lib.class);
+			kernel32lib = (Kernel32Lib) Native.load(Kernel32Lib.path, Kernel32Lib.class);
 			kernel32lib.SetErrorMode(Kernel32Lib.SEM_NOGPFAULTERRORBOX);
 		}
 		catch (java.lang.UnsatisfiedLinkError e) {

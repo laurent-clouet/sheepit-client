@@ -49,7 +49,7 @@ public class WinProcess {
 		this.pid = -1;
 		this.kernel32lib = null;
 		try {
-			this.kernel32lib = (Kernel32Lib) Native.loadLibrary(Kernel32Lib.path, Kernel32Lib.class);
+			this.kernel32lib = (Kernel32Lib) Native.load(Kernel32Lib.path, Kernel32Lib.class);
 		}
 		catch (java.lang.UnsatisfiedLinkError e) {
 			System.out.println("WinProcess::construct " + e);
