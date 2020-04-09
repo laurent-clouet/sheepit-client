@@ -21,8 +21,8 @@ package com.sheepit.client.standalone;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
-import static org.kohsuke.args4j.ExampleMode.REQUIRED;
 import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.OptionHandlerFilter;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -126,7 +126,7 @@ public class Worker {
 			System.err.println("Usage: ");
 			parser.printUsage(System.err);
 			System.err.println();
-			System.err.println("Example: java " + this.getClass().getName() + " " + parser.printExample(REQUIRED));
+			System.err.println("Example: java " + this.getClass().getName() + " " + parser.printExample(OptionHandlerFilter.REQUIRED));
 			return;
 		}
 		
