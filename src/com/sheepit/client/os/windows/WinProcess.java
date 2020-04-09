@@ -64,7 +64,7 @@ public class WinProcess {
 	
 	private static boolean processHasGetPid() {
 		try {
-			if (Process.class.getMethod("pid", null) != null) {
+			if (Process.class.getMethod("pid") != null) {
 				return true;
 			}
 		}
@@ -75,7 +75,7 @@ public class WinProcess {
 	
 	private static long getPid(Process process) {
 		try {
-			return (long) Process.class.getMethod("pid", null).invoke(process, null);
+			return (long) Process.class.getMethod("pid").invoke(process);
 		}
 		catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 		}
