@@ -375,6 +375,8 @@ public class Client {
 		this.disableErrorSending = true;
 		
 		if (this.renderingJob != null) {
+			this.gui.status("Stopping");
+
 			if (this.renderingJob.getProcessRender().getProcess() != null) {
 				this.renderingJob.setAskForRendererKill(true);
 				OS.getOS().kill(this.renderingJob.getProcessRender().getProcess());
@@ -389,6 +391,8 @@ public class Client {
 		}
 
 		if (this.server.getPage("logout").isEmpty() == false) {
+			this.gui.status("Disconnecting from SheepIt server");
+
 			try {
 				this.server.HTTPRequest(this.server.getPage("logout"));
 			}
@@ -641,11 +645,11 @@ public class Client {
 		
 		while ((ret != 0 || md5_check == false) && attempts < this.maxDownloadFileAttempts) {
 			if (ret != 0) {
-				this.gui.error("Client::downloadFile problem with Server.HTTPGetFile returned " + ret);
+				this.gui.error(String.format("Unable to download %s (error %d). Retrying now", download_type, ret));
 				this.log.debug("Client::downloadFile problem with Server.HTTPGetFile (return: " + ret + ") removing local file (path: " + local_path + ")");
 			}
 			else if (md5_check == false) {
-				this.gui.error("Client::downloadFile problem with Client::checkFile mismatch on md5");
+				this.gui.error(String.format("Verification of downloaded %s has failed. Retrying now", download_type));
 				this.log.debug("Client::downloadFile problem with Client::checkFile mismatch on md5, removing local file (path: " + local_path + ")");
 			}
 			local_path_file.delete();
@@ -706,7 +710,7 @@ public class Client {
 			ret = Utils.unzipFileIntoDirectory(renderer_archive, renderer_path, null, log);
 			if (ret != 0) {
 				this.log.error("Client::prepareWorkingDirectory, error(1) with Utils.unzipFileIntoDirectory(" + renderer_archive + ", " + renderer_path + ") returned " + ret);
-				this.gui.error("Client::prepareWorkingDirectory, error with Utils.unzipFileIntoDirectory of the renderer (returned " + ret + ")");
+				this.gui.error(String.format("Unable to extract the renderer (error %d)", ret));
 				return -1;
 			}
 			
@@ -734,7 +738,7 @@ public class Client {
 			ret = Utils.unzipFileIntoDirectory(scene_archive, scene_path, ajob.getPassword(), log);
 			if (ret != 0) {
 				this.log.error("Client::prepareWorkingDirectory, error(2) with Utils.unzipFileIntoDirectory(" + scene_archive + ", " + scene_path + ") returned " + ret);
-				this.gui.error("Client::prepareWorkingDirectory, error with Utils.unzipFileIntoDirectory of the scene (returned " + ret + ")");
+				this.gui.error(String.format("Unable to extract the scene (error %d)", ret));
 				return -2;
 			}
 		}
@@ -756,6 +760,10 @@ public class Client {
 		int max_try = 3;
 		ServerCode ret = ServerCode.UNKNOWN;
 		while (nb_try < max_try && ret != ServerCode.OK) {
+			this.gui.status(String.format("Uploading frame (%.2fMB)",
+					(new File(ajob.getOutputImagePath()).length() / 1024.0 / 1024.0)
+			));
+
 			ret = this.server.HTTPSendFile(url_real, ajob.getOutputImagePath());
 			switch (ret) {
 				case OK:
