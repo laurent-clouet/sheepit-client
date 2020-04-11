@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# jvm is taken from https://adoptopenjdk.net/releases.html?variant=openjdk11&jvmVariant=hotspot
 jvm_name="jdk-11.0.6+10-jre"
 
 #creating folder structure
