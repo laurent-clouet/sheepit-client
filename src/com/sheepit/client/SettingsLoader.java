@@ -285,10 +285,6 @@ public class SettingsLoader {
 			
 			if (prop.containsKey("theme")) {
 				this.theme = prop.getProperty("theme");
-			} else {
-				// All clients base will already have a config file that doesn't include the theme selection key.
-				// If that's the case, then we default the client to light mode.
-				this.theme = "light";
 			}
 
 			if (prop.containsKey("priority")) {
@@ -373,9 +369,13 @@ public class SettingsLoader {
 		if (config.getUIType() == null && ui != null) {
 			config.setUIType(ui);
 		}
-		
-		if (config.getTheme() == null && theme != null) {
-			config.setTheme(theme);
+
+		if (config.getTheme() == null) {
+			if (this.theme != null) {
+				config.setTheme(this.theme);
+			} else {
+				config.setTheme("light");
+			}
 		}
 
 		config.setAutoSignIn(Boolean.valueOf(autoSignIn));
