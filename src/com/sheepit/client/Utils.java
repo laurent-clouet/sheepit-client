@@ -192,10 +192,10 @@ public class Utils {
 		
 		String output = "";
 		if (hours > 0) {
-			output += hours + "h";
+			output += hours + "h ";
 		}
 		if (minutes > 0) {
-			output += minutes + "min";
+			output += minutes + "min ";
 		}
 		if (seconds > 0) {
 			output += seconds + "s";
