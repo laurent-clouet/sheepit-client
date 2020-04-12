@@ -64,6 +64,7 @@ public class Configuration {
 	private boolean autoSignIn;
 	private String UIType;
 	private String hostname;
+	private String theme;
 	
 	public Configuration(File cache_dir_, String login_, String password_) {
 		this.configFilePath = null;
@@ -89,6 +90,7 @@ public class Configuration {
 		this.extras = "";
 		this.autoSignIn = false;
 		this.UIType = null;
+		this.theme = null;
 	}
 	
 	
