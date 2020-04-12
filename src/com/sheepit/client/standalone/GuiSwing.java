@@ -25,7 +25,6 @@ import java.awt.Image;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
 import java.awt.SystemTray;
-import java.awt.Toolkit;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -56,6 +55,10 @@ import com.sheepit.client.standalone.swing.activity.Settings;
 import com.sheepit.client.standalone.swing.activity.Working;
 import lombok.Getter;
 import lombok.Setter;
+
+import com.formdev.flatlaf.FlatLightLaf;	// Required for dark & light mode
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatLaf;
 
 public class GuiSwing extends JFrame implements Gui {
 	public static final String type = "swing";
@@ -104,13 +107,6 @@ public class GuiSwing extends JFrame implements Gui {
 	
 	@Override
 	public void start() {
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		}
-		catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e1) {
-			e1.printStackTrace();
-		}
-		
 		if (useSysTray) {
 			try {
 				sysTray = SystemTray.getSystemTray();
@@ -158,6 +154,20 @@ public class GuiSwing extends JFrame implements Gui {
 		
 		this.showActivity(ActivityType.SETTINGS);
 		
+		try {
+			if (client.getConfiguration().getTheme().equals("light")) {
+				UIManager.setLookAndFeel(new FlatLightLaf());
+			} else if (client.getConfiguration().getTheme().equals("dark")) {
+				UIManager.setLookAndFeel(new FlatDarkLaf());
+			}
+
+			// Apply the selected theme to swing components
+			FlatLaf.updateUI();
+		}
+		catch (UnsupportedLookAndFeelException e1) {
+			e1.printStackTrace();
+		}
+
 		while (waitingForAuthentication) {
 			try {
 				synchronized (this) {

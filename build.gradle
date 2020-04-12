@@ -32,6 +32,8 @@ dependencies {
 	compile 'net.java.dev.jna:jna:4.0.0'
 	compile 'javax.xml.bind:jaxb-api:2.3.1'
 	compile 'com.squareup.retrofit2:converter-simplexml:2.3.0'
+
+	implementation 'com.formdev:flatlaf:0.30'
 }
 
 jar {
