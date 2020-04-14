@@ -37,6 +37,10 @@ public class RenderTask {
 	@Attribute(name = "extras")
 	@Getter
 	private String extras;
+
+	@Attribute(name = "validation_url")
+	@Getter
+	private String validationUrl;
 	
 	@Attribute(name = "name")
 	@Getter

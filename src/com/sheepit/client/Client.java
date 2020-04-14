@@ -741,13 +741,9 @@ public class Client {
 	}
 	
 	protected Error.Type confirmJob(Job ajob) {
-		String extras_config = "";
-		RenderProcess process = ajob.getProcessRender();
-		if (process != null && process.getCoresUsed() > 0) {
-			extras_config = "&cores=" + process.getCoresUsed();
-		}
-		
-		String url_real = String.format("%s?job=%s&frame=%s&rendertime=%d&memoryused=%s&extras=%s%s", this.server.getPage("validate-job"), ajob.getId(), ajob.getFrameNumber(), ajob.getProcessRender().getDuration(), ajob.getProcessRender().getMemoryUsed(), ajob.getExtras(), extras_config);
+		String url_real = String.format("%s&rendertime=%d&memoryused=%s", ajob.getValidationUrl(), ajob.getProcessRender().getDuration(), ajob.getProcessRender().getMemoryUsed());
+		this.log.debug("Client::confirmeJob url " + url_real);
+		this.log.debug("path frame " + ajob.getOutputImagePath());
 		
 		this.isValidatingJob = true;
 		int nb_try = 1;

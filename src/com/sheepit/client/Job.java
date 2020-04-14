@@ -66,6 +66,7 @@ public class Job {
 	private String outputImagePath;
 	private String path; // path inside of the archive
 	private String rendererCommand;
+	private String validationUrl;
 	private String script;
 	private boolean useGPU;
 	private String name;
@@ -81,13 +82,14 @@ public class Job {
 	private Configuration configuration;
 	private Log log;
 	
-	public Job(Configuration config_, Gui gui_, Log log_, String id_, String frame_, String path_, boolean use_gpu, String command_, String script_, String sceneMd5_, String rendererMd5_, String name_, String password_, String extras_, boolean synchronous_upload_, String update_method_) {
+	public Job(Configuration config_, Gui gui_, Log log_, String id_, String frame_, String path_, boolean use_gpu, String command_, String validationUrl_, String script_, String sceneMd5_, String rendererMd5_, String name_, String password_, String extras_, boolean synchronous_upload_, String update_method_) {
 		configuration = config_;
 		id = id_;
 		frameNumber = frame_;
 		path = path_;
 		useGPU = use_gpu;
 		rendererCommand = command_;
+		validationUrl = validationUrl_;
 		sceneMD5 = sceneMd5_;
 		rendererMD5 = rendererMd5_;
 		name = name_;
