@@ -686,42 +686,6 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 		return ServerCode.UNKNOWN;
 	}
 	
-	public byte[] getLastRender() {
-		try {
-			HttpURLConnection httpCon = this.HTTPRequest(this.getPage("last-render-frame"));
-			
-			InputStream inStrm = httpCon.getInputStream();
-			if (httpCon.getResponseCode() != HttpURLConnection.HTTP_OK) {
-				this.log.debug("Server::getLastRender code not ok " + httpCon.getResponseCode());
-				return null;
-			}
-			int size = httpCon.getContentLength();
-			
-			if (size <= 0) {
-				this.log.debug("Server::getLastRender size is negative (size: " + size + ")");
-				return null;
-			}
-			
-			byte[] ret = new byte[size];
-			byte[] ch = new byte[512 * 1024];
-			int n = 0;
-			int i = 0;
-			while ((n = inStrm.read(ch)) != -1) {
-				System.arraycopy(ch, 0, ret, i, n);
-				i += n;
-			}
-			inStrm.close();
-			return ret;
-		}
-		catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			PrintWriter pw = new PrintWriter(sw);
-			e.printStackTrace(pw);
-			this.log.debug("Server::getLastRender Exception " + e + " stacktrace: " + sw.toString());
-		}
-		return null;
-	}
-	
 	private String generateXMLForMD5cache() {
 		List<FileMD5> md5s = new ArrayList<>();
 		for (File local_file : this.user_config.getLocalCacheFiles()) {
