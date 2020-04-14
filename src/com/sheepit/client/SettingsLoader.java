@@ -56,6 +56,7 @@ public class SettingsLoader {
 	private String cacheDir;
 	private String autoSignIn;
 	private String ui;
+	private String theme;
 	private int    priority;
 	
 	public SettingsLoader(String path_) {
@@ -67,7 +68,7 @@ public class SettingsLoader {
 		}
 	}
 	
-	public SettingsLoader(String path_, String login_, String password_, String proxy_, String hostname_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, long maxRam_, int maxRenderTime_, String cacheDir_, boolean autoSignIn_, String ui_, int priority_) {
+	public SettingsLoader(String path_, String login_, String password_, String proxy_, String hostname_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, long maxRam_, int maxRenderTime_, String cacheDir_, boolean autoSignIn_, String ui_, String theme_, int priority_) {
 		if (path_ == null) {
 			path = getDefaultFilePath();
 		}
@@ -82,6 +83,8 @@ public class SettingsLoader {
 		autoSignIn = String.valueOf(autoSignIn_);
 		ui = ui_;
 		priority = priority_;
+		theme = theme_;
+
 		if (cores_ > 0) {
 			cores = String.valueOf(cores_);
 		}
@@ -166,6 +169,10 @@ public class SettingsLoader {
 			if (ui != null) {
 				prop.setProperty("ui", ui);
 			}
+
+			if (theme != null) {
+				prop.setProperty("theme", theme);
+			}
 			
 			prop.store(output, null);
 		}
@@ -212,6 +219,7 @@ public class SettingsLoader {
 		this.priority = 19; // must be the same default as Configuration
 		this.ram = null;
 		this.renderTime = null;
+		this.theme = null;
 		
 		if (new File(path).exists() == false) {
 			return;
@@ -275,6 +283,10 @@ public class SettingsLoader {
 				this.ui = prop.getProperty("ui");
 			}
 			
+			if (prop.containsKey("theme")) {
+				this.theme = prop.getProperty("theme");
+			}
+
 			if (prop.containsKey("priority")) {
 				this.priority = Integer.parseInt(prop.getProperty("priority"));
 			}
@@ -357,12 +369,20 @@ public class SettingsLoader {
 		if (config.getUIType() == null && ui != null) {
 			config.setUIType(ui);
 		}
-		
+
+		if (config.getTheme() == null) {
+			if (this.theme != null) {
+				config.setTheme(this.theme);
+			} else {
+				config.setTheme("light");
+			}
+		}
+
 		config.setAutoSignIn(Boolean.valueOf(autoSignIn));
 	}
 	
 	@Override
 	public String toString() {
-		return "SettingsLoader [path=" + path + ", login=" + login + ", password=" + password + ", computeMethod=" + computeMethod + ", gpu=" + gpu + ", cacheDir=" + cacheDir + "priority="+priority+"]";
+		return "SettingsLoader [path=" + path + ", login=" + login + ", password=" + password + ", computeMethod=" + computeMethod + ", gpu=" + gpu + ", cacheDir=" + cacheDir + ", theme=" + theme + ", priority="+priority+"]";
 	}
 }

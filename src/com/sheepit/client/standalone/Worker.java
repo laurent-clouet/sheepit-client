@@ -112,6 +112,9 @@ public class Worker {
 	@Option(name = "-title", usage = "Custom title for the GUI Client", required = false)
 	private String title = "SheepIt Render Farm";
 	
+	@Option(name = "-theme", usage = "Specify the theme to use for the graphical client, default 'light', available 'light', 'dark'", required = false)
+	private String theme = null;
+
 	public static void main(String[] args) {
 		new Worker().doMain(args);
 	}
@@ -283,6 +286,16 @@ public class Worker {
 			config.setUIType(ui_type);
 		}
 		
+		if (theme != null) {
+			if (!theme.equals("light") && !theme.equals("dark")) {
+				System.err.println(String.format("The theme specified (%s) doesn't exist. Please choose 'light' or 'dark'.", theme));
+				System.err.println("Aborting");
+				System.exit(2);
+			}
+
+			config.setTheme(this.theme);
+		}
+
 		if (config_file != null) {
 			if (new File(config_file).exists() == false) {
 				System.err.println("Configuration file not found.");

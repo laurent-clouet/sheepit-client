@@ -40,6 +40,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
 import javax.swing.Spring;
 import javax.swing.SpringLayout;
 
@@ -73,6 +74,7 @@ public class Working implements Activity {
 	private JLabel waiting_projects_value;
 	private JLabel connected_machines_value;
 	private JLabel user_info_total_rendertime_this_session_value;
+	private String currentTheme;
 	
 	public Working(GuiSwing parent_) {
 		parent = parent_;
@@ -92,10 +94,38 @@ public class Working implements Activity {
 		user_info_total_rendertime_this_session_value = new JLabel("");
 		lastRenderTime = new JLabel("");
 		lastRender = new JLabel("");
+		currentTheme = UIManager.getLookAndFeel().getName();    // Capture the theme on component instantiation
 	}
 	
 	@Override
 	public void show() {
+		// If the stored theme and the UIManager's theme doesn't match is bc the user has changed it
+		if (!currentTheme.equals(UIManager.getLookAndFeel().getName())) {
+			// And, as the user has changed the theme, then we must recreate all the UI elements with session data
+			// Reason being they are defined as class variables and therefore created once when the object
+			// is created the first time.
+			// As the Java swing engine applies the "look & feel" at creation time, we need to "re-create" the
+			// objects to ensure they have the right theme colors.
+			statusContent = new JLabel(statusContent.getText());
+			renderedFrameContent = new JLabel(renderedFrameContent.getText());
+			remainingFrameContent = new JLabel(remainingFrameContent.getText());
+			creditEarned = new JLabel(creditEarned.getText());
+			current_project_name_value = new JLabel(current_project_name_value.getText());
+			current_project_duration_value = new JLabel(current_project_duration_value.getText());
+			currrent_project_progression_value = new JLabel(currrent_project_progression_value.getText());
+			current_project_compute_method_value = new JLabel(current_project_compute_method_value.getText());
+			user_info_points_total_value = new JLabel(user_info_points_total_value.getText());
+			renderable_projects_value = new JLabel(renderable_projects_value.getText());
+			waiting_projects_value = new JLabel(waiting_projects_value.getText());
+			connected_machines_value = new JLabel(connected_machines_value.getText());
+			user_info_total_rendertime_this_session_value = new JLabel(user_info_total_rendertime_this_session_value.getText());
+			lastRenderTime = new JLabel(lastRenderTime.getText());
+			lastRender = new JLabel(lastRender.getText());
+
+			// set the new theme as the current one
+			currentTheme = UIManager.getLookAndFeel().getName();
+		}
+
 		// current project
 		JPanel current_project_panel = new JPanel(new SpringLayout());
 		current_project_panel.setBorder(BorderFactory.createTitledBorder("Project"));
@@ -173,7 +203,7 @@ public class Working implements Activity {
 		last_frame_panel.add(lastRenderTime);
 		last_frame_panel.add(lastRender);
 		
-		ImageIcon image = new ImageIcon(getClass().getResource("/title.png"));
+		ImageIcon image = new ImageIcon(getClass().getResource("/sheepit-logo.png"));
 		JLabel labelImage = new JLabel(image);
 		labelImage.setAlignmentX(Component.CENTER_ALIGNMENT);
 		parent.getContentPane().add(labelImage);
@@ -208,10 +238,12 @@ public class Working implements Activity {
 		global_constraints.weightx = 1;
 		global_constraints.gridx = 0;
 		
+		parent.getContentPane().add(new JLabel(" "), global_constraints);		// Add a separator between logo and first panel
 		parent.getContentPane().add(current_project_panel, global_constraints);
 		parent.getContentPane().add(global_stats_panel, global_constraints);
 		parent.getContentPane().add(session_info_panel, global_constraints);
 		parent.getContentPane().add(last_frame_panel, global_constraints);
+		parent.getContentPane().add(new JLabel(" "), global_constraints);		// Add a separator between last panel and buttons
 		parent.getContentPane().add(buttonsPanel, global_constraints);
 		
 		Spring widthLeftColumn = getBestWidth(current_project_panel, 4, 2);

@@ -35,6 +35,7 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -43,10 +44,17 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JRadioButton;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.SpinnerNumberModel;
+
+import com.formdev.flatlaf.FlatLaf;
+import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.FlatDarkLaf;
 
 import com.sheepit.client.Configuration;
 import com.sheepit.client.Configuration.ComputeType;
@@ -78,6 +86,10 @@ public class Settings implements Activity {
 	private JTextField proxy;
 	private JTextField hostname;
 	
+	private ButtonGroup themeOptionsGroup;
+	private JRadioButton lightMode;
+	private JRadioButton darkMode;
+
 	private JCheckBox saveFile;
 	private JCheckBox autoSignIn;
 	JButton saveButton;
@@ -96,11 +108,13 @@ public class Settings implements Activity {
 		Configuration config = parent.getConfiguration();
 		new SettingsLoader(config.getConfigFilePath()).merge(config);
 		
+		applyTheme(config.getTheme());	// apply the proper theme (light/dark)
+
 		List<GPUDevice> gpus = GPU.listDevices(config);
 		
 		GridBagConstraints constraints = new GridBagConstraints();
 		int currentRow = 0;
-		ImageIcon image = new ImageIcon(getClass().getResource("/title.png"));
+		ImageIcon image = new ImageIcon(getClass().getResource("/sheepit-logo.png"));
 		constraints.fill = GridBagConstraints.CENTER;
 		
 		JLabel labelImage = new JLabel(image);
@@ -111,6 +125,11 @@ public class Settings implements Activity {
 		
 		++currentRow;
 		
+		constraints.gridy = currentRow;
+		parent.getContentPane().add(new JLabel(" "), constraints);	// Add a separator between logo and first panel
+
+		currentRow++;
+
 		// authentication
 		CollapsibleJPanel authentication_panel = new CollapsibleJPanel(new GridLayout(2, 2));
 		authentication_panel.setBorder(BorderFactory.createTitledBorder("Authentication"));
@@ -137,6 +156,36 @@ public class Settings implements Activity {
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		parent.getContentPane().add(authentication_panel, constraints);
 		
+		// Theme selection panel
+		CollapsibleJPanel themePanel = new CollapsibleJPanel(new GridLayout(1, 3));
+		themePanel.setBorder(BorderFactory.createTitledBorder("Theme"));
+
+		themeOptionsGroup = new ButtonGroup();
+
+		lightMode = new JRadioButton("Light");
+		lightMode.setActionCommand("light");
+		lightMode.setSelected(config.getTheme().equals("light"));
+		lightMode.addActionListener(new ApplyThemeAction());
+
+		darkMode = new JRadioButton("Dark");
+		darkMode.setActionCommand("dark");
+		darkMode.setSelected(config.getTheme().equals("dark"));
+		darkMode.addActionListener(new ApplyThemeAction());
+
+		themePanel.add(lightMode);
+		themePanel.add(darkMode);
+
+		// Group both radio buttons to allow only one selected
+		themeOptionsGroup.add(lightMode);
+		themeOptionsGroup.add(darkMode);
+
+		currentRow++;
+		constraints.gridx = 0;
+		constraints.gridy = currentRow;
+		constraints.gridwidth = 2;
+
+		parent.getContentPane().add(themePanel, constraints);
+
 		// directory
 		CollapsibleJPanel directory_panel = new CollapsibleJPanel(new GridLayout(1, 3));
 		directory_panel.setBorder(BorderFactory.createTitledBorder("Cache"));
@@ -370,6 +419,11 @@ public class Settings implements Activity {
 		constraints.gridwidth = 2;
 		parent.getContentPane().add(general_panel, constraints);
 		
+		currentRow++;
+		constraints.gridy = currentRow;
+		parent.getContentPane().add(new JLabel(" "), constraints);	// Add a separator between last checkboxes and button
+
+		currentRow++;
 		String buttonText = "Start";
 		if (parent.getClient() != null) {
 			if (parent.getClient().isRunning()) {
@@ -405,6 +459,22 @@ public class Settings implements Activity {
 
 		saveButton.setEnabled(selected);
 		return selected;
+	}
+
+	private void applyTheme(String theme_) {
+		try {
+			if (theme_.equals("light")) {
+				UIManager.setLookAndFeel(new FlatLightLaf());
+			} else if (theme_.equals("dark")) {
+				UIManager.setLookAndFeel(new FlatDarkLaf());
+			}
+
+			// Apply the new theme
+			FlatLaf.updateUI();
+		}
+		catch (UnsupportedLookAndFeelException e1) {
+			e1.printStackTrace();
+		}
 	}
 	
 	class ChooseFileAction implements ActionListener {
@@ -452,6 +522,13 @@ public class Settings implements Activity {
 		}
 	}
 	
+	class ApplyThemeAction implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			applyTheme(themeOptionsGroup.getSelection().getActionCommand());
+		}
+	}
+
 	class SaveAction implements ActionListener {
 		
 		@Override
@@ -464,6 +541,9 @@ public class Settings implements Activity {
 			if (config == null) {
 				return;
 			}
+
+			if (themeOptionsGroup.getSelection().getActionCommand() != null)
+				config.setTheme(themeOptionsGroup.getSelection().getActionCommand());
 			
 			if (cacheDir != null) {
 				File fromConfig = config.getStorageDir();
@@ -550,7 +630,22 @@ public class Settings implements Activity {
 			}
 			
 			if (saveFile.isSelected()) {
-				parent.setSettingsLoader(new SettingsLoader(config.getConfigFilePath(), login.getText(), new String(password.getPassword()), proxyText, hostnameText, method, selected_gpu, cpu_cores, max_ram, max_rendertime, cachePath, autoSignIn.isSelected(), GuiSwing.type, priority.getValue()));
+				parent.setSettingsLoader(new SettingsLoader(
+						config.getConfigFilePath(),
+						login.getText(),
+						new String(password.getPassword()),
+						proxyText,
+						hostnameText,
+						method,
+						selected_gpu,
+						cpu_cores,
+						max_ram,
+						max_rendertime,
+						cachePath,
+						autoSignIn.isSelected(),
+						GuiSwing.type,
+						themeOptionsGroup.getSelection().getActionCommand(),	// selected theme
+						priority.getValue()));
 				
 				// wait for successful authentication (to store the public key)
 				// or do we already have one?
