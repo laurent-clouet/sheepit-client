@@ -27,9 +27,9 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
+import java.awt.Image;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.Date;
 
@@ -46,11 +46,8 @@ import javax.swing.SpringLayout;
 
 import com.sheepit.client.Client;
 import com.sheepit.client.Job;
-import com.sheepit.client.RenderProcess;
-import com.sheepit.client.Server;
 import com.sheepit.client.Stats;
 import com.sheepit.client.Utils;
-import com.sheepit.client.os.OS;
 import com.sheepit.client.standalone.GuiSwing;
 import com.sheepit.client.standalone.GuiSwing.ActivityType;
 
@@ -307,26 +304,42 @@ public class Working implements Activity {
 		Client client = parent.getClient();
 		if (client != null) {
 			Job lastJob = client.getPreviousJob();
-			Server server = client.getServer();
-			if (server != null) {
-				byte[] data = server.getLastRender();
-				if (data != null) {
-					InputStream is = new ByteArrayInputStream(data);
+			if (lastJob != null) {
+				ImageIcon icon = null;
+				int idInt = Integer.parseInt(lastJob.getId());
+				if (idInt == 1) {
+					icon = new ImageIcon(getClass().getResource("/frame_compute_method.jpg"));
+				}
+				else if (idInt < 20) {
+					icon = new ImageIcon(getClass().getResource("/frame_power_detection.jpg"));
+				}
+				else {
 					try {
-						BufferedImage image = ImageIO.read(is);
-						if (image != null) {
-							lastRender.setIcon(new ImageIcon(image));
-							if (lastJob != null) {
-								// don't use lastJob.getProcessRender().getDuration() due to timezone
-								if (lastJob.getProcessRender().getDuration() > 1) {
-									lastRenderTime.setText("Render time : " + Utils.humanDuration(new Date(lastJob.getProcessRender().getEndTime() - lastJob.getProcessRender().getStartTime())));
-								}
-							}
+						String path = lastJob.getOutputImagePath();
+
+						BufferedImage img = ImageIO.read(new File(path));
+						float width = img.getWidth();
+						float height = img.getHeight();
+						float factor = 1.0f;
+						if (height > 200) {
+							factor = 200f / height;
 						}
+						if (width * factor > 200) {
+							factor = Math.min(factor, 200f / width);
+						}
+						icon = new ImageIcon(img.getScaledInstance((int)(width * factor), (int)(height * factor), Image.SCALE_FAST));
 					}
 					catch (IOException e) {
 						System.out.println("Working::showLastRender() exception " + e);
 						e.printStackTrace();
+					}
+				}
+
+				if (icon != null) {
+					lastRender.setIcon(icon);
+					// don't use lastJob.getProcessRender().getDuration() due to timezone
+					if (lastJob.getProcessRender().getDuration() > 1) {
+						lastRenderTime.setText("Render time : " + Utils.humanDuration(new Date(lastJob.getProcessRender().getEndTime() - lastJob.getProcessRender().getStartTime())));
 					}
 				}
 			}

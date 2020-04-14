@@ -329,9 +329,6 @@ public class Client {
 						gui.error("Client::run problem with confirmJob (returned " + ret + ")");
 						sendError(step);
 					}
-					else {
-						gui.AddFrameRendered();
-					}
 				}
 				else {
 					this.jobsToValidate.add(this.renderingJob);
@@ -445,9 +442,6 @@ public class Client {
 					this.gui.error(Error.humanString(ret));
 					this.log.debug("Client::senderLoop confirm failed, ret: " + ret);
 					sendError(step);
-				}
-				else {
-					gui.AddFrameRendered();
 				}
 			}
 			catch (InterruptedException e) {
@@ -795,15 +789,17 @@ public class Client {
 				}
 			}
 		}
+
 		this.isValidatingJob = false;
+		this.previousJob = ajob;
+
+		gui.AddFrameRendered();
 		
 		// we can remove the frame file
 		File frame = new File(ajob.getOutputImagePath());
 		frame.delete();
 		ajob.setOutputImagePath(null);
-		
-		this.isValidatingJob = false;
-		this.previousJob = ajob;
+
 		return Error.Type.OK;
 	}
 	
