@@ -323,7 +323,7 @@ public class Client {
 					continue;
 				}
 				
-				if (this.renderingJob.isSynchronousUpload() == false) { // power or compute_method job, need to upload right away
+				if (this.renderingJob.isSynchronousUpload() == true) { // power or compute_method job, need to upload right away
 					ret = confirmJob(this.renderingJob);
 					if (ret != Error.Type.OK) {
 						gui.error("Client::run problem with confirmJob (returned " + ret + ")");
