@@ -58,9 +58,6 @@ public class Worker {
 	@Option(name = "-cache-dir", usage = "Cache/Working directory. Caution, everything in it not related to the render-farm will be removed", metaVar = "/tmp/cache", required = false)
 	private String cache_dir = null;
 	
-	@Option(name = "-max-uploading-job", usage = "", metaVar = "1", required = false)
-	private int max_upload = -1;
-	
 	@Option(name = "-gpu", usage = "Name of the GPU used for the render, for example CUDA_0 for Nvidia or OPENCL_0 for AMD/Intel card", metaVar = "CUDA_0", required = false)
 	private String gpu_device = null;
 	
@@ -147,13 +144,12 @@ public class Worker {
 			}
 		}
 		
-		if (max_upload != -1) {
-			if (max_upload <= 0) {
-				System.err.println("Error: max upload should be a greater than zero");
-				return;
-			}
-			config.setMaxUploadingJob(max_upload);
-		}
+		// We set a hard limit of 3 concurrent uploads. As the server doesn't allocate more than 3 concurrent jobs to
+		// a single session to avoid any client taking too many frames and not validating them, we throttle the uploads.
+		// If we don't set this limit, in a computer with slow uploads the server will return a "no job available" when
+		// the 4th concurrent job is requested and that will put the client in "wait" mode for some random time. To
+		// avoid that situation we set this limit.
+		config.setMaxUploadingJob(3);
 		
 		if (gpu_device != null) {
 			if (gpu_device.startsWith(Nvidia.TYPE) == false && gpu_device.startsWith(OpenCL.TYPE) == false) {
