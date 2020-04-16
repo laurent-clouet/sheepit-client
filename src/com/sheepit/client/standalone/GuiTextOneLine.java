@@ -42,6 +42,9 @@ public class GuiTextOneLine implements Gui {
 	private String status;
 	private String line;
 	
+	private int  uploadQueueSize;
+	private long uploadQueueVolume;
+	
 	private boolean exiting = false;
 	
 	private Client client;
@@ -54,6 +57,8 @@ public class GuiTextOneLine implements Gui {
 		status = "";
 		computeMethod = "";
 		line = "";
+		uploadQueueSize   = 0;
+		uploadQueueVolume = 0;
 	}
 	
 	@Override
@@ -136,6 +141,12 @@ public class GuiTextOneLine implements Gui {
 	}
 	
 	@Override
+	public void displayUploadQueueStats(int queueSize, long queueVolume) {
+		this.uploadQueueSize   = queueSize;
+		this.uploadQueueVolume = queueVolume;
+	}
+	
+	@Override
 	public void setRemainingTime(String time_) {
 		status = "(remaining " + time_ + ")";
 		updateLine();
@@ -171,7 +182,17 @@ public class GuiTextOneLine implements Gui {
 		int charToRemove = line.length();
 		
 		System.out.print("\r");
-		line = String.format("Frames: %d Points: %s | %s %s %s", rendered, creditsEarned != null ? creditsEarned : "unknown", project, computeMethod, status + (exiting ? " (Exiting after this frame)" : ""));
+		
+		line = String.format("Frames: %d Points: %s | %s%s %s %s",
+				rendered,
+				creditsEarned != null ? creditsEarned : "unknown",
+				(this.uploadQueueSize > 0 ? String.format("Upload queue: %d (%.2fMB) | ",
+						this.uploadQueueSize, (this.uploadQueueVolume / 1024.0 / 1024.0)) : ""),
+				project,
+				computeMethod,
+				status + (exiting ? " (Exiting after all frames are uploaded)" : "")
+		);
+		
 		System.out.print(line);
 		for (int i = line.length(); i <= charToRemove; i++) {
 			System.out.print(" ");

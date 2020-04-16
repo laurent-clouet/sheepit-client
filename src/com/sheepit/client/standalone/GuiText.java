@@ -118,6 +118,11 @@ public class GuiText implements Gui {
 	}
 	
 	@Override
+	public void displayUploadQueueStats(int queueSize, long queueVolume) {
+		System.out.println(String.format("Upload queue size / volume: %d / %.2fMB", queueSize, (queueVolume / 1024.0 / 1024.0)));
+	}
+	
+	@Override
 	public void setRenderingProjectName(String name_) {
 		if (name_ != null && name_.isEmpty() == false) {
 			System.out.println("Rendering project \"" + name_ + "\"");

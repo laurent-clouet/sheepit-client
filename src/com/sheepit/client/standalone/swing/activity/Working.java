@@ -71,13 +71,14 @@ public class Working implements Activity {
 	private JLabel waiting_projects_value;
 	private JLabel connected_machines_value;
 	private JLabel user_info_total_rendertime_this_session_value;
+	private JLabel userInfoQueuedUploadsAndSizeValue;
 	private String currentTheme;
 	
 	public Working(GuiSwing parent_) {
 		parent = parent_;
 		
 		statusContent = new JLabel("Init");
-		renderedFrameContent = new JLabel("");
+		renderedFrameContent = new JLabel("0");
 		remainingFrameContent = new JLabel("");
 		creditEarned = new JLabel("");
 		current_project_name_value = new JLabel("");
@@ -91,6 +92,7 @@ public class Working implements Activity {
 		user_info_total_rendertime_this_session_value = new JLabel("");
 		lastRenderTime = new JLabel("");
 		lastRender = new JLabel("");
+		userInfoQueuedUploadsAndSizeValue = new JLabel("0");
 		currentTheme = UIManager.getLookAndFeel().getName();    // Capture the theme on component instantiation
 	}
 	
@@ -118,6 +120,7 @@ public class Working implements Activity {
 			user_info_total_rendertime_this_session_value = new JLabel(user_info_total_rendertime_this_session_value.getText());
 			lastRenderTime = new JLabel(lastRenderTime.getText());
 			lastRender = new JLabel(lastRender.getText());
+			userInfoQueuedUploadsAndSizeValue = new JLabel(userInfoQueuedUploadsAndSizeValue.getText());
 
 			// set the new theme as the current one
 			currentTheme = UIManager.getLookAndFeel().getName();
@@ -154,6 +157,7 @@ public class Working implements Activity {
 		
 		JLabel user_info_credits_this_session = new JLabel("Points earned: ", JLabel.TRAILING);
 		JLabel user_info_total_rendertime_this_session = new JLabel("Duration: ", JLabel.TRAILING);
+		JLabel user_info_pending_uploads_and_size = new JLabel("Queued uploads: ", JLabel.TRAILING);
 		JLabel user_info_rendered_frame_this_session = new JLabel("Rendered frames: ", JLabel.TRAILING);
 		JLabel global_static_renderable_project = new JLabel("Renderable projects: ", JLabel.TRAILING);
 		
@@ -162,6 +166,9 @@ public class Working implements Activity {
 		
 		session_info_panel.add(user_info_rendered_frame_this_session);
 		session_info_panel.add(renderedFrameContent);
+		
+		session_info_panel.add(user_info_pending_uploads_and_size);
+		session_info_panel.add(userInfoQueuedUploadsAndSizeValue);
 		
 		session_info_panel.add(global_static_renderable_project);
 		session_info_panel.add(renderable_projects_value);
@@ -193,7 +200,7 @@ public class Working implements Activity {
 		// last frame
 		JPanel last_frame_panel = new JPanel();
 		last_frame_panel.setLayout(new BoxLayout(last_frame_panel, BoxLayout.Y_AXIS));
-		last_frame_panel.setBorder(BorderFactory.createTitledBorder("Last rendered frame"));
+		last_frame_panel.setBorder(BorderFactory.createTitledBorder("Last uploaded frame"));
 		lastRender.setIcon(new ImageIcon(new BufferedImage(200, 120, BufferedImage.TYPE_INT_ARGB)));
 		lastRender.setAlignmentX(Component.CENTER_ALIGNMENT);
 		lastRenderTime.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -245,10 +252,10 @@ public class Working implements Activity {
 		
 		Spring widthLeftColumn = getBestWidth(current_project_panel, 4, 2);
 		widthLeftColumn = Spring.max(widthLeftColumn, getBestWidth(global_stats_panel, 4, 2));
-		widthLeftColumn = Spring.max(widthLeftColumn, getBestWidth(session_info_panel, 3, 2));
+		widthLeftColumn = Spring.max(widthLeftColumn, getBestWidth(session_info_panel, 4, 2));
 		alignPanel(current_project_panel, 5, 2, widthLeftColumn);
 		alignPanel(global_stats_panel, 4, 2, widthLeftColumn);
-		alignPanel(session_info_panel, 4, 2, widthLeftColumn);
+		alignPanel(session_info_panel, 5, 2, widthLeftColumn);
 	}
 	
 	public void setStatus(String msg_) {
@@ -279,7 +286,16 @@ public class Working implements Activity {
 		renderable_projects_value.setText(df.format(stats.getRenderableProject()));
 		waiting_projects_value.setText(df.format(stats.getWaitingProject()));
 		connected_machines_value.setText(df.format(stats.getConnectedMachine()));
+		
 		updateTime();
+	}
+	
+	public void displayUploadQueueStats(int queueSize, long queueVolume) {
+		userInfoQueuedUploadsAndSizeValue.setText(String.format("%d (%.2fMB) %s",
+				queueSize,
+				(queueVolume / 1024.0 / 1024.0),
+				(queueSize == this.parent.getConfiguration().getMaxUploadingJob() ? "- Queue full!" : "")
+		));
 	}
 	
 	public void updateTime() {
