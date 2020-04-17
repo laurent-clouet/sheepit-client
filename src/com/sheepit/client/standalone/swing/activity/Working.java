@@ -291,9 +291,9 @@ public class Working implements Activity {
 	}
 	
 	public void displayUploadQueueStats(int queueSize, long queueVolume) {
-		userInfoQueuedUploadsAndSizeValue.setText(String.format("%d (%.2fMB) %s",
+		userInfoQueuedUploadsAndSizeValue.setText(String.format("%d%s%s",
 				queueSize,
-				(queueVolume / 1024.0 / 1024.0),
+				(queueSize > 0 ? String.format(" (%.2fMB) ", (queueVolume / 1024.0 / 1024.0)) : ""),
 				(queueSize == this.parent.getConfiguration().getMaxUploadingJob() ? "- Queue full!" : "")
 		));
 	}
