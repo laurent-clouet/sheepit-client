@@ -37,6 +37,7 @@ import com.sheepit.client.Error.ServerCode;
 import com.sheepit.client.Error.Type;
 import com.sheepit.client.exception.FermeException;
 import com.sheepit.client.exception.FermeExceptionBadResponseFromServer;
+import com.sheepit.client.exception.FermeExceptionJobBlockedByUser;
 import com.sheepit.client.exception.FermeExceptionNoRendererAvailable;
 import com.sheepit.client.exception.FermeExceptionNoRightToRender;
 import com.sheepit.client.exception.FermeExceptionNoSession;
@@ -160,6 +161,16 @@ public class Client {
 					}
 					this.gui.status("Requesting Job");
 					this.renderingJob = this.server.requestJob();
+				}
+				catch (FermeExceptionJobBlockedByUser e) {
+					Job frame_to_reset = this.renderingJob;
+					this.renderingJob = null;
+					this.gui.error("Job previously blocked");
+					this.sendError(step, frame_to_reset, Type.RENDERER_KILLED_BY_USER);
+					this.log.removeCheckPoint(step);
+					
+					this.log.info("Client::run Server assigned a job previously blocked by user");
+					continue;
 				}
 				catch (FermeExceptionNoRightToRender e) {
 					this.gui.error("User does not have enough right to render scene");

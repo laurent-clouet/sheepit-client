@@ -39,7 +39,13 @@ public class CLIInputActionHandler implements CLIInputListener {
 		if (command.equalsIgnoreCase("block")) {
 			Job job = client.getRenderingJob();
 			if (job != null) {
-				job.block();
+				job.block(Job.FRAME_BLOCK);
+			}
+		}
+		else if (command.equalsIgnoreCase("permblock")) {
+			Job job = client.getRenderingJob();
+			if (job != null) {
+				job.block(Job.PERMANENT_PROJECT_BLOCK);
 			}
 		}
 		else if (command.equalsIgnoreCase("resume")) {
@@ -66,14 +72,15 @@ public class CLIInputActionHandler implements CLIInputListener {
 		}
 		else {
 			System.out.println("Unknown command: " + command);
-			System.out.println("status: display client status");
+			System.out.println("status:    display client status");
 			System.out.println("priority <n>: set the priority for the next renderjob");
-			System.out.println("block:  block project");
-			System.out.println("pause:  pause client requesting new jobs");
-			System.out.println("resume: resume after client was paused");
-			System.out.println("stop:   exit after frame was finished");
-			System.out.println("cancel: cancel exit");
-			System.out.println("quit:   exit now");
+			System.out.println("block:     block current frame");
+			System.out.println("permblock: permanently block current project NOTE: only affects this client instance");
+			System.out.println("pause:     pause client requesting new jobs");
+			System.out.println("resume:    resume after client was paused");
+			System.out.println("stop:      exit after frame was finished");
+			System.out.println("cancel:    cancel exit");
+			System.out.println("quit:      exit now");
 		}
 	}
 	

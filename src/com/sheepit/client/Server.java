@@ -72,6 +72,7 @@ import com.sheepit.client.Configuration.ComputeType;
 import com.sheepit.client.Error.ServerCode;
 import com.sheepit.client.exception.FermeException;
 import com.sheepit.client.exception.FermeExceptionBadResponseFromServer;
+import com.sheepit.client.exception.FermeExceptionJobBlockedByUser;
 import com.sheepit.client.exception.FermeExceptionNoRendererAvailable;
 import com.sheepit.client.exception.FermeExceptionNoRightToRender;
 import com.sheepit.client.exception.FermeExceptionNoSession;
@@ -324,7 +325,15 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 							throw new FermeException("error requestJob: status is not ok (it's " + serverCode + ")");
 					}
 				}
-
+				
+				// After updating the stats with the latest information and check that everything in the server side
+				// looks OK, we check if the user has blocked this job previously
+				String blockSemaphore = this.user_config.getWorkingDirectory().getAbsolutePath() + File.separator + jobData.getRenderTask().getArchive_md5() + ".blocked";
+				
+				if (new File(blockSemaphore).exists()) {         // And if blocked then raise an exception to abort the
+					throw new FermeExceptionJobBlockedByUser();  // rendering process for this job
+				}
+				
 				String script = "import bpy\n";
 				// blender 2.7x
 				script += "try:\n";
@@ -730,6 +739,15 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 					this.log.debug("Server::handleFileMD5DeleteDocument delete old file " + path);
 					File file_to_delete = new File(path + ".zip");
 					file_to_delete.delete();
+					
+					// If there is a semaphore for this project (created when the user manually blocks a job) then
+					// delete it as well
+					file_to_delete = new File(path + ".blocked");
+					
+					if (file_to_delete.exists()) {
+						file_to_delete.delete();
+					}
+					
 					Utils.delete(new File(path));
 				}
 			}

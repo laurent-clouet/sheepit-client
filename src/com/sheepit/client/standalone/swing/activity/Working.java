@@ -39,6 +39,7 @@ import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.Spring;
@@ -218,7 +219,7 @@ public class Working implements Activity {
 		
 		pauseButton.addActionListener(new PauseAction());
 		
-		JButton blockJob = new JButton("Block this project");
+		JButton blockJob = new JButton("Block this frame/project");
 		blockJob.addActionListener(new blockJobAction());
 		
 		exitAfterFrame = new JButton("Exit after this frame");
@@ -452,13 +453,35 @@ public class Working implements Activity {
 	class blockJobAction implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			Client client = parent.getClient();
-			if (client != null) {
-				Job job = client.getRenderingJob();
-				if (job != null) {
-					job.block();
+			String[] blockJobOptions = {"This Frame Only", "Whole Project", "Do Nothing"};
+			
+			int userDecision = JOptionPane.showOptionDialog(
+					null,
+					"Do you want to block this frame only or the whole project?\n\nNOTE: The decision applies to this client instance only. Other instances can potentially receive this frame or job again.",
+					"Block frame or project",
+					JOptionPane.DEFAULT_OPTION,
+					JOptionPane.QUESTION_MESSAGE,
+					null,
+					blockJobOptions,
+					blockJobOptions[2]);    // Make the "Do nothing" button the default one to avoid mistakes
+			
+			if(userDecision < 2) {  // If user selects one "This frame only" or "Whole Project"
+				Client client = parent.getClient();
+				
+				if (client != null) {
+					Job job = client.getRenderingJob();
+					if (job != null) {
+						if (userDecision == 0) {   // Block this frame only
+							job.block(Job.FRAME_BLOCK);
+						} else {                    // Block the project permanently for this instance
+							job.block(Job.PERMANENT_PROJECT_BLOCK);
+						}
+					}
 				}
+			} else {
+				System.out.println("No Option");
 			}
+			
 		}
 	}
 	

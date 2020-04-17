@@ -210,6 +210,13 @@ public class Configuration {
 							
 							// TODO: remove old one
 						}
+						else if (extension.equals(".blocked")) {
+							// The following situation (a .block semaphore without the associated job zip file) should
+							// NEVER occur, but we check anyhow to avoid having orphan semaphores
+							if (!new File(dir + File.separator + name + ".zip").exists()) {
+								file.delete();
+							}
+						}
 						else {
 							file.delete();
 						}
