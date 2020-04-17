@@ -579,12 +579,6 @@ public class Job {
 		}
 	}
 
-	public boolean isBlockedByUser() {
-		String blockSemaphore = configuration.getWorkingDirectory().getAbsolutePath() + File.separator + this.getSceneMD5() + ".blocked";
-		
-		return new File(blockSemaphore).exists();
-	}
-	
 	private Type detectError(String line) {
 		
 		if (line.contains("CUDA error: Out of memory")) {
