@@ -39,6 +39,7 @@ import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.Spring;
@@ -228,7 +229,7 @@ public class Working implements Activity {
 		JButton blockJob = new JButton("Block this project");
 		blockJob.addActionListener(new blockJobAction());
 		
-		exitAfterFrame = new JButton("Exit after this frame");
+		exitAfterFrame = new JButton("Exit");
 		exitAfterFrame.addActionListener(new ExitAfterAction());
 		
 		buttonsPanel.add(settingsButton);
@@ -296,6 +297,22 @@ public class Working implements Activity {
 				(queueSize > 0 ? String.format(" (%.2fMB) ", (queueVolume / 1024.0 / 1024.0)) : ""),
 				(queueSize == this.parent.getConfiguration().getMaxUploadingJob() ? "- Queue full!" : "")
 		));
+		
+		// If the user has requested to exit, then we need to update the JButton with the queue size
+		if (this.exitAfterFrame.getText().startsWith("Cancel")) {
+			Client client = parent.getClient();
+			
+			if (client != null) {
+				if (client.isRunning()) {
+					queueSize++;
+				}
+			}
+			
+			exitAfterFrame.setText(String.format("Cancel exit (%s frame%s to go)",
+					queueSize,
+					(queueSize > 1 ? "s" : ""))
+			);
+		}
 	}
 	
 	public void updateTime() {
@@ -454,11 +471,39 @@ public class Working implements Activity {
 			Client client = parent.getClient();
 			if (client != null) {
 				if (client.isRunning()) {
-					exitAfterFrame.setText("Cancel exit");
-					client.askForStop();
+					String[] exitJobOptions = {"Finish Current Jobs and then Exit", "Cancel Everything and Exit Now", "Do Nothing"};
+					int jobsQueueSize = client.getUploadQueueSize() + (client.isRunning() ? 1 : 0);
+
+					int userDecision = JOptionPane.showOptionDialog(
+							null,
+							String.format("<html>Please be aware that you have <strong>%d frame%s</strong> in either the upload queue or being rendered. Do you want to exit once the %sframe%s have been sent or right now?.\n\n",
+									jobsQueueSize ,   // Add the current frame to the total count ONLY if the client is running
+									(jobsQueueSize > 1 ? "s" : ""),
+									(jobsQueueSize > 1 ? (jobsQueueSize + " ") : ""),
+									(jobsQueueSize > 1 ? "s" : "")
+							),
+							"Exit Now or Later",
+							JOptionPane.DEFAULT_OPTION,
+							JOptionPane.QUESTION_MESSAGE,
+							null,
+							exitJobOptions,
+							exitJobOptions[2]);    // Make the "Do nothing" button the default one to avoid mistakes
+					
+					if (userDecision == 0) {
+						exitAfterFrame.setText(String.format("Cancel exit (%s frame%s to go)",
+								jobsQueueSize,
+								(jobsQueueSize > 1 ? "s" : "")
+								)
+						);
+						
+						client.askForStop();
+					} else if (userDecision == 1) {
+						client.stop();
+						System.exit(0);
+					}
 				}
 				else {
-					exitAfterFrame.setText("Exit after this frame");
+					exitAfterFrame.setText("Exit");
 					client.cancelStop();
 				}
 			}

@@ -135,244 +135,227 @@ public class Client {
 			Thread thread_sender = new Thread(runnable_sender);
 			thread_sender.start();
 			
-			while (this.running == true) {
-				this.renderingJob = null;
-				synchronized (this) {
-					while (this.suspended) {
-						wait();
-					}
-				}
-				step = this.log.newCheckPoint();
-				try {
-					Calendar next_request = this.nextJobRequest();
-					if (next_request != null) {
-						// wait
-						Date now = new Date();
-						this.gui.status(String.format("Waiting until %tR before requesting job", next_request));
-						long wait = next_request.getTimeInMillis() - now.getTime();
-						if (wait < 0) {
-							// it means the client has to wait until the next day
-							wait += 24*3600*1000;
-						}
-						try {
-							Thread.sleep(wait);
-						}
-						catch (InterruptedException e3) {
-							
-						}
-						catch (IllegalArgumentException e3) {
-							this.log.error("Client::run sleepA failed " + e3);
+			do {
+				while (this.running == true) {
+					this.renderingJob = null;
+					synchronized (this) {
+						while (this.suspended) {
+							wait();
 						}
 					}
-					this.gui.status("Requesting Job");
-					this.renderingJob = this.server.requestJob();
-				}
-				catch (FermeExceptionNoRightToRender e) {
-					this.gui.error("User does not have enough right to render scene");
-					return -2;
-				}
-				catch (FermeExceptionSessionDisabled e) {
-					this.gui.error(Error.humanString(Error.Type.SESSION_DISABLED));
-					// should wait forever to actually display the message to the user
-					while (true) {
-						try {
-							Thread.sleep(100000);
-						}
-						catch (InterruptedException e1) {
-						}
-					}
-				}
-				catch (FermeExceptionNoRendererAvailable e) {
-					this.gui.error(Error.humanString(Error.Type.RENDERER_NOT_AVAILABLE));
-					// should wait forever to actually display the message to the user
-					while (true) {
-						try {
-							Thread.sleep(100000);
-						}
-						catch (InterruptedException e1) {
-						}
-					}
-				}
-				catch (FermeExceptionNoSession e) {
-					this.log.debug("User has no session need to re-authenticate");
-					ret = this.server.getConfiguration();
-					if (ret != Error.Type.OK) {
-						this.renderingJob = null;
-					}
-					else {
-						this.startTime = new Date().getTime(); // reset start session time because the server did it
-						try {
-							Calendar next_request = this.nextJobRequest();
-							if (next_request != null) {
-								// wait
-								Date now = new Date();
-								this.gui.status(String.format("Waiting until %tR before requesting job", next_request));
-								try {
-									Thread.sleep(next_request.getTimeInMillis() - now.getTime());
-								}
-								catch (InterruptedException e3) {
-									
-								}
-								catch (IllegalArgumentException e3) {
-									this.log.error("Client::run sleepB failed " + e3);
-								}
+					step = this.log.newCheckPoint();
+					try {
+						Calendar next_request = this.nextJobRequest();
+						if (next_request != null) {
+							// wait
+							Date now = new Date();
+							this.gui.status(String.format("Waiting until %tR before requesting job", next_request));
+							long wait = next_request.getTimeInMillis() - now.getTime();
+							if (wait < 0) {
+								// it means the client has to wait until the next day
+								wait += 24 * 3600 * 1000;
 							}
-							this.gui.status("Requesting Job");
-							this.renderingJob = this.server.requestJob();
+							try {
+								Thread.sleep(wait);
+							} catch (InterruptedException e3) {
+							
+							} catch (IllegalArgumentException e3) {
+								this.log.error("Client::run sleepA failed " + e3);
+							}
 						}
-						catch (FermeException e1) {
+						this.gui.status("Requesting Job");
+						this.renderingJob = this.server.requestJob();
+					} catch (FermeExceptionNoRightToRender e) {
+						this.gui.error("User does not have enough right to render scene");
+						return -2;
+					} catch (FermeExceptionSessionDisabled e) {
+						this.gui.error(Error.humanString(Error.Type.SESSION_DISABLED));
+						// should wait forever to actually display the message to the user
+						while (true) {
+							try {
+								Thread.sleep(100000);
+							} catch (InterruptedException e1) {
+							}
+						}
+					} catch (FermeExceptionNoRendererAvailable e) {
+						this.gui.error(Error.humanString(Error.Type.RENDERER_NOT_AVAILABLE));
+						// should wait forever to actually display the message to the user
+						while (true) {
+							try {
+								Thread.sleep(100000);
+							} catch (InterruptedException e1) {
+							}
+						}
+					} catch (FermeExceptionNoSession e) {
+						this.log.debug("User has no session need to re-authenticate");
+						ret = this.server.getConfiguration();
+						if (ret != Error.Type.OK) {
 							this.renderingJob = null;
+						} else {
+							this.startTime = new Date().getTime(); // reset start session time because the server did it
+							try {
+								Calendar next_request = this.nextJobRequest();
+								if (next_request != null) {
+									// wait
+									Date now = new Date();
+									this.gui.status(String.format("Waiting until %tR before requesting job", next_request));
+									try {
+										Thread.sleep(next_request.getTimeInMillis() - now.getTime());
+									} catch (InterruptedException e3) {
+									
+									} catch (IllegalArgumentException e3) {
+										this.log.error("Client::run sleepB failed " + e3);
+									}
+								}
+								this.gui.status("Requesting Job");
+								this.renderingJob = this.server.requestJob();
+							} catch (FermeException e1) {
+								this.renderingJob = null;
+							}
 						}
-					}
-				}
-				catch (FermeServerDown e) {
-					int wait = ThreadLocalRandom.current().nextInt(10, 30 + 1); // max is exclusive
-					int time_sleep = 1000 * 60 * wait;
-					this.gui.status(String.format("Can not connect to server. Please check your connectivity. Will retry in %s minutes", wait));
-					try {
-						Thread.sleep(time_sleep);
-					}
-					catch (InterruptedException e1) {
-						return -3;
-					}
-					continue; // go back to ask job
-				}
-				catch (FermeExceptionServerOverloaded e) {
-					int wait = ThreadLocalRandom.current().nextInt(10, 30 + 1); // max is exclusive
-					int time_sleep = 1000 * 60 * wait;
-					this.gui.status(String.format("Server is overloaded and cannot give frame to render. Will retry in %s minutes", wait));
-					try {
-						Thread.sleep(time_sleep);
-					}
-					catch (InterruptedException e1) {
-						return -3;
-					}
-					continue; // go back to ask job
-				}
-				catch (FermeExceptionServerInMaintenance e) {
-					int wait = ThreadLocalRandom.current().nextInt(20, 30 + 1); // max is exclusive
-					int time_sleep = 1000 * 60 * wait;
-					this.gui.status(String.format("Server is in maintenance and cannot give frame to render. Will retry in %s minutes", wait));
-					try {
-						Thread.sleep(time_sleep);
-					}
-					catch (InterruptedException e1) {
-						return -3;
-					}
-					continue; // go back to ask job
-				}
-				catch (FermeExceptionBadResponseFromServer e) {
-					int wait = ThreadLocalRandom.current().nextInt(15, 30 + 1); // max is exclusive
-					int time_sleep = 1000 * 60 * wait;
-					this.gui.status(String.format("Bad answer from server. Will retry in %s minutes", wait));
-					try {
-						Thread.sleep(time_sleep);
-					}
-					catch (InterruptedException e1) {
-						return -3;
-					}
-					continue; // go back to ask job
-				}
-				catch (FermeException e) {
-					this.gui.error("Client::run exception requestJob (1) " + e.getMessage());
-					StringWriter sw = new StringWriter();
-					PrintWriter pw = new PrintWriter(sw);
-					e.printStackTrace(pw);
-					this.log.debug("Client::run exception " + e + " stacktrace: " + sw.toString());
-					this.sendError(step);
-					continue;
-				}
-				
-				if (this.renderingJob == null) { // no job
-					int wait = ThreadLocalRandom.current().nextInt(10, 30 + 1); // max is exclusive
-					int time_sleep = 1000 * 60 * wait;
-					Date wakeup_time = new Date(new Date().getTime() + time_sleep);
-					this.gui.status(String.format("No job available. Sleeping for %d minutes (will wake up at %tR)", wait, wakeup_time));
-					this.suspended = true;
-					int time_slept = 0;
-					while (time_slept < time_sleep && this.running == true) {
+					} catch (FermeServerDown e) {
+						int wait = ThreadLocalRandom.current().nextInt(10, 30 + 1); // max is exclusive
+						int time_sleep = 1000 * 60 * wait;
+						this.gui.status(String.format("Can not connect to server. Please check your connectivity. Will retry in %s minutes", wait));
 						try {
-							Thread.sleep(250);
-						}
-						catch (InterruptedException e) {
+							Thread.sleep(time_sleep);
+						} catch (InterruptedException e1) {
 							return -3;
 						}
-						time_slept += 250;
+						continue; // go back to ask job
+					} catch (FermeExceptionServerOverloaded e) {
+						int wait = ThreadLocalRandom.current().nextInt(10, 30 + 1); // max is exclusive
+						int time_sleep = 1000 * 60 * wait;
+						this.gui.status(String.format("Server is overloaded and cannot give frame to render. Will retry in %s minutes", wait));
+						try {
+							Thread.sleep(time_sleep);
+						} catch (InterruptedException e1) {
+							return -3;
+						}
+						continue; // go back to ask job
+					} catch (FermeExceptionServerInMaintenance e) {
+						int wait = ThreadLocalRandom.current().nextInt(20, 30 + 1); // max is exclusive
+						int time_sleep = 1000 * 60 * wait;
+						this.gui.status(String.format("Server is in maintenance and cannot give frame to render. Will retry in %s minutes", wait));
+						try {
+							Thread.sleep(time_sleep);
+						} catch (InterruptedException e1) {
+							return -3;
+						}
+						continue; // go back to ask job
+					} catch (FermeExceptionBadResponseFromServer e) {
+						int wait = ThreadLocalRandom.current().nextInt(15, 30 + 1); // max is exclusive
+						int time_sleep = 1000 * 60 * wait;
+						this.gui.status(String.format("Bad answer from server. Will retry in %s minutes", wait));
+						try {
+							Thread.sleep(time_sleep);
+						} catch (InterruptedException e1) {
+							return -3;
+						}
+						continue; // go back to ask job
+					} catch (FermeException e) {
+						this.gui.error("Client::run exception requestJob (1) " + e.getMessage());
+						StringWriter sw = new StringWriter();
+						PrintWriter pw = new PrintWriter(sw);
+						e.printStackTrace(pw);
+						this.log.debug("Client::run exception " + e + " stacktrace: " + sw.toString());
+						this.sendError(step);
+						continue;
 					}
-					this.suspended = false;
-					continue; // go back to ask job
-				}
-				
-				this.log.debug("Got work to do id: " + this.renderingJob.getId() + " frame: " + this.renderingJob.getFrameNumber());
-				
-				ret = this.work(this.renderingJob);
-				if (ret == Error.Type.RENDERER_KILLED) {
-					this.log.removeCheckPoint(step);
-					continue;
-				}
-				
-				if (ret == Error.Type.NO_SPACE_LEFT_ON_DEVICE) {
-					Job frame_to_reset = this.renderingJob; // copy it because the sendError will take ~5min to execute
-					this.renderingJob = null;
-					this.gui.error(Error.humanString(ret));
-					this.sendError(step, frame_to_reset, ret);
-					this.log.removeCheckPoint(step);
-					return -50;
-				}
-				
-				if (ret != Error.Type.OK) {
-					Job frame_to_reset = this.renderingJob; // copy it because the sendError will take ~5min to execute
-					this.renderingJob = null;
-					this.gui.error(Error.humanString(ret));
-					this.sendError(step, frame_to_reset, ret);
-					this.log.removeCheckPoint(step);
-					continue;
-				}
-				
-				if (this.renderingJob.isSynchronousUpload() == true) { // power or compute_method job, need to upload right away
-					this.gui.status(String.format("Uploading frame (%.2fMB)",
-							(this.renderingJob.getOutputImageSize() / 1024.0 / 1024.0)
-					));
 					
-					ret = confirmJob(this.renderingJob);
+					if (this.renderingJob == null) { // no job
+						int wait = ThreadLocalRandom.current().nextInt(10, 30 + 1); // max is exclusive
+						int time_sleep = 1000 * 60 * wait;
+						Date wakeup_time = new Date(new Date().getTime() + time_sleep);
+						this.gui.status(String.format("No job available. Sleeping for %d minutes (will wake up at %tR)", wait, wakeup_time));
+						this.suspended = true;
+						int time_slept = 0;
+						while (time_slept < time_sleep && this.running == true) {
+							try {
+								Thread.sleep(250);
+							} catch (InterruptedException e) {
+								return -3;
+							}
+							time_slept += 250;
+						}
+						this.suspended = false;
+						continue; // go back to ask job
+					}
+					
+					this.log.debug("Got work to do id: " + this.renderingJob.getId() + " frame: " + this.renderingJob.getFrameNumber());
+					
+					ret = this.work(this.renderingJob);
+					if (ret == Error.Type.RENDERER_KILLED) {
+						this.log.removeCheckPoint(step);
+						continue;
+					}
+					
+					if (ret == Error.Type.NO_SPACE_LEFT_ON_DEVICE) {
+						Job frame_to_reset = this.renderingJob; // copy it because the sendError will take ~5min to execute
+						this.renderingJob = null;
+						this.gui.error(Error.humanString(ret));
+						this.sendError(step, frame_to_reset, ret);
+						this.log.removeCheckPoint(step);
+						return -50;
+					}
+					
 					if (ret != Error.Type.OK) {
-						gui.error("Client::run problem with confirmJob (returned " + ret + ")");
-						sendError(step);
+						Job frame_to_reset = this.renderingJob; // copy it because the sendError will take ~5min to execute
+						this.renderingJob = null;
+						this.gui.error(Error.humanString(ret));
+						this.sendError(step, frame_to_reset, ret);
+						this.log.removeCheckPoint(step);
+						continue;
 					}
-				}
-				else {
-					this.gui.status(String.format("Queuing frame for upload (%.2fMB)",
-							(this.renderingJob.getOutputImageSize() / 1024.0 / 1024.0)
-					));
 					
-					this.jobsToValidate.add(this.renderingJob);
+					if (this.renderingJob.isSynchronousUpload() == true) { // power or compute_method job, need to upload right away
+						this.gui.status(String.format("Uploading frame (%.2fMB)",
+								(this.renderingJob.getOutputImageSize() / 1024.0 / 1024.0)
+						));
+						
+						ret = confirmJob(this.renderingJob);
+						if (ret != Error.Type.OK) {
+							gui.error("Client::run problem with confirmJob (returned " + ret + ")");
+							sendError(step);
+						}
+					} else {
+						this.gui.status(String.format("Queuing frame for upload (%.2fMB)",
+								(this.renderingJob.getOutputImageSize() / 1024.0 / 1024.0)
+						));
+						
+						this.jobsToValidate.add(this.renderingJob);
+						
+						this.uploadQueueSize++;
+						this.uploadQueueVolume += this.renderingJob.getOutputImageSize();
+						this.gui.displayUploadQueueStats(uploadQueueSize, uploadQueueVolume);
+						
+						this.renderingJob = null;
+					}
 					
-					this.uploadQueueSize++;
-					this.uploadQueueVolume += this.renderingJob.getOutputImageSize();
-					this.gui.displayUploadQueueStats(uploadQueueSize, uploadQueueVolume);
-					
-					this.renderingJob = null;
+					while (this.shouldWaitBeforeRender() == true) {
+						try {
+							Thread.sleep(4000); // wait a little bit
+							this.gui.status("Sending frames. Please wait");
+						} catch (InterruptedException e3) {
+						}
+					}
+					this.log.removeCheckPoint(step);
 				}
 				
-				while (this.shouldWaitBeforeRender() == true) {
-					try {
-						Thread.sleep(4000); // wait a little bit
-						this.gui.status("Sending frames. Please wait");
-					}
-					catch (InterruptedException e3) {
-					}
-				}
-				this.log.removeCheckPoint(step);
-			}
-			
-			// not running but maybe still sending frame
-			while (this.jobsToValidate.isEmpty() == false) {
+				// If we reach this point is bc the main loop (the one that controls all the workflow) has exited
+				// due to user requesting to exit the App and we are just waiting for the upload queue to empty
+				// If the user cancels the exit, then this.running will be true and the main loop will take
+				// control again
 				try {
 					Thread.sleep(2300); // wait a little bit
+					this.gui.status("Uploading rendered frames before exiting. Please wait");
 				}
 				catch (InterruptedException e3) {
 				}
-			}
+				
+				// This loop will remain valid until all the background uploads have
+				// finished (unless the stop() method has been triggered)
+			} while(this.uploadQueueSize > 0);
 		}
 		catch (Exception e1) {
 			// no exception should be raised in the actual launcher (applet or standalone)
