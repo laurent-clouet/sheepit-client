@@ -492,7 +492,7 @@ public class Working implements Activity {
 			Client client = parent.getClient();
 			if (client != null) {
 				if (client.isRunning()) {
-					String[] exitJobOptions = {"Finish Current Jobs and then Exit", "Cancel Everything and Exit Now", "Do Nothing"};
+					String[] exitJobOptions = {"Exit after current Jobs", "Exit Immediately", "Do Nothing"};
 					int jobsQueueSize = client.getUploadQueueSize() + (client.isRunning() ? 1 : 0);
 
 					int userDecision = JOptionPane.showOptionDialog(
