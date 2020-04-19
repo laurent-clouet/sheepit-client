@@ -36,6 +36,8 @@ public interface Gui {
 	
 	public void displayStats(Stats stats);
 	
+	public void displayUploadQueueStats(int queueSize, long queueVolume);
+	
 	public void error(String err_);
 	
 	public void AddFrameRendered();

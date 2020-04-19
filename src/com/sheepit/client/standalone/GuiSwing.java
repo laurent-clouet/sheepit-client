@@ -238,6 +238,13 @@ public class GuiSwing extends JFrame implements Gui {
 	}
 	
 	@Override
+	public void displayUploadQueueStats(int queueSize, long queueVolume) {
+		if (activityWorking != null) {
+			this.activityWorking.displayUploadQueueStats(queueSize, queueVolume);
+		}
+	}
+	
+	@Override
 	public Client getClient() {
 		return client;
 	}
