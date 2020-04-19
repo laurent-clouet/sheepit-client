@@ -64,6 +64,7 @@ public class Job {
 	private String rendererMD5;
 	private String id;
 	private String outputImagePath;
+	private long   outputImageSize;
 	private String path; // path inside of the archive
 	private String rendererCommand;
 	private String validationUrl;
@@ -98,6 +99,7 @@ public class Job {
 		synchronousUpload = synchronous_upload_;
 		gui = gui_;
 		outputImagePath = null;
+		outputImageSize = 0;
 		script = script_;
 		updateRenderingStatusMethod = update_method_;
 		askForRendererKill = false;
@@ -412,7 +414,8 @@ public class Job {
 		}
 		else {
 			setOutputImagePath(files[0].getAbsolutePath());
-			log.debug("Job::render pictureFilename: '" + getOutputImagePath() + "'");
+			this.outputImageSize = new File(getOutputImagePath()).length();
+			log.debug(String.format("Job::render pictureFilename: %s, size: %d'",getOutputImagePath(), this.outputImageSize));
 		}
 		
 		File scene_dir = new File(getSceneDirectory());

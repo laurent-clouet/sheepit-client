@@ -67,6 +67,9 @@ public class Client {
 	
 	private int maxDownloadFileAttempts = 5;
 	
+	private int uploadQueueSize;
+	private long uploadQueueVolume;
+	
 	public Client(Gui gui_, Configuration configuration, String url_) {
 		this.configuration = configuration;
 		this.server = new Server(url_, this.configuration, this);
@@ -80,6 +83,9 @@ public class Client {
 		this.disableErrorSending = false;
 		this.running = false;
 		this.suspended = false;
+		
+		this.uploadQueueSize = 0;
+		this.uploadQueueVolume = 0;
 	}
 	
 	public String toString() {
@@ -324,6 +330,10 @@ public class Client {
 				}
 				
 				if (this.renderingJob.isSynchronousUpload() == true) { // power or compute_method job, need to upload right away
+					this.gui.status(String.format("Uploading frame (%.2fMB)",
+							(this.renderingJob.getOutputImageSize() / 1024.0 / 1024.0)
+					));
+					
 					ret = confirmJob(this.renderingJob);
 					if (ret != Error.Type.OK) {
 						gui.error("Client::run problem with confirmJob (returned " + ret + ")");
@@ -331,13 +341,23 @@ public class Client {
 					}
 				}
 				else {
+					this.gui.status(String.format("Queuing frame for upload (%.2fMB)",
+							(this.renderingJob.getOutputImageSize() / 1024.0 / 1024.0)
+					));
+					
 					this.jobsToValidate.add(this.renderingJob);
+					
+					this.uploadQueueSize++;
+					this.uploadQueueVolume += this.renderingJob.getOutputImageSize();
+					this.gui.displayUploadQueueStats(uploadQueueSize, uploadQueueVolume);
+					
 					this.renderingJob = null;
 				}
 				
 				while (this.shouldWaitBeforeRender() == true) {
 					try {
 						Thread.sleep(4000); // wait a little bit
+						this.gui.status("Sending frames. Please wait");
 					}
 					catch (InterruptedException e3) {
 					}
@@ -436,13 +456,17 @@ public class Client {
 			try {
 				job_to_send = jobsToValidate.take();
 				this.log.debug("will validate " + job_to_send);
-				//gui.status("Sending frame");
+
 				ret = confirmJob(job_to_send);
 				if (ret != Error.Type.OK) {
 					this.gui.error(Error.humanString(ret));
 					this.log.debug("Client::senderLoop confirm failed, ret: " + ret);
 					sendError(step);
 				}
+				
+				this.uploadQueueSize--;
+				this.uploadQueueVolume -= job_to_send.getOutputImageSize();
+				this.gui.displayUploadQueueStats(this.uploadQueueSize, this.uploadQueueVolume);
 			}
 			catch (InterruptedException e) {
 			}
@@ -750,10 +774,6 @@ public class Client {
 		int max_try = 3;
 		ServerCode ret = ServerCode.UNKNOWN;
 		while (nb_try < max_try && ret != ServerCode.OK) {
-			this.gui.status(String.format("Uploading frame (%.2fMB)",
-					(new File(ajob.getOutputImagePath()).length() / 1024.0 / 1024.0)
-			));
-
 			ret = this.server.HTTPSendFile(url_real, ajob.getOutputImagePath());
 			switch (ret) {
 				case OK:

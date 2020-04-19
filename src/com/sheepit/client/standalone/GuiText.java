@@ -118,6 +118,15 @@ public class GuiText implements Gui {
 	}
 	
 	@Override
+	public void displayUploadQueueStats(int queueSize, long queueVolume) {
+		// No need to check if the queue is not empty to show the volume bc this line is always shown at the end
+		// of the render process in text GUI (unless an error occurred, where the file is uploaded synchronously)
+		System.out.println(String.format("Queued uploads: %d (%.2fMB)",
+				queueSize,
+				(queueVolume / 1024.0 / 1024.0)));
+	}
+	
+	@Override
 	public void setRenderingProjectName(String name_) {
 		if (name_ != null && name_.isEmpty() == false) {
 			System.out.println("Rendering project \"" + name_ + "\"");
