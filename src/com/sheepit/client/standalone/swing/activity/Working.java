@@ -476,7 +476,7 @@ public class Working implements Activity {
 
 					int userDecision = JOptionPane.showOptionDialog(
 							null,
-							String.format("<html>Please be aware that you have <strong>%d frame%s</strong> in either the upload queue or being rendered. Do you want to exit once the %sframe%s have been sent or right now?.\n\n",
+							String.format("<html>You have <strong>%d frame%s</strong> being uploaded or rendered. Do you want to finish the jobs or exit now?.\n\n",
 									jobsQueueSize ,   // Add the current frame to the total count ONLY if the client is running
 									(jobsQueueSize > 1 ? "s" : ""),
 									(jobsQueueSize > 1 ? (jobsQueueSize + " ") : ""),
