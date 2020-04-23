@@ -360,7 +360,7 @@ public class Working implements Activity {
 						if (width * factor > 200) {
 							factor = Math.min(factor, 200f / width);
 						}
-						icon = new ImageIcon(img.getScaledInstance((int)(width * factor), (int)(height * factor), Image.SCALE_FAST));
+						icon = new ImageIcon(img.getScaledInstance((int) (width * factor), (int) (height * factor), Image.SCALE_FAST));
 					}
 					catch (IOException e) {
 						System.out.println("Working::showLastRender() exception " + e);
@@ -492,12 +492,12 @@ public class Working implements Activity {
 					if (userDecision == 0) {
 						exitAfterFrame.setText(String.format("Cancel exit (%s frame%s to go)",
 								jobsQueueSize,
-								(jobsQueueSize > 1 ? "s" : "")
-								)
+								(jobsQueueSize > 1 ? "s" : ""))
 						);
 						
 						client.askForStop();
-					} else if (userDecision == 1) {
+					}
+					else if (userDecision == 1) {
 						client.stop();
 						System.exit(0);
 					}
@@ -522,5 +522,4 @@ public class Working implements Activity {
 			}
 		}
 	}
-	
 }
