@@ -513,12 +513,12 @@ public class Working implements Activity {
 					if (userDecision == 0) {
 						exitAfterFrame.setText(String.format("Cancel exit (%s frame%s to go)",
 								jobsQueueSize,
-								(jobsQueueSize > 1 ? "s" : "")
-								)
+								(jobsQueueSize > 1 ? "s" : ""))
 						);
 						
 						client.askForStop();
-					} else if (userDecision == 1) {
+					}
+					else if (userDecision == 1) {
 						client.stop();
 						System.exit(0);
 					}
@@ -543,5 +543,4 @@ public class Working implements Activity {
 			}
 		}
 	}
-	
 }

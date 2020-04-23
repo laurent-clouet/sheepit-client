@@ -160,41 +160,50 @@ public class Client {
 							}
 							try {
 								Thread.sleep(wait);
-							} catch (InterruptedException e3) {
-							
-							} catch (IllegalArgumentException e3) {
+							}
+							catch (InterruptedException e3) {
+
+							}
+							catch (IllegalArgumentException e3) {
 								this.log.error("Client::run sleepA failed " + e3);
 							}
 						}
 						this.gui.status("Requesting Job");
 						this.renderingJob = this.server.requestJob();
-					} catch (FermeExceptionNoRightToRender e) {
+					}
+					catch (FermeExceptionNoRightToRender e) {
 						this.gui.error("User does not have enough right to render scene");
 						return -2;
-					} catch (FermeExceptionSessionDisabled e) {
+					}
+					catch (FermeExceptionSessionDisabled e) {
 						this.gui.error(Error.humanString(Error.Type.SESSION_DISABLED));
 						// should wait forever to actually display the message to the user
 						while (true) {
 							try {
 								Thread.sleep(100000);
-							} catch (InterruptedException e1) {
+							}
+							catch (InterruptedException e1) {
 							}
 						}
-					} catch (FermeExceptionNoRendererAvailable e) {
+					}
+					catch (FermeExceptionNoRendererAvailable e) {
 						this.gui.error(Error.humanString(Error.Type.RENDERER_NOT_AVAILABLE));
 						// should wait forever to actually display the message to the user
 						while (true) {
 							try {
 								Thread.sleep(100000);
-							} catch (InterruptedException e1) {
+							}
+							catch (InterruptedException e1) {
 							}
 						}
-					} catch (FermeExceptionNoSession e) {
+					}
+					catch (FermeExceptionNoSession e) {
 						this.log.debug("User has no session need to re-authenticate");
 						ret = this.server.getConfiguration();
 						if (ret != Error.Type.OK) {
 							this.renderingJob = null;
-						} else {
+						}
+						else {
 							this.startTime = new Date().getTime(); // reset start session time because the server did it
 							try {
 								Calendar next_request = this.nextJobRequest();
@@ -204,59 +213,71 @@ public class Client {
 									this.gui.status(String.format("Waiting until %tR before requesting job", next_request));
 									try {
 										Thread.sleep(next_request.getTimeInMillis() - now.getTime());
-									} catch (InterruptedException e3) {
-									
-									} catch (IllegalArgumentException e3) {
+									}
+									catch (InterruptedException e3) {
+
+									}
+									catch (IllegalArgumentException e3) {
 										this.log.error("Client::run sleepB failed " + e3);
 									}
 								}
 								this.gui.status("Requesting Job");
 								this.renderingJob = this.server.requestJob();
-							} catch (FermeException e1) {
+							}
+							catch (FermeException e1) {
 								this.renderingJob = null;
 							}
 						}
-					} catch (FermeServerDown e) {
+					}
+					catch (FermeServerDown e) {
 						int wait = ThreadLocalRandom.current().nextInt(10, 30 + 1); // max is exclusive
 						int time_sleep = 1000 * 60 * wait;
 						this.gui.status(String.format("Can not connect to server. Please check your connectivity. Will retry in %s minutes", wait));
 						try {
 							Thread.sleep(time_sleep);
-						} catch (InterruptedException e1) {
+						}
+						catch (InterruptedException e1) {
 							return -3;
 						}
 						continue; // go back to ask job
-					} catch (FermeExceptionServerOverloaded e) {
+					}
+					catch (FermeExceptionServerOverloaded e) {
 						int wait = ThreadLocalRandom.current().nextInt(10, 30 + 1); // max is exclusive
 						int time_sleep = 1000 * 60 * wait;
 						this.gui.status(String.format("Server is overloaded and cannot give frame to render. Will retry in %s minutes", wait));
 						try {
 							Thread.sleep(time_sleep);
-						} catch (InterruptedException e1) {
+						}
+						catch (InterruptedException e1) {
 							return -3;
 						}
 						continue; // go back to ask job
-					} catch (FermeExceptionServerInMaintenance e) {
+					}
+					catch (FermeExceptionServerInMaintenance e) {
 						int wait = ThreadLocalRandom.current().nextInt(20, 30 + 1); // max is exclusive
 						int time_sleep = 1000 * 60 * wait;
 						this.gui.status(String.format("Server is in maintenance and cannot give frame to render. Will retry in %s minutes", wait));
 						try {
 							Thread.sleep(time_sleep);
-						} catch (InterruptedException e1) {
+						}
+						catch (InterruptedException e1) {
 							return -3;
 						}
 						continue; // go back to ask job
-					} catch (FermeExceptionBadResponseFromServer e) {
+					}
+					catch (FermeExceptionBadResponseFromServer e) {
 						int wait = ThreadLocalRandom.current().nextInt(15, 30 + 1); // max is exclusive
 						int time_sleep = 1000 * 60 * wait;
 						this.gui.status(String.format("Bad answer from server. Will retry in %s minutes", wait));
 						try {
 							Thread.sleep(time_sleep);
-						} catch (InterruptedException e1) {
+						}
+						catch (InterruptedException e1) {
 							return -3;
 						}
 						continue; // go back to ask job
-					} catch (FermeException e) {
+					}
+					catch (FermeException e) {
 						this.gui.error("Client::run exception requestJob (1) " + e.getMessage());
 						StringWriter sw = new StringWriter();
 						PrintWriter pw = new PrintWriter(sw);
@@ -276,7 +297,8 @@ public class Client {
 						while (time_slept < time_sleep && this.running == true) {
 							try {
 								Thread.sleep(250);
-							} catch (InterruptedException e) {
+							}
+							catch (InterruptedException e) {
 								return -3;
 							}
 							time_slept += 250;
@@ -321,7 +343,8 @@ public class Client {
 							gui.error("Client::run problem with confirmJob (returned " + ret + ")");
 							sendError(step);
 						}
-					} else {
+					}
+					else {
 						this.gui.status(String.format("Queuing frame for upload (%.2fMB)",
 								(this.renderingJob.getOutputImageSize() / 1024.0 / 1024.0)
 						));
@@ -339,7 +362,8 @@ public class Client {
 						try {
 							Thread.sleep(4000); // wait a little bit
 							this.gui.status("Sending frames. Please wait");
-						} catch (InterruptedException e3) {
+						}
+						catch (InterruptedException e3) {
 						}
 					}
 					this.log.removeCheckPoint(step);
@@ -358,7 +382,7 @@ public class Client {
 				
 				// This loop will remain valid until all the background uploads have
 				// finished (unless the stop() method has been triggered)
-			} while(this.uploadQueueSize > 0);
+			} while (this.uploadQueueSize > 0);
 		}
 		catch (Exception e1) {
 			// no exception should be raised in the actual launcher (applet or standalone)
@@ -515,7 +539,6 @@ public class Client {
 	}
 	
 	/**
-	 * 
 	 * @return the date of the next request, or null if there is not delay (null <=> now)
 	 */
 	public Calendar nextJobRequest() {
@@ -598,7 +621,8 @@ public class Client {
 		}
 
 		Observer removeSceneDirectoryOnceRenderHasStartedObserver = new Observer() {
-			@Override public void update(Observable observable, Object o) {
+			@Override
+			public void update(Observable observable, Object o) {
 				// only remove the .blend since it's most important data
 				// and it's the only file we are sure will not be needed anymore
 				scene_file.delete();
