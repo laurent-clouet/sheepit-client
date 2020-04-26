@@ -56,6 +56,7 @@ public class Working implements Activity {
 	private GuiSwing parent;
 	
 	private JLabel statusContent;
+	private String previousStatus;
 	private JLabel renderedFrameContent;
 	private JLabel remainingFrameContent;
 	private JLabel lastRenderTime;
@@ -95,6 +96,7 @@ public class Working implements Activity {
 		lastRender = new JLabel("");
 		userInfoQueuedUploadsAndSizeValue = new JLabel("0");
 		currentTheme = UIManager.getLookAndFeel().getName();    // Capture the theme on component instantiation
+		previousStatus = "";
 	}
 	
 	@Override
@@ -218,10 +220,10 @@ public class Working implements Activity {
 		JButton settingsButton = new JButton("Settings");
 		settingsButton.addActionListener(new SettingsAction());
 		
-		pauseButton = new JButton("Pause");
+		pauseButton = new JButton("Pause getting new jobs");
 		Client client = parent.getClient();
 		if (client != null && client.isSuspended()) {
-			pauseButton.setText("Resume");
+			pauseButton.setText("Resume getting jobs");
 		}
 		
 		pauseButton.addActionListener(new PauseAction());
@@ -260,7 +262,24 @@ public class Working implements Activity {
 	}
 	
 	public void setStatus(String msg_) {
-		statusContent.setText("<html>" + msg_ + "</html>");
+		setStatus(msg_, false);
+	}
+	
+	public void setStatus(String msg_, boolean overwriteSuspendedMsg) {
+		Client client = parent.getClient();
+		
+		if (!msg_.equals("")) {
+			this.previousStatus = msg_;
+		}
+		
+		if (client != null && client.isSuspended()) {
+			if (overwriteSuspendedMsg) {
+				statusContent.setText("<html>" + msg_ + "</html>");
+			}
+		}
+		else {
+			statusContent.setText("<html>" + msg_ + "</html>");
+		}
 	}
 	
 	public void setRenderingProjectName(String msg_) {
@@ -445,12 +464,14 @@ public class Working implements Activity {
 			Client client = parent.getClient();
 			if (client != null) {
 				if (client.isSuspended()) {
-					pauseButton.setText("Pause");
+					pauseButton.setText("Pause getting new jobs");
 					client.resume();
+					setStatus(previousStatus);
 				}
 				else {
-					pauseButton.setText("Resume");
+					pauseButton.setText("Resume getting jobs");
 					client.suspend();
+					setStatus("");
 				}
 			}
 		}

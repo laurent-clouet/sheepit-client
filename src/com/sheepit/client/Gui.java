@@ -25,6 +25,8 @@ public interface Gui {
 	public void stop();
 	
 	public void status(String msg_);
+	
+	public void status(String msg_, boolean overwriteSuspendedMsg);
 
 	public void updateTrayIcon(Integer percentage_);
 

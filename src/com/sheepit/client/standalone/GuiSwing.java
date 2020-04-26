@@ -187,11 +187,16 @@ public class GuiSwing extends JFrame implements Gui {
 	
 	@Override
 	public void status(String msg_) {
-		if (activityWorking != null) {
-			this.activityWorking.setStatus(msg_);
-		}
+		status(msg_, false);
 	}
 	
+	@Override
+	public void status(String msg_, boolean overwriteSuspendedMsg) {
+		if (activityWorking != null) {
+			this.activityWorking.setStatus(msg_, overwriteSuspendedMsg);
+		}
+	}
+
 	@Override
 	public void setRenderingProjectName(String name_) {
 		if (activityWorking != null) {
