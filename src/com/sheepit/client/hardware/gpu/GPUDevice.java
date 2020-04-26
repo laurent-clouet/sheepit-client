@@ -80,6 +80,12 @@ public class GPUDevice {
 		this.oldId = id;
 	}
 	
+	public int getRecommandedTileSize() {
+		// check the optimal tile size for the GPU. As a tactical solution, we start with 256x256px tile size for
+		// GPUs with more than 1GB of VRAM, 128x128x otherwise
+		return (getMemory() > 1073741824L) ? 256 : 128;
+	}
+	
 	@Override
 	public String toString() {
 		return "GPUDevice [type=" + type + ", model='" + model + "', memory=" + memory + ", id=" + id + "]";
