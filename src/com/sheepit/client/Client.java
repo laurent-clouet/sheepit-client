@@ -139,6 +139,9 @@ public class Client {
 				while (this.running == true) {
 					this.renderingJob = null;
 					synchronized (this) {
+						if (this.suspended) {
+							this.gui.status("Client paused", true);
+						}
 						while (this.suspended) {
 							wait();
 						}
@@ -438,6 +441,7 @@ public class Client {
 	
 	public void suspend() {
 		suspended = true;
+		this.gui.status("Client will pause when the current job finishes", true);
 	}
 	
 	public synchronized void resume() {
