@@ -106,8 +106,21 @@ public class GuiTextOneLine implements Gui {
 
 	@Override
 	public void status(String msg_) {
-		status = msg_;
-		updateLine();
+		status(msg_, false);
+	}
+	
+	@Override
+	public void status(String msg_, boolean overwriteSuspendedMsg) {
+		if (client != null && client.isSuspended()) {
+			if (overwriteSuspendedMsg) {
+				status = msg_;
+				updateLine();
+			}
+		}
+		else {
+			status = msg_;
+			updateLine();
+		}
 	}
 	
 	@Override

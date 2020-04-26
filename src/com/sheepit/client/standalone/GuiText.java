@@ -95,8 +95,21 @@ public class GuiText implements Gui {
 
 	@Override
 	public void status(String msg_) {
-		System.out.println(msg_);
+		status(msg_, false);
+	}
+	
+	@Override
+	public void status(String msg_, boolean overwriteSuspendedMsg) {
 		log.debug("GUI " + msg_);
+		
+		if (client != null && client.isSuspended()) {
+			if (overwriteSuspendedMsg) {
+				System.out.println(msg_);
+			}
+		}
+		else {
+			System.out.println(msg_);
+		}
 	}
 	
 	@Override
