@@ -152,8 +152,8 @@ public interface Kernel32Lib extends Library {
 		public char[] szExeFile = new char[WinDef.MAX_PATH];
 		
 		@Override
-		protected List getFieldOrder() {
-			return Arrays.asList(new String[] { "dwSize", "cntUsage", "th32ProcessID", "th32DefaultHeapID", "th32ModuleID", "cntThreads", "th32ParentProcessID", "pcPriClassBase", "dwFlags", "szExeFile" });
+		protected List<String> getFieldOrder() {
+			return Arrays.asList("dwSize", "cntUsage", "th32ProcessID", "th32DefaultHeapID", "th32ModuleID", "cntThreads", "th32ParentProcessID", "pcPriClassBase", "dwFlags", "szExeFile");
 		}
 	}
 	
