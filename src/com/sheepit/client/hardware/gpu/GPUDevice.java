@@ -89,7 +89,7 @@ public class GPUDevice {
 	public void setRenderbucketSize(int proposedRenderbucketSize) {
 		int renderbucketSize = getRecommandedTileSize(this.type);    // minimum recommended renderbucket size for GPUs
 		
-		if (proposedRenderbucketSize > 32) {
+		if (proposedRenderbucketSize >= 32) {
 			if (getType().equals("CUDA")) {
 				if (proposedRenderbucketSize <= 512) {
 					renderbucketSize = proposedRenderbucketSize;
