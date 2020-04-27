@@ -168,7 +168,7 @@ public class Job {
 			+ "signal.signal(signal.SIGINT, hndl)\n";
 		if (isUseGPU() && configuration.getGPUDevice() != null && configuration.getComputeMethod() != ComputeType.CPU) {
 			// If using a GPU, check the proper tile size
-			int tileSize = configuration.getGPUDevice().getRecommandedTileSize();
+			int tileSize = configuration.getGPUDevice().getRenderbucketSize();
 
 			core_script = "sheepit_set_compute_device(\"" + configuration.getGPUDevice().getType() + "\", \"GPU\", \"" + configuration.getGPUDevice().getId() + "\")\n";
 			core_script += String.format("bpy.context.scene.render.tile_x = %1$d\nbpy.context.scene.render.tile_y = %1$d\n",
