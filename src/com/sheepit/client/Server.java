@@ -340,7 +340,7 @@ public class Server extends Thread implements HostnameVerifier, X509TrustManager
 				
 				script += jobData.getRenderTask().getScript();
 
-				String validationUrl = URLDecoder.decode(jobData.getRenderTask().getValidationUrl());
+				String validationUrl = URLDecoder.decode(jobData.getRenderTask().getValidationUrl(), "UTF-8");
 
 				Job a_job = new Job(
 						this.user_config,
