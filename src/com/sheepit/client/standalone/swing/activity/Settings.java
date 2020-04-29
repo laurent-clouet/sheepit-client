@@ -79,6 +79,8 @@ public class Settings implements Activity {
 	private JFileChooser cacheDirChooser;
 	private JCheckBox useCPU;
 	private List<JCheckBoxGPU> useGPUs;
+	private JLabel renderbucketSizeLabel;
+	private JSlider renderbucketSize;
 	private JSlider cpuCores;
 	private JSlider ram;
 	private JSpinner renderTime;
@@ -111,6 +113,7 @@ public class Settings implements Activity {
 		applyTheme(config.getTheme());	// apply the proper theme (light/dark)
 
 		List<GPUDevice> gpus = GPU.listDevices(config);
+		useGPUs.clear();    // Empty the auxiliary list (used in the list of checkboxes)
 		
 		GridBagConstraints constraints = new GridBagConstraints();
 		int currentRow = 0;
@@ -252,6 +255,41 @@ public class Settings implements Activity {
 		gridbag.setConstraints(useCPU, compute_devices_constraints);
 		compute_devices_panel.add(useCPU);
 		
+		if (gpus.size() > 0) {
+			int maxRenderbucketSize = 32;
+			
+			Hashtable<Integer, JLabel> renderbucketSizeTable = new Hashtable<Integer, JLabel>();
+			
+			// We "take logs" to calculate the exponent to fill the slider. The logarithm, or log, of a number reflects
+			// what power you need to raise a certain base to in order to get that number. In this case, as we are
+			// offering increments of 2, the formula will be:
+			//
+			//            log(tile size in px)
+			// exponent = --------------------
+			//                  log(2)
+			//
+			int steps = (int) (Math.log(gpus.get(0).getMaximumTileSize()) / Math.log(2));
+			
+			for (int i = 5; i <= steps; i++) {
+				renderbucketSizeTable.put((i - 5), new JLabel(String.format("%.0f", Math.pow(2, i))));
+			}
+			
+			renderbucketSize = new JSlider(0, renderbucketSizeTable.size() - 1);
+			renderbucketSize.setLabelTable(renderbucketSizeTable);
+			renderbucketSize.setMajorTickSpacing(1);
+			renderbucketSize.setMinorTickSpacing(1);
+			renderbucketSize.setPaintTicks(true);
+			renderbucketSize.setPaintLabels(true);
+			renderbucketSize.setValue(config.getRenderbucketSize() != -1 ?
+					((int) (Math.log(config.getRenderbucketSize()) / Math.log(2))) - 5 :
+					((int) (Math.log(gpus.get(0).getRecommandedRenderbucketSize()) / Math.log(2))) - 5);
+			
+			renderbucketSizeLabel = new JLabel("Renderbucket size:");
+			
+			renderbucketSizeLabel.setVisible(false);
+			renderbucketSize.setVisible(false);
+		}
+		
 		for (GPUDevice gpu : gpus) {
 			JCheckBoxGPU gpuCheckBox = new JCheckBoxGPU(gpu);
 			gpuCheckBox.setToolTipText(gpu.getId());
@@ -259,6 +297,8 @@ public class Settings implements Activity {
 				GPUDevice config_gpu = config.getGPUDevice();
 				if (config_gpu != null && config_gpu.getId().equals(gpu.getId())) {
 					gpuCheckBox.setSelected(gpuChecked);
+					renderbucketSizeLabel.setVisible(true);
+					renderbucketSize.setVisible(true);
 				}
 			}
 			gpuCheckBox.addActionListener(new GpuChangeAction());
@@ -267,6 +307,22 @@ public class Settings implements Activity {
 			gridbag.setConstraints(gpuCheckBox, compute_devices_constraints);
 			compute_devices_panel.add(gpuCheckBox);
 			useGPUs.add(gpuCheckBox);
+		}
+		
+		if (gpus.size() > 0) {
+			compute_devices_constraints.weightx = 1.0 / gpus.size();
+			compute_devices_constraints.gridx = 0;
+			compute_devices_constraints.gridy++;
+			
+			gridbag.setConstraints(renderbucketSizeLabel, compute_devices_constraints);
+			compute_devices_panel.add(renderbucketSizeLabel);
+			
+			compute_devices_constraints.gridx = 1;
+			compute_devices_constraints.weightx = 1.0;
+			
+			gridbag.setConstraints(renderbucketSize, compute_devices_constraints);
+			compute_devices_panel.add(new JLabel(" "), compute_devices_constraints);        // Add a space between lines
+			compute_devices_panel.add(renderbucketSize);
 		}
 		
 		CPU cpu = new CPU();
@@ -297,6 +353,7 @@ public class Settings implements Activity {
 			compute_devices_constraints.weightx = 1.0;
 			
 			gridbag.setConstraints(cpuCores, compute_devices_constraints);
+			compute_devices_panel.add(new JLabel(" "), compute_devices_constraints);        // Add a space between lines
 			compute_devices_panel.add(cpuCores);
 		}
 		
@@ -332,6 +389,7 @@ public class Settings implements Activity {
 		compute_devices_constraints.weightx = 1.0;
 		
 		gridbag.setConstraints(ram, compute_devices_constraints);
+		compute_devices_panel.add(new JLabel(" "), compute_devices_constraints);        // Add a space between lines
 		compute_devices_panel.add(ram);
 		
 		parent.getContentPane().add(compute_devices_panel, constraints);
@@ -503,7 +561,20 @@ public class Settings implements Activity {
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			renderbucketSizeLabel.setVisible(false);
+			renderbucketSize.setVisible(false);
+			
 			for (JCheckBox box : useGPUs) {
+				if (!box.isSelected()) {
+					box.setSelected(false);
+				}
+				else {
+					renderbucketSizeLabel.setVisible(true);
+					renderbucketSize.setVisible(true);
+				}
+				
+				// Simulate a radio button behavior with check buttons while only 1 GPU
+				// can be selected at a time
 				if (box.equals(e.getSource()) == false) {
 					box.setSelected(false);
 				}
@@ -578,6 +649,11 @@ public class Settings implements Activity {
 				config.setGPUDevice(selected_gpu);
 			}
 			
+			int renderbucket_size = -1;
+			if (renderbucketSize != null) {
+				renderbucket_size = (int) Math.pow(2, (renderbucketSize.getValue() + 5));
+			}
+			
 			int cpu_cores = -1;
 			if (cpuCores != null) {
 				cpu_cores = cpuCores.getValue();
@@ -638,6 +714,7 @@ public class Settings implements Activity {
 						hostnameText,
 						method,
 						selected_gpu,
+						renderbucket_size,
 						cpu_cores,
 						max_ram,
 						max_rendertime,

@@ -50,6 +50,7 @@ public class SettingsLoader {
 	private String hostname;
 	private String computeMethod;
 	private String gpu;
+	private String renderbucketSize;
 	private String cores;
 	private String ram;
 	private String renderTime;
@@ -68,7 +69,7 @@ public class SettingsLoader {
 		}
 	}
 	
-	public SettingsLoader(String path_, String login_, String password_, String proxy_, String hostname_, ComputeType computeMethod_, GPUDevice gpu_, int cores_, long maxRam_, int maxRenderTime_, String cacheDir_, boolean autoSignIn_, String ui_, String theme_, int priority_) {
+	public SettingsLoader(String path_, String login_, String password_, String proxy_, String hostname_, ComputeType computeMethod_, GPUDevice gpu_, int renderbucketSize_, int cores_, long maxRam_, int maxRenderTime_, String cacheDir_, boolean autoSignIn_, String ui_, String theme_, int priority_) {
 		if (path_ == null) {
 			path = getDefaultFilePath();
 		}
@@ -105,6 +106,10 @@ public class SettingsLoader {
 		if (gpu_ != null) {
 			gpu = gpu_.getId();
 		}
+		
+		if (renderbucketSize_ >= 32) {
+			renderbucketSize = String.valueOf(renderbucketSize_);
+		}
 	}
 	
 	public static String getDefaultFilePath() {
@@ -132,6 +137,10 @@ public class SettingsLoader {
 			
 			if (gpu != null) {
 				prop.setProperty("compute-gpu", gpu);
+			}
+			
+			if (renderbucketSize != null) {
+				prop.setProperty("renderbucket-size", renderbucketSize);
 			}
 			
 			if (cores != null) {
@@ -213,6 +222,7 @@ public class SettingsLoader {
 		this.hostname = null;
 		this.computeMethod = null;
 		this.gpu = null;
+		this.renderbucketSize = null;
 		this.cacheDir = null;
 		this.autoSignIn = null;
 		this.ui = null;
@@ -241,6 +251,10 @@ public class SettingsLoader {
 			
 			if (prop.containsKey("compute-gpu")) {
 				this.gpu = prop.getProperty("compute-gpu");
+			}
+			
+			if (prop.containsKey("renderbucket-size")) {
+				this.renderbucketSize = prop.getProperty("renderbucket-size");
 			}
 			
 			if (prop.containsKey("cpu-cores")) { // backward compatibility
@@ -348,8 +362,27 @@ public class SettingsLoader {
 			GPUDevice device = GPU.getGPUDevice(gpu);
 			if (device != null) {
 				config.setGPUDevice(device);
+				
+				// If the user has indicated a render bucket size at least 32x32 px, overwrite the config file value
+				if (config.getRenderbucketSize() >= 32) {
+					config.getGPUDevice().setRenderbucketSize(config.getRenderbucketSize());    // Update size
+				}
+				else {
+					// If the configuration file does have any value
+					if (renderbucketSize != null) {
+						config.getGPUDevice().setRenderbucketSize(Integer.valueOf(renderbucketSize));
+					}
+					else {
+						// Don't do anything here as the GPU get's a default value when it's initialised
+						// The configuration will take the default GPU value
+					}
+				}
+				
+				// And now update the client configuration with the new value
+				config.setRenderbucketSize(config.getGPUDevice().getRenderbucketSize());
 			}
 		}
+		
 		if (config.getNbCores() == -1 && cores != null) {
 			config.setNbCores(Integer.valueOf(cores));
 		}
@@ -383,6 +416,6 @@ public class SettingsLoader {
 	
 	@Override
 	public String toString() {
-		return "SettingsLoader [path=" + path + ", login=" + login + ", password=" + password + ", computeMethod=" + computeMethod + ", gpu=" + gpu + ", cacheDir=" + cacheDir + ", theme=" + theme + ", priority="+priority+"]";
+		return "SettingsLoader [path=" + path + ", login=" + login + ", password=" + password + ", computeMethod=" + computeMethod + ", gpu=" + gpu + ", renderbucket-size=" + renderbucketSize + ", cacheDir=" + cacheDir + ", theme=" + theme + ", priority=" + priority + "]";
 	}
 }

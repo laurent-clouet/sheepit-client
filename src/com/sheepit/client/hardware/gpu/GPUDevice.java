@@ -23,6 +23,7 @@ public class GPUDevice {
 	private String type;
 	private String model;
 	private long memory; // in B
+	private int renderbucketSize;
 	
 	private String id;
 	
@@ -33,6 +34,7 @@ public class GPUDevice {
 		this.model = model;
 		this.memory = ram;
 		this.id = id;
+		this.renderbucketSize = getRecommandedRenderbucketSize();
 	}
 	
 	public GPUDevice(String type, String model, long ram, String id, String oldId) {
@@ -80,8 +82,66 @@ public class GPUDevice {
 		this.oldId = id;
 	}
 	
+	public int getRenderbucketSize() {
+		return this.renderbucketSize;
+	}
+	
+	public void setRenderbucketSize(int proposedRenderbucketSize) {
+		int renderbucketSize = getRecommandedRenderbucketSize();    // minimum recommended renderbucket size for GPUs
+		
+		if (proposedRenderbucketSize >= 32) {
+			if (type.equals("CUDA")) {
+				if (proposedRenderbucketSize <= getMaximumTileSize()) {
+					renderbucketSize = proposedRenderbucketSize;
+				}
+				else {
+					renderbucketSize = getRecommandedRenderbucketSize();
+				}
+			}
+			else if (type.equals("OPENCL")) {
+				if (proposedRenderbucketSize <= getMaximumTileSize()) {
+					renderbucketSize = proposedRenderbucketSize;
+				}
+				else {
+					renderbucketSize = getRecommandedRenderbucketSize();
+				}
+			}
+		}
+		
+		this.renderbucketSize = renderbucketSize;
+	}
+	
+	public int getRecommandedRenderbucketSize() {
+		if (type.equals("CUDA")) {
+			// Optimal CUDA-based GPUs Renderbucket algorithm
+			return (getMemory() > 1073741824L) ? 256 : 128;
+		}
+		else if (type.equals("OPENCL")) {
+			// Optimal OpenCL-based GPUs Renderbucket algorithm
+			return (memory > 1073741824L) ? 256 : 128;
+		}
+		else {
+			// This branch should not be reached, but if it does, then set the size to 32x32 pixels (safest option)
+			return 32;
+		}
+	}
+	
+	public int getMaximumTileSize() {
+		if (type.equals("CUDA")) {
+			return (memory > 1073741824L) ? 512 : 128;
+		}
+		else if (type.equals("OPENCL")) {
+			// Optimal OpenCL-based GPUs Renderbucket algorithm
+			return (memory > 1073741824L) ? 2048 : 128;
+		}
+		else {
+			// This branch should not be reached, but if it does, then set the size to 32x32 pixels (safest option)
+			return 32;
+		}
+	}
+	
 	@Override
 	public String toString() {
-		return "GPUDevice [type=" + type + ", model='" + model + "', memory=" + memory + ", id=" + id + "]";
+		return "GPUDevice [type=" + type + ", model='" + model + "', memory=" + memory + ", id=" + id + ", renderbucketSize=" + renderbucketSize + "]";
 	}
 }

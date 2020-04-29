@@ -57,6 +57,7 @@ public class Configuration {
 	private int priority;
 	private ComputeType computeMethod;
 	private GPUDevice GPUDevice;
+	private int renderbucketSize;
 	private boolean detectGPUs;
 	private boolean printLog;
 	private List<Pair<Calendar, Calendar>> requestTime;
@@ -80,6 +81,7 @@ public class Configuration {
 		this.priority = 19; // default lowest
 		this.computeMethod = null;
 		this.GPUDevice = null;
+		this.renderbucketSize = -1;
 		this.userHasSpecifiedACacheDir = false;
 		this.detectGPUs = true;
 		this.workingDirectory = null;
