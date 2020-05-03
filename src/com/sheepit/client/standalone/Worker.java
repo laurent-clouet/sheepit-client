@@ -135,18 +135,15 @@ public class Worker {
 		
 		if (gpu_device != null) {
 			if (gpu_device.startsWith(Nvidia.TYPE) == false && gpu_device.startsWith(OpenCL.TYPE) == false) {
-				System.err.println("GPU_ID should look like '" + Nvidia.TYPE + "_X' or '" + OpenCL.TYPE + "_X' more info on gpus available with --show-gpu");
-				System.exit(2);
+				System.err.println("ERROR: The entered GPU_ID is invalid. The GPU_ID should look like '" + Nvidia.TYPE + "_#' or '" + OpenCL.TYPE
+						+ "_#'. Please use the proper GPU_ID from the GPU list below\n");
+				showGPUList(parser);
 			}
-			String family = "";
-			if (gpu_device.startsWith(Nvidia.TYPE) == false && gpu_device.startsWith(OpenCL.TYPE) == false) {
-				System.err.println("GPU_ID should look like '" + Nvidia.TYPE + "_X' or '" + OpenCL.TYPE + "_X' more info on gpus available with --show-gpu");
-				return;
-			}
+			
 			GPUDevice gpu = GPU.getGPUDevice(gpu_device);
 			if (gpu == null) {
-				System.err.println("GPU unknown, list of available gpus can be display with --show-gpu");
-				System.exit(2);
+				System.err.println("ERROR: The entered GPU_ID is invalid. Please use the proper GPU_ID from the GPU list below\n");
+				showGPUList(parser);
 			}
 			config.setGPUDevice(gpu);
 		}
@@ -168,7 +165,9 @@ public class Worker {
 							end.setTime(timeFormat.parse(times[1]));
 						}
 						catch (ParseException e) {
-							System.err.println("Error: wrong format in request time");
+							System.err.println(String.format(
+									"ERROR: The entered time slot (-request-time parameter) doesn't seem to be valid. Please check the format is correct [%s]",
+									e.getMessage()));
 							System.exit(2);
 						}
 						
@@ -176,7 +175,7 @@ public class Worker {
 							config.getRequestTime().add(new Pair<Calendar, Calendar>(start, end));
 						}
 						else {
-							System.err.println("Error: wrong request time " + times[0] + " is after " + times[1]);
+							System.err.println(String.format("ERROR: The start (%s) time must be earlier than the finish (%s) time", times[0], times[1]));
 							System.exit(2);
 						}
 					}
@@ -185,7 +184,7 @@ public class Worker {
 		}
 		
 		if (nb_cores < -1 || nb_cores == 0) { // -1 is the default
-			System.err.println("Error: use-number-core should be a greater than zero");
+			System.err.println("ERROR: The entered number of CPU cores (-cores parameter) is not valid. Please enter a number greater than zero");
 			return;
 		}
 		else {
@@ -197,7 +196,8 @@ public class Worker {
 				config.setMaxMemory(Utils.parseNumber(max_ram) / 1000); // internal value are in kB
 			}
 			catch (java.lang.IllegalStateException e) {
-				System.err.println("Error: failed to parse memory parameter");
+				System.err.println(
+						String.format("ERROR: The entered value of maximum memory (-memory parameter) doesn't seem to be a valid number [%s]", e.getMessage()));
 				return;
 			}
 		}
@@ -211,7 +211,9 @@ public class Worker {
 				compute_method = ComputeType.valueOf(method);
 			}
 			catch (IllegalArgumentException e) {
-				System.err.println("Error: compute-method unknown");
+				System.err.println(String.format(
+						"ERROR: The entered compute method (-compute-method parameter) is not valid. Available values are CPU, GPU or CPU_GPU [%s]",
+						e.getMessage()));
 				System.exit(2);
 			}
 		}
@@ -229,8 +231,8 @@ public class Worker {
 				Proxy.set(proxy);
 			}
 			catch (MalformedURLException e) {
-				System.err.println("Error: wrong url for proxy");
-				System.err.println(e);
+				System.err.println(String.format("ERROR: The entered proxy URL (-proxy parameter) doesn't seem to have the right format. Please check it [%s]",
+						e.getMessage()));
 				System.exit(2);
 			}
 		}
@@ -240,18 +242,17 @@ public class Worker {
 		}
 		
 		if (compute_method == ComputeType.CPU && config.getGPUDevice() != null) {
-			System.err.println("You choose to only use the CPU but a GPU was also provided. You can not do both.");
-			System.err.println("Aborting");
+			System.err.println(
+					"ERROR: The compute method is set to use CPU only, but a GPU has also been specified. Change the compute method to CPU_GPU or remove the GPU");
 			System.exit(2);
 		}
 		else if (compute_method == ComputeType.CPU_GPU && config.getGPUDevice() == null) {
-			System.err.println("You choose to only use the CPU and GPU but no GPU device was provided.");
-			System.err.println("Aborting");
+			System.err.println(
+					"ERROR: The compute method is set to use both CPU and GPU, but no GPU has been specified. Change the compute method to CPU or add a GPU (via -gpu parameter)");
 			System.exit(2);
 		}
 		else if (compute_method == ComputeType.GPU && config.getGPUDevice() == null) {
-			System.err.println("You choose to only use the GPU but no GPU device was provided.");
-			System.err.println("Aborting");
+			System.err.println("ERROR: The compute method is set to use GPU only, but not GPU has been specified. Please add a GPU (via -gpu parameter)");
 			System.exit(2);
 		}
 		else if (compute_method == ComputeType.CPU) {
@@ -272,8 +273,7 @@ public class Worker {
 		
 		if (theme != null) {
 			if (!theme.equals("light") && !theme.equals("dark")) {
-				System.err.println(String.format("The theme specified (%s) doesn't exist. Please choose 'light' or 'dark'.", theme));
-				System.err.println("Aborting");
+				System.err.println("ERROR: The entered theme (-theme parameter) doesn't exist. Please choose either 'light' or 'dark'");
 				System.exit(2);
 			}
 			
@@ -282,8 +282,8 @@ public class Worker {
 		
 		if (config_file != null) {
 			if (new File(config_file).exists() == false) {
-				System.err.println("Configuration file not found.");
-				System.err.println("Aborting");
+				System.err.println(
+						"ERROR: The entered configuration file (-config parameter) cannot be loaded. Please check that you've entered an existing filename");
 				System.exit(2);
 			}
 			config.setConfigFilePath(config_file);
@@ -300,7 +300,8 @@ public class Worker {
 		switch (type) {
 			case GuiTextOneLine.type:
 				if (config.isPrintLog()) {
-					System.out.println("OneLine UI can not be used if verbose mode is enabled");
+					System.err.println(
+							"ERROR: The oneLine UI and the --verbose parameter cannot be used at the same time. Please either change the ui to text or remove the verbose mode");
 					System.exit(2);
 				}
 				gui = new GuiTextOneLine();
@@ -311,8 +312,8 @@ public class Worker {
 			default:
 			case GuiSwing.type:
 				if (java.awt.GraphicsEnvironment.isHeadless()) {
-					System.out.println("Graphical ui can not be launch.");
-					System.out.println("You should set a DISPLAY or use a text ui (with -ui " + GuiTextOneLine.type + " or -ui " + GuiText.type + ").");
+					System.err.println("ERROR: Your current configuration doesn't support graphical UI.");
+					System.err.println("Please use one of the text-based UIs provided (using -ui " + GuiTextOneLine.type + " or -ui " + GuiText.type + ")");
 					System.exit(3);
 				}
 				gui = new GuiSwing(no_systray == false, title);
@@ -325,5 +326,14 @@ public class Worker {
 		hook.attachShutDownHook();
 		
 		gui.start();
+	}
+	
+	private void showGPUList(CmdLineParser parser) {
+		try {
+			parser.parseArgument("--show-gpu");
+		}
+		catch (CmdLineException e) {
+			System.err.println(String.format("ERROR: Unable to parse the provided parameter [%s]", e.getMessage()));
+		}
 	}
 }

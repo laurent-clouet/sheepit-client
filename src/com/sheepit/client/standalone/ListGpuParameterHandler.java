@@ -41,7 +41,8 @@ public class ListGpuParameterHandler<T> extends OptionHandler<T> {
 		List<GPUDevice> gpus = GPU.listDevices(new Configuration(null, null, null));
 		if (gpus != null) {
 			for (GPUDevice gpu : gpus) {
-				System.out.println("Id        : " + gpu.getId());
+				System.out.println("GPU_ID    : " + gpu.getOldId());
+				System.out.println("Long ID   : " + gpu.getId());
 				System.out.println("Model     : " + gpu.getModel());
 				System.out.println("Memory, MB: " + (int) (gpu.getMemory() / (1024 * 1024)));
 				System.out.println();
