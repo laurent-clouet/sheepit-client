@@ -19,11 +19,14 @@
 
 package com.sheepit.client.hardware.gpu;
 
+import com.sheepit.client.hardware.gpu.nvidia.Nvidia;
+import com.sheepit.client.hardware.gpu.opencl.OpenCL;
+
 public class GPUDevice {
 	private String type;
 	private String model;
 	private long memory; // in B
-	private int renderbucketSize;
+	private int renderBucketSize;
 	
 	private String id;
 	
@@ -34,7 +37,7 @@ public class GPUDevice {
 		this.model = model;
 		this.memory = ram;
 		this.id = id;
-		this.renderbucketSize = getRecommandedRenderbucketSize();
+		this.renderBucketSize = 32;
 	}
 	
 	public GPUDevice(String type, String model, long ram, String id, String oldId) {
@@ -83,65 +86,42 @@ public class GPUDevice {
 	}
 	
 	public int getRenderbucketSize() {
-		return this.renderbucketSize;
+		return this.renderBucketSize;
 	}
 	
 	public void setRenderbucketSize(int proposedRenderbucketSize) {
-		int renderbucketSize = getRecommandedRenderbucketSize();    // minimum recommended renderbucket size for GPUs
+		int renderBucketSize = 32;
+		GPULister gpu;
+		
+		if (type.equals("CUDA")) {
+			gpu = new Nvidia();
+		}
+		else if (type.equals("OPENCL")) {
+			gpu = new OpenCL();
+		}
+		else {
+			// If execution takes this branch is because we weren't able to detect the proper GPU technology or
+			// because is a new one (different from CUDA and OPENCL). In that case, move into the safest position
+			// of 32x32 pixel tile sizes
+			System.out.println("GPUDevice::setRenderbucketSize Unable to detect GPU technology. Render bucket size set to 32x32 pixels");
+			this.renderBucketSize = 32;
+			return;
+		}
 		
 		if (proposedRenderbucketSize >= 32) {
-			if (type.equals("CUDA")) {
-				if (proposedRenderbucketSize <= getMaximumTileSize()) {
-					renderbucketSize = proposedRenderbucketSize;
-				}
-				else {
-					renderbucketSize = getRecommandedRenderbucketSize();
-				}
+			if (proposedRenderbucketSize <= gpu.getMaximumRenderBucketSize(getMemory())) {
+				renderBucketSize = proposedRenderbucketSize;
 			}
-			else if (type.equals("OPENCL")) {
-				if (proposedRenderbucketSize <= getMaximumTileSize()) {
-					renderbucketSize = proposedRenderbucketSize;
-				}
-				else {
-					renderbucketSize = getRecommandedRenderbucketSize();
-				}
+			else {
+				renderBucketSize = gpu.getRecommendedRenderBucketSize(getMemory());
 			}
 		}
 		
-		this.renderbucketSize = renderbucketSize;
-	}
-	
-	public int getRecommandedRenderbucketSize() {
-		if (type.equals("CUDA")) {
-			// Optimal CUDA-based GPUs Renderbucket algorithm
-			return (getMemory() > 1073741824L) ? 256 : 128;
-		}
-		else if (type.equals("OPENCL")) {
-			// Optimal OpenCL-based GPUs Renderbucket algorithm
-			return (memory > 1073741824L) ? 256 : 128;
-		}
-		else {
-			// This branch should not be reached, but if it does, then set the size to 32x32 pixels (safest option)
-			return 32;
-		}
-	}
-	
-	public int getMaximumTileSize() {
-		if (type.equals("CUDA")) {
-			return (memory > 1073741824L) ? 512 : 128;
-		}
-		else if (type.equals("OPENCL")) {
-			// Optimal OpenCL-based GPUs Renderbucket algorithm
-			return (memory > 1073741824L) ? 2048 : 128;
-		}
-		else {
-			// This branch should not be reached, but if it does, then set the size to 32x32 pixels (safest option)
-			return 32;
-		}
+		this.renderBucketSize = renderBucketSize;
 	}
 	
 	@Override
 	public String toString() {
-		return "GPUDevice [type=" + type + ", model='" + model + "', memory=" + memory + ", id=" + id + ", renderbucketSize=" + renderbucketSize + "]";
+		return "GPUDevice [type=" + type + ", model='" + model + "', memory=" + memory + ", id=" + id + ", renderbucketSize=" + renderBucketSize + "]";
 	}
 }
