@@ -463,7 +463,7 @@ public class Client {
 		int step = log.newCheckPoint();
 		Error.Type ret;
 		while (true) {
-			Job job_to_send;
+			Job job_to_send = null;
 			try {
 				job_to_send = jobsToValidate.take();
 				this.log.debug("will validate " + job_to_send);
@@ -474,12 +474,16 @@ public class Client {
 					this.log.debug("Client::senderLoop confirm failed, ret: " + ret);
 					sendError(step);
 				}
-				
-				this.uploadQueueSize--;
-				this.uploadQueueVolume -= job_to_send.getOutputImageSize();
-				this.gui.displayUploadQueueStats(this.uploadQueueSize, this.uploadQueueVolume);
 			}
 			catch (InterruptedException e) {
+			}
+			finally {
+				this.uploadQueueSize--;
+				if (job_to_send != null) {
+					this.uploadQueueVolume -= job_to_send.getOutputImageSize();
+				}
+
+				this.gui.displayUploadQueueStats(this.uploadQueueSize, this.uploadQueueVolume);
 			}
 		}
 	}
@@ -784,21 +788,23 @@ public class Client {
 		int nb_try = 1;
 		int max_try = 3;
 		ServerCode ret = ServerCode.UNKNOWN;
-		while (nb_try < max_try && ret != ServerCode.OK) {
+		Type confirmJobReturnCode = Error.Type.OK;
+		retryLoop: while (nb_try < max_try && ret != ServerCode.OK) {
 			ret = this.server.HTTPSendFile(url_real, ajob.getOutputImagePath());
 			switch (ret) {
 				case OK:
 					// no issue, exit the loop
-					nb_try = max_try;
-					break;
+					break retryLoop;
 				
 				case JOB_VALIDATION_ERROR_SESSION_DISABLED:
 				case JOB_VALIDATION_ERROR_BROKEN_MACHINE:
-					return Type.SESSION_DISABLED;
+					confirmJobReturnCode = Error.Type.SESSION_DISABLED;
+					break retryLoop;
 					
 				case JOB_VALIDATION_ERROR_MISSING_PARAMETER:
 					// no point to retry the request
-					return Error.Type.UNKNOWN;
+					confirmJobReturnCode = Error.Type.UNKNOWN;
+					break retryLoop;
 					
 				default:
 					// do nothing, try to do a request on the next loop
@@ -812,7 +818,7 @@ public class Client {
 					Thread.sleep(32000);
 				}
 				catch (InterruptedException e) {
-					return Error.Type.UNKNOWN;
+					confirmJobReturnCode = Error.Type.UNKNOWN;
 				}
 			}
 		}
@@ -820,14 +826,16 @@ public class Client {
 		this.isValidatingJob = false;
 		this.previousJob = ajob;
 
-		gui.AddFrameRendered();
+		if (confirmJobReturnCode == Error.Type.OK) {
+			gui.AddFrameRendered();
+		}
 		
 		// we can remove the frame file
 		File frame = new File(ajob.getOutputImagePath());
 		frame.delete();
 		ajob.setOutputImagePath(null);
 
-		return Error.Type.OK;
+		return confirmJobReturnCode;
 	}
 	
 	protected boolean shouldWaitBeforeRender() {
