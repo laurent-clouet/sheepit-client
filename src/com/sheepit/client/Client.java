@@ -358,12 +358,15 @@ public class Client {
 						this.renderingJob = null;
 					}
 					
-					while (this.shouldWaitBeforeRender() == true) {
-						try {
-							Thread.sleep(4000); // wait a little bit
-							this.gui.status("Sending frames. Please wait");
-						}
-						catch (InterruptedException e3) {
+					if (this.shouldWaitBeforeRender() == true) {
+						this.gui.status("Sending frames. Please wait");
+						
+						while (this.shouldWaitBeforeRender() == true) {
+							try {
+								Thread.sleep(4000); // wait a little bit
+							}
+							catch (InterruptedException e3) {
+							}
 						}
 					}
 					this.log.removeCheckPoint(step);
