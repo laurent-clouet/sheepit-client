@@ -206,7 +206,7 @@ public class GuiSwing extends JFrame implements Gui {
 	
 	@Override
 	public void error(String msg_) {
-		status(msg_);
+		status(msg_, true);
 	}
 	
 	@Override
