@@ -198,7 +198,7 @@ public class Client {
 						}
 					}
 					catch (FermeExceptionNoSession e) {
-						this.log.debug("User has no session need to re-authenticate");
+						this.log.debug("User has no session and needs to re-authenticate");
 						ret = this.server.getConfiguration();
 						if (ret != Error.Type.OK) {
 							this.renderingJob = null;
@@ -232,7 +232,8 @@ public class Client {
 					catch (FermeServerDown e) {
 						int wait = ThreadLocalRandom.current().nextInt(10, 30 + 1); // max is exclusive
 						int time_sleep = 1000 * 60 * wait;
-						this.gui.status(String.format("Can not connect to server. Please check your connectivity. Will retry in %s minutes", wait));
+						this.gui.status(String.format("Cannot connect to the server. Please check your connectivity. Will try again at %tR",
+								new Date(new Date().getTime() + time_sleep)));
 						try {
 							Thread.sleep(time_sleep);
 						}
@@ -244,7 +245,8 @@ public class Client {
 					catch (FermeExceptionServerOverloaded e) {
 						int wait = ThreadLocalRandom.current().nextInt(10, 30 + 1); // max is exclusive
 						int time_sleep = 1000 * 60 * wait;
-						this.gui.status(String.format("Server is overloaded and cannot give frame to render. Will retry in %s minutes", wait));
+						this.gui.status(String.format("The server is overloaded and cannot allocate a job. Will try again at %tR",
+								new Date(new Date().getTime() + time_sleep)));
 						try {
 							Thread.sleep(time_sleep);
 						}
@@ -256,7 +258,8 @@ public class Client {
 					catch (FermeExceptionServerInMaintenance e) {
 						int wait = ThreadLocalRandom.current().nextInt(20, 30 + 1); // max is exclusive
 						int time_sleep = 1000 * 60 * wait;
-						this.gui.status(String.format("Server is in maintenance and cannot give frame to render. Will retry in %s minutes", wait));
+						this.gui.status(String.format("The server is under maintenance and cannot allocate a job. Will try again at %tR",
+								new Date(new Date().getTime() + time_sleep)));
 						try {
 							Thread.sleep(time_sleep);
 						}
@@ -268,7 +271,8 @@ public class Client {
 					catch (FermeExceptionBadResponseFromServer e) {
 						int wait = ThreadLocalRandom.current().nextInt(15, 30 + 1); // max is exclusive
 						int time_sleep = 1000 * 60 * wait;
-						this.gui.status(String.format("Bad answer from server. Will retry in %s minutes", wait));
+						this.gui.status(String.format("Bad answer from the server. Will try again at %tR",
+								new Date(new Date().getTime() + time_sleep)));
 						try {
 							Thread.sleep(time_sleep);
 						}
@@ -290,8 +294,8 @@ public class Client {
 					if (this.renderingJob == null) { // no job
 						int wait = ThreadLocalRandom.current().nextInt(10, 30 + 1); // max is exclusive
 						int time_sleep = 1000 * 60 * wait;
-						Date wakeup_time = new Date(new Date().getTime() + time_sleep);
-						this.gui.status(String.format("No job available. Sleeping for %d minutes (will wake up at %tR)", wait, wakeup_time));
+						this.gui.status(String.format("No job available. Will try again at %tR",
+								new Date(new Date().getTime() + time_sleep)));
 						this.suspended = true;
 						int time_slept = 0;
 						while (time_slept < time_sleep && this.running == true) {
