@@ -45,6 +45,8 @@ public abstract class OS {
 	
 	public abstract boolean checkNiceAvailability();
 	
+	public abstract void shutdownComputer(int delayInMinutes);
+	
 	public Process exec(List<String> command, Map<String, String> env) throws IOException {
 		ProcessBuilder builder = new ProcessBuilder(command);
 		builder.redirectErrorStream(true);

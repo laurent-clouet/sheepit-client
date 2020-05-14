@@ -24,11 +24,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadLocalRandom;
@@ -65,6 +70,7 @@ import lombok.Data;
 	private boolean disableErrorSending;
 	private boolean running;
 	private boolean suspended;
+	private boolean shuttingdown;
 	
 	private int maxDownloadFileAttempts = 5;
 	
@@ -85,6 +91,7 @@ import lombok.Data;
 		this.disableErrorSending = false;
 		this.running = false;
 		this.suspended = false;
+		this.shuttingdown = false;
 		
 		this.uploadQueueSize = 0;
 		this.uploadQueueVolume = 0;
@@ -126,6 +133,25 @@ import lombok.Data;
 				return -1;
 			}
 			
+			// If the user has selected to shutdown the computer at any specific time, set a scheduled task
+			if (configuration.getShutdownTime() > 0) {
+				new Timer().schedule(new TimerTask() {
+					@Override public void run() {
+						shuttingdown = true;
+						log.debug("Initiating the computer's shutting down process");
+						
+						if (configuration.getShutdownMode().equals("wait")) {
+							// Soft stop. Complete current render (if any), finish uploading frames and then shutdown the computer
+							askForStop();
+						}
+						else {
+							// Soft stop. Interrupt the current render, abort pending uploads, close the client and shutdown the computer
+							stop();
+						}
+					}
+				}, this.configuration.getShutdownTime());
+			}
+			
 			this.startTime = new Date().getTime();
 			this.server.start(); // for staying alive
 			
@@ -141,14 +167,16 @@ import lombok.Data;
 			do {
 				while (this.running == true) {
 					this.renderingJob = null;
+
 					synchronized (this) {
 						if (this.suspended) {
 							this.gui.status("Client paused", true);
 						}
-						while (this.suspended) {
+						while (this.suspended && !this.shuttingdown) {
 							wait();
 						}
 					}
+					
 					step = this.log.newCheckPoint();
 					try {
 						Calendar next_request = this.nextJobRequest();
@@ -181,9 +209,9 @@ import lombok.Data;
 					catch (FermeExceptionSessionDisabled e) {
 						this.gui.error(Error.humanString(Error.Type.SESSION_DISABLED));
 						// should wait forever to actually display the message to the user
-						while (true) {
+						while (true && !shuttingdown) {
 							try {
-								Thread.sleep(100000);
+								Thread.sleep(1000);
 							}
 							catch (InterruptedException e1) {
 							}
@@ -192,9 +220,9 @@ import lombok.Data;
 					catch (FermeExceptionNoRendererAvailable e) {
 						this.gui.error(Error.humanString(Error.Type.RENDERER_NOT_AVAILABLE));
 						// should wait forever to actually display the message to the user
-						while (true) {
+						while (true && !shuttingdown) {
 							try {
-								Thread.sleep(100000);
+								Thread.sleep(1000);
 							}
 							catch (InterruptedException e1) {
 							}
@@ -214,8 +242,13 @@ import lombok.Data;
 									// wait
 									Date now = new Date();
 									this.gui.status(String.format("Waiting until %tR before requesting job", next_request));
+									long timeToSleep = next_request.getTimeInMillis() - now.getTime();
 									try {
-										Thread.sleep(next_request.getTimeInMillis() - now.getTime());
+										int timeSlept = 0;
+										while (timeSlept < timeToSleep && this.running && !this.shuttingdown) {
+											Thread.sleep(1000);
+											timeSlept += 1000;
+										}
 									}
 									catch (InterruptedException e3) {
 									
@@ -224,6 +257,12 @@ import lombok.Data;
 										this.log.error("Client::run sleepB failed " + e3);
 									}
 								}
+
+								// if we have broken the wait loop because a stop or shutdown signal, go back to the main loop to exit
+								if (!this.running || this.shuttingdown) {
+									continue;
+								}
+
 								this.gui.status("Requesting Job");
 								this.renderingJob = this.server.requestJob();
 							}
@@ -238,7 +277,11 @@ import lombok.Data;
 						this.gui.status(String.format("Cannot connect to the server. Please check your connectivity. Will try again at %tR",
 								new Date(new Date().getTime() + time_sleep)));
 						try {
-							Thread.sleep(time_sleep);
+							int timeSlept = 0;
+							while (timeSlept < time_sleep && this.running && !this.shuttingdown) {
+								Thread.sleep(1000);
+								timeSlept += 1000;
+							}
 						}
 						catch (InterruptedException e1) {
 							return -3;
@@ -252,7 +295,11 @@ import lombok.Data;
 						this.gui.status(String.format("The server is overloaded and cannot allocate a job. Will try again at %tR",
 								new Date(new Date().getTime() + time_sleep)));
 						try {
-							Thread.sleep(time_sleep);
+							int timeSlept = 0;
+							while (timeSlept < time_sleep && this.running && !this.shuttingdown) {
+								Thread.sleep(1000);
+								timeSlept += 1000;
+							}
 						}
 						catch (InterruptedException e1) {
 							return -3;
@@ -266,7 +313,11 @@ import lombok.Data;
 						this.gui.status(String.format("The server is under maintenance and cannot allocate a job. Will try again at %tR",
 								new Date(new Date().getTime() + time_sleep)));
 						try {
-							Thread.sleep(time_sleep);
+							int timeSlept = 0;
+							while (timeSlept < time_sleep && this.running && !this.shuttingdown) {
+								Thread.sleep(1000);
+								timeSlept += 1000;
+							}
 						}
 						catch (InterruptedException e1) {
 							return -3;
@@ -279,7 +330,11 @@ import lombok.Data;
 						int time_sleep = 1000 * 60 * wait;
 						this.gui.status(String.format("Bad answer from the server. Will try again at %tR", new Date(new Date().getTime() + time_sleep)));
 						try {
-							Thread.sleep(time_sleep);
+							int timeSlept = 0;
+							while (timeSlept < time_sleep && this.running && !this.shuttingdown) {
+								Thread.sleep(1000);
+								timeSlept += 1000;
+							}
 						}
 						catch (InterruptedException e1) {
 							return -3;
@@ -306,7 +361,7 @@ import lombok.Data;
 								(retrySchemeInSeconds.length - 1)];
 						this.gui.status(String.format("No job available. Will try again at %tR", new Date(new Date().getTime() + time_sleep)));
 						int time_slept = 0;
-						while (time_slept < time_sleep && this.running == true) {
+						while (time_slept < time_sleep && this.running == true && !this.shuttingdown) {
 							try {
 								Thread.sleep(250);
 							}
@@ -410,6 +465,13 @@ import lombok.Data;
 			e1.printStackTrace(pw);
 			this.log.debug("Client::run exception(D) " + e1 + " stacktrace: " + sw.toString());
 			return -99; // the this.stop will be done after the return of this.run()
+		}
+		
+		if (this.shuttingdown) {
+			// Shutdown the computer using the appropriate command for the host OS
+			this.log.debug("Shutting down the computer in 1 minute");
+			
+			OS.getOS().shutdownComputer(1);
 		}
 		
 		this.gui.stop();
