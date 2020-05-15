@@ -62,6 +62,9 @@ import com.sheepit.client.SettingsLoader;
 import com.sheepit.client.hardware.cpu.CPU;
 import com.sheepit.client.hardware.gpu.GPU;
 import com.sheepit.client.hardware.gpu.GPUDevice;
+import com.sheepit.client.hardware.gpu.GPULister;
+import com.sheepit.client.hardware.gpu.nvidia.Nvidia;
+import com.sheepit.client.hardware.gpu.opencl.OpenCL;
 import com.sheepit.client.network.Proxy;
 import com.sheepit.client.os.OS;
 import com.sheepit.client.standalone.GuiSwing;
@@ -79,6 +82,8 @@ public class Settings implements Activity {
 	private JFileChooser cacheDirChooser;
 	private JCheckBox useCPU;
 	private List<JCheckBoxGPU> useGPUs;
+	private JLabel renderbucketSizeLabel;
+	private JSlider renderbucketSize;
 	private JSlider cpuCores;
 	private JSlider ram;
 	private JSpinner renderTime;
@@ -111,6 +116,7 @@ public class Settings implements Activity {
 		applyTheme(config.getTheme());	// apply the proper theme (light/dark)
 
 		List<GPUDevice> gpus = GPU.listDevices(config);
+		useGPUs.clear();    // Empty the auxiliary list (used in the list of checkboxes)
 		
 		GridBagConstraints constraints = new GridBagConstraints();
 		int currentRow = 0;
@@ -252,21 +258,74 @@ public class Settings implements Activity {
 		gridbag.setConstraints(useCPU, compute_devices_constraints);
 		compute_devices_panel.add(useCPU);
 		
-		for (GPUDevice gpu : gpus) {
-			JCheckBoxGPU gpuCheckBox = new JCheckBoxGPU(gpu);
-			gpuCheckBox.setToolTipText(gpu.getId());
-			if (gpuChecked) {
-				GPUDevice config_gpu = config.getGPUDevice();
-				if (config_gpu != null && config_gpu.getId().equals(gpu.getId())) {
-					gpuCheckBox.setSelected(gpuChecked);
+		if (gpus.size() > 0) {
+			renderbucketSizeLabel = new JLabel("Renderbucket size:");
+			renderbucketSize      = new JSlider();
+			renderbucketSize.setMajorTickSpacing(1);
+			renderbucketSize.setMinorTickSpacing(1);
+			renderbucketSize.setPaintTicks(true);
+			renderbucketSize.setPaintLabels(true);
+			
+			renderbucketSizeLabel.setVisible(false);
+			renderbucketSize.setVisible(false);
+			
+			for (GPUDevice gpu : gpus) {
+				JCheckBoxGPU gpuCheckBox = new JCheckBoxGPU(gpu);
+				gpuCheckBox.setToolTipText(gpu.getId());
+				if (gpuChecked) {
+					GPUDevice config_gpu = config.getGPUDevice();
+					if (config_gpu != null && config_gpu.getId().equals(gpu.getId())) {
+						gpuCheckBox.setSelected(gpuChecked);
+						renderbucketSizeLabel.setVisible(true);
+						renderbucketSize.setVisible(true);
+					}
+				}
+				gpuCheckBox.addActionListener(new GpuChangeAction());
+				
+				compute_devices_constraints.gridy++;
+				gridbag.setConstraints(gpuCheckBox, compute_devices_constraints);
+				compute_devices_panel.add(gpuCheckBox);
+				useGPUs.add(gpuCheckBox);
+			}
+			
+			// Initialisation values will apply if we are not  able to detect the proper GPU technology or
+			// because is a new one (different from CUDA and OPENCL). In that case, move into a safe position
+			// of 32x32 pixel render bucket and a maximum of 128x128 pixel for the "unknown GPU"
+			int maxRenderbucketSize   = 128;
+			int recommendedBucketSize = 32;
+			
+			if (config.getComputeMethod() == ComputeType.GPU || config.getComputeMethod() == ComputeType.CPU_GPU) {
+				GPULister gpu;
+				
+				if (config.getGPUDevice().getType().equals("CUDA")) {
+					gpu = new Nvidia();
+					maxRenderbucketSize = gpu.getMaximumRenderBucketSize(config.getGPUDevice().getMemory());
+					recommendedBucketSize = gpu.getRecommendedRenderBucketSize(config.getGPUDevice().getMemory());
+				}
+				else if (config.getGPUDevice().getType().equals("OPENCL")) {
+					gpu = new OpenCL();
+					maxRenderbucketSize = gpu.getMaximumRenderBucketSize(config.getGPUDevice().getMemory());
+					recommendedBucketSize = gpu.getRecommendedRenderBucketSize(config.getGPUDevice().getMemory());
 				}
 			}
-			gpuCheckBox.addActionListener(new GpuChangeAction());
+
+			buildRenderBucketSizeSlider(maxRenderbucketSize, config.getRenderbucketSize() != -1 ?
+					((int) (Math.log(config.getRenderbucketSize()) / Math.log(2))) - 5 :
+					((int) (Math.log(recommendedBucketSize) / Math.log(2))) - 5);
 			
+			compute_devices_constraints.weightx = 1.0 / gpus.size();
+			compute_devices_constraints.gridx = 0;
 			compute_devices_constraints.gridy++;
-			gridbag.setConstraints(gpuCheckBox, compute_devices_constraints);
-			compute_devices_panel.add(gpuCheckBox);
-			useGPUs.add(gpuCheckBox);
+			
+			gridbag.setConstraints(renderbucketSizeLabel, compute_devices_constraints);
+			compute_devices_panel.add(renderbucketSizeLabel);
+			
+			compute_devices_constraints.gridx = 1;
+			compute_devices_constraints.weightx = 1.0;
+			
+			gridbag.setConstraints(renderbucketSize, compute_devices_constraints);
+			compute_devices_panel.add(new JLabel(" "), compute_devices_constraints);        // Add a space between lines
+			compute_devices_panel.add(renderbucketSize);
 		}
 		
 		CPU cpu = new CPU();
@@ -297,6 +356,7 @@ public class Settings implements Activity {
 			compute_devices_constraints.weightx = 1.0;
 			
 			gridbag.setConstraints(cpuCores, compute_devices_constraints);
+			compute_devices_panel.add(new JLabel(" "), compute_devices_constraints);        // Add a space between lines
 			compute_devices_panel.add(cpuCores);
 		}
 		
@@ -332,6 +392,7 @@ public class Settings implements Activity {
 		compute_devices_constraints.weightx = 1.0;
 		
 		gridbag.setConstraints(ram, compute_devices_constraints);
+		compute_devices_panel.add(new JLabel(" "), compute_devices_constraints);        // Add a space between lines
 		compute_devices_panel.add(ram);
 		
 		parent.getContentPane().add(compute_devices_panel, constraints);
@@ -446,6 +507,29 @@ public class Settings implements Activity {
 		}
 	}
 	
+	private void buildRenderBucketSizeSlider(int maxRenderbucketSize, int selectedBucketSize) {
+		Hashtable<Integer, JLabel> renderbucketSizeTable = new Hashtable<Integer, JLabel>();
+		
+		// We "take logs" to calculate the exponent to fill the slider. The logarithm, or log, of a number reflects
+		// what power you need to raise a certain base to in order to get that number. In this case, as we are
+		// offering increments of 2^n, the formula will be:
+		//
+		//            log(tile size in px)
+		// exponent = --------------------
+		//                  log(2)
+		//
+		int steps = (int) (Math.log(maxRenderbucketSize) / Math.log(2));
+		
+		for (int i = 5; i <= steps; i++) {
+			renderbucketSizeTable.put((i - 5), new JLabel(String.format("%.0f", Math.pow(2, i))));
+		}
+		
+		renderbucketSize.setMinimum(0);
+		renderbucketSize.setMaximum(renderbucketSizeTable.size() - 1);
+		renderbucketSize.setLabelTable(renderbucketSizeTable);
+		renderbucketSize.setValue(selectedBucketSize);
+	}
+	
 	public boolean checkDisplaySaveButton() {
 		boolean selected = useCPU.isSelected();
 		for (JCheckBoxGPU box : useGPUs) {
@@ -503,10 +587,43 @@ public class Settings implements Activity {
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			renderbucketSizeLabel.setVisible(false);
+			renderbucketSize.setVisible(false);
+			
+			int counter = 0;
 			for (JCheckBox box : useGPUs) {
+				if (!box.isSelected()) {
+					box.setSelected(false);
+				}
+				else {
+					GPULister gpu;
+					int maxRenderbucketSize = 128;		// Max default render bucket size
+					int recommendedBucketSize = 32;		// Default recommended render bucket size
+					
+					if (useGPUs.get(counter).getGPUDevice().getType().equals("CUDA")) {
+						gpu = new Nvidia();
+						maxRenderbucketSize = gpu.getMaximumRenderBucketSize(useGPUs.get(counter).getGPUDevice().getMemory());
+						recommendedBucketSize = gpu.getRecommendedRenderBucketSize(useGPUs.get(counter).getGPUDevice().getMemory());
+					}
+					else if (useGPUs.get(counter).getGPUDevice().getType().equals("OPENCL")) {
+						gpu = new OpenCL();
+						maxRenderbucketSize = gpu.getMaximumRenderBucketSize(useGPUs.get(counter).getGPUDevice().getMemory());
+						recommendedBucketSize = gpu.getRecommendedRenderBucketSize(useGPUs.get(counter).getGPUDevice().getMemory());
+					}
+					
+					buildRenderBucketSizeSlider(maxRenderbucketSize, ((int) (Math.log(recommendedBucketSize) / Math.log(2))) - 5);
+					
+					renderbucketSizeLabel.setVisible(true);
+					renderbucketSize.setVisible(true);
+				}
+				
+				// Simulate a radio button behavior with check buttons while only 1 GPU
+				// can be selected at a time
 				if (box.equals(e.getSource()) == false) {
 					box.setSelected(false);
 				}
+				
+				counter++;
 			}
 			checkDisplaySaveButton();
 		}
@@ -578,6 +695,11 @@ public class Settings implements Activity {
 				config.setGPUDevice(selected_gpu);
 			}
 			
+			int renderbucket_size = -1;
+			if (renderbucketSize != null) {
+				renderbucket_size = (int) Math.pow(2, (renderbucketSize.getValue() + 5));
+			}
+			
 			int cpu_cores = -1;
 			if (cpuCores != null) {
 				cpu_cores = cpuCores.getValue();
@@ -638,6 +760,7 @@ public class Settings implements Activity {
 						hostnameText,
 						method,
 						selected_gpu,
+						renderbucket_size,
 						cpu_cores,
 						max_ram,
 						max_rendertime,

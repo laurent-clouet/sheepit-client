@@ -127,4 +127,14 @@ public class Nvidia implements GPULister {
 		return devices;
 	}
 	
+	@Override
+	public int getRecommendedRenderBucketSize(long memory) {
+		// Optimal CUDA-based GPUs Renderbucket algorithm
+		return (memory > 1073741824L) ? 256 : 128;
+	}
+	
+	@Override
+	public int getMaximumRenderBucketSize(long memory) {
+		return (memory > 1073741824L) ? 512 : 128;
+	}
 }

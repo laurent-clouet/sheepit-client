@@ -47,6 +47,7 @@ import javax.swing.SpringLayout;
 
 import com.sheepit.client.Client;
 import com.sheepit.client.Job;
+import com.sheepit.client.Log;
 import com.sheepit.client.Stats;
 import com.sheepit.client.Utils;
 import com.sheepit.client.standalone.GuiSwing;
@@ -75,6 +76,7 @@ public class Working implements Activity {
 	private JLabel user_info_total_rendertime_this_session_value;
 	private JLabel userInfoQueuedUploadsAndSizeValue;
 	private String currentTheme;
+	private Log log;
 	
 	public Working(GuiSwing parent_) {
 		parent = parent_;
@@ -97,6 +99,7 @@ public class Working implements Activity {
 		userInfoQueuedUploadsAndSizeValue = new JLabel("0");
 		currentTheme = UIManager.getLookAndFeel().getName();    // Capture the theme on component instantiation
 		previousStatus = "";
+		log = Log.getInstance(parent_.getConfiguration());
 	}
 	
 	@Override
@@ -382,8 +385,9 @@ public class Working implements Activity {
 						icon = new ImageIcon(img.getScaledInstance((int) (width * factor), (int) (height * factor), Image.SCALE_FAST));
 					}
 					catch (IOException e) {
-						System.out.println("Working::showLastRender() exception " + e);
-						e.printStackTrace();
+						log.error(String.format("Working::showLastRender() Unable to load/preview rendered frame [%s]. Exception %s",
+								lastJob.getOutputImagePath(),
+								e.getMessage()));
 					}
 				}
 

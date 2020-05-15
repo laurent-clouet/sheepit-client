@@ -48,6 +48,7 @@ public class Error {
 		OS_NOT_SUPPORTED(17),
 		CPU_NOT_SUPPORTED(18),
 		GPU_NOT_SUPPORTED(19),
+		VALIDATION_FAILED(25),
 		
 		// internal error handling
 		NO_SPACE_LEFT_ON_DEVICE(100),
