@@ -345,7 +345,7 @@ public class Client {
 						ret = confirmJob(this.renderingJob);
 						if (ret != Error.Type.OK) {
 							gui.error("Client::run problem with confirmJob (returned " + ret + ")");
-							sendError(step);
+							sendError(step, this.renderingJob, Error.Type.VALIDATION_FAILED);
 						}
 					}
 					else {
