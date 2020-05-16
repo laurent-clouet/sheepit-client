@@ -95,17 +95,16 @@ public class Configuration {
 		this.theme = null;
 	}
 	
+	
 	public String toString() {
 		return String.format("Configuration (workingDirectory '%s')", this.workingDirectory.getAbsolutePath());
 	}
 
 	public void setUsePriority(int priority) {
-		if (priority > 19) {
+		if (priority > 19)
 			priority = 19;
-		}
-		if (priority < -19) {
+		if (priority < -19)
 			priority = -19;
-		}
 		
 		this.priority = priority;
 		

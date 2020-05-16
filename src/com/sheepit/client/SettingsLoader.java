@@ -406,8 +406,7 @@ public class SettingsLoader {
 		if (config.getTheme() == null) {
 			if (this.theme != null) {
 				config.setTheme(this.theme);
-			}
-			else {
+			} else {
 				config.setTheme("light");
 			}
 		}

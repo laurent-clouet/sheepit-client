@@ -113,7 +113,7 @@ public class Settings implements Activity {
 		Configuration config = parent.getConfiguration();
 		new SettingsLoader(config.getConfigFilePath()).merge(config);
 		
-		applyTheme(config.getTheme());    // apply the proper theme (light/dark)
+		applyTheme(config.getTheme());	// apply the proper theme (light/dark)
 
 		List<GPUDevice> gpus = GPU.listDevices(config);
 		useGPUs.clear();    // Empty the auxiliary list (used in the list of checkboxes)
@@ -132,7 +132,7 @@ public class Settings implements Activity {
 		++currentRow;
 		
 		constraints.gridy = currentRow;
-		parent.getContentPane().add(new JLabel(" "), constraints);    // Add a separator between logo and first panel
+		parent.getContentPane().add(new JLabel(" "), constraints);	// Add a separator between logo and first panel
 
 		currentRow++;
 
@@ -331,14 +331,14 @@ public class Settings implements Activity {
 		CPU cpu = new CPU();
 		if (cpu.cores() > 1) { // if only one core is available, no need to show the choice
 			double step = 1;
-			double display = (double) cpu.cores() / step;
+			double display = (double)cpu.cores() / step;
 			while (display > 10) {
 				step += 1.0;
-				display = (double) cpu.cores() / step;
+				display = (double)cpu.cores() / step;
 			}
 			
 			cpuCores = new JSlider(1, cpu.cores());
-			cpuCores.setMajorTickSpacing((int) (step));
+			cpuCores.setMajorTickSpacing((int)(step));
 			cpuCores.setMinorTickSpacing(1);
 			cpuCores.setPaintTicks(true);
 			cpuCores.setPaintLabels(true);
@@ -365,10 +365,10 @@ public class Settings implements Activity {
 		int all_ram = (int) os.getMemory();
 		ram = new JSlider(0, all_ram);
 		int step = 1000000;
-		double display = (double) all_ram / (double) step;
+		double display = (double)all_ram / (double)step;
 		while (display > 10) {
 			step += 1000000;
-			display = (double) all_ram / (double) step;
+			display = (double)all_ram / (double)step;
 		}
 		Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
 		for (int g = 0; g < all_ram; g += step) {
@@ -378,7 +378,7 @@ public class Settings implements Activity {
 		ram.setLabelTable(labelTable);
 		ram.setPaintTicks(true);
 		ram.setPaintLabels(true);
-		ram.setValue((int) (config.getMaxMemory() != -1 ? config.getMaxMemory() : os.getMemory()));
+		ram.setValue((int)(config.getMaxMemory() != -1 ? config.getMaxMemory() : os.getMemory()));
 		JLabel ramLabel = new JLabel("Memory:");
 		
 		compute_devices_constraints.weightx = 1.0 / gpus.size();
@@ -405,7 +405,7 @@ public class Settings implements Activity {
 		priority.setPaintTicks(true);
 		priority.setPaintLabels(true);
 		priority.setValue(config.getPriority());
-		JLabel priorityLabel = new JLabel(high_priority_support ? "Priority (High <-> Low):" : "Priority (Normal <-> Low):");
+		JLabel priorityLabel = new JLabel(high_priority_support ? "Priority (High <-> Low):" : "Priority (Normal <-> Low):" );
 		
 		compute_devices_constraints.weightx = 1.0 / gpus.size();
 		compute_devices_constraints.gridx = 0;
@@ -452,7 +452,7 @@ public class Settings implements Activity {
 		if (parent.getConfiguration().getMaxRenderTime() > 0) {
 			val = parent.getConfiguration().getMaxRenderTime() / 60;
 		}
-		renderTime = new JSpinner(new SpinnerNumberModel(val, 0, 1000, 1));
+		renderTime = new JSpinner(new SpinnerNumberModel(val,0,1000,1));
 		
 		advanced_panel.add(renderTimeLabel);
 		advanced_panel.add(renderTime);
@@ -482,7 +482,7 @@ public class Settings implements Activity {
 		
 		currentRow++;
 		constraints.gridy = currentRow;
-		parent.getContentPane().add(new JLabel(" "), constraints);    // Add a separator between last checkboxes and button
+		parent.getContentPane().add(new JLabel(" "), constraints);	// Add a separator between last checkboxes and button
 
 		currentRow++;
 		String buttonText = "Start";
@@ -549,8 +549,7 @@ public class Settings implements Activity {
 		try {
 			if (theme_.equals("light")) {
 				UIManager.setLookAndFeel(new FlatLightLaf());
-			}
-			else if (theme_.equals("dark")) {
+			} else if (theme_.equals("dark")) {
 				UIManager.setLookAndFeel(new FlatDarkLaf());
 			}
 
@@ -660,9 +659,8 @@ public class Settings implements Activity {
 				return;
 			}
 
-			if (themeOptionsGroup.getSelection().getActionCommand() != null) {
+			if (themeOptionsGroup.getSelection().getActionCommand() != null)
 				config.setTheme(themeOptionsGroup.getSelection().getActionCommand());
-			}
 			
 			if (cacheDir != null) {
 				File fromConfig = config.getStorageDir();
@@ -722,7 +720,7 @@ public class Settings implements Activity {
 			
 			int max_rendertime = -1;
 			if (renderTime != null) {
-				max_rendertime = (Integer) renderTime.getValue() * 60;
+				max_rendertime = (Integer)renderTime.getValue() * 60;
 				config.setMaxRenderTime(max_rendertime);
 			}
 			
@@ -769,7 +767,7 @@ public class Settings implements Activity {
 						cachePath,
 						autoSignIn.isSelected(),
 						GuiSwing.type,
-						themeOptionsGroup.getSelection().getActionCommand(),    // selected theme
+						themeOptionsGroup.getSelection().getActionCommand(),	// selected theme
 						priority.getValue()));
 				
 				// wait for successful authentication (to store the public key)

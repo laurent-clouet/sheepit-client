@@ -162,10 +162,10 @@ public class Job {
 		// When sending Ctrl+C to the terminal it also get's sent to all subprocesses e.g. also the render process.
 		// The java program handles Ctrl+C but the renderer quits on Ctrl+C.
 		// This script causes the renderer to ignore Ctrl+C.
-		String ignore_signal_script = "import signal\n"
-				+ "def hndl(signum, frame):\n"
-				+ "    pass\n"
-				+ "signal.signal(signal.SIGINT, hndl)\n";
+		String ignore_signal_script= "import signal\n"
+			+ "def hndl(signum, frame):\n"
+			+ "    pass\n"
+			+ "signal.signal(signal.SIGINT, hndl)\n";
 		if (isUseGPU() && configuration.getGPUDevice() != null && configuration.getComputeMethod() != ComputeType.CPU) {
 			// If using a GPU, check the proper tile size
 			int tileSize = configuration.getGPUDevice().getRenderbucketSize();
@@ -274,8 +274,8 @@ public class Job {
 					public void run() {
 						RenderProcess process = getProcessRender();
 						if (process != null) {
-							long duration = (new Date().getTime() - process.getStartTime()) / 1000; // in seconds
-							if (configuration.getMaxRenderTime() > 0 && duration > configuration.getMaxRenderTime()) {
+							long duration = (new Date().getTime() - process.getStartTime() ) / 1000; // in seconds
+							if (configuration.getMaxRenderTime() > 0 &&  duration > configuration.getMaxRenderTime()) {
 								log.debug("Killing render because process duration");
 								OS.getOS().kill(process.getProcess());
 								setAskForRendererKill(true);
@@ -378,7 +378,7 @@ public class Job {
 		if (isAskForRendererKill()) {
 			log.debug("Job::render been asked to end render");
 			
-			long duration = (new Date().getTime() - process.getStartTime()) / 1000; // in seconds
+			long duration = (new Date().getTime() - process.getStartTime() ) / 1000; // in seconds
 			if (configuration.getMaxRenderTime() > 0 && duration > configuration.getMaxRenderTime()) {
 				log.debug("Render killed because process duration (" + duration + "s) is over user setting (" + configuration.getMaxRenderTime() + "s)");
 				return Error.Type.RENDERER_KILLED_BY_USER_OVER_TIME;
@@ -423,7 +423,7 @@ public class Job {
 		else {
 			setOutputImagePath(files[0].getAbsolutePath());
 			this.outputImageSize = new File(getOutputImagePath()).length();
-			log.debug(String.format("Job::render pictureFilename: %s, size: %d'", getOutputImagePath(), this.outputImageSize));
+			log.debug(String.format("Job::render pictureFilename: %s, size: %d'",getOutputImagePath(), this.outputImageSize));
 		}
 		
 		File scene_dir = new File(getSceneDirectory());
@@ -443,7 +443,7 @@ public class Job {
 
 		if (standardTileInfo.find()) {
 			int tileJustProcessed = Integer.parseInt(standardTileInfo.group(1));
-			int totalTilesInJob = Integer.parseInt(standardTileInfo.group(2));
+			int totalTilesInJob  = Integer.parseInt(standardTileInfo.group(2));
 
 			newProgress = Math.abs((tileJustProcessed * 100) / totalTilesInJob);
 		}
