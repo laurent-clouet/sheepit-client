@@ -249,6 +249,11 @@ public class Job {
 			}
 		}
 		
+		// Add this option to the blender call to remove the following execution errors:
+		//		ALSA lib pcm_dmix.c:1108:(snd_pcm_dmix_open) unable to open slave
+		// 		AL lib: (EE) ALCplaybackAlsa_open: Could not open playback device 'default': No such file or directory
+		command.add("-noaudio");
+		
 		try {
 			renderStartedObservable event = new renderStartedObservable(renderStarted);
 			String line;
