@@ -111,6 +111,9 @@ public class Worker {
 	
 	@Option(name = "-theme", usage = "Specify the theme to use for the graphical client, default 'light', available 'light', 'dark'", required = false)
 	private String theme = null;
+	
+	@Option(name = "-renderbucket-size", usage = "Set a custom GPU renderbucket size (32 for 32x32px, 64 for 64x64px, and so on). NVIDIA GPUs support a maximum renderbucket size of 512x512 pixel, while AMD GPUs support a maximum 2048x2048 pixel renderbucket size. Minimum renderbucket size is 32 pixels for all GPUs", required = false)
+	private int renderbucketSize = -1;
 
 	public static void main(String[] args) {
 		new Worker().doMain(args);
@@ -277,6 +280,12 @@ public class Worker {
 		}
 		
 		config.setComputeMethod(compute_method);
+		
+		// Change the default configuration if the user has specified a minimum renderbucket size of 32
+		if (renderbucketSize >= 32) {
+			// Send the proposed renderbucket size and check if viable
+			config.setRenderbucketSize(renderbucketSize);
+		}
 		
 		if (ui_type != null) {
 			config.setUIType(ui_type);
