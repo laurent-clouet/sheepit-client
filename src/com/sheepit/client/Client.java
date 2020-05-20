@@ -69,6 +69,7 @@ public class Client {
 	
 	private int uploadQueueSize;
 	private long uploadQueueVolume;
+	private int noJobRetryIter;
 	
 	public Client(Gui gui_, Configuration configuration, String url_) {
 		this.configuration = configuration;
@@ -86,6 +87,7 @@ public class Client {
 		
 		this.uploadQueueSize = 0;
 		this.uploadQueueVolume = 0;
+		this.noJobRetryIter = 0;
 	}
 	
 	public String toString() {
@@ -292,8 +294,9 @@ public class Client {
 					}
 					
 					if (this.renderingJob == null) { // no job
-						int wait = ThreadLocalRandom.current().nextInt(10, 30 + 1); // max is exclusive
-						int time_sleep = 1000 * 60 * wait;
+						int[] retrySchemeInSeconds = {300000, 480000, 720000, 900000, 1200000};	// 5, 8, 12, 15 and 20 minutes
+						
+						int time_sleep = retrySchemeInSeconds[(this.noJobRetryIter < retrySchemeInSeconds.length) ? this.noJobRetryIter++ : (retrySchemeInSeconds.length - 1)];
 						this.gui.status(String.format("No job available. Will try again at %tR",
 								new Date(new Date().getTime() + time_sleep)));
 						this.suspended = true;
@@ -312,6 +315,9 @@ public class Client {
 					}
 					
 					this.log.debug("Got work to do id: " + this.renderingJob.getId() + " frame: " + this.renderingJob.getFrameNumber());
+					
+					// As the server allocated a new job to this client, reset the no_job waiting algorithm
+					this.noJobRetryIter = 0;
 					
 					ret = this.work(this.renderingJob);
 					if (ret == Error.Type.RENDERER_KILLED) {
