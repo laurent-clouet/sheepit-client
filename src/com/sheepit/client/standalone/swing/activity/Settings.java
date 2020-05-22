@@ -406,6 +406,10 @@ public class Settings implements Activity {
 		priority.setValue(config.getPriority());
 		JLabel priorityLabel = new JLabel(high_priority_support ? "Priority (High <-> Low):" : "Priority (Normal <-> Low):");
 		
+		boolean showPrioritySlider = os.checkNiceAvailability();
+		priority.setVisible(showPrioritySlider);
+		priorityLabel.setVisible(showPrioritySlider);
+		
 		compute_devices_constraints.weightx = 1.0 / gpus.size();
 		compute_devices_constraints.gridx = 0;
 		compute_devices_constraints.gridy++;
