@@ -55,14 +55,21 @@ public class Log {
 	}
 	
 	private void append(String level_, String msg_) {
-		if (msg_.equals("") == false) {
-			String line = this.dateFormat.format(new java.util.Date()) + " (" + level_ + ") " + msg_;
-			if (this.checkpoints.containsKey(this.lastCheckPoint) && this.checkpoints.get(this.lastCheckPoint) != null) {
-				this.checkpoints.get(this.lastCheckPoint).add(line);
+		String line = null;
+		
+		try {
+			if (msg_.equals("") == false) {
+				line = this.dateFormat.format(new java.util.Date()) + " (" + level_ + ") " + msg_;
+				if (this.checkpoints.containsKey(this.lastCheckPoint) && this.checkpoints.get(this.lastCheckPoint) != null) {
+					this.checkpoints.get(this.lastCheckPoint).add(line);
+				}
+				if (this.printStdOut == true) {
+					System.out.println(line);
+				}
 			}
-			if (this.printStdOut == true) {
-				System.out.println(line);
-			}
+		}
+		catch (Exception e) {
+			// Nothing to do here. Just allow the thread to continue
 		}
 	}
 	
