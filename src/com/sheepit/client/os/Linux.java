@@ -242,8 +242,7 @@ public class Linux extends OS {
 		try {
 			Process process = processBuilder.start();
 			
-			BufferedReader reader = new BufferedReader(
-					new InputStreamReader(process.getInputStream()));
+			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			
 			String line;
 			StringBuilder screenOutput = new StringBuilder();
@@ -262,19 +261,15 @@ public class Linux extends OS {
 			
 			int exitCode = process.waitFor();
 			if (exitCode != 0) {
-				System.err.println(String.format("ERROR Linux::isOpenGLAreadyInstalled Unable to execute ldd command. Exit code %d",
-						exitCode));
-				System.err.println(String.format("Screen output from ldd execution: %s",
-						screenOutput.toString()));
+				System.err.println(String.format("ERROR Linux::isOpenGLAreadyInstalled Unable to execute ldd command. Exit code %d", exitCode));
+				System.err.println(String.format("Screen output from ldd execution: %s", screenOutput.toString()));
 			}
 		}
 		catch (IOException e) {
-			System.err.println(String.format("ERROR Linux::isOpenGLAreadyInstalled Unable to execute ldd command. IOException %s",
-					e.getMessage()));
+			System.err.println(String.format("ERROR Linux::isOpenGLAreadyInstalled Unable to execute ldd command. IOException %s", e.getMessage()));
 		}
 		catch (InterruptedException e) {
-			System.err.println(String.format("ERROR Linux::isOpenGLAreadyInstalled Unable to execute ldd command. InterruptedException %s",
-					e.getMessage()));
+			System.err.println(String.format("ERROR Linux::isOpenGLAreadyInstalled Unable to execute ldd command. InterruptedException %s", e.getMessage()));
 		}
 		
 		return false;
