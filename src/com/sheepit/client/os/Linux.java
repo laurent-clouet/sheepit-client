@@ -18,7 +18,9 @@
  */
 package com.sheepit.client.os;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -152,19 +154,22 @@ public class Linux extends OS {
 	
 	@Override
 	public Process exec(List<String> command, Map<String, String> env_overight) throws IOException {
-		// the renderer have a lib directory so add to the LD_LIBRARY_PATH
-		// (even if we are not sure that it is the renderer who is launch
-		
 		Map<String, String> new_env = new HashMap<String, String>();
 		new_env.putAll(java.lang.System.getenv()); // clone the env
-		Boolean has_ld_library_path = new_env.containsKey("LD_LIBRARY_PATH");
 		
-		String lib_dir = (new File(command.get(0))).getParent() + File.separator + "lib";
-		if (has_ld_library_path == false) {
-			new_env.put("LD_LIBRARY_PATH", lib_dir);
-		}
-		else {
-			new_env.put("LD_LIBRARY_PATH", new_env.get("LD_LIBRARY_PATH") + ":" + lib_dir);
+		// if Blender is already loading an OpenGL library, don't need to load Blender's default one (it will
+		// create system incompatibilities). If no OpenGL library is found, then load the one included in the binary
+		// zip file
+		if (isOpenGLAreadyInstalled(command.get(0)) == false) {
+			Boolean has_ld_library_path = new_env.containsKey("LD_LIBRARY_PATH");
+			
+			String lib_dir = (new File(command.get(0))).getParent() + File.separator + "lib";
+			if (has_ld_library_path == false) {
+				new_env.put("LD_LIBRARY_PATH", lib_dir);
+			}
+			else {
+				new_env.put("LD_LIBRARY_PATH", new_env.get("LD_LIBRARY_PATH") + ":" + lib_dir);
+			}
 		}
 		
 		List<String> actual_command = command;
@@ -227,5 +232,46 @@ public class Linux extends OS {
 				process.destroy();
 			}
 		}
+	}
+	
+	protected boolean isOpenGLAreadyInstalled(String pathToRendEXE) {
+		ProcessBuilder processBuilder = new ProcessBuilder();
+		processBuilder.command("bash", "-c", "ldd '" + pathToRendEXE + "'");    // support for paths with an space
+		processBuilder.redirectErrorStream(true);
+		
+		try {
+			Process process = processBuilder.start();
+			
+			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			
+			String line;
+			StringBuilder screenOutput = new StringBuilder();
+			while ((line = reader.readLine()) != null) {
+				// check the shared libraries that Blender is loading at run time. If it already loads an existing
+				// version of OpenGL (ie the one shipped with NVIDIA drivers) then return false to avoid the client
+				// replacing them (and glitching the EEVEE render). Otherwise return true and load the /lib folder
+				// to ensure that Blender works correctly
+				if (line.toLowerCase().contains("libgl.so")) {
+					return !line.toLowerCase().contains("not found");
+				}
+				
+				// In case of error we can later check the screen output from ldd
+				screenOutput.append(line);
+			}
+			
+			int exitCode = process.waitFor();
+			if (exitCode != 0) {
+				System.err.println(String.format("ERROR Linux::isOpenGLAreadyInstalled Unable to execute ldd command. Exit code %d", exitCode));
+				System.err.println(String.format("Screen output from ldd execution: %s", screenOutput.toString()));
+			}
+		}
+		catch (IOException e) {
+			System.err.println(String.format("ERROR Linux::isOpenGLAreadyInstalled Unable to execute ldd command. IOException %s", e.getMessage()));
+		}
+		catch (InterruptedException e) {
+			System.err.println(String.format("ERROR Linux::isOpenGLAreadyInstalled Unable to execute ldd command. InterruptedException %s", e.getMessage()));
+		}
+		
+		return false;
 	}
 }
