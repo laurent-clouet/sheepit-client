@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2015 Laurent CLOUET
  *
- * This program is free software; you can redistribute it and/or 
+ * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; version 2
  * of the License.
@@ -105,8 +105,7 @@ public class CollapsibleJPanel extends JPanel {
 		setMaximumSize(new Dimension(getMaximumSize().width, height));
 	}
 	
-	@Override
-	public Component add(Component component) { // Need this to get the original height of panel
+	@Override public Component add(Component component) { // Need this to get the original height of panel
 		
 		Component returnComponent = super.add(component);
 		
@@ -115,8 +114,7 @@ public class CollapsibleJPanel extends JPanel {
 		return returnComponent;
 	}
 	
-	@Override
-	public void setBorder(Border border) { // Need this to get the border title
+	@Override public void setBorder(Border border) { // Need this to get the border title
 		
 		if (border instanceof TitledBorder && (borderTitle == "")) {
 			borderTitle = ((TitledBorder) border).getTitle();
@@ -129,27 +127,22 @@ public class CollapsibleJPanel extends JPanel {
 	
 	public class onClickHandler implements MouseListener {
 		
-		@Override
-		public void mouseClicked(MouseEvent e) {
+		@Override public void mouseClicked(MouseEvent e) {
 		}
 		
-		@Override
-		public void mousePressed(MouseEvent e) {
+		@Override public void mousePressed(MouseEvent e) {
 			if (e.getPoint().y < COLLAPSED_HEIGHT) { // Only if click is on top of panel
 				((CollapsibleJPanel) e.getComponent()).toggleCollapsed();
 			}
 		}
 		
-		@Override
-		public void mouseEntered(MouseEvent e) {
+		@Override public void mouseEntered(MouseEvent e) {
 		}
 		
-		@Override
-		public void mouseExited(MouseEvent e) {
+		@Override public void mouseExited(MouseEvent e) {
 		}
 		
-		@Override
-		public void mouseReleased(MouseEvent e) {
+		@Override public void mouseReleased(MouseEvent e) {
 		}
 		
 	}

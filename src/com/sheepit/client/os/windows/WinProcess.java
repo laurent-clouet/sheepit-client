@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Laurent CLOUET
  * Author Laurent CLOUET <laurent.clouet@nopnop.net>
  *
- * This program is free software; you can redistribute it and/or 
+ * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; version 2
  * of the License.
@@ -84,13 +84,14 @@ public class WinProcess {
 	
 	private static WinNT.HANDLE getHandleByPid(int pid_) throws IOException {
 		WinNT.HANDLE handle = Kernel32.INSTANCE.OpenProcess(0x0400 | // PROCESS_QUERY_INFORMATION
-				0x0800 | // PROCESS_SUSPEND_RESUME
-				0x0001 | // PROCESS_TERMINATE
-				0x0200 | // PROCESS_SET_INFORMATION
-				0x00100000, // SYNCHRONIZE
+						0x0800 | // PROCESS_SUSPEND_RESUME
+						0x0001 | // PROCESS_TERMINATE
+						0x0200 | // PROCESS_SET_INFORMATION
+						0x00100000, // SYNCHRONIZE
 				false, pid_);
 		if (handle == null) {
-			throw new IOException("OpenProcess failed: " + Kernel32Util.formatMessageFromLastErrorCode(Kernel32.INSTANCE.GetLastError()) + " (pid: " + pid_ + ")");
+			throw new IOException(
+					"OpenProcess failed: " + Kernel32Util.formatMessageFromLastErrorCode(Kernel32.INSTANCE.GetLastError()) + " (pid: " + pid_ + ")");
 		}
 		return handle;
 	}
@@ -130,8 +131,7 @@ public class WinProcess {
 		this.pid = pid_;
 	}
 	
-	@Override
-	protected void finalize() throws Throwable {
+	@Override protected void finalize() throws Throwable {
 		if (this.handle != null) {
 			// Kernel32.INSTANCE.CloseHandle(this.handle); // do not close the handle because the parent Process object might still be alive
 			this.handle = null;

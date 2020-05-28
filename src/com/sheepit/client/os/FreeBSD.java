@@ -2,7 +2,7 @@
  * Copyright (C) 2010-2015 Laurent CLOUET
  * Author Laurent CLOUET <laurent.clouet@nopnop.net>
  *
- * This program is free software; you can redistribute it and/or 
+ * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; version 2
  * of the License.
@@ -42,13 +42,11 @@ public class FreeBSD extends OS {
 		return "freebsd";
 	}
 	
-	@Override
-	public String getRenderBinaryPath() {
+	@Override public String getRenderBinaryPath() {
 		return "rend.exe";
 	}
 	
-	@Override
-	public CPU getCPU() {
+	@Override public CPU getCPU() {
 		CPU ret = new CPU();
 		try {
 			Runtime r = Runtime.getRuntime();
@@ -110,8 +108,7 @@ public class FreeBSD extends OS {
 		return ret;
 	}
 	
-	@Override
-	public long getMemory() {
+	@Override public long getMemory() {
 		try {
 			Runtime r = Runtime.getRuntime();
 			Process p = r.exec("sysctl -n hw.usermem");
@@ -133,18 +130,15 @@ public class FreeBSD extends OS {
 		return 0;
 	}
 	
-	@Override
-	public long getFreeMemory() {
+	@Override public long getFreeMemory() {
 		return -1;
 	}
 	
-	@Override
-	public String getCUDALib() {
+	@Override public String getCUDALib() {
 		return "cuda";
 	}
 	
-	@Override
-	public Process exec(List<String> command, Map<String, String> env_overight) throws IOException {
+	@Override public Process exec(List<String> command, Map<String, String> env_overight) throws IOException {
 		// the renderer have a lib directory so add to the LD_LIBRARY_PATH
 		// (even if we are not sure that it is the renderer who is launch
 		

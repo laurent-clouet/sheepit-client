@@ -1,6 +1,6 @@
 /* This file was originally taken from JNA project (https://github.com/twall/jna)
  * filename: contrib/platform/src/com/sun/jna/platform/win32/Tlhelp32.java
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -61,7 +61,8 @@ public interface Kernel32Lib extends Library {
 	/**
 	 * Includes all processes and threads in the system, plus the heaps and modules of the process specified in th32ProcessID.
 	 */
-	WinDef.DWORD TH32CS_SNAPALL = new WinDef.DWORD((TH32CS_SNAPHEAPLIST.intValue() | TH32CS_SNAPPROCESS.intValue() | TH32CS_SNAPTHREAD.intValue() | TH32CS_SNAPMODULE.intValue()));
+	WinDef.DWORD TH32CS_SNAPALL = new WinDef.DWORD(
+			(TH32CS_SNAPHEAPLIST.intValue() | TH32CS_SNAPPROCESS.intValue() | TH32CS_SNAPTHREAD.intValue() | TH32CS_SNAPMODULE.intValue()));
 	
 	/**
 	 * Indicates that the snapshot handle is to be inheritable.
@@ -151,9 +152,10 @@ public interface Kernel32Lib extends Library {
 		 */
 		public char[] szExeFile = new char[WinDef.MAX_PATH];
 		
-		@Override
-		protected List<String> getFieldOrder() {
-			return Arrays.asList("dwSize", "cntUsage", "th32ProcessID", "th32DefaultHeapID", "th32ModuleID", "cntThreads", "th32ParentProcessID", "pcPriClassBase", "dwFlags", "szExeFile");
+		@Override protected List<String> getFieldOrder() {
+			return Arrays
+					.asList("dwSize", "cntUsage", "th32ProcessID", "th32DefaultHeapID", "th32ModuleID", "cntThreads", "th32ParentProcessID", "pcPriClassBase",
+							"dwFlags", "szExeFile");
 		}
 	}
 	

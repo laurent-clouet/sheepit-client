@@ -2,7 +2,7 @@
  * Copyright (C) 2013-2014 Laurent CLOUET
  * Author Laurent CLOUET <laurent.clouet@nopnop.net>
  *
- * This program is free software; you can redistribute it and/or 
+ * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; version 2
  * of the License.
@@ -48,7 +48,7 @@ public class GPUDevice {
 	public String getType() {
 		return type;
 	}
-
+	
 	public void setType(String type) {
 		this.type = type;
 	}
@@ -120,8 +120,7 @@ public class GPUDevice {
 		this.renderBucketSize = renderBucketSize;
 	}
 	
-	@Override
-	public String toString() {
+	@Override public String toString() {
 		return "GPUDevice [type=" + type + ", model='" + model + "', memory=" + memory + ", id=" + id + ", renderbucketSize=" + renderBucketSize + "]";
 	}
 }

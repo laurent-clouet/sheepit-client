@@ -2,7 +2,7 @@
  * Copyright (C) 2018 Laurent CLOUET
  * Author Laurent CLOUET <laurent.clouet@nopnop.net>
  *
- * This program is free software; you can redistribute it and/or 
+ * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; version 2
  * of the License.
@@ -28,12 +28,12 @@ public class CUDeviceAttribute {
 	 * PCI bus ID of the device
 	 */
 	public static final int CU_DEVICE_ATTRIBUTE_PCI_BUS_ID = 33;
-
+	
 	/**
 	 * PCI device ID of the device
 	 */
 	public static final int CU_DEVICE_ATTRIBUTE_PCI_DEVICE_ID = 34;
-
+	
 	/**
 	 * PCI domain ID of the device
 	 */

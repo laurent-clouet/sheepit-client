@@ -2,7 +2,7 @@
  * Copyright (C) 2010-2014 Laurent CLOUET
  * Author Laurent CLOUET <laurent.clouet@nopnop.net>
  *
- * This program is free software; you can redistribute it and/or 
+ * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; version 2
  * of the License.
@@ -46,8 +46,7 @@ public class GuiText implements Gui {
 		this.log = Log.getInstance(null);
 	}
 	
-	@Override
-	public void start() {
+	@Override public void start() {
 		if (client != null) {
 			
 			CLIInputObserver cli_input_observer = new CLIInputObserver(client);
@@ -56,8 +55,7 @@ public class GuiText implements Gui {
 			cli_input_observer_thread.start();
 			
 			Signal.handle(new Signal("INT"), new SignalHandler() {
-				@Override
-				public void handle(Signal signal) {
+				@Override public void handle(Signal signal) {
 					sigIntCount++;
 					
 					if (sigIntCount == 4) {
@@ -84,22 +82,18 @@ public class GuiText implements Gui {
 		}
 	}
 	
-	@Override
-	public void stop() {
+	@Override public void stop() {
 		Runtime.getRuntime().halt(0);
 	}
-
-	@Override
-	public void updateTrayIcon(Integer percentage) {
+	
+	@Override public void updateTrayIcon(Integer percentage) {
 	}
-
-	@Override
-	public void status(String msg_) {
+	
+	@Override public void status(String msg_) {
 		status(msg_, false);
 	}
 	
-	@Override
-	public void status(String msg_, boolean overwriteSuspendedMsg) {
+	@Override public void status(String msg_, boolean overwriteSuspendedMsg) {
 		log.debug("GUI " + msg_);
 		
 		if (client != null && client.isSuspended()) {
@@ -112,67 +106,54 @@ public class GuiText implements Gui {
 		}
 	}
 	
-	@Override
-	public void error(String err_) {
+	@Override public void error(String err_) {
 		System.out.println("Error " + err_);
 		log.error("Error " + err_);
 	}
 	
-	@Override
-	public void AddFrameRendered() {
+	@Override public void AddFrameRendered() {
 		this.framesRendered += 1;
 		System.out.println("Frames rendered: " + this.framesRendered);
 	}
 	
-	@Override
-	public void displayStats(Stats stats) {
+	@Override public void displayStats(Stats stats) {
 		System.out.println("Frames remaining: " + stats.getRemainingFrame());
 		System.out.println("Credits earned: " + stats.getCreditsEarnedDuringSession());
 	}
 	
-	@Override
-	public void displayUploadQueueStats(int queueSize, long queueVolume) {
+	@Override public void displayUploadQueueStats(int queueSize, long queueVolume) {
 		// No need to check if the queue is not empty to show the volume bc this line is always shown at the end
 		// of the render process in text GUI (unless an error occurred, where the file is uploaded synchronously)
-		System.out.println(String.format("Queued uploads: %d (%.2fMB)",
-				queueSize,
-				(queueVolume / 1024.0 / 1024.0)));
+		System.out.println(String.format("Queued uploads: %d (%.2fMB)", queueSize, (queueVolume / 1024.0 / 1024.0)));
 	}
 	
-	@Override
-	public void setRenderingProjectName(String name_) {
+	@Override public void setRenderingProjectName(String name_) {
 		if (name_ != null && name_.isEmpty() == false) {
 			System.out.println("Rendering project \"" + name_ + "\"");
 		}
 	}
 	
-	@Override
-	public void setRemainingTime(String time_) {
+	@Override public void setRemainingTime(String time_) {
 		System.out.println("Rendering (remaining " + time_ + ")");
 	}
 	
-	@Override
-	public void setRenderingTime(String time_) {
+	@Override public void setRenderingTime(String time_) {
 		System.out.println("Rendering " + time_);
 	}
 	
-	@Override
-	public void setClient(Client cli) {
+	@Override public void setClient(Client cli) {
 		client = cli;
 	}
 	
-	@Override
-	public void setComputeMethod(String computeMethod) {
+	@Override public void setComputeMethod(String computeMethod) {
 		System.out.println("Compute method: " + computeMethod);
 	}
 	
-	@Override
-	public Client getClient() {
+	@Override public Client getClient() {
 		return client;
 	}
 	
-	@Override
-	public void successfulAuthenticationEvent(String publickey) {
+	@Override public void successfulAuthenticationEvent(String publickey) {
 	
 	}
 }

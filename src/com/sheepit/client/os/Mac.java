@@ -2,7 +2,7 @@
  * Copyright (C) 2010-2014 Laurent CLOUET
  * Author Laurent CLOUET <laurent.clouet@nopnop.net>
  *
- * This program is free software; you can redistribute it and/or 
+ * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; version 2
  * of the License.
@@ -41,13 +41,11 @@ public class Mac extends OS {
 		return "mac";
 	}
 	
-	@Override
-	public String getRenderBinaryPath() {
+	@Override public String getRenderBinaryPath() {
 		return "Blender" + File.separator + "blender.app" + File.separator + "Contents" + File.separator + "MacOS" + File.separator + "blender";
 	}
 	
-	@Override
-	public CPU getCPU() {
+	@Override public CPU getCPU() {
 		CPU ret = new CPU();
 		
 		String command = "sysctl machdep.cpu.family machdep.cpu.brand_string";
@@ -97,8 +95,7 @@ public class Mac extends OS {
 		return ret;
 	}
 	
-	@Override
-	public long getMemory() {
+	@Override public long getMemory() {
 		String command = "sysctl hw.memsize";
 		
 		Process p = null;
@@ -140,13 +137,11 @@ public class Mac extends OS {
 		return -1;
 	}
 	
-	@Override
-	public long getFreeMemory() {
+	@Override public long getFreeMemory() {
 		return -1;
 	}
 	
-	@Override
-	public Process exec(List<String> command, Map<String, String> env) throws IOException {
+	@Override public Process exec(List<String> command, Map<String, String> env) throws IOException {
 		List<String> actual_command = command;
 		if (this.hasNiceBinary == null) {
 			this.checkNiceAvailability();
@@ -173,8 +168,7 @@ public class Mac extends OS {
 		return builder.start();
 	}
 	
-	@Override
-	public String getCUDALib() {
+	@Override public String getCUDALib() {
 		return "/usr/local/cuda/lib/libcuda.dylib";
 	}
 	
