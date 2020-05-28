@@ -2,7 +2,7 @@
  * Copyright (C) 2015 Laurent CLOUET
  * Author Laurent CLOUET <laurent.clouet@nopnop.net>
  *
- * This program is free software; you can redistribute it and/or 
+ * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; version 2
  * of the License.
@@ -23,8 +23,7 @@ import lombok.Data;
 
 import java.util.Date;
 
-@Data
-public class RenderProcess {
+@Data public class RenderProcess {
 	private long startTime;
 	private long endTime;
 	private int remainingDuration; // in seconds
@@ -42,7 +41,6 @@ public class RenderProcess {
 	}
 	
 	/**
-	 * 
 	 * @return duration in seconds
 	 */
 	public int getDuration() {

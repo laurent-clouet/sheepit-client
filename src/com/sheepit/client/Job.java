@@ -2,7 +2,7 @@
  * Copyright (C) 2010-2014 Laurent CLOUET
  * Author Laurent CLOUET <laurent.clouet@nopnop.net>
  *
- * This program is free software; you can redistribute it and/or 
+ * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; version 2
  * of the License.
@@ -51,20 +51,19 @@ import com.sheepit.client.os.OS;
 import lombok.Data;
 import lombok.Getter;
 
-@Data
-public class Job {
+@Data public class Job {
 	public static final String UPDATE_METHOD_BY_REMAINING_TIME = "remainingtime";
 	public static final String UPDATE_METHOD_BLENDER_INTERNAL_BY_PART = "blenderinternal";
 	public static final String UPDATE_METHOD_BY_TILE = "by_tile";
-
+	
 	public static final int SHOW_BASE_ICON = -1;
-
+	
 	private String frameNumber;
 	private String sceneMD5;
 	private String rendererMD5;
 	private String id;
 	private String outputImagePath;
-	private long   outputImageSize;
+	private long outputImageSize;
 	private String path; // path inside of the archive
 	private String rendererCommand;
 	private String validationUrl;
@@ -83,7 +82,9 @@ public class Job {
 	private Configuration configuration;
 	private Log log;
 	
-	public Job(Configuration config_, Gui gui_, Log log_, String id_, String frame_, String path_, boolean use_gpu, String command_, String validationUrl_, String script_, String sceneMd5_, String rendererMd5_, String name_, String password_, String extras_, boolean synchronous_upload_, String update_method_) {
+	public Job(Configuration config_, Gui gui_, Log log_, String id_, String frame_, String path_, boolean use_gpu, String command_, String validationUrl_,
+			String script_, String sceneMd5_, String rendererMd5_, String name_, String password_, String extras_, boolean synchronous_upload_,
+			String update_method_) {
 		configuration = config_;
 		id = id_;
 		frameNumber = frame_;
@@ -123,7 +124,9 @@ public class Job {
 	}
 	
 	public String toString() {
-		return String.format("Job (numFrame '%s' sceneMD5 '%s' rendererMD5 '%s' ID '%s' pictureFilename '%s' jobPath '%s' gpu %s name '%s' extras '%s' updateRenderingStatusMethod '%s' render %s)", frameNumber, sceneMD5, rendererMD5, id, outputImagePath, path, useGPU, name, extras, updateRenderingStatusMethod, render);
+		return String
+				.format("Job (numFrame '%s' sceneMD5 '%s' rendererMD5 '%s' ID '%s' pictureFilename '%s' jobPath '%s' gpu %s name '%s' extras '%s' updateRenderingStatusMethod '%s' render %s)",
+						frameNumber, sceneMD5, rendererMD5, id, outputImagePath, path, useGPU, name, extras, updateRenderingStatusMethod, render);
 	}
 	
 	public String getPrefixOutputImage() {
@@ -162,17 +165,14 @@ public class Job {
 		// When sending Ctrl+C to the terminal it also get's sent to all subprocesses e.g. also the render process.
 		// The java program handles Ctrl+C but the renderer quits on Ctrl+C.
 		// This script causes the renderer to ignore Ctrl+C.
-		String ignore_signal_script= "import signal\n"
-			+ "def hndl(signum, frame):\n"
-			+ "    pass\n"
-			+ "signal.signal(signal.SIGINT, hndl)\n";
+		String ignore_signal_script = "import signal\n" + "def hndl(signum, frame):\n" + "    pass\n" + "signal.signal(signal.SIGINT, hndl)\n";
 		if (isUseGPU() && configuration.getGPUDevice() != null && configuration.getComputeMethod() != ComputeType.CPU) {
 			// If using a GPU, check the proper tile size
 			int tileSize = configuration.getGPUDevice().getRenderbucketSize();
-
-			core_script = "sheepit_set_compute_device(\"" + configuration.getGPUDevice().getType() + "\", \"GPU\", \"" + configuration.getGPUDevice().getId() + "\")\n";
-			core_script += String.format("bpy.context.scene.render.tile_x = %1$d\nbpy.context.scene.render.tile_y = %1$d\n",
-					tileSize);
+			
+			core_script = "sheepit_set_compute_device(\"" + configuration.getGPUDevice().getType() + "\", \"GPU\", \"" + configuration.getGPUDevice().getId()
+					+ "\")\n";
+			core_script += String.format("bpy.context.scene.render.tile_x = %1$d\nbpy.context.scene.render.tile_y = %1$d\n", tileSize);
 			
 			log.debug(String.format("Rendering bucket size set to %1$dx%1$d pixels", tileSize));
 			gui.setComputeMethod("GPU");
@@ -203,7 +203,8 @@ public class Job {
 		new_env.put("PYTHONPATH", ""); // make sure blender is using the embedded python, if not it could create "Fatal Python error: Py_Initialize"
 		new_env.put("PYTHONHOME", "");// make sure blender is using the embedded python, if not it could create "Fatal Python error: Py_Initialize"
 		
-		if (isUseGPU() && configuration.getGPUDevice() != null && configuration.getComputeMethod() != ComputeType.CPU && OpenCL.TYPE.equals(configuration.getGPUDevice().getType())) {
+		if (isUseGPU() && configuration.getGPUDevice() != null && configuration.getComputeMethod() != ComputeType.CPU && OpenCL.TYPE
+				.equals(configuration.getGPUDevice().getType())) {
 			new_env.put("CYCLES_OPENCL_SPLIT_KERNEL_TEST", "1");
 			this.updateRenderingStatusMethod = UPDATE_METHOD_BY_TILE; // don't display remaining time
 		}
@@ -270,12 +271,11 @@ public class Job {
 			if (configuration.getMaxRenderTime() > 0) {
 				timerOfMaxRenderTime = new Timer();
 				timerOfMaxRenderTime.schedule(new TimerTask() {
-					@Override
-					public void run() {
+					@Override public void run() {
 						RenderProcess process = getProcessRender();
 						if (process != null) {
-							long duration = (new Date().getTime() - process.getStartTime() ) / 1000; // in seconds
-							if (configuration.getMaxRenderTime() > 0 &&  duration > configuration.getMaxRenderTime()) {
+							long duration = (new Date().getTime() - process.getStartTime()) / 1000; // in seconds
+							if (configuration.getMaxRenderTime() > 0 && duration > configuration.getMaxRenderTime()) {
 								log.debug("Killing render because process duration");
 								OS.getOS().kill(process.getProcess());
 								setAskForRendererKill(true);
@@ -288,30 +288,31 @@ public class Job {
 			log.debug("renderer output");
 			try {
 				int progress = -1;
-
-				Pattern tilePattern  = Pattern.compile(" ([0-9]+)\\s?\\/\\s?([0-9]+) ");
-
+				
+				Pattern tilePattern = Pattern.compile(" ([0-9]+)\\s?\\/\\s?([0-9]+) ");
+				
 				// Initialise the progress bar in the icon (0% completed at this time)
 				gui.updateTrayIcon(0);
-
+				
 				while ((line = input.readLine()) != null) {
 					log.debug(line);
-
+					
 					progress = computeRenderingProgress(line, tilePattern, progress);
-
+					
 					updateRenderingMemoryPeak(line);
 					if (configuration.getMaxMemory() != -1 && process.getMemoryUsed() > configuration.getMaxMemory()) {
-						log.debug("Blocking render because process ram used (" + process.getMemoryUsed() + "k) is over user setting (" + configuration.getMaxMemory() + "k)");
+						log.debug("Blocking render because process ram used (" + process.getMemoryUsed() + "k) is over user setting (" + configuration
+								.getMaxMemory() + "k)");
 						OS.getOS().kill(process.getProcess());
 						process.finish();
 						if (script_file != null) {
 							script_file.delete();
 						}
-
+						
 						// Once the process is finished (either finished successfully or with an error) move back to
 						// base icon (isolated S with no progress bar)
 						gui.updateTrayIcon(Job.SHOW_BASE_ICON);
-
+						
 						return Error.Type.RENDERER_OUT_OF_MEMORY;
 					}
 					
@@ -321,13 +322,13 @@ public class Job {
 						if (script_file != null) {
 							script_file.delete();
 						}
-
+						
 						// Put back base icon
 						gui.updateTrayIcon(Job.SHOW_BASE_ICON);
-
+						
 						return error;
 					}
-
+					
 					if (event.isStarted() == false && (process.getMemoryUsed() > 0 || process.getRemainingDuration() > 0)) {
 						event.doNotifyIsStarted();
 					}
@@ -338,10 +339,10 @@ public class Job {
 				// most likely The handle is invalid
 				log.error("Job::render exception(B) (silent error) " + err1);
 			}
-
+			
 			// Put back base icon
 			gui.updateTrayIcon(Job.SHOW_BASE_ICON);
-
+			
 			log.debug("end of rendering");
 		}
 		catch (Exception err) {
@@ -374,11 +375,11 @@ public class Job {
 		};
 		
 		File[] files = configuration.getWorkingDirectory().listFiles(textFilter);
-
+		
 		if (isAskForRendererKill()) {
 			log.debug("Job::render been asked to end render");
 			
-			long duration = (new Date().getTime() - process.getStartTime() ) / 1000; // in seconds
+			long duration = (new Date().getTime() - process.getStartTime()) / 1000; // in seconds
 			if (configuration.getMaxRenderTime() > 0 && duration > configuration.getMaxRenderTime()) {
 				log.debug("Render killed because process duration (" + duration + "s) is over user setting (" + configuration.getMaxRenderTime() + "s)");
 				return Error.Type.RENDERER_KILLED_BY_USER_OVER_TIME;
@@ -423,7 +424,7 @@ public class Job {
 		else {
 			setOutputImagePath(files[0].getAbsolutePath());
 			this.outputImageSize = new File(getOutputImagePath()).length();
-			log.debug(String.format("Job::render pictureFilename: %s, size: %d'",getOutputImagePath(), this.outputImageSize));
+			log.debug(String.format("Job::render pictureFilename: %s, size: %d'", getOutputImagePath(), this.outputImageSize));
 		}
 		
 		File scene_dir = new File(getSceneDirectory());
@@ -436,26 +437,26 @@ public class Job {
 		
 		return Error.Type.OK;
 	}
-
+	
 	private int computeRenderingProgress(String line, Pattern tilePattern, int currentProgress) {
 		Matcher standardTileInfo = tilePattern.matcher(line);
 		int newProgress = currentProgress;
-
+		
 		if (standardTileInfo.find()) {
 			int tileJustProcessed = Integer.parseInt(standardTileInfo.group(1));
-			int totalTilesInJob  = Integer.parseInt(standardTileInfo.group(2));
-
+			int totalTilesInJob = Integer.parseInt(standardTileInfo.group(2));
+			
 			newProgress = Math.abs((tileJustProcessed * 100) / totalTilesInJob);
 		}
-
+		
 		// Only update the tray icon if percentage has changed
 		if (newProgress != currentProgress) {
 			gui.updateTrayIcon(newProgress);
 		}
-
+		
 		return newProgress;
 	}
-
+	
 	private void updateRenderingStatus(String line) {
 		if (getUpdateRenderingStatusMethod() != null && getUpdateRenderingStatusMethod().equals(Job.UPDATE_METHOD_BLENDER_INTERNAL_BY_PART)) {
 			String search = " Part ";
@@ -574,7 +575,7 @@ public class Job {
 			}
 		}
 	}
-
+	
 	private Type detectError(String line) {
 		
 		if (line.contains("CUDA error: Out of memory")) {
@@ -819,17 +820,16 @@ public class Job {
 		}
 		return Type.OK;
 	}
-
+	
 	public static class renderStartedObservable extends Observable {
-
-		@Getter
-		private boolean isStarted;
-
+		
+		@Getter private boolean isStarted;
+		
 		public renderStartedObservable(Observer observer) {
 			super();
 			addObserver(observer);
 		}
-
+		
 		public void doNotifyIsStarted() {
 			setChanged();
 			notifyObservers();

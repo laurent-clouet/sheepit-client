@@ -13,8 +13,7 @@ import com.sun.jna.ptr.LongByReference;
 public class Nvidia implements GPULister {
 	public static String TYPE = "CUDA";
 	
-	@Override
-	public List<GPUDevice> getGpus() {
+	@Override public List<GPUDevice> getGpus() {
 		OS os = OS.getOS();
 		String path = os.getCUDALib();
 		if (path == null) {
@@ -62,11 +61,11 @@ public class Nvidia implements GPULister {
 		}
 		
 		List<GPUDevice> devices = new ArrayList<>(count.getValue());
-
+		
 		for (int num = 0; num < count.getValue(); num++) {
 			IntByReference aDevice = new IntByReference();
 			
-			result =  cudalib.cuDeviceGet(aDevice, num);
+			result = cudalib.cuDeviceGet(aDevice, num);
 			if (result != CUresult.CUDA_SUCCESS) {
 				System.out.println("Nvidia::getGpus cuDeviceGet failed (ret: " + CUresult.stringFor(result) + ")");
 				continue;
@@ -75,19 +74,21 @@ public class Nvidia implements GPULister {
 			IntByReference pciDomainId = new IntByReference();
 			IntByReference pciBusId = new IntByReference();
 			IntByReference pciDeviceId = new IntByReference();
-			result =  cudalib.cuDeviceGetAttribute(pciDomainId, CUDeviceAttribute.CU_DEVICE_ATTRIBUTE_PCI_DOMAIN_ID, aDevice.getValue());
+			result = cudalib.cuDeviceGetAttribute(pciDomainId, CUDeviceAttribute.CU_DEVICE_ATTRIBUTE_PCI_DOMAIN_ID, aDevice.getValue());
 			if (result != CUresult.CUDA_SUCCESS) {
-				System.out.println("Nvidia::getGpus cuDeviceGetAttribute for CU_DEVICE_ATTRIBUTE_PCI_DOMAIN_ID failed (ret: " + CUresult.stringFor(result) + ")");
+				System.out
+						.println("Nvidia::getGpus cuDeviceGetAttribute for CU_DEVICE_ATTRIBUTE_PCI_DOMAIN_ID failed (ret: " + CUresult.stringFor(result) + ")");
 				continue;
 			}
-			result =  cudalib.cuDeviceGetAttribute(pciBusId, CUDeviceAttribute.CU_DEVICE_ATTRIBUTE_PCI_BUS_ID, aDevice.getValue());
+			result = cudalib.cuDeviceGetAttribute(pciBusId, CUDeviceAttribute.CU_DEVICE_ATTRIBUTE_PCI_BUS_ID, aDevice.getValue());
 			if (result != CUresult.CUDA_SUCCESS) {
 				System.out.println("Nvidia::getGpus cuDeviceGetAttribute for CU_DEVICE_ATTRIBUTE_PCI_BUS_ID failed (ret: " + CUresult.stringFor(result) + ")");
 				continue;
 			}
-			result =  cudalib.cuDeviceGetAttribute(pciDeviceId, CUDeviceAttribute.CU_DEVICE_ATTRIBUTE_PCI_DEVICE_ID, aDevice.getValue());
+			result = cudalib.cuDeviceGetAttribute(pciDeviceId, CUDeviceAttribute.CU_DEVICE_ATTRIBUTE_PCI_DEVICE_ID, aDevice.getValue());
 			if (result != CUresult.CUDA_SUCCESS) {
-				System.out.println("Nvidia::getGpus cuDeviceGetAttribute for CU_DEVICE_ATTRIBUTE_PCI_DEVICE_ID failed (ret: " + CUresult.stringFor(result) + ")");
+				System.out
+						.println("Nvidia::getGpus cuDeviceGetAttribute for CU_DEVICE_ATTRIBUTE_PCI_DEVICE_ID failed (ret: " + CUresult.stringFor(result) + ")");
 				continue;
 			}
 			
@@ -113,11 +114,8 @@ public class Nvidia implements GPULister {
 				return null;
 			}
 			
-			String blenderId = String.format("CUDA_%s_%04x:%02x:%02x",
-					new String(name).trim(),
-					pciDomainId.getValue(),
-					pciBusId.getValue(),
-					pciDeviceId.getValue());
+			String blenderId = String
+					.format("CUDA_%s_%04x:%02x:%02x", new String(name).trim(), pciDomainId.getValue(), pciBusId.getValue(), pciDeviceId.getValue());
 			GPUDevice gpu = new GPUDevice(TYPE, new String(name).trim(), ram.getValue(), blenderId);
 			// for backward compatibility generate a CUDA_N id
 			gpu.setOldId(TYPE + "_" + num);
@@ -127,14 +125,12 @@ public class Nvidia implements GPULister {
 		return devices;
 	}
 	
-	@Override
-	public int getRecommendedRenderBucketSize(long memory) {
+	@Override public int getRecommendedRenderBucketSize(long memory) {
 		// Optimal CUDA-based GPUs Renderbucket algorithm
 		return (memory > 1073741824L) ? 256 : 128;
 	}
 	
-	@Override
-	public int getMaximumRenderBucketSize(long memory) {
+	@Override public int getMaximumRenderBucketSize(long memory) {
 		return (memory > 1073741824L) ? 512 : 128;
 	}
 }

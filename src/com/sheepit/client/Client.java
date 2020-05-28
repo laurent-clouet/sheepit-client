@@ -2,7 +2,7 @@
  * Copyright (C) 2010-2014 Laurent CLOUET
  * Author Laurent CLOUET <laurent.clouet@nopnop.net>
  *
- * This program is free software; you can redistribute it and/or 
+ * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; version 2
  * of the License.
@@ -49,8 +49,7 @@ import com.sheepit.client.os.OS;
 
 import lombok.Data;
 
-@Data
-public class Client {
+@Data public class Client {
 	private Gui gui;
 	private Server server;
 	private Configuration configuration;
@@ -164,7 +163,7 @@ public class Client {
 								Thread.sleep(wait);
 							}
 							catch (InterruptedException e3) {
-
+							
 							}
 							catch (IllegalArgumentException e3) {
 								this.log.error("Client::run sleepA failed " + e3);
@@ -217,7 +216,7 @@ public class Client {
 										Thread.sleep(next_request.getTimeInMillis() - now.getTime());
 									}
 									catch (InterruptedException e3) {
-
+									
 									}
 									catch (IllegalArgumentException e3) {
 										this.log.error("Client::run sleepB failed " + e3);
@@ -273,8 +272,7 @@ public class Client {
 					catch (FermeExceptionBadResponseFromServer e) {
 						int wait = ThreadLocalRandom.current().nextInt(15, 30 + 1); // max is exclusive
 						int time_sleep = 1000 * 60 * wait;
-						this.gui.status(String.format("Bad answer from the server. Will try again at %tR",
-								new Date(new Date().getTime() + time_sleep)));
+						this.gui.status(String.format("Bad answer from the server. Will try again at %tR", new Date(new Date().getTime() + time_sleep)));
 						try {
 							Thread.sleep(time_sleep);
 						}
@@ -294,11 +292,12 @@ public class Client {
 					}
 					
 					if (this.renderingJob == null) { // no job
-						int[] retrySchemeInSeconds = {300000, 480000, 720000, 900000, 1200000};	// 5, 8, 12, 15 and 20 minutes
+						int[] retrySchemeInSeconds = { 300000, 480000, 720000, 900000, 1200000 };    // 5, 8, 12, 15 and 20 minutes
 						
-						int time_sleep = retrySchemeInSeconds[(this.noJobRetryIter < retrySchemeInSeconds.length) ? this.noJobRetryIter++ : (retrySchemeInSeconds.length - 1)];
-						this.gui.status(String.format("No job available. Will try again at %tR",
-								new Date(new Date().getTime() + time_sleep)));
+						int time_sleep = retrySchemeInSeconds[(this.noJobRetryIter < retrySchemeInSeconds.length) ?
+								this.noJobRetryIter++ :
+								(retrySchemeInSeconds.length - 1)];
+						this.gui.status(String.format("No job available. Will try again at %tR", new Date(new Date().getTime() + time_sleep)));
 						this.suspended = true;
 						int time_slept = 0;
 						while (time_slept < time_sleep && this.running == true) {
@@ -344,9 +343,7 @@ public class Client {
 					}
 					
 					if (this.renderingJob.isSynchronousUpload() == true) { // power or compute_method job, need to upload right away
-						this.gui.status(String.format("Uploading frame (%.2fMB)",
-								(this.renderingJob.getOutputImageSize() / 1024.0 / 1024.0)
-						));
+						this.gui.status(String.format("Uploading frame (%.2fMB)", (this.renderingJob.getOutputImageSize() / 1024.0 / 1024.0)));
 						
 						ret = confirmJob(this.renderingJob);
 						if (ret != Error.Type.OK) {
@@ -355,9 +352,7 @@ public class Client {
 						}
 					}
 					else {
-						this.gui.status(String.format("Queuing frame for upload (%.2fMB)",
-								(this.renderingJob.getOutputImageSize() / 1024.0 / 1024.0)
-						));
+						this.gui.status(String.format("Queuing frame for upload (%.2fMB)", (this.renderingJob.getOutputImageSize() / 1024.0 / 1024.0)));
 						
 						this.jobsToValidate.add(this.renderingJob);
 						
@@ -395,7 +390,8 @@ public class Client {
 				
 				// This loop will remain valid until all the background uploads have
 				// finished (unless the stop() method has been triggered)
-			} while (this.uploadQueueSize > 0);
+			}
+			while (this.uploadQueueSize > 0);
 		}
 		catch (Exception e1) {
 			// no exception should be raised in the actual launcher (applet or standalone)
@@ -416,7 +412,7 @@ public class Client {
 		
 		if (this.renderingJob != null) {
 			this.gui.status("Stopping");
-
+			
 			if (this.renderingJob.getProcessRender().getProcess() != null) {
 				this.renderingJob.setAskForRendererKill(true);
 				OS.getOS().kill(this.renderingJob.getProcessRender().getProcess());
@@ -429,10 +425,10 @@ public class Client {
 		if (this.server == null) {
 			return 0;
 		}
-
+		
 		if (this.server.getPage("logout").isEmpty() == false) {
 			this.gui.status("Disconnecting from SheepIt server");
-
+			
 			try {
 				this.server.HTTPRequest(this.server.getPage("logout"));
 			}
@@ -480,7 +476,7 @@ public class Client {
 			try {
 				job_to_send = jobsToValidate.take();
 				this.log.debug("will validate " + job_to_send);
-
+				
 				ret = confirmJob(job_to_send);
 				if (ret != Error.Type.OK) {
 					this.gui.error(Error.humanString(ret));
@@ -495,7 +491,7 @@ public class Client {
 				if (job_to_send != null) {
 					this.uploadQueueVolume -= job_to_send.getOutputImageSize();
 				}
-
+				
 				this.gui.displayUploadQueueStats(this.uploadQueueSize, this.uploadQueueVolume);
 			}
 		}
@@ -527,7 +523,8 @@ public class Client {
 			writer.close();
 			String args = "?type=" + (error == null ? "" : error.getValue());
 			if (job_to_reset_ != null) {
-				args += "&frame=" + job_to_reset_.getFrameNumber() + "&job=" + job_to_reset_.getId() + "&render_time=" + job_to_reset_.getProcessRender().getDuration() + "&memoryused=" + job_to_reset_.getProcessRender().getMemoryUsed();
+				args += "&frame=" + job_to_reset_.getFrameNumber() + "&job=" + job_to_reset_.getId() + "&render_time=" + job_to_reset_.getProcessRender()
+						.getDuration() + "&memoryused=" + job_to_reset_.getProcessRender().getMemoryUsed();
 				if (job_to_reset_.getExtras() != null && job_to_reset_.getExtras().isEmpty() == false) {
 					args += "&extras=" + job_to_reset_.getExtras();
 				}
@@ -543,7 +540,8 @@ public class Client {
 			// no exception should be raised to actual launcher (applet or standalone)
 		}
 		
-		if (error != null && (error == Error.Type.RENDERER_CRASHED || error == Error.Type.RENDERER_KILLED_BY_USER || error == Error.Type.RENDERER_KILLED_BY_SERVER)) {
+		if (error != null && (error == Error.Type.RENDERER_CRASHED || error == Error.Type.RENDERER_KILLED_BY_USER
+				|| error == Error.Type.RENDERER_KILLED_BY_SERVER)) {
 			// do nothing, we can ask for a job right away
 		}
 		else {
@@ -625,27 +623,28 @@ public class Client {
 		
 		if (scene_file.exists() == false) {
 			gui.setRenderingProjectName("");
-			this.log.error("Client::work job preparation failed (scene file '" + scene_file.getAbsolutePath() + "' does not exist), cleaning directory in hope to recover");
+			this.log.error("Client::work job preparation failed (scene file '" + scene_file.getAbsolutePath()
+					+ "' does not exist), cleaning directory in hope to recover");
 			this.configuration.cleanWorkingDirectory();
 			return Error.Type.MISSING_SCENE;
 		}
 		
 		if (renderer_file.exists() == false) {
 			gui.setRenderingProjectName("");
-			this.log.error("Client::work job preparation failed (renderer file '" + renderer_file.getAbsolutePath() + "' does not exist), cleaning directory in hope to recover");
+			this.log.error("Client::work job preparation failed (renderer file '" + renderer_file.getAbsolutePath()
+					+ "' does not exist), cleaning directory in hope to recover");
 			this.configuration.cleanWorkingDirectory();
 			return Error.Type.MISSING_RENDERER;
 		}
-
+		
 		Observer removeSceneDirectoryOnceRenderHasStartedObserver = new Observer() {
-			@Override
-			public void update(Observable observable, Object o) {
+			@Override public void update(Observable observable, Object o) {
 				// only remove the .blend since it's most important data
 				// and it's the only file we are sure will not be needed anymore
 				scene_file.delete();
 			}
 		};
-
+		
 		Error.Type err = ajob.render(removeSceneDirectoryOnceRenderHasStartedObserver);
 		gui.setRenderingProjectName("");
 		gui.setRemainingTime("");
@@ -659,18 +658,20 @@ public class Client {
 			}
 			return err;
 		}
-
+		
 		removeSceneDirectory(ajob);
 		
 		return Error.Type.OK;
 	}
 	
 	protected int downloadSceneFile(Job ajob_) throws FermeExceptionNoSpaceLeftOnDevice {
-		return this.downloadFile(ajob_, ajob_.getSceneArchivePath(), ajob_.getSceneMD5(), String.format("%s?type=job&job=%s", this.server.getPage("download-archive"), ajob_.getId()), "project");
+		return this.downloadFile(ajob_, ajob_.getSceneArchivePath(), ajob_.getSceneMD5(),
+				String.format("%s?type=job&job=%s", this.server.getPage("download-archive"), ajob_.getId()), "project");
 	}
 	
 	protected int downloadExecutable(Job ajob) throws FermeExceptionNoSpaceLeftOnDevice {
-		return this.downloadFile(ajob, ajob.getRendererArchivePath(), ajob.getRendererMD5(), String.format("%s?type=binary&job=%s", this.server.getPage("download-archive"), ajob.getId()), "renderer");
+		return this.downloadFile(ajob, ajob.getRendererArchivePath(), ajob.getRendererMD5(),
+				String.format("%s?type=binary&job=%s", this.server.getPage("download-archive"), ajob.getId()), "renderer");
 	}
 	
 	private int downloadFile(Job ajob, String local_path, String md5_server, String url, String download_type) throws FermeExceptionNoSpaceLeftOnDevice {
@@ -707,7 +708,8 @@ public class Client {
 			attempts++;
 			
 			if ((ret != 0 || md5_check == false) && attempts >= this.maxDownloadFileAttempts) {
-				this.log.debug("Client::downloadFile failed after " + this.maxDownloadFileAttempts + " attempts, removing local file (path: " + local_path + "), stopping...");
+				this.log.debug("Client::downloadFile failed after " + this.maxDownloadFileAttempts + " attempts, removing local file (path: " + local_path
+						+ "), stopping...");
 				local_path_file.delete();
 				return -9;
 			}
@@ -727,13 +729,15 @@ public class Client {
 		String md5_local = Utils.md5(local_path);
 		
 		if (md5_local.equals(md5_server) == false) {
-			this.log.error("Client::checkFile mismatch on md5 local: '" + md5_local + "' server: '" + md5_server + "' (local size: " + new File(local_path).length() + ")");
+			this.log.error(
+					"Client::checkFile mismatch on md5 local: '" + md5_local + "' server: '" + md5_server + "' (local size: " + new File(local_path).length()
+							+ ")");
 			return false;
 		}
 		
 		return true;
 	}
-
+	
 	protected void removeSceneDirectory(Job ajob) {
 		Utils.delete(new File(ajob.getSceneDirectory()));
 	}
@@ -755,7 +759,9 @@ public class Client {
 			// unzip the archive
 			ret = Utils.unzipFileIntoDirectory(renderer_archive, renderer_path, null, log);
 			if (ret != 0) {
-				this.log.error("Client::prepareWorkingDirectory, error(1) with Utils.unzipFileIntoDirectory(" + renderer_archive + ", " + renderer_path + ") returned " + ret);
+				this.log.error(
+						"Client::prepareWorkingDirectory, error(1) with Utils.unzipFileIntoDirectory(" + renderer_archive + ", " + renderer_path + ") returned "
+								+ ret);
 				this.gui.error(String.format("Unable to extract the renderer (error %d)", ret));
 				return -1;
 			}
@@ -783,7 +789,9 @@ public class Client {
 			// unzip the archive
 			ret = Utils.unzipFileIntoDirectory(scene_archive, scene_path, ajob.getPassword(), log);
 			if (ret != 0) {
-				this.log.error("Client::prepareWorkingDirectory, error(2) with Utils.unzipFileIntoDirectory(" + scene_archive + ", " + scene_path + ") returned " + ret);
+				this.log.error(
+						"Client::prepareWorkingDirectory, error(2) with Utils.unzipFileIntoDirectory(" + scene_archive + ", " + scene_path + ") returned "
+								+ ret);
 				this.gui.error(String.format("Unable to extract the scene (error %d)", ret));
 				return -2;
 			}
@@ -793,7 +801,8 @@ public class Client {
 	}
 	
 	protected Error.Type confirmJob(Job ajob) {
-		String url_real = String.format("%s&rendertime=%d&memoryused=%s", ajob.getValidationUrl(), ajob.getProcessRender().getDuration(), ajob.getProcessRender().getMemoryUsed());
+		String url_real = String.format("%s&rendertime=%d&memoryused=%s", ajob.getValidationUrl(), ajob.getProcessRender().getDuration(),
+				ajob.getProcessRender().getMemoryUsed());
 		this.log.debug("Client::confirmeJob url " + url_real);
 		this.log.debug("path frame " + ajob.getOutputImagePath());
 		
@@ -802,7 +811,8 @@ public class Client {
 		int max_try = 3;
 		ServerCode ret = ServerCode.UNKNOWN;
 		Type confirmJobReturnCode = Error.Type.OK;
-		retryLoop: while (nb_try < max_try && ret != ServerCode.OK) {
+		retryLoop:
+		while (nb_try < max_try && ret != ServerCode.OK) {
 			ret = this.server.HTTPSendFile(url_real, ajob.getOutputImagePath());
 			switch (ret) {
 				case OK:
@@ -813,12 +823,12 @@ public class Client {
 				case JOB_VALIDATION_ERROR_BROKEN_MACHINE:
 					confirmJobReturnCode = Error.Type.SESSION_DISABLED;
 					break retryLoop;
-					
+				
 				case JOB_VALIDATION_ERROR_MISSING_PARAMETER:
 					// no point to retry the request
 					confirmJobReturnCode = Error.Type.UNKNOWN;
 					break retryLoop;
-					
+				
 				default:
 					// do nothing, try to do a request on the next loop
 					break;
@@ -835,10 +845,10 @@ public class Client {
 				}
 			}
 		}
-
+		
 		this.isValidatingJob = false;
 		this.previousJob = ajob;
-
+		
 		if (confirmJobReturnCode == Error.Type.OK) {
 			gui.AddFrameRendered();
 		}
@@ -847,7 +857,7 @@ public class Client {
 		File frame = new File(ajob.getOutputImagePath());
 		frame.delete();
 		ajob.setOutputImagePath(null);
-
+		
 		return confirmJobReturnCode;
 	}
 	

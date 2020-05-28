@@ -2,7 +2,7 @@
  * Copyright (C) 2015 Laurent CLOUET
  * Author Laurent CLOUET <laurent.clouet@nopnop.net>
  *
- * This program is free software; you can redistribute it and/or 
+ * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; version 2
  * of the License.
@@ -33,16 +33,14 @@ public class VersionParameterHandler<T> extends OptionHandler<T> {
 		super(parser, option, setter);
 	}
 	
-	@Override
-	public int parseArguments(Parameters params) throws CmdLineException {
+	@Override public int parseArguments(Parameters params) throws CmdLineException {
 		Configuration config = new Configuration(null, "", "");
 		System.out.println("Version: " + config.getJarVersion());
 		System.exit(0);
 		return 0;
 	}
 	
-	@Override
-	public String getDefaultMetaVariable() {
+	@Override public String getDefaultMetaVariable() {
 		return null;
 	}
 }

@@ -2,7 +2,7 @@
  * Copyright (C) 2013-2014 Laurent CLOUET
  * Author Laurent CLOUET <laurent.clouet@nopnop.net>
  *
- * This program is free software; you can redistribute it and/or 
+ * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; version 2
  * of the License.
@@ -34,8 +34,7 @@ import com.sun.jna.ptr.IntByReference;
 public class OpenCL implements GPULister {
 	public static String TYPE = "OPENCL";
 	
-	@Override
-	public List<GPUDevice> getGpus() {
+	@Override public List<GPUDevice> getGpus() {
 		OpenCLLib lib = null;
 		
 		String path = "OpenCL";
@@ -123,14 +122,12 @@ public class OpenCL implements GPULister {
 		return available_devices;
 	}
 	
-	@Override
-	public int getRecommendedRenderBucketSize(long memory) {
+	@Override public int getRecommendedRenderBucketSize(long memory) {
 		// Optimal CUDA-based GPUs Renderbucket algorithm
 		return (memory > 1073741824L) ? 256 : 128;
 	}
 	
-	@Override
-	public int getMaximumRenderBucketSize(long memory) {
+	@Override public int getMaximumRenderBucketSize(long memory) {
 		return (memory > 1073741824L) ? 2048 : 128;
 	}
 	
@@ -181,7 +178,7 @@ public class OpenCL implements GPULister {
 			System.out.println("OpenCL::getBlenderId failed(I) status: " + status);
 			return "";
 		}
-
+		
 		return String.format("%s_%s_%s_%02x:%02x.%01x", TYPE, platform, name, topology[21], topology[22], topology[23]);
 	}
 }
