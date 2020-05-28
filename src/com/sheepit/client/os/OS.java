@@ -41,9 +41,9 @@ public abstract class OS {
 		return null;
 	}
 	
-	public boolean getSupportHighPriority() {
-		return true;
-	}
+	public abstract boolean getSupportHighPriority();
+	
+	public abstract boolean checkNiceAvailability();
 	
 	public Process exec(List<String> command, Map<String, String> env) throws IOException {
 		ProcessBuilder builder = new ProcessBuilder(command);

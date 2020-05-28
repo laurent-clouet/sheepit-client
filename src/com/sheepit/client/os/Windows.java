@@ -218,4 +218,13 @@ public class Windows extends OS {
 		}
 		return false;
 	}
+	
+	@Override public boolean getSupportHighPriority() {
+		return true;
+	}
+	
+	@Override public boolean checkNiceAvailability() {
+		// In windows, nice is not required and therefore we return always true to show the slider in the Settings GUI
+		return true;
+	}
 }
