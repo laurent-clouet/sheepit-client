@@ -298,7 +298,6 @@ import lombok.Data;
 								this.noJobRetryIter++ :
 								(retrySchemeInSeconds.length - 1)];
 						this.gui.status(String.format("No job available. Will try again at %tR", new Date(new Date().getTime() + time_sleep)));
-						this.suspended = true;
 						int time_slept = 0;
 						while (time_slept < time_sleep && this.running == true) {
 							try {
@@ -309,7 +308,6 @@ import lombok.Data;
 							}
 							time_slept += 250;
 						}
-						this.suspended = false;
 						continue; // go back to ask job
 					}
 					
