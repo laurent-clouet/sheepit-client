@@ -2,7 +2,7 @@
  * Copyright (C) 2015 Laurent CLOUET
  * Author Laurent CLOUET <laurent.clouet@nopnop.net>
  *
- * This program is free software; you can redistribute it and/or 
+ * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; version 2
  * of the License.
@@ -42,7 +42,7 @@ public class GuiTextOneLine implements Gui {
 	private String status;
 	private String line;
 	
-	private int  uploadQueueSize;
+	private int uploadQueueSize;
 	private long uploadQueueVolume;
 	
 	private boolean exiting = false;
@@ -57,12 +57,11 @@ public class GuiTextOneLine implements Gui {
 		status = "";
 		computeMethod = "";
 		line = "";
-		uploadQueueSize   = 0;
+		uploadQueueSize = 0;
 		uploadQueueVolume = 0;
 	}
 	
-	@Override
-	public void start() {
+	@Override public void start() {
 		if (client != null) {
 			
 			CLIInputObserver cli_input_observer = new CLIInputObserver(client);
@@ -71,8 +70,7 @@ public class GuiTextOneLine implements Gui {
 			cli_input_observer_thread.start();
 			
 			Signal.handle(new Signal("INT"), new SignalHandler() {
-				@Override
-				public void handle(Signal signal) {
+				@Override public void handle(Signal signal) {
 					sigIntCount++;
 					
 					if (sigIntCount == 5) {
@@ -95,22 +93,18 @@ public class GuiTextOneLine implements Gui {
 		}
 	}
 	
-	@Override
-	public void stop() {
+	@Override public void stop() {
 		Runtime.getRuntime().halt(0);
 	}
-
-	@Override
-	public void updateTrayIcon(Integer percentage) {
+	
+	@Override public void updateTrayIcon(Integer percentage) {
 	}
-
-	@Override
-	public void status(String msg_) {
+	
+	@Override public void status(String msg_) {
 		status(msg_, false);
 	}
 	
-	@Override
-	public void status(String msg_, boolean overwriteSuspendedMsg) {
+	@Override public void status(String msg_, boolean overwriteSuspendedMsg) {
 		if (client != null && client.isSuspended()) {
 			if (overwriteSuspendedMsg) {
 				status = msg_;
@@ -123,8 +117,7 @@ public class GuiTextOneLine implements Gui {
 		}
 	}
 	
-	@Override
-	public void setRenderingProjectName(String name_) {
+	@Override public void setRenderingProjectName(String name_) {
 		if (name_ == null || name_.isEmpty()) {
 			project = "";
 		}
@@ -134,60 +127,50 @@ public class GuiTextOneLine implements Gui {
 		updateLine();
 	}
 	
-	@Override
-	public void error(String msg_) {
+	@Override public void error(String msg_) {
 		status = "Error " + msg_;
 		updateLine();
 	}
 	
-	@Override
-	public void AddFrameRendered() {
+	@Override public void AddFrameRendered() {
 		rendered += 1;
 		updateLine();
 	}
 	
-	@Override
-	public void displayStats(Stats stats) {
+	@Override public void displayStats(Stats stats) {
 		remaining = stats.getRemainingFrame();
 		creditsEarned = String.valueOf(stats.getCreditsEarnedDuringSession());
 		updateLine();
 	}
 	
-	@Override
-	public void displayUploadQueueStats(int queueSize, long queueVolume) {
-		this.uploadQueueSize   = queueSize;
+	@Override public void displayUploadQueueStats(int queueSize, long queueVolume) {
+		this.uploadQueueSize = queueSize;
 		this.uploadQueueVolume = queueVolume;
 	}
 	
-	@Override
-	public void setRemainingTime(String time_) {
+	@Override public void setRemainingTime(String time_) {
 		status = "(remaining " + time_ + ")";
 		updateLine();
 	}
 	
-	@Override
-	public void setRenderingTime(String time_) {
+	@Override public void setRenderingTime(String time_) {
 		status = "Rendering " + time_;
 		updateLine();
 	}
 	
-	@Override
-	public void setClient(Client cli) {
+	@Override public void setClient(Client cli) {
 		client = cli;
 	}
 	
-	@Override
-	public void setComputeMethod(String computeMethod_) {
+	@Override public void setComputeMethod(String computeMethod_) {
 		computeMethod = computeMethod_;
 	}
 	
-	@Override
-	public Client getClient() {
+	@Override public Client getClient() {
 		return client;
 	}
 	
-	@Override
-	public void successfulAuthenticationEvent(String publickey) {
+	@Override public void successfulAuthenticationEvent(String publickey) {
 	
 	}
 	
@@ -196,15 +179,9 @@ public class GuiTextOneLine implements Gui {
 		
 		System.out.print("\r");
 		
-		line = String.format("Frames: %d Points: %s | Queued uploads: %d%s | %s %s %s",
-				rendered,
-				creditsEarned != null ? creditsEarned : "unknown",
-				this.uploadQueueSize,
-				(this.uploadQueueSize > 0 ? String.format(" (%.2fMB)", (this.uploadQueueVolume / 1024.0 / 1024.0)) : ""),
-				project,
-				computeMethod,
-				status + (exiting ? " (Exiting after all frames are uploaded)" : "")
-		);
+		line = String.format("Frames: %d Points: %s | Queued uploads: %d%s | %s %s %s", rendered, creditsEarned != null ? creditsEarned : "unknown",
+				this.uploadQueueSize, (this.uploadQueueSize > 0 ? String.format(" (%.2fMB)", (this.uploadQueueVolume / 1024.0 / 1024.0)) : ""), project,
+				computeMethod, status + (exiting ? " (Exiting after all frames are uploaded)" : ""));
 		
 		System.out.print(line);
 		for (int i = line.length(); i <= charToRemove; i++) {

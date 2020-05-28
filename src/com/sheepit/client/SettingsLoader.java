@@ -2,7 +2,7 @@
  * Copyright (C) 2015 Laurent CLOUET
  * Author Laurent CLOUET <laurent.clouet@nopnop.net>
  *
- * This program is free software; you can redistribute it and/or 
+ * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; version 2
  * of the License.
@@ -43,8 +43,7 @@ public class SettingsLoader {
 	
 	private String login;
 	
-	@Setter
-	private String password;
+	@Setter private String password;
 	
 	private String proxy;
 	private String hostname;
@@ -58,7 +57,7 @@ public class SettingsLoader {
 	private String autoSignIn;
 	private String ui;
 	private String theme;
-	private int    priority;
+	private int priority;
 	
 	public SettingsLoader(String path_) {
 		if (path_ == null) {
@@ -69,7 +68,9 @@ public class SettingsLoader {
 		}
 	}
 	
-	public SettingsLoader(String path_, String login_, String password_, String proxy_, String hostname_, ComputeType computeMethod_, GPUDevice gpu_, int renderbucketSize_, int cores_, long maxRam_, int maxRenderTime_, String cacheDir_, boolean autoSignIn_, String ui_, String theme_, int priority_) {
+	public SettingsLoader(String path_, String login_, String password_, String proxy_, String hostname_, ComputeType computeMethod_, GPUDevice gpu_,
+			int renderbucketSize_, int cores_, long maxRam_, int maxRenderTime_, String cacheDir_, boolean autoSignIn_, String ui_, String theme_,
+			int priority_) {
 		if (path_ == null) {
 			path = getDefaultFilePath();
 		}
@@ -85,7 +86,7 @@ public class SettingsLoader {
 		ui = ui_;
 		priority = priority_;
 		theme = theme_;
-
+		
 		if (cores_ > 0) {
 			cores = String.valueOf(cores_);
 		}
@@ -178,7 +179,7 @@ public class SettingsLoader {
 			if (ui != null) {
 				prop.setProperty("ui", ui);
 			}
-
+			
 			if (theme != null) {
 				prop.setProperty("theme", theme);
 			}
@@ -300,7 +301,7 @@ public class SettingsLoader {
 			if (prop.containsKey("theme")) {
 				this.theme = prop.getProperty("theme");
 			}
-
+			
 			if (prop.containsKey("priority")) {
 				this.priority = Integer.parseInt(prop.getProperty("priority"));
 			}
@@ -350,7 +351,8 @@ public class SettingsLoader {
 			config.setUsePriority(priority);
 		}
 		try {
-			if ((config.getComputeMethod() == null && computeMethod != null) || (computeMethod != null && config.getComputeMethod() != ComputeType.valueOf(computeMethod))) {
+			if ((config.getComputeMethod() == null && computeMethod != null) || (computeMethod != null && config.getComputeMethod() != ComputeType
+					.valueOf(computeMethod))) {
 				config.setComputeMethod(ComputeType.valueOf(computeMethod));
 			}
 		}
@@ -402,20 +404,21 @@ public class SettingsLoader {
 		if (config.getUIType() == null && ui != null) {
 			config.setUIType(ui);
 		}
-
+		
 		if (config.getTheme() == null) {
 			if (this.theme != null) {
 				config.setTheme(this.theme);
-			} else {
+			}
+			else {
 				config.setTheme("light");
 			}
 		}
-
+		
 		config.setAutoSignIn(Boolean.valueOf(autoSignIn));
 	}
 	
-	@Override
-	public String toString() {
-		return "SettingsLoader [path=" + path + ", login=" + login + ", password=" + password + ", computeMethod=" + computeMethod + ", gpu=" + gpu + ", renderbucket-size=" + renderbucketSize + ", cacheDir=" + cacheDir + ", theme=" + theme + ", priority=" + priority + "]";
+	@Override public String toString() {
+		return "SettingsLoader [path=" + path + ", login=" + login + ", password=" + password + ", computeMethod=" + computeMethod + ", gpu=" + gpu
+				+ ", renderbucket-size=" + renderbucketSize + ", cacheDir=" + cacheDir + ", theme=" + theme + ", priority=" + priority + "]";
 	}
 }

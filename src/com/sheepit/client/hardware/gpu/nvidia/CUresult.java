@@ -66,18 +66,18 @@ public class CUresult {
 	
 	/**
 	 * This indicates profiling APIs are called while application is running
-	 * in visual profiler mode. 
+	 * in visual profiler mode.
 	 */
 	public static final int CUDA_ERROR_PROFILER_DISABLED = 5;
 	
 	/**
-	 * This indicates profiling has not been initialized for this context. 
-	 * Call cuProfilerInitialize() to resolve this. 
+	 * This indicates profiling has not been initialized for this context.
+	 * Call cuProfilerInitialize() to resolve this.
 	 *
-	 * @deprecated This error return is deprecated as of CUDA 5.0. 
-	 * It is no longer an error to attempt to enable/disable the 
-	 * profiling via ::cuProfilerStart or ::cuProfilerStop without 
-	 * initialization. 
+	 * @deprecated This error return is deprecated as of CUDA 5.0.
+	 * It is no longer an error to attempt to enable/disable the
+	 * profiling via ::cuProfilerStart or ::cuProfilerStop without
+	 * initialization.
 	 */
 	public static final int CUDA_ERROR_PROFILER_NOT_INITIALIZED = 6;
 	
@@ -85,8 +85,8 @@ public class CUresult {
 	 * This indicates profiler has already been started and probably
 	 * cuProfilerStart() is incorrectly called.
 	 *
-	 * @deprecated This error return is deprecated as of CUDA 5.0. 
-	 * It is no longer an error to call cuProfilerStart() when 
+	 * @deprecated This error return is deprecated as of CUDA 5.0.
+	 * It is no longer an error to call cuProfilerStart() when
 	 * profiling is already enabled.
 	 */
 	public static final int CUDA_ERROR_PROFILER_ALREADY_STARTED = 7;
@@ -95,8 +95,8 @@ public class CUresult {
 	 * This indicates profiler has already been stopped and probably
 	 * cuProfilerStop() is incorrectly called.
 	 *
-	 * @deprecated This error return is deprecated as of CUDA 5.0. 
-	 * It is no longer an error to call cuProfilerStop() when 
+	 * @deprecated This error return is deprecated as of CUDA 5.0.
+	 * It is no longer an error to call cuProfilerStop() when
 	 * profiling is already disabled.
 	 */
 	public static final int CUDA_ERROR_PROFILER_ALREADY_STOPPED = 8;
@@ -203,7 +203,7 @@ public class CUresult {
 	
 	/**
 	 * This indicates that the ::CUcontext passed to the API call can
-	 * only be bound to a single CPU thread at a time but is already 
+	 * only be bound to a single CPU thread at a time but is already
 	 * bound to a CPU thread.
 	 */
 	public static final int CUDA_ERROR_CONTEXT_ALREADY_IN_USE = 216;
@@ -307,7 +307,7 @@ public class CUresult {
 	/**
 	 * This error indicates that a call to ::cuMemPeerRegister is trying to
 	 * register memory from a context which has not had peer access
-	 * enabled yet via ::cuCtxEnablePeerAccess(), or that 
+	 * enabled yet via ::cuCtxEnablePeerAccess(), or that
 	 * ::cuCtxDisablePeerAccess() is trying to disable peer access
 	 * which has not been enabled yet.
 	 */
@@ -347,15 +347,15 @@ public class CUresult {
 	
 	/**
 	 * A device-side assert triggered during kernel execution. The context
-	 * cannot be used anymore, and must be destroyed. All existing device 
-	 * memory allocations from this context are invalid and must be 
+	 * cannot be used anymore, and must be destroyed. All existing device
+	 * memory allocations from this context are invalid and must be
 	 * reconstructed if the program is to continue using CUDA.
 	 */
 	public static final int CUDA_ERROR_ASSERT = 710;
 	
 	/**
 	 * This error indicates that the hardware resources required to enable
-	 * peer access have been exhausted for one or more of the devices 
+	 * peer access have been exhausted for one or more of the devices
 	 * passed to ::cuCtxEnablePeerAccess().
 	 */
 	public static final int CUDA_ERROR_TOO_MANY_PEERS = 711;

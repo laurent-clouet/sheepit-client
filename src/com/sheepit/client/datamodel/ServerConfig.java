@@ -8,20 +8,13 @@ import org.simpleframework.xml.Root;
 
 import java.util.List;
 
-@Root(strict = false, name = "config")
-@ToString
-public class ServerConfig {
+@Root(strict = false, name = "config") @ToString public class ServerConfig {
 	
-	@Attribute
-	@Getter
-	private int status;
+	@Attribute @Getter private int status;
 	
-	@Attribute(required = false)
-	@Getter
-	private String publickey;
+	@Attribute(required = false) @Getter private String publickey;
 	
-	@ElementList(name = "request", inline = true, required = false)
-	private List<RequestEndPoint> requestEndPoints;
+	@ElementList(name = "request", inline = true, required = false) private List<RequestEndPoint> requestEndPoints;
 	
 	public ServerConfig() {
 	}

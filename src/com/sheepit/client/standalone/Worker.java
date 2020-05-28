@@ -2,7 +2,7 @@
  * Copyright (C) 2010-2014 Laurent CLOUET
  * Author Laurent CLOUET <laurent.clouet@nopnop.net>
  *
- * This program is free software; you can redistribute it and/or 
+ * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; version 2
  * of the License.
@@ -30,6 +30,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.LinkedList;
+
 import com.sheepit.client.Client;
 import com.sheepit.client.Configuration;
 import com.sheepit.client.Configuration.ComputeType;
@@ -46,75 +47,53 @@ import com.sheepit.client.hardware.gpu.opencl.OpenCL;
 import com.sheepit.client.network.Proxy;
 
 public class Worker {
-	@Option(name = "-server", usage = "Render-farm server, default https://client.sheepit-renderfarm.com", metaVar = "URL", required = false)
-	private String server = "https://client.sheepit-renderfarm.com";
+	@Option(name = "-server", usage = "Render-farm server, default https://client.sheepit-renderfarm.com", metaVar = "URL", required = false) private String server = "https://client.sheepit-renderfarm.com";
 	
-	@Option(name = "-login", usage = "User's login", metaVar = "LOGIN", required = false)
-	private String login = "";
+	@Option(name = "-login", usage = "User's login", metaVar = "LOGIN", required = false) private String login = "";
 	
-	@Option(name = "-password", usage = "User's password", metaVar = "PASSWORD", required = false)
-	private String password = "";
+	@Option(name = "-password", usage = "User's password", metaVar = "PASSWORD", required = false) private String password = "";
 	
-	@Option(name = "-cache-dir", usage = "Cache/Working directory. Caution, everything in it not related to the render-farm will be removed", metaVar = "/tmp/cache", required = false)
-	private String cache_dir = null;
+	@Option(name = "-cache-dir", usage = "Cache/Working directory. Caution, everything in it not related to the render-farm will be removed", metaVar = "/tmp/cache", required = false) private String cache_dir = null;
 	
-	@Option(name = "-gpu", usage = "Name of the GPU used for the render, for example CUDA_0 for Nvidia or OPENCL_0 for AMD/Intel card", metaVar = "CUDA_0", required = false)
-	private String gpu_device = null;
+	@Option(name = "-gpu", usage = "Name of the GPU used for the render, for example CUDA_0 for Nvidia or OPENCL_0 for AMD/Intel card", metaVar = "CUDA_0", required = false) private String gpu_device = null;
 	
-	@Option(name = "--no-gpu", usage = "Don't detect GPUs", required = false)
-	private boolean no_gpu_detection = false;
+	@Option(name = "--no-gpu", usage = "Don't detect GPUs", required = false) private boolean no_gpu_detection = false;
 	
-	@Option(name = "-compute-method", usage = "CPU: only use cpu, GPU: only use gpu, CPU_GPU: can use cpu and gpu (not at the same time) if -gpu is not use it will not use the gpu", metaVar = "CPU", required = false)
-	private String method = null;
+	@Option(name = "-compute-method", usage = "CPU: only use cpu, GPU: only use gpu, CPU_GPU: can use cpu and gpu (not at the same time) if -gpu is not use it will not use the gpu", metaVar = "CPU", required = false) private String method = null;
 	
-	@Option(name = "-cores", usage = "Number of cores/threads to use for the render", metaVar = "3", required = false)
-	private int nb_cores = -1;
+	@Option(name = "-cores", usage = "Number of cores/threads to use for the render", metaVar = "3", required = false) private int nb_cores = -1;
 	
-	@Option(name = "-memory", usage = "Maximum memory allow to be used by renderer, number with unit (800M, 2G, ...)", required = false)
-	private String max_ram = null;
+	@Option(name = "-memory", usage = "Maximum memory allow to be used by renderer, number with unit (800M, 2G, ...)", required = false) private String max_ram = null;
 	
-	@Option(name = "-rendertime", usage = "Maximum time allow for each frame (in minutes)", required = false)
-	private int max_rendertime = -1;
+	@Option(name = "-rendertime", usage = "Maximum time allow for each frame (in minutes)", required = false) private int max_rendertime = -1;
 	
-	@Option(name = "--verbose", usage = "Display log", required = false)
-	private boolean print_log = false;
+	@Option(name = "--verbose", usage = "Display log", required = false) private boolean print_log = false;
 	
-	@Option(name = "-request-time", usage = "H1:M1-H2:M2,H3:M3-H4:M4 Use the 24h format. For example to request job between 2am-8.30am and 5pm-11pm you should do --request-time 2:00-8:30,17:00-23:00 Caution, it's the requesting job time to get a project, not the working time", metaVar = "2:00-8:30,17:00-23:00", required = false)
-	private String request_time = null;
+	@Option(name = "-request-time", usage = "H1:M1-H2:M2,H3:M3-H4:M4 Use the 24h format. For example to request job between 2am-8.30am and 5pm-11pm you should do --request-time 2:00-8:30,17:00-23:00 Caution, it's the requesting job time to get a project, not the working time", metaVar = "2:00-8:30,17:00-23:00", required = false) private String request_time = null;
 	
-	@Option(name = "-proxy", usage = "URL of the proxy", metaVar = "http://login:password@host:port", required = false)
-	private String proxy = null;
+	@Option(name = "-proxy", usage = "URL of the proxy", metaVar = "http://login:password@host:port", required = false) private String proxy = null;
 	
-	@Option(name = "-extras", usage = "Extras data push on the authentication request", required = false)
-	private String extras = null;
+	@Option(name = "-extras", usage = "Extras data push on the authentication request", required = false) private String extras = null;
 	
-	@Option(name = "-ui", usage = "Specify the user interface to use, default '" + GuiSwing.type + "', available '" + GuiTextOneLine.type + "', '" + GuiText.type + "', '" + GuiSwing.type + "' (graphical)", required = false)
-	private String ui_type = null;
+	@Option(name = "-ui", usage = "Specify the user interface to use, default '" + GuiSwing.type + "', available '" + GuiTextOneLine.type + "', '"
+			+ GuiText.type + "', '" + GuiSwing.type + "' (graphical)", required = false) private String ui_type = null;
 	
-	@Option(name = "-config", usage = "Specify the configuration file", required = false)
-	private String config_file = null;
+	@Option(name = "-config", usage = "Specify the configuration file", required = false) private String config_file = null;
 	
-	@Option(name = "--version", usage = "Display application version", required = false, handler = VersionParameterHandler.class)
-	private VersionParameterHandler versionHandler;
+	@Option(name = "--version", usage = "Display application version", required = false, handler = VersionParameterHandler.class) private VersionParameterHandler versionHandler;
 	
-	@Option(name = "--show-gpu", usage = "Print available CUDA devices and exit", required = false, handler = ListGpuParameterHandler.class)
-	private ListGpuParameterHandler listGpuParameterHandler;
+	@Option(name = "--show-gpu", usage = "Print available CUDA devices and exit", required = false, handler = ListGpuParameterHandler.class) private ListGpuParameterHandler listGpuParameterHandler;
 	
-	@Option(name = "--no-systray", usage = "Don't use systray", required = false)
-	private boolean no_systray = false;
+	@Option(name = "--no-systray", usage = "Don't use systray", required = false) private boolean no_systray = false;
 	
-	@Option(name = "-priority", usage = "Set render process priority (19 lowest to -19 highest)", required = false)
-	private int priority = 19;
-
-	@Option(name = "-title", usage = "Custom title for the GUI Client", required = false)
-	private String title = "SheepIt Render Farm";
+	@Option(name = "-priority", usage = "Set render process priority (19 lowest to -19 highest)", required = false) private int priority = 19;
 	
-	@Option(name = "-theme", usage = "Specify the theme to use for the graphical client, default 'light', available 'light', 'dark'", required = false)
-	private String theme = null;
+	@Option(name = "-title", usage = "Custom title for the GUI Client", required = false) private String title = "SheepIt Render Farm";
 	
-	@Option(name = "-renderbucket-size", usage = "Set a custom GPU renderbucket size (32 for 32x32px, 64 for 64x64px, and so on). NVIDIA GPUs support a maximum renderbucket size of 512x512 pixel, while AMD GPUs support a maximum 2048x2048 pixel renderbucket size. Minimum renderbucket size is 32 pixels for all GPUs", required = false)
-	private int renderbucketSize = -1;
-
+	@Option(name = "-theme", usage = "Specify the theme to use for the graphical client, default 'light', available 'light', 'dark'", required = false) private String theme = null;
+	
+	@Option(name = "-renderbucket-size", usage = "Set a custom GPU renderbucket size (32 for 32x32px, 64 for 64x64px, and so on). NVIDIA GPUs support a maximum renderbucket size of 512x512 pixel, while AMD GPUs support a maximum 2048x2048 pixel renderbucket size. Minimum renderbucket size is 32 pixels for all GPUs", required = false) private int renderbucketSize = -1;
+	
 	public static void main(String[] args) {
 		new Worker().doMain(args);
 	}
@@ -137,7 +116,7 @@ public class Worker {
 		Configuration config = new Configuration(null, login, password);
 		config.setPrintLog(print_log);
 		config.setUsePriority(priority);
-		config.setDetectGPUs(! no_gpu_detection);
+		config.setDetectGPUs(!no_gpu_detection);
 		
 		if (cache_dir != null) {
 			File a_dir = new File(cache_dir);
@@ -297,10 +276,10 @@ public class Worker {
 				System.err.println("Aborting");
 				System.exit(2);
 			}
-
+			
 			config.setTheme(this.theme);
 		}
-
+		
 		if (config_file != null) {
 			if (new File(config_file).exists() == false) {
 				System.err.println("Configuration file not found.");

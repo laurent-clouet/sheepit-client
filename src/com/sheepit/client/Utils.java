@@ -2,7 +2,7 @@
  * Copyright (C) 2010-2014 Laurent CLOUET
  * Author Laurent CLOUET <laurent.clouet@nopnop.net>
  *
- * This program is free software; you can redistribute it and/or 
+ * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; version 2
  * of the License.
@@ -51,7 +51,8 @@ import com.sheepit.client.Error.ServerCode;
 import com.sheepit.client.exception.FermeExceptionNoSpaceLeftOnDevice;
 
 public class Utils {
-	public static int unzipFileIntoDirectory(String zipFileName_, String destinationDirectory, String password, Log log) throws FermeExceptionNoSpaceLeftOnDevice {
+	public static int unzipFileIntoDirectory(String zipFileName_, String destinationDirectory, String password, Log log)
+			throws FermeExceptionNoSpaceLeftOnDevice {
 		try {
 			ZipFile zipFile = new ZipFile(zipFileName_);
 			UnzipParameters unzipParameters = new UnzipParameters();

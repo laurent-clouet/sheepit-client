@@ -2,7 +2,7 @@
  * Copyright (C) 2010-2014 Laurent CLOUET
  * Author Laurent CLOUET <laurent.clouet@nopnop.net>
  *
- * This program is free software; you can redistribute it and/or 
+ * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; version 2
  * of the License.
@@ -56,13 +56,13 @@ import com.sheepit.client.standalone.swing.activity.Working;
 import lombok.Getter;
 import lombok.Setter;
 
-import com.formdev.flatlaf.FlatLightLaf;	// Required for dark & light mode
+import com.formdev.flatlaf.FlatLightLaf;    // Required for dark & light mode
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLaf;
 
 public class GuiSwing extends JFrame implements Gui {
 	public static final String type = "swing";
-
+	
 	public enum ActivityType {
 		WORKING, SETTINGS
 	}
@@ -79,13 +79,11 @@ public class GuiSwing extends JFrame implements Gui {
 	
 	private boolean waitingForAuthentication;
 	private Client client;
-
+	
 	private BufferedImage iconSprites;
 	private BufferedImage[] trayIconSprites;
-
-	@Getter
-	@Setter
-	private SettingsLoader settingsLoader;
+	
+	@Getter @Setter private SettingsLoader settingsLoader;
 	
 	private ThreadClient threadClient;
 	
@@ -96,8 +94,7 @@ public class GuiSwing extends JFrame implements Gui {
 		waitingForAuthentication = true;
 		
 		new Timer().scheduleAtFixedRate(new TimerTask() {
-			@Override
-			public void run() {
+			@Override public void run() {
 				if (activityWorking != null) {
 					activityWorking.updateTime();
 				}
@@ -105,8 +102,7 @@ public class GuiSwing extends JFrame implements Gui {
 		}, 2 * 1000, 2 * 1000);
 	}
 	
-	@Override
-	public void start() {
+	@Override public void start() {
 		if (useSysTray) {
 			try {
 				sysTray = SystemTray.getSystemTray();
@@ -124,21 +120,22 @@ public class GuiSwing extends JFrame implements Gui {
 				sysTray = null;
 			}
 		}
-
+		
 		// load the images sprite and split into individual images
 		URL spriteSequenceUrl = getClass().getResource("/icon-sprites.png");
-
+		
 		if (spriteSequenceUrl != null) {
 			try {
 				iconSprites = ImageIO.read(spriteSequenceUrl);
-				trayIconSprites = new BufferedImage[101 * 1];			// sprite sheet has 101 images in 1 column
-
-				setIconImage(extractImageFromSprite(-1));	// sprite 0 is standard Sheep It! icon
-			} catch (IOException e) {
+				trayIconSprites = new BufferedImage[101 * 1];            // sprite sheet has 101 images in 1 column
+				
+				setIconImage(extractImageFromSprite(-1));    // sprite 0 is standard Sheep It! icon
+			}
+			catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-
+		
 		setTitle(title);
 		setSize(520, 760);
 		
@@ -157,17 +154,18 @@ public class GuiSwing extends JFrame implements Gui {
 		try {
 			if (client.getConfiguration().getTheme().equals("light")) {
 				UIManager.setLookAndFeel(new FlatLightLaf());
-			} else if (client.getConfiguration().getTheme().equals("dark")) {
+			}
+			else if (client.getConfiguration().getTheme().equals("dark")) {
 				UIManager.setLookAndFeel(new FlatDarkLaf());
 			}
-
+			
 			// Apply the selected theme to swing components
 			FlatLaf.updateUI();
 		}
 		catch (UnsupportedLookAndFeelException e1) {
 			e1.printStackTrace();
 		}
-
+		
 		while (waitingForAuthentication) {
 			try {
 				synchronized (this) {
@@ -180,51 +178,43 @@ public class GuiSwing extends JFrame implements Gui {
 		}
 	}
 	
-	@Override
-	public void stop() {
+	@Override public void stop() {
 		System.exit(0);
 	}
 	
-	@Override
-	public void status(String msg_) {
+	@Override public void status(String msg_) {
 		status(msg_, false);
 	}
 	
-	@Override
-	public void status(String msg_, boolean overwriteSuspendedMsg) {
+	@Override public void status(String msg_, boolean overwriteSuspendedMsg) {
 		if (activityWorking != null) {
 			this.activityWorking.setStatus(msg_, overwriteSuspendedMsg);
 		}
 	}
-
-	@Override
-	public void setRenderingProjectName(String name_) {
+	
+	@Override public void setRenderingProjectName(String name_) {
 		if (activityWorking != null) {
 			this.activityWorking.setRenderingProjectName(name_);
 		}
 	}
 	
-	@Override
-	public void error(String msg_) {
+	@Override public void error(String msg_) {
 		status(msg_, true);
 	}
 	
-	@Override
-	public void setRemainingTime(String time_) {
+	@Override public void setRemainingTime(String time_) {
 		if (activityWorking != null) {
 			this.activityWorking.setRemainingTime(time_);
 		}
 	}
 	
-	@Override
-	public void setRenderingTime(String time_) {
+	@Override public void setRenderingTime(String time_) {
 		if (activityWorking != null) {
 			this.activityWorking.setRenderingTime(time_);
 		}
 	}
 	
-	@Override
-	public void AddFrameRendered() {
+	@Override public void AddFrameRendered() {
 		framesRendered++;
 		
 		if (activityWorking != null) {
@@ -235,41 +225,35 @@ public class GuiSwing extends JFrame implements Gui {
 		}
 	}
 	
-	@Override
-	public void displayStats(Stats stats) {
+	@Override public void displayStats(Stats stats) {
 		if (activityWorking != null) {
 			this.activityWorking.displayStats(stats);
 		}
 	}
 	
-	@Override
-	public void displayUploadQueueStats(int queueSize, long queueVolume) {
+	@Override public void displayUploadQueueStats(int queueSize, long queueVolume) {
 		if (activityWorking != null) {
 			this.activityWorking.displayUploadQueueStats(queueSize, queueVolume);
 		}
 	}
 	
-	@Override
-	public Client getClient() {
+	@Override public Client getClient() {
 		return client;
 	}
 	
-	@Override
-	public void setClient(Client cli) {
+	@Override public void setClient(Client cli) {
 		client = cli;
 	}
 	
-	@Override
-	public void setComputeMethod(String computeMethod) {
+	@Override public void setComputeMethod(String computeMethod) {
 		this.activityWorking.setComputeMethod(computeMethod);
 	}
 	
 	public Configuration getConfiguration() {
 		return client.getConfiguration();
 	}
-
-	@Override
-	public void successfulAuthenticationEvent(String publickey) {
+	
+	@Override public void successfulAuthenticationEvent(String publickey) {
 		if (settingsLoader != null) {
 			if (publickey != null) {
 				settingsLoader.setPassword(publickey);
@@ -341,15 +325,14 @@ public class GuiSwing extends JFrame implements Gui {
 	
 	public TrayIcon getTrayIcon() {
 		final PopupMenu trayMenu = new PopupMenu();
-
+		
 		// on start, show the base icon
 		Image img = extractImageFromSprite(-1);
 		final TrayIcon icon = new TrayIcon(img);
 		
 		MenuItem exit = new MenuItem("Exit");
 		exit.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
+			@Override public void actionPerformed(ActionEvent e) {
 				System.exit(0);
 			}
 		});
@@ -357,8 +340,7 @@ public class GuiSwing extends JFrame implements Gui {
 		
 		MenuItem open = new MenuItem("Open...");
 		open.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
+			@Override public void actionPerformed(ActionEvent e) {
 				restoreFromTray();
 			}
 		});
@@ -366,8 +348,7 @@ public class GuiSwing extends JFrame implements Gui {
 		
 		MenuItem settings = new MenuItem("Settings...");
 		settings.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
+			@Override public void actionPerformed(ActionEvent e) {
 				restoreFromTray();
 				showActivity(ActivityType.SETTINGS);
 			}
@@ -379,8 +360,7 @@ public class GuiSwing extends JFrame implements Gui {
 		icon.setToolTip("SheepIt! Client");
 		
 		icon.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
+			@Override public void actionPerformed(ActionEvent e) {
 				restoreFromTray();
 			}
 		});
@@ -388,7 +368,7 @@ public class GuiSwing extends JFrame implements Gui {
 		return icon;
 		
 	}
-
+	
 	private Image extractImageFromSprite(int spriteNumber) {
 		// Sprite structure
 		// Image 0: base sprite
@@ -398,29 +378,27 @@ public class GuiSwing extends JFrame implements Gui {
 		// -1 turns into 0 (base sprite with no progress bar)
 		// 0 to 101 turns into 1 to 101 (progress sequence starts in sprite 1 and ends on sprite 101)
 		ImageIcon img = new ImageIcon(iconSprites.getSubimage(0, (spriteNumber + 1) * 114, 114, 114));
-
+		
 		return img.getImage();
 	}
-
-	@Override
-	public void updateTrayIcon(Integer percentage) {
+	
+	@Override public void updateTrayIcon(Integer percentage) {
 		// update the app icon on the app bar
 		Image img = extractImageFromSprite(percentage);
 		setIconImage(img);
-
+		
 		// if the app supports the system tray, update as well
 		if (sysTray != null && SystemTray.isSupported()) {
 			if (trayIcon != null) {
 				trayIcon.setImage(img);
-				trayIcon.setImageAutoSize(true);		// use this method to ensure that icon is refreshed when on
-														// the tray
+				trayIcon.setImageAutoSize(true);        // use this method to ensure that icon is refreshed when on
+				// the tray
 			}
 		}
 	}
-
+	
 	public class ThreadClient extends Thread {
-		@Override
-		public void run() {
+		@Override public void run() {
 			if (GuiSwing.this.client != null) {
 				GuiSwing.this.client.run();
 			}

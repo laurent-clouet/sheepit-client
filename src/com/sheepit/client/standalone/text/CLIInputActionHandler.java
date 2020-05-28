@@ -2,7 +2,7 @@
  * Copyright (C) 2017 Laurent CLOUET
  * Author Rolf Aretz Lap <rolf.aretz@ottogroup.com>
  *
- * This program is free software; you can redistribute it and/or 
+ * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; version 2
  * of the License.
@@ -25,8 +25,7 @@ import com.sheepit.client.Job;
 
 public class CLIInputActionHandler implements CLIInputListener {
 	
-	@Override
-	public void commandEntered(Client client, String command) {
+	@Override public void commandEntered(Client client, String command) {
 		int priorityLength = "priority".length();
 		
 		//prevent Null Pointer at next step
@@ -89,7 +88,7 @@ public class CLIInputActionHandler implements CLIInputListener {
 		}
 		
 	}
-
+	
 	void displayStatus(Client client) {
 		if (client.isSuspended()) {
 			System.out.println("Status: paused");
