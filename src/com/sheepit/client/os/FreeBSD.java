@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import com.sheepit.client.Log;
@@ -31,11 +32,10 @@ import com.sheepit.client.hardware.cpu.CPU;
 
 public class FreeBSD extends OS {
 	private final String NICE_BINARY_PATH = "nice";
-	private Boolean hasNiceBinary;
+	private final String ID_COMMAND_INVOCATION = "id -u";
 	
 	public FreeBSD() {
 		super();
-		this.hasNiceBinary = null;
 	}
 	
 	public String name() {
@@ -155,10 +155,7 @@ public class FreeBSD extends OS {
 		}
 		
 		List<String> actual_command = command;
-		if (this.hasNiceBinary == null) {
-			this.checkNiceAvailability();
-		}
-		if (this.hasNiceBinary.booleanValue()) {
+		if (checkNiceAvailability()) {
 			// launch the process in lowest priority
 			if (env_overight != null) {
 				actual_command.add(0, env_overight.get("PRIORITY"));
@@ -183,17 +180,42 @@ public class FreeBSD extends OS {
 		return builder.start();
 	}
 	
-	private void checkNiceAvailability() {
+	@Override public boolean getSupportHighPriority() {
+		try {
+			ProcessBuilder builder = new ProcessBuilder();
+			builder.command("bash", "-c", ID_COMMAND_INVOCATION);
+			builder.redirectErrorStream(true);
+			
+			Process process = builder.start();
+			InputStream is = process.getInputStream();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+			
+			String userLevel = null;
+			if ((userLevel = reader.readLine()) != null) {
+				// Root user in *ix systems -independently of the alias used to login- has a id value of 0. On top of being a user with root capabilities,
+				// to support changing the priority the nice tool must be accessible from the current user
+				return (userLevel.equals("0")) & checkNiceAvailability();
+			}
+		}
+		catch (IOException e) {
+			System.err.println(String.format("ERROR FreeBSD::getSupportHighPriority Unable to execute id command. IOException %s", e.getMessage()));
+		}
+		
+		return false;
+	}
+	
+	@Override public boolean checkNiceAvailability() {
 		ProcessBuilder builder = new ProcessBuilder();
 		builder.command(NICE_BINARY_PATH);
 		builder.redirectErrorStream(true);
+		
 		Process process = null;
+		boolean hasNiceBinary = false;
 		try {
 			process = builder.start();
-			this.hasNiceBinary = true;
+			hasNiceBinary = true;
 		}
 		catch (IOException e) {
-			this.hasNiceBinary = false;
 			Log.getInstance(null).error("Failed to find low priority binary, will not launch renderer in normal priority (" + e + ")");
 		}
 		finally {
@@ -201,5 +223,6 @@ public class FreeBSD extends OS {
 				process.destroy();
 			}
 		}
+		return hasNiceBinary;
 	}
 }
