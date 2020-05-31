@@ -73,6 +73,8 @@ import lombok.Getter;
 	private String password;
 	private String extras;
 	private String updateRenderingStatusMethod;
+	private String blenderShortVersion;
+	private String blenderLongVersion;
 	private boolean synchronousUpload;
 	private RenderProcess render;
 	private boolean askForRendererKill;
@@ -108,6 +110,8 @@ import lombok.Getter;
 		serverBlockJob = false;
 		log = log_;
 		render = new RenderProcess();
+		blenderShortVersion = null;
+		blenderLongVersion = null;
 	}
 	
 	public void block() {
@@ -296,6 +300,17 @@ import lombok.Getter;
 				
 				while ((line = input.readLine()) != null) {
 					log.debug(line);
+					
+					// Process lines until the version is loaded (usually first or second line of log)
+					if (blenderLongVersion == null) {
+						Pattern blenderPattern = Pattern.compile("Blender (([0-9]{1,3}\\.[0-9]{0,3}).*)$");
+						Matcher blendDetectedVersion = blenderPattern.matcher(line);
+						
+						if (blendDetectedVersion.find()) {
+							blenderLongVersion  = blendDetectedVersion.group(1);
+							blenderShortVersion = blendDetectedVersion.group(2);
+						}
+					}
 					
 					progress = computeRenderingProgress(line, tilePattern, progress);
 					

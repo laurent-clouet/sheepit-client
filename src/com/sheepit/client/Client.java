@@ -45,6 +45,7 @@ import com.sheepit.client.exception.FermeExceptionServerInMaintenance;
 import com.sheepit.client.exception.FermeExceptionServerOverloaded;
 import com.sheepit.client.exception.FermeExceptionSessionDisabled;
 import com.sheepit.client.exception.FermeServerDown;
+import com.sheepit.client.hardware.cpu.CPU;
 import com.sheepit.client.os.OS;
 
 import lombok.Data;
@@ -511,6 +512,28 @@ import lombok.Data;
 			temp_file.createNewFile();
 			temp_file.deleteOnExit();
 			FileOutputStream writer = new FileOutputStream(temp_file);
+			
+			// Create a header with the information summarised for easier admin error analysis
+			Configuration conf = this.configuration;
+			CPU cpu = OS.getOS().getCPU();
+			
+			StringBuilder logHeader = new StringBuilder()
+				.append("====================================================================================================\n")
+				.append(String.format("%s  /  %s  /  %s  /  SheepIt v%s\n", conf.getLogin(), conf.getHostname(), OS.getOS().name(), conf.getJarVersion()))
+				.append(String.format("%s  x%d  %.1f GB RAM\n", cpu.name(), conf.getNbCores(), conf.getMaxMemory() / 1024.0 / 1024.0));
+			
+			if (conf.getComputeMethod() == Configuration.ComputeType.GPU || conf.getComputeMethod() == Configuration.ComputeType.CPU_GPU) {
+				logHeader
+					.append(String.format("%s   %.1f GB VRAM\n", conf.getGPUDevice().getModel(), conf.getGPUDevice().getMemory() / 1024.0 / 1024.0 / 1024.0));
+			}
+			
+			logHeader.append("====================================================================================================\n")
+				.append(String.format("Project ::: %s\n", job_to_reset_.getName()))
+				.append(String.format("Project id: %s  frame: %s\n", job_to_reset_.getId(), job_to_reset_.getFrameNumber()))
+				.append(String.format("blender ::: %s\n\n", job_to_reset_.getBlenderLongVersion())).append(String.format("ERROR Type :: %s\n", error))
+				.append("====================================================================================================\n\n");
+			
+			writer.write(logHeader.toString().getBytes());
 			
 			ArrayList<String> logs = this.log.getForCheckPoint(step_);
 			for (String line : logs) {
