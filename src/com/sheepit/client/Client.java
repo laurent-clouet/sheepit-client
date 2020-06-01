@@ -685,6 +685,8 @@ import lombok.Data;
 		
 		// must download the archive
 		int ret = this.server.HTTPGetFile(url, local_path, this.gui, update_ui);
+		
+		// Try to check the download file even if a download error has occurred (MD5 file check will delete the file if partially downloaded)
 		boolean md5_check = this.checkFile(ajob, local_path, md5_server);
 		int attempts = 1;
 		
