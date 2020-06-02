@@ -21,13 +21,16 @@ package com.sheepit.client.standalone;
 
 import com.sheepit.client.Client;
 import com.sheepit.client.Gui;
-import com.sheepit.client.Job;
 import com.sheepit.client.Stats;
 import com.sheepit.client.standalone.text.CLIInputActionHandler;
 import com.sheepit.client.standalone.text.CLIInputObserver;
 
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class GuiTextOneLine implements Gui {
 	public static final String type = "oneLine";
@@ -37,6 +40,7 @@ public class GuiTextOneLine implements Gui {
 	private int remaining;
 	private String creditsEarned;
 	private int sigIntCount = 0;
+	private DateFormat df;
 	
 	private String computeMethod;
 	private String status;
@@ -59,6 +63,7 @@ public class GuiTextOneLine implements Gui {
 		line = "";
 		uploadQueueSize = 0;
 		uploadQueueVolume = 0;
+		df = new SimpleDateFormat("MMM dd HH:mm:ss");
 	}
 	
 	@Override public void start() {
@@ -179,9 +184,10 @@ public class GuiTextOneLine implements Gui {
 		
 		System.out.print("\r");
 		
-		line = String.format("Frames: %d Points: %s | Queued uploads: %d%s | %s %s %s", rendered, creditsEarned != null ? creditsEarned : "unknown",
-				this.uploadQueueSize, (this.uploadQueueSize > 0 ? String.format(" (%.2fMB)", (this.uploadQueueVolume / 1024.0 / 1024.0)) : ""), project,
-				computeMethod, status + (exiting ? " (Exiting after all frames are uploaded)" : ""));
+		line = String.format("%s Frames: %d Points: %s | Queued uploads: %d%s | %s %s %s", df.format(new Date()), rendered,
+				creditsEarned != null ? creditsEarned : "unknown", this.uploadQueueSize,
+				(this.uploadQueueSize > 0 ? String.format(" (%.2fMB)", (this.uploadQueueVolume / 1024.0 / 1024.0)) : ""), project, computeMethod,
+				status + (exiting ? " (Exiting after all frames are uploaded)" : ""));
 		
 		System.out.print(line);
 		for (int i = line.length(); i <= charToRemove; i++) {
