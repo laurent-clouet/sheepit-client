@@ -605,26 +605,7 @@ public class Server extends Thread {
 	
 	private OkHttpClient getOkHttpClient() {
 		try {
-			final TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
-				
-				@Override public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
-				}
-				
-				@Override public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
-				}
-				
-				@Override public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-					return new java.security.cert.X509Certificate[] {};
-				}
-			} };
-			
-			final SSLContext sslContext = SSLContext.getInstance("SSL");
-			sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
-			
-			final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
-			
 			OkHttpClient.Builder builder = new OkHttpClient.Builder();
-			builder.sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0]);
 			
 			CookieManager cookieManager = new CookieManager();
 			cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
@@ -644,12 +625,6 @@ public class Server extends Thread {
 			else {
 				builder.readTimeout(1, TimeUnit.MINUTES);    // No proxy - 60 seconds max
 			}
-			
-			builder.hostnameVerifier(new HostnameVerifier() {
-				@Override public boolean verify(String hostname, SSLSession session) {
-					return true;	// Accept all certificates
-				}
-			});
 			
 			return builder.build();
 		}
