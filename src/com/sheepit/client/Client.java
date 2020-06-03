@@ -527,12 +527,18 @@ import lombok.Data;
 					.append(String.format("%s   %.1f GB VRAM\n", conf.getGPUDevice().getModel(), conf.getGPUDevice().getMemory() / 1024.0 / 1024.0 / 1024.0));
 			}
 			
-			logHeader.append("====================================================================================================\n")
-				.append(String.format("Project ::: %s\n", job_to_reset_.getName()))
-				.append(String.format("Project id: %s  frame: %s\n", job_to_reset_.getId(), job_to_reset_.getFrameNumber()))
-				.append(String.format("blender ::: %s\n\n", job_to_reset_.getBlenderLongVersion())).append(String.format("ERROR Type :: %s\n", error))
-				.append("====================================================================================================\n\n");
+			logHeader.append("====================================================================================================\n");
+			if (job_to_reset_ != null) {
+				logHeader.append(String.format("Project ::: %s\n", job_to_reset_.getName())).append(String.format("Project id: %s  frame: %s\n", job_to_reset_.getId(), job_to_reset_.getFrameNumber()))
+						.append(String.format("blender ::: %s\n\n", job_to_reset_.getBlenderLongVersion())).append(String.format("ERROR Type :: %s\n", error));
+			}
+			else {
+				logHeader.append("Project ::: No project allocated.\n")
+						.append(String.format("ERROR Type :: %s\n", (error != null ? error : "N/A")));
+			}
+			logHeader.append("====================================================================================================\n\n");
 			
+			// Insert the info at the beginning of the error log
 			writer.write(logHeader.toString().getBytes());
 			
 			ArrayList<String> logs = this.log.getForCheckPoint(step_);
