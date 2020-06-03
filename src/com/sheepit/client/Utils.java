@@ -29,9 +29,11 @@ import java.nio.file.Paths;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Calendar;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.ZoneId;
 import java.util.Date;
-import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -182,24 +184,42 @@ public class Utils {
 	}
 	
 	public static String humanDuration(Date date) {
-		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-		calendar.setTime(date);
+		ZoneId zoneId = ZoneId.of("GMT");
+		LocalDateTime tempDate = LocalDateTime.ofInstant(date.toInstant(), zoneId);
+		LocalDateTime epoch = LocalDateTime.ofInstant(Instant.ofEpochSecond(0), zoneId);
 		
-		int hours = (calendar.get(Calendar.DAY_OF_MONTH) - 1) * 24 + calendar.get(Calendar.HOUR_OF_DAY);
-		int minutes = calendar.get(Calendar.MINUTE);
-		int seconds = calendar.get(Calendar.SECOND);
+		long months = epoch.until(tempDate, ChronoUnit.MONTHS);
+		epoch = epoch.plusMonths(months);
 		
-		String output = "";
+		long days = epoch.until(tempDate, ChronoUnit.DAYS);
+		epoch = epoch.plusDays(days);
+		
+		long hours = epoch.until(tempDate, ChronoUnit.HOURS);
+		epoch = epoch.plusHours(hours);
+		
+		long minutes = epoch.until(tempDate, ChronoUnit.MINUTES);
+		epoch = epoch.plusMinutes(minutes);
+		
+		long seconds = epoch.until(tempDate, ChronoUnit.SECONDS);
+		
+		StringBuilder output = new StringBuilder();
+		if (months > 0) {
+			output.append(String.format("%dmonth%s ", months, (months > 1 ? "s" : "")));
+		}
+		if (days > 0) {
+			output.append(String.format("%dday%s ", days, (days > 1 ? "s" : "")));
+		}
 		if (hours > 0) {
-			output += hours + "h ";
+			output.append(String.format("%dh ", hours));
 		}
 		if (minutes > 0) {
-			output += minutes + "min ";
+			output.append(String.format("%dmin ", minutes));
 		}
 		if (seconds > 0) {
-			output += seconds + "s";
+			output.append(String.format("%ds", seconds));
 		}
-		return output;
+		
+		return output.toString().trim();
 	}
 	
 	public static boolean noFreeSpaceOnDisk(String destination_) {
