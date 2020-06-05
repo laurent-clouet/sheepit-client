@@ -54,6 +54,7 @@ public class SettingsLoader {
 	private String renderTime;
 	private String cacheDir;
 	private String autoSignIn;
+	private String useSysTray;
 	private String ui;
 	private String theme;
 	private int priority;
@@ -68,8 +69,8 @@ public class SettingsLoader {
 	}
 	
 	public SettingsLoader(String path_, String login_, String password_, String proxy_, String hostname_, ComputeType computeMethod_, GPUDevice gpu_,
-			int renderbucketSize_, int cores_, long maxRam_, int maxRenderTime_, String cacheDir_, boolean autoSignIn_, String ui_, String theme_,
-			int priority_) {
+		int renderbucketSize_, int cores_, long maxRam_, int maxRenderTime_, String cacheDir_, boolean autoSignIn_, boolean useSysTray_, String ui_,
+		String theme_, int priority_) {
 		if (path_ == null) {
 			path = getDefaultFilePath();
 		}
@@ -82,6 +83,7 @@ public class SettingsLoader {
 		hostname = hostname_;
 		cacheDir = cacheDir_;
 		autoSignIn = String.valueOf(autoSignIn_);
+		useSysTray = String.valueOf(useSysTray_);
 		ui = ui_;
 		priority = priority_;
 		theme = theme_;
@@ -175,6 +177,10 @@ public class SettingsLoader {
 				prop.setProperty("auto-signin", autoSignIn);
 			}
 			
+			if (useSysTray != null) {
+				prop.setProperty("use-systray", useSysTray);
+			}
+			
 			if (ui != null) {
 				prop.setProperty("ui", ui);
 			}
@@ -225,6 +231,7 @@ public class SettingsLoader {
 		this.renderbucketSize = null;
 		this.cacheDir = null;
 		this.autoSignIn = null;
+		this.useSysTray = null;
 		this.ui = null;
 		this.priority = 19; // must be the same default as Configuration
 		this.ram = null;
@@ -293,6 +300,10 @@ public class SettingsLoader {
 				this.autoSignIn = prop.getProperty("auto-signin");
 			}
 			
+			if (prop.containsKey("use-systray")) {
+				this.useSysTray = prop.getProperty("use-systray");
+			}
+			
 			if (prop.containsKey("ui")) {
 				this.ui = prop.getProperty("ui");
 			}
@@ -351,7 +362,7 @@ public class SettingsLoader {
 		}
 		try {
 			if ((config.getComputeMethod() == null && computeMethod != null) || (computeMethod != null && config.getComputeMethod() != ComputeType
-					.valueOf(computeMethod))) {
+				.valueOf(computeMethod))) {
 				config.setComputeMethod(ComputeType.valueOf(computeMethod));
 			}
 		}
@@ -413,11 +424,18 @@ public class SettingsLoader {
 			}
 		}
 		
-		config.setAutoSignIn(Boolean.valueOf(autoSignIn));
+		// if the user has invoked the app with --no-systray, then we just overwrite the existing configuration with (boolean)false. If no parameter has been
+		// specified and the settings file contains use-systray=false, then deactivate as well.
+		if (!config.isUseSysTray() || (config.isUseSysTray() && useSysTray != null && useSysTray.equals("false"))) {
+			config.setUseSysTray(false);
+		}
+		
+		config.setAutoSignIn(Boolean.parseBoolean(autoSignIn));
 	}
 	
 	@Override public String toString() {
-		return "SettingsLoader [path=" + path + ", login=" + login + ", password=" + password + ", computeMethod=" + computeMethod + ", gpu=" + gpu
-				+ ", renderbucket-size=" + renderbucketSize + ", cacheDir=" + cacheDir + ", theme=" + theme + ", priority=" + priority + "]";
+		return String.format(
+			"SettingsLoader [path=%s, login=%s, password=%s, computeMethod=%s, gpu=%s, renderbucket-size=%s, cacheDir=%s, theme=%s, priority=%d, autosign=%s, usetray=%s]",
+			path, login, password, computeMethod, gpu, renderbucketSize, cacheDir, theme, priority, autoSignIn, useSysTray);
 	}
 }
