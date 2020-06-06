@@ -32,7 +32,6 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
-import com.sheepit.client.Configuration;
 import com.sheepit.client.Configuration.ComputeType;
 import com.sheepit.client.hardware.gpu.GPU;
 import com.sheepit.client.hardware.gpu.GPUDevice;
