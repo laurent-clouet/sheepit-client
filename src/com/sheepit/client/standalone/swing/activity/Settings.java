@@ -29,7 +29,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Hashtable;
 import java.util.LinkedList;

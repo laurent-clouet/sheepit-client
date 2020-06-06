@@ -32,7 +32,6 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowStateListener;
 import java.awt.image.BufferedImage;
 import java.net.URL;
-import java.nio.Buffer;
 import java.util.Timer;
 import java.util.TimerTask;
 
