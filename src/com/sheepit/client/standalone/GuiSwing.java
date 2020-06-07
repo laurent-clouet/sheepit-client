@@ -191,6 +191,12 @@ public class GuiSwing extends JFrame implements Gui {
 		}
 	}
 	
+	@Override public void status(String msg, int progress, long size) {
+		if (activityWorking != null) {
+			this.activityWorking.setStatus(String.format("%s %d%%", msg, progress));
+		}
+	}
+	
 	@Override public void setRenderingProjectName(String name_) {
 		if (activityWorking != null) {
 			this.activityWorking.setRenderingProjectName(name_);

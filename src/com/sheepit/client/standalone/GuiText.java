@@ -31,6 +31,7 @@ import sun.misc.SignalHandler;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 
 public class GuiText implements Gui {
@@ -110,6 +111,11 @@ public class GuiText implements Gui {
 		}
 	}
 	
+	@Override public void status(String msg, int progress, long size) {
+		System.out.print("\r");
+		System.out.print(String.format("%s %s", this.df.format(new Date()), showProgress(msg, progress, size)));
+	}
+	
 	@Override public void error(String err_) {
 		System.out.println(String.format("ERROR: %s %s", this.df.format(new Date()), err_));
 		log.error("Error " + err_);
@@ -159,5 +165,29 @@ public class GuiText implements Gui {
 	
 	@Override public void successfulAuthenticationEvent(String publickey) {
 	
+	}
+	
+	private String showProgress(String message, int progress, long size) {
+		StringBuilder progressBar = new StringBuilder(140);
+		progressBar
+			.append(message)
+			.append(" ")
+			.append(String.join("", Collections.nCopies(progress == 0 ? 2 : 2 - (int) (Math.log10(progress)), " ")))
+			.append(String.format("%d%% [", progress))
+			.append(String.join("", Collections.nCopies((int)(progress/5), "=")))
+			.append('>')
+			.append(String.join("", Collections.nCopies(20 - (int)(progress / 5), " ")))
+			.append(']');
+		
+		if (size > 0) {
+			progressBar.append(String.format(" %dMB", (size / 1024 / 1024)));
+		}
+		
+		// Once the process has completed, show the output in a new line
+		if (progress == 100) {
+			progressBar.append("\n");
+		}
+		
+		return progressBar.toString();
 	}
 }

@@ -439,7 +439,7 @@ public class Server extends Thread {
 				written += len;
 				
 				if ((written - lastUpd) > 1000000) { // only update the gui every 1MB
-					gui_.status(String.format(status_, (int) (100.0 * written / size)));
+					gui_.status(status_, (int) (100.0 * written / size), written);
 					lastUpd = written;
 				}
 			}
@@ -448,7 +448,7 @@ public class Server extends Thread {
 			output.close();
 			is.close();
 			
-			gui_.status(String.format(status_, 100));
+			gui_.status(status_, 100, size);
 			
 			long end = new Date().getTime();
 			this.log.debug(String.format("File downloaded at %.1f kB/s, written %d B", ((float) (size / 1000)) / ((float) (end - start) / 1000), written));
