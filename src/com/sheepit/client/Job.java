@@ -188,14 +188,19 @@ import lombok.Getter;
 			gui.setComputeMethod("CPU");
 		}
 		
+		// Set the proper number of threads (=1 thread per core used)
+		if (configuration.getNbCores() > 0) {
+			core_script += "bpy.context.scene.render.threads_mode = 'FIXED'\n";
+			core_script += String.format("bpy.context.scene.render.threads = %d\n", configuration.getNbCores());
+		}
+		else {
+			core_script += "bpy.context.scene.render.threads_mode = 'AUTO'\n";
+		}
+		
 		core_script += ignore_signal_script;
 		File script_file = null;
 		String command1[] = getRendererCommand().split(" ");
 		int size_command = command1.length + 2; // + 2 for script
-		
-		if (configuration.getNbCores() > 0) { // user has specified something
-			size_command += 2;
-		}
 		
 		List<String> command = new ArrayList<String>(size_command);
 		
@@ -244,11 +249,6 @@ import lombok.Getter;
 					break;
 				case ".e":
 					command.add(getRendererPath());
-					// the number of cores has to be put after the binary and before the scene arg
-					if (configuration.getNbCores() > 0) {
-						command.add("-t");
-						command.add(Integer.toString(configuration.getNbCores()));
-					}
 					break;
 				case ".o":
 					command.add(configuration.getWorkingDirectory().getAbsolutePath() + File.separator + getPrefixOutputImage());
