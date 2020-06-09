@@ -84,7 +84,7 @@ public class Worker {
 	
 	@Option(name = "--show-gpu", usage = "Print available CUDA devices and exit", required = false, handler = ListGpuParameterHandler.class) private ListGpuParameterHandler listGpuParameterHandler;
 	
-	@Option(name = "--no-systray", usage = "Don't use systray", required = false) private boolean no_systray = false;
+	@Option(name = "--no-systray", usage = "Don't use SysTray", required = false) private boolean useSysTray = false;
 	
 	@Option(name = "-priority", usage = "Set render process priority (19 lowest to -19 highest)", required = false) private int priority = 19;
 	
@@ -132,6 +132,11 @@ public class Worker {
 		// the 4th concurrent job is requested and that will put the client in "wait" mode for some random time. To
 		// avoid that situation we set this limit.
 		config.setMaxUploadingJob(3);
+		
+		// Store the SysTray preference from the user. Please note that we must ! the value of the variable because the way args4j works. If the --no-systray
+		// parameter is detected, args4j will store (boolean)true in the useSysTray variable but we want to store (boolean)false in the configuration class
+		// for further checks.
+		config.setUseSysTray(!useSysTray);
 		
 		if (gpu_device != null) {
 			if (gpu_device.startsWith(Nvidia.TYPE) == false && gpu_device.startsWith(OpenCL.TYPE) == false) {
@@ -287,9 +292,9 @@ public class Worker {
 				System.exit(2);
 			}
 			config.setConfigFilePath(config_file);
-			new SettingsLoader(config_file).merge(config);
 		}
 		
+		new SettingsLoader(config_file).merge(config);
 		Log.getInstance(config).debug("client version " + config.getJarVersion());
 		
 		Gui gui;
@@ -316,7 +321,7 @@ public class Worker {
 					System.err.println("Please use one of the text-based UIs provided (using -ui " + GuiTextOneLine.type + " or -ui " + GuiText.type + ")");
 					System.exit(3);
 				}
-				gui = new GuiSwing(no_systray == false, title);
+				gui = new GuiSwing(config.isUseSysTray(), title);
 				break;
 		}
 		Client cli = new Client(gui, config, server);

@@ -261,6 +261,9 @@ public class Working implements Activity {
 		alignPanel(current_project_panel, 5, 2, widthLeftColumn);
 		alignPanel(global_stats_panel, 4, 2, widthLeftColumn);
 		alignPanel(session_info_panel, 5, 2, widthLeftColumn);
+		
+		// Set the proper size for the Working (if coming from Settings screen, the window size will be too big for the content!)
+		parent.setSize(520, 760);
 	}
 	
 	public void setStatus(String msg_) {
