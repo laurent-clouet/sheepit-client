@@ -85,6 +85,7 @@ public class Settings implements Activity {
 	private JFileChooser cacheDirChooser;
 	private JCheckBox useCPU;
 	private List<JCheckBoxGPU> useGPUs;
+	private JCheckBox useSysTray;
 	private JLabel renderbucketSizeLabel;
 	private JSlider renderbucketSize;
 	private JSlider cpuCores;
@@ -103,6 +104,7 @@ public class Settings implements Activity {
 	JButton saveButton;
 	
 	private boolean haveAutoStarted;
+	private boolean useSysTrayPrevState;
 	
 	public Settings(GuiSwing parent_) {
 		parent = parent_;
@@ -114,6 +116,7 @@ public class Settings implements Activity {
 	@Override public void show() {
 		Configuration config = parent.getConfiguration();
 		new SettingsLoader(config.getConfigFilePath()).merge(config);
+		useSysTrayPrevState = config.isUseSysTray();
 		
 		applyTheme(config.getTheme());    // apply the proper theme (light/dark)
 		
@@ -450,8 +453,15 @@ public class Settings implements Activity {
 		parent.getContentPane().add(compute_devices_panel, constraints);
 		
 		// other
-		CollapsibleJPanel advanced_panel = new CollapsibleJPanel(new GridLayout(3, 2));
+		CollapsibleJPanel advanced_panel = new CollapsibleJPanel(new GridLayout(4, 2));
 		advanced_panel.setBorder(BorderFactory.createTitledBorder("Advanced options"));
+		
+		JLabel useSysTrayLabel = new JLabel("Minimize to SysTray");
+		
+		useSysTray = new JCheckBox();
+		useSysTray.setSelected(config.isUseSysTray());
+		advanced_panel.add(useSysTrayLabel);
+		advanced_panel.add(useSysTray);
 		
 		JLabel proxyLabel = new JLabel("Proxy:");
 		proxyLabel.setToolTipText("http://login:password@host:port");
@@ -485,7 +495,6 @@ public class Settings implements Activity {
 		constraints.gridy = currentRow;
 		constraints.gridwidth = 2;
 		parent.getContentPane().add(advanced_panel, constraints);
-		advanced_panel.setCollapsed(true);
 		
 		// general settings
 		JPanel general_panel = new JPanel(new GridLayout(1, 2));
@@ -522,6 +531,9 @@ public class Settings implements Activity {
 		constraints.gridx = 0;
 		constraints.gridy = currentRow;
 		parent.getContentPane().add(saveButton, constraints);
+
+		// Increase the size of the app Window to ensure it shows all the information with the Advanced Options panel opened.
+		parent.setSize(520,850);
 		
 		if (haveAutoStarted == false && config.isAutoSignIn() && checkDisplaySaveButton()) {
 			// auto start
@@ -774,14 +786,17 @@ public class Settings implements Activity {
 			if (saveFile.isSelected()) {
 				parent.setSettingsLoader(
 						new SettingsLoader(config.getConfigFilePath(), login.getText(), new String(password.getPassword()), proxyText, hostnameText, method,
-								selected_gpu, renderbucket_size, cpu_cores, max_ram, max_rendertime, cachePath, autoSignIn.isSelected(), GuiSwing.type,
-								themeOptionsGroup.getSelection().getActionCommand(),    // selected theme
-								priority.getValue()));
+								selected_gpu, renderbucket_size, cpu_cores, max_ram, max_rendertime, cachePath, autoSignIn.isSelected(), useSysTray.isSelected(),
+								GuiSwing.type, themeOptionsGroup.getSelection().getActionCommand(), priority.getValue()));
 				
 				// wait for successful authentication (to store the public key)
 				// or do we already have one?
 				if (parent.getClient().getServer().getServerConfig() != null && parent.getClient().getServer().getServerConfig().getPublickey() != null) {
 					parent.getSettingsLoader().saveFile();
+				}
+				
+				if (useSysTrayPrevState != useSysTray.isSelected()) {
+					JOptionPane.showMessageDialog(null, "You must restart the SheepIt app for the SysTray change to take effect");
 				}
 			}
 		}
