@@ -280,9 +280,9 @@ import lombok.Getter;
 						if (process != null) {
 							long duration = (new Date().getTime() - process.getStartTime()) / 1000; // in seconds
 							if (configuration.getMaxRenderTime() > 0 && duration > configuration.getMaxRenderTime()) {
+								setAskForRendererKill(true);
 								log.debug("Killing render because process duration");
 								OS.getOS().kill(process.getProcess());
-								setAskForRendererKill(true);
 							}
 						}
 					}
