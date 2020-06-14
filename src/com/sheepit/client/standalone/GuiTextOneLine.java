@@ -191,15 +191,15 @@ public class GuiTextOneLine implements Gui {
 		System.out.print("\r");
 		
 		line = String.format("%s Frames: %d Points: %s | Upload Queue: %d%s | %%s %s %s", df.format(new Date()), rendered,
-				creditsEarned != null ? creditsEarned : "unknown", this.uploadQueueSize,
-				(this.uploadQueueSize > 0 ? String.format(" (%.2fMB)", (this.uploadQueueVolume / 1024.0 / 1024.0)) : ""), computeMethod,
-				status + (exiting ? " (Exiting after all frames are uploaded)" : ""));
-
+			creditsEarned != null ? creditsEarned : "unknown", this.uploadQueueSize,
+			(this.uploadQueueSize > 0 ? String.format(" (%.2fMB)", (this.uploadQueueVolume / 1024.0 / 1024.0)) : ""), computeMethod,
+			status + (exiting ? " (Exiting after all frames are uploaded)" : ""));
+		
 		if (line.length() + project.length() > 120) {
 			// If the line without the project name is already >120 characters (might happen if the user has thousands of frames and millions of points in the
 			// session + is exiting after all frames are uploaded) then set the line to 117c to avoid a negative number exception in substring function
 			int lineLength = (line.length() >= 120 ? 117 : line.length());
-			line = String.format(line, project.substring(0, 117-lineLength) + "...");
+			line = String.format(line, project.substring(0, 117 - lineLength) + "...");
 		}
 		else {
 			line = String.format(line, project);
@@ -217,9 +217,9 @@ public class GuiTextOneLine implements Gui {
 			.append(message)
 			.append(String.join("", Collections.nCopies(progress == 0 ? 2 : 2 - (int) (Math.log10(progress)), " ")))
 			.append(String.format(" %d%%%% [", progress))
-			.append(String.join("", Collections.nCopies((int)(progress/10), "=")))
+			.append(String.join("", Collections.nCopies((int) (progress / 10), "=")))
 			.append('>')
-			.append(String.join("", Collections.nCopies(10 - (int)(progress / 10), " ")))
+			.append(String.join("", Collections.nCopies(10 - (int) (progress / 10), " ")))
 			.append(']');
 		
 		if (size > 0) {
