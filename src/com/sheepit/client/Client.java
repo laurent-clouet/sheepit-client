@@ -703,14 +703,14 @@ import lombok.Data;
 	
 	private int downloadFile(Job ajob, String local_path, String md5_server, String url, String download_type) throws FermeExceptionNoSpaceLeftOnDevice {
 		File local_path_file = new File(local_path);
-		String update_ui = "Downloading " + download_type + " %s %%";
+		String update_ui = "Downloading " + download_type;
 		
 		if (local_path_file.exists() == true) {
 			this.gui.status("Reusing cached " + download_type);
 			return 0;
 		}
 		
-		this.gui.status("Downloading " + download_type);
+		this.gui.status(String.format("Downloading %s", download_type), 0, 0);
 		
 		// must download the archive
 		int ret = this.server.HTTPGetFile(url, local_path, this.gui, update_ui);
