@@ -30,6 +30,7 @@ import sun.misc.SignalHandler;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 
 public class GuiTextOneLine implements Gui {
@@ -122,12 +123,17 @@ public class GuiTextOneLine implements Gui {
 		}
 	}
 	
+	@Override public void status(String msg, int progress, long size) {
+		status = showProgress(msg, progress, size);
+		updateLine();
+	}
+	
 	@Override public void setRenderingProjectName(String name_) {
 		if (name_ == null || name_.isEmpty()) {
 			project = "";
 		}
 		else {
-			project = "Project \"" + name_ + "\" |";
+			project = name_ + " |";
 		}
 		updateLine();
 	}
@@ -154,7 +160,7 @@ public class GuiTextOneLine implements Gui {
 	}
 	
 	@Override public void setRemainingTime(String time_) {
-		status = "(remaining " + time_ + ")";
+		status = "Rendering (remaining " + time_ + ")";
 		updateLine();
 	}
 	
@@ -184,14 +190,42 @@ public class GuiTextOneLine implements Gui {
 		
 		System.out.print("\r");
 		
-		line = String.format("%s Frames: %d Points: %s | Queued uploads: %d%s | %s %s %s", df.format(new Date()), rendered,
-				creditsEarned != null ? creditsEarned : "unknown", this.uploadQueueSize,
-				(this.uploadQueueSize > 0 ? String.format(" (%.2fMB)", (this.uploadQueueVolume / 1024.0 / 1024.0)) : ""), project, computeMethod,
-				status + (exiting ? " (Exiting after all frames are uploaded)" : ""));
+		line = String.format("%s Frames: %d Points: %s | Upload Queue: %d%s | %%s %s %s", df.format(new Date()), rendered,
+			creditsEarned != null ? creditsEarned : "unknown", this.uploadQueueSize,
+			(this.uploadQueueSize > 0 ? String.format(" (%.2fMB)", (this.uploadQueueVolume / 1024.0 / 1024.0)) : ""), computeMethod,
+			status + (exiting ? " (Exiting after all frames are uploaded)" : ""));
+		
+		if (line.length() + project.length() > 120) {
+			// If the line without the project name is already >120 characters (might happen if the user has thousands of frames and millions of points in the
+			// session + is exiting after all frames are uploaded) then set the line to 117c to avoid a negative number exception in substring function
+			int lineLength = (line.length() >= 120 ? 117 : line.length());
+			line = String.format(line, project.substring(0, 117 - lineLength) + "...");
+		}
+		else {
+			line = String.format(line, project);
+		}
 		
 		System.out.print(line);
 		for (int i = line.length(); i <= charToRemove; i++) {
 			System.out.print(" ");
 		}
+	}
+	
+	private String showProgress(String message, int progress, long size) {
+		StringBuilder progressBar = new StringBuilder(140);
+		progressBar
+			.append(message)
+			.append(String.join("", Collections.nCopies(progress == 0 ? 2 : 2 - (int) (Math.log10(progress)), " ")))
+			.append(String.format(" %d%%%% [", progress))
+			.append(String.join("", Collections.nCopies((int) (progress / 10), "=")))
+			.append('>')
+			.append(String.join("", Collections.nCopies(10 - (int) (progress / 10), " ")))
+			.append(']');
+		
+		if (size > 0) {
+			progressBar.append(String.format(" %dMB", (size / 1024 / 1024)));
+		}
+		
+		return progressBar.toString();
 	}
 }

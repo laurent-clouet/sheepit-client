@@ -28,6 +28,8 @@ public interface Gui {
 	
 	public void status(String msg_, boolean overwriteSuspendedMsg);
 	
+	public void status(String msg_, int progress, long size);
+	
 	public void updateTrayIcon(Integer percentage_);
 	
 	public void setRenderingProjectName(String name_);
