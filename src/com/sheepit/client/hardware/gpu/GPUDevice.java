@@ -88,8 +88,13 @@ public class GPUDevice {
 	public int getRenderbucketSize() {
 		return this.renderBucketSize;
 	}
+
+	public int getRecommendedBucketSize() {
+		this.setRenderbucketSize(null);
+		return this.renderBucketSize;
+	}
 	
-	public void setRenderbucketSize(int proposedRenderbucketSize) {
+	public void setRenderbucketSize(Integer proposedRenderbucketSize) {
 		int renderBucketSize = 32;
 		GPULister gpu;
 		
@@ -108,7 +113,10 @@ public class GPUDevice {
 			return;
 		}
 		
-		if (proposedRenderbucketSize >= 32) {
+		if (proposedRenderbucketSize == null) {
+			renderBucketSize = gpu.getRecommendedRenderBucketSize(getMemory());
+		}
+		else if (proposedRenderbucketSize >= 32) {
 			if (proposedRenderbucketSize <= gpu.getMaximumRenderBucketSize(getMemory())) {
 				renderBucketSize = proposedRenderbucketSize;
 			}
