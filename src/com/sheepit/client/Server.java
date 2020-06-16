@@ -511,7 +511,7 @@ public class Server extends Thread {
 				return ServerCode.ERROR_BAD_RESPONSE;
 			}
 			else {
-				System.out.println(response.body().string());
+				this.log.error(String.format("Server::HTTPSendFile Unknown response received from server: %s", response.body().string()));
 			}
 			
 			return ServerCode.UNKNOWN;
