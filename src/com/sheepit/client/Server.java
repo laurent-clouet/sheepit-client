@@ -478,7 +478,7 @@ public class Server extends Thread {
 			MediaType MEDIA_TYPE = MediaType.parse("image/" + fileMimeType); // e.g. "image/png"
 			
 			RequestBody uploadContent = new MultipartBody.Builder().setType(MultipartBody.FORM)
-				.addFormDataPart("file", new File(file1).getName(), RequestBody.create(MEDIA_TYPE, new File(file1))).build();
+				.addFormDataPart("file", new File(file1).getName(), RequestBody.create(new File(file1), MEDIA_TYPE)).build();
 			
 			Request request = new Request.Builder().url(surl).post(uploadContent).build();
 			
