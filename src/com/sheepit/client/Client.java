@@ -242,6 +242,7 @@ import lombok.Data;
 						catch (InterruptedException e1) {
 							return -3;
 						}
+						this.log.removeCheckPoint(step);
 						continue; // go back to ask job
 					}
 					catch (FermeExceptionServerOverloaded e) {
@@ -255,6 +256,7 @@ import lombok.Data;
 						catch (InterruptedException e1) {
 							return -3;
 						}
+						this.log.removeCheckPoint(step);
 						continue; // go back to ask job
 					}
 					catch (FermeExceptionServerInMaintenance e) {
@@ -268,6 +270,7 @@ import lombok.Data;
 						catch (InterruptedException e1) {
 							return -3;
 						}
+						this.log.removeCheckPoint(step);
 						continue; // go back to ask job
 					}
 					catch (FermeExceptionBadResponseFromServer e) {
@@ -280,6 +283,7 @@ import lombok.Data;
 						catch (InterruptedException e1) {
 							return -3;
 						}
+						this.log.removeCheckPoint(step);
 						continue; // go back to ask job
 					}
 					catch (FermeException e) {
@@ -289,6 +293,7 @@ import lombok.Data;
 						e.printStackTrace(pw);
 						this.log.debug("Client::run exception " + e + " stacktrace: " + sw.toString());
 						this.sendError(step);
+						this.log.removeCheckPoint(step);
 						continue;
 					}
 					
@@ -309,6 +314,7 @@ import lombok.Data;
 							}
 							time_slept += 250;
 						}
+						this.log.removeCheckPoint(step);
 						continue; // go back to ask job
 					}
 					
