@@ -46,6 +46,7 @@ public class GuiTextOneLine implements Gui {
 	private String computeMethod;
 	private String status;
 	private String line;
+	private String eta;
 	
 	private int uploadQueueSize;
 	private long uploadQueueVolume;
@@ -65,6 +66,7 @@ public class GuiTextOneLine implements Gui {
 		uploadQueueSize = 0;
 		uploadQueueVolume = 0;
 		df = new SimpleDateFormat("MMM dd HH:mm:ss");
+		eta = "";
 	}
 	
 	@Override public void start() {
@@ -123,6 +125,10 @@ public class GuiTextOneLine implements Gui {
 		}
 	}
 	
+	@Override public void status(String msg, int progress) {
+		this.status(msg, progress, 0);
+	}
+	
 	@Override public void status(String msg, int progress, long size) {
 		status = showProgress(msg, progress, size);
 		updateLine();
@@ -160,7 +166,7 @@ public class GuiTextOneLine implements Gui {
 	}
 	
 	@Override public void setRemainingTime(String time_) {
-		status = "Rendering (remaining " + time_ + ")";
+		this.eta = time_;
 		updateLine();
 	}
 	
@@ -224,6 +230,10 @@ public class GuiTextOneLine implements Gui {
 		
 		if (size > 0) {
 			progressBar.append(String.format(" %dMB", (size / 1024 / 1024)));
+		}
+		
+		if (!this.eta.equals("")) {
+			progressBar.append(String.format(" ETA %s", this.eta));
 		}
 		
 		return progressBar.toString();

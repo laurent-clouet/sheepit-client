@@ -42,6 +42,7 @@ public class GuiText implements Gui {
 	private int sigIntCount = 0;
 	private Log log;
 	private DateFormat df;
+	private String eta;
 	
 	private Client client;
 	
@@ -49,6 +50,7 @@ public class GuiText implements Gui {
 		this.framesRendered = 0;
 		this.log = Log.getInstance(null);
 		this.df = new SimpleDateFormat("MMM dd HH:mm:ss");
+		this.eta = "";
 	}
 	
 	@Override public void start() {
@@ -111,6 +113,10 @@ public class GuiText implements Gui {
 		}
 	}
 	
+	@Override public void status(String msg, int progress) {
+		this.status(msg, progress, 0);
+	}
+	
 	@Override public void status(String msg, int progress, long size) {
 		System.out.print("\r");
 		System.out.print(String.format("%s %s", this.df.format(new Date()), showProgress(msg, progress, size)));
@@ -144,7 +150,7 @@ public class GuiText implements Gui {
 	}
 	
 	@Override public void setRemainingTime(String time_) {
-		System.out.println(String.format("%s Rendering (remaining %s)", this.df.format(new Date()), time_));
+		this.eta = time_;
 	}
 	
 	@Override public void setRenderingTime(String time_) {
@@ -169,23 +175,35 @@ public class GuiText implements Gui {
 	
 	private String showProgress(String message, int progress, long size) {
 		StringBuilder progressBar = new StringBuilder(140);
-		progressBar
-			.append(message)
-			.append(" ")
-			.append(String.join("", Collections.nCopies(progress == 0 ? 2 : 2 - (int) (Math.log10(progress)), " ")))
-			.append(String.format("%d%% [", progress))
-			.append(String.join("", Collections.nCopies((int)(progress/5), "=")))
-			.append('>')
-			.append(String.join("", Collections.nCopies(20 - (int)(progress / 5), " ")))
-			.append(']');
 		
-		if (size > 0) {
-			progressBar.append(String.format(" %dMB", (size / 1024 / 1024)));
+		if (progress < 100) {
+			progressBar
+				.append(message)
+				.append(" ")
+				.append(String.join("", Collections.nCopies(progress == 0 ? 2 : 2 - (int) (Math.log10(progress)), " ")))
+				.append(String.format("%d%% [", progress))
+				.append(String.join("", Collections.nCopies((int)(progress/5), "=")))
+				.append('>')
+				.append(String.join("", Collections.nCopies(20 - (int)(progress / 5), " ")))
+				.append(']');
+			
+			if (size > 0) {
+				progressBar.append(String.format(" %dMB", (size / 1024 / 1024)));
+			}
+			
+			if (!this.eta.equals("")) {
+				progressBar.append(String.format(" ETA %s", this.eta));
+			}
+			
+			progressBar.append(String.join("", Collections.nCopies(60 - progressBar.length(), " ")));
 		}
-		
-		// Once the process has completed, show the output in a new line
-		if (progress == 100) {
-			progressBar.append("\n");
+		// If progress has reached 100%
+		else {
+			progressBar
+				.append(message)
+				.append(" done")
+				.append(String.join("", Collections.nCopies(60 - progressBar.length(), " ")))
+				.append("\n");
 		}
 		
 		return progressBar.toString();
