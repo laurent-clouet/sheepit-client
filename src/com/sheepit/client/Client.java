@@ -48,6 +48,7 @@ import com.sheepit.client.exception.FermeServerDown;
 import com.sheepit.client.hardware.cpu.CPU;
 import com.sheepit.client.os.OS;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data public class Client {
@@ -923,13 +924,8 @@ import lombok.Data;
 	 * @int checkpoint - the checkpoint associated with the job (to add any additional log to the render output)
 	 * @Job job - the job to be validated
 	 */
-	class QueuedJob {
+	@AllArgsConstructor class QueuedJob {
 		final private int checkpoint;
 		final private Job job;
-		
-		public QueuedJob(int checkpoint, Job job) {
-			this.checkpoint = checkpoint;
-			this.job = job;
-		}
 	}
 }
