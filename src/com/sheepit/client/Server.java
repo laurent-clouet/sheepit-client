@@ -475,7 +475,7 @@ public class Server extends Thread {
 		try {
 			String fileMimeType = Files.probeContentType(Paths.get(file1));
 			
-			MediaType MEDIA_TYPE = MediaType.parse("image/" + fileMimeType); // e.g. "image/png"
+			MediaType MEDIA_TYPE = MediaType.parse(fileMimeType); // e.g. "image/png"
 			
 			RequestBody uploadContent = new MultipartBody.Builder().setType(MultipartBody.FORM)
 				.addFormDataPart("file", new File(file1).getName(), RequestBody.create(new File(file1), MEDIA_TYPE)).build();
