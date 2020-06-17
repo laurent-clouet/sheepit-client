@@ -293,10 +293,11 @@ import lombok.Getter;
 			try {
 				int progress = -1;
 				
-				Pattern tilePattern = Pattern.compile(" ([0-9]+)\\s?\\/\\s?([0-9]+) ");
+				Pattern tilePattern = Pattern.compile(" (Rendered|Path Tracing Tile|Rendering) (\\d+)\\s?\\/\\s?(\\d+)( Tiles| samples|,)");
 				
-				// Initialise the progress bar in the icon (0% completed at this time)
+				// Initialise the progress bar in the icon and the UI (0% completed at this time)
 				gui.updateTrayIcon(0);
+				gui.status("Preparing scene", 0);
 				
 				while ((line = input.readLine()) != null) {
 					log.debug(line);
@@ -458,15 +459,16 @@ import lombok.Getter;
 		int newProgress = currentProgress;
 		
 		if (standardTileInfo.find()) {
-			int tileJustProcessed = Integer.parseInt(standardTileInfo.group(1));
-			int totalTilesInJob = Integer.parseInt(standardTileInfo.group(2));
+			int tileJustProcessed = Integer.parseInt(standardTileInfo.group(2));
+			int totalTilesInJob = Integer.parseInt(standardTileInfo.group(3));
 			
 			newProgress = Math.abs((tileJustProcessed * 100) / totalTilesInJob);
 		}
 		
-		// Only update the tray icon if percentage has changed
+		// Only update the tray icon and the screen if percentage has changed
 		if (newProgress != currentProgress) {
 			gui.updateTrayIcon(newProgress);
+			gui.status("Rendering", newProgress);
 		}
 		
 		return newProgress;
