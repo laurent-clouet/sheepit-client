@@ -469,8 +469,8 @@ public class Server extends Thread {
 		return -2;
 	}
 	
-	public ServerCode HTTPSendFile(String surl, String file1) {
-		this.log.debug("Server::HTTPSendFile(" + surl + "," + file1 + ")");
+	public ServerCode HTTPSendFile(String surl, String file1, int checkpoint) {
+		this.log.debug(checkpoint, "Server::HTTPSendFile(" + surl + "," + file1 + ")");
 		
 		try {
 			String fileMimeType = Files.probeContentType(Paths.get(file1));
@@ -497,7 +497,7 @@ public class Server extends Thread {
 					
 					ServerCode serverCode = ServerCode.fromInt(jobValidation.getStatus());
 					if (serverCode != ServerCode.OK) {
-						this.log.error("Server::HTTPSendFile wrong status (is " + serverCode + ")");
+						this.log.error(checkpoint, "Server::HTTPSendFile wrong status (is " + serverCode + ")");
 						return serverCode;
 					}
 				}
@@ -520,21 +520,21 @@ public class Server extends Thread {
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
 			e.printStackTrace(pw);
-			this.log.error(String.format("Server::HTTPSendFile Error in upload process. Exception %s stacktrace ", e.getMessage(), sw.toString()));
+			this.log.error(checkpoint, String.format("Server::HTTPSendFile Error in upload process. Exception %s stacktrace ", e.getMessage(), sw.toString()));
 			return ServerCode.UNKNOWN;
 		}
 		catch (OutOfMemoryError e) {
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
 			e.printStackTrace(pw);
-			this.log.error("Server::HTTPSendFile, OutOfMemoryError " + e + " stacktrace " + sw.toString());
+			this.log.error(checkpoint, "Server::HTTPSendFile, OutOfMemoryError " + e + " stacktrace " + sw.toString());
 			return ServerCode.JOB_VALIDATION_ERROR_UPLOAD_FAILED;
 		}
 		catch (Exception e) {
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
 			e.printStackTrace(pw);
-			this.log.error("Server::HTTPSendFile, Exception " + e + " stacktrace " + sw.toString());
+			this.log.error(checkpoint, "Server::HTTPSendFile, Exception " + e + " stacktrace " + sw.toString());
 			return ServerCode.UNKNOWN;
 		}
 	}
