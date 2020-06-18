@@ -325,6 +325,10 @@ import lombok.Data;
 					
 					ret = this.work(this.renderingJob);
 					if (ret == Error.Type.RENDERER_KILLED) {
+						Job frame_to_reset = this.renderingJob; // copy it because the sendError will take ~5min to execute
+						this.renderingJob = null;
+						this.gui.error(Error.humanString(ret));
+						this.sendError(step, frame_to_reset, ret);
 						this.log.removeCheckPoint(step);
 						continue;
 					}
