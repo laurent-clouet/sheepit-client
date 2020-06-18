@@ -48,6 +48,7 @@ import com.sheepit.client.exception.FermeServerDown;
 import com.sheepit.client.hardware.cpu.CPU;
 import com.sheepit.client.os.OS;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data public class Client {
@@ -57,7 +58,7 @@ import lombok.Data;
 	private Log log;
 	private Job renderingJob;
 	private Job previousJob;
-	private BlockingQueue<Job> jobsToValidate;
+	private BlockingQueue<QueuedJob> jobsToValidate;
 	private boolean isValidatingJob;
 	private long startTime;
 	
@@ -78,7 +79,7 @@ import lombok.Data;
 		this.gui = gui_;
 		this.renderingJob = null;
 		this.previousJob = null;
-		this.jobsToValidate = new ArrayBlockingQueue<Job>(1024);
+		this.jobsToValidate = new ArrayBlockingQueue<QueuedJob>(5);
 		this.isValidatingJob = false;
 		
 		this.disableErrorSending = false;
@@ -354,7 +355,7 @@ import lombok.Data;
 					if (this.renderingJob.isSynchronousUpload() == true) { // power or compute_method job, need to upload right away
 						this.gui.status(String.format("Uploading frame (%.2fMB)", (this.renderingJob.getOutputImageSize() / 1024.0 / 1024.0)));
 						
-						ret = confirmJob(this.renderingJob);
+						ret = confirmJob(this.renderingJob, step);
 						if (ret != Error.Type.OK) {
 							gui.error("Client::run problem with confirmJob (returned " + ret + ")");
 							sendError(step, this.renderingJob, Error.Type.VALIDATION_FAILED);
@@ -363,7 +364,7 @@ import lombok.Data;
 					else {
 						this.gui.status(String.format("Queuing frame for upload (%.2fMB)", (this.renderingJob.getOutputImageSize() / 1024.0 / 1024.0)));
 						
-						this.jobsToValidate.add(this.renderingJob);
+						this.jobsToValidate.add(new QueuedJob(step, this.renderingJob));
 						
 						this.uploadQueueSize++;
 						this.uploadQueueVolume += this.renderingJob.getOutputImageSize();
@@ -478,27 +479,41 @@ import lombok.Data;
 	}
 	
 	public int senderLoop() {
-		int step = log.newCheckPoint();
-		Error.Type ret;
+		int step = -1;
+		Error.Type ret = null;
 		while (true) {
-			Job job_to_send = null;
+			QueuedJob queuedJob = null;
 			try {
-				job_to_send = jobsToValidate.take();
-				this.log.debug("will validate " + job_to_send);
+				queuedJob = jobsToValidate.take();
+				step = queuedJob.checkpoint;	// retrieve the checkpoint attached to the job
 				
-				ret = confirmJob(job_to_send);
+				this.log.debug(step, "will validate " + queuedJob.job);
+				
+				ret = confirmJob(queuedJob.job, step);
 				if (ret != Error.Type.OK) {
 					this.gui.error(Error.humanString(ret));
-					this.log.debug("Client::senderLoop confirm failed, ret: " + ret);
-					sendError(step);
+					this.log.debug(step, "Client::senderLoop confirm failed, ret: " + ret);
 				}
 			}
 			catch (InterruptedException e) {
+				this.log.error(step, "Client::senderLoop Exception " + e.getMessage());
 			}
 			finally {
+				if (ret != Error.Type.OK) {
+					if (queuedJob.job != null) {
+						sendError(step, queuedJob.job, ret);
+					}
+					else {
+						sendError(step);
+					}
+				}
+				
+				// Remove the checkpoint information
+				log.removeCheckPoint(step);
+				
 				this.uploadQueueSize--;
-				if (job_to_send != null) {
-					this.uploadQueueVolume -= job_to_send.getOutputImageSize();
+				if (queuedJob.job != null) {
+					this.uploadQueueVolume -= queuedJob.job.getOutputImageSize();
 				}
 				
 				this.gui.displayUploadQueueStats(this.uploadQueueSize, this.uploadQueueVolume);
@@ -566,7 +581,7 @@ import lombok.Data;
 					args += "&extras=" + job_to_reset_.getExtras();
 				}
 			}
-			this.server.HTTPSendFile(this.server.getPage("error") + args, temp_file.getAbsolutePath());
+			this.server.HTTPSendFile(this.server.getPage("error") + args, temp_file.getAbsolutePath(), step_);
 			temp_file.delete();
 		}
 		catch (Exception e) {
@@ -839,11 +854,11 @@ import lombok.Data;
 		return 0;
 	}
 	
-	protected Error.Type confirmJob(Job ajob) {
+	protected Error.Type confirmJob(Job ajob, int checkpoint) {
 		String url_real = String.format("%s&rendertime=%d&memoryused=%s", ajob.getValidationUrl(), ajob.getProcessRender().getDuration(),
 				ajob.getProcessRender().getMemoryUsed());
-		this.log.debug("Client::confirmeJob url " + url_real);
-		this.log.debug("path frame " + ajob.getOutputImagePath());
+		this.log.debug(checkpoint, "Client::confirmeJob url " + url_real);
+		this.log.debug(checkpoint, "path frame " + ajob.getOutputImagePath());
 		
 		this.isValidatingJob = true;
 		int nb_try = 1;
@@ -852,7 +867,7 @@ import lombok.Data;
 		Type confirmJobReturnCode = Error.Type.OK;
 		retryLoop:
 		while (nb_try < max_try && ret != ServerCode.OK) {
-			ret = this.server.HTTPSendFile(url_real, ajob.getOutputImagePath());
+			ret = this.server.HTTPSendFile(url_real, ajob.getOutputImagePath(), checkpoint);
 			switch (ret) {
 				case OK:
 					// no issue, exit the loop
@@ -876,7 +891,7 @@ import lombok.Data;
 			nb_try++;
 			if (ret != ServerCode.OK && nb_try < max_try) {
 				try {
-					this.log.debug("Sleep for 32s before trying to re-upload the frame");
+					this.log.debug(checkpoint, "Sleep for 32s before trying to re-upload the frame");
 					Thread.sleep(32000);
 				}
 				catch (InterruptedException e) {
@@ -906,5 +921,15 @@ import lombok.Data;
 			concurrent_job++;
 		}
 		return (concurrent_job >= this.configuration.getMaxUploadingJob());
+	}
+	
+	/****************
+	 * Inner class that will hold the queued jobs. The constructor accepts two parameters:
+	 * @int checkpoint - the checkpoint associated with the job (to add any additional log to the render output)
+	 * @Job job - the job to be validated
+	 */
+	@AllArgsConstructor class QueuedJob {
+		final private int checkpoint;
+		final private Job job;
 	}
 }
