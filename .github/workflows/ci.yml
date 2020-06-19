@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Run a one-line script
+      run: ./create_signed_release.sh
+      env:
+        JAVA_HOME: /usr/lib/jvm/java-8-openjdk # i guess?
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        path: sheepit-*.exe
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        path: sheepit-client*.jar
