@@ -13,7 +13,7 @@ echo "### Setup ###"
 keystore="$1"
 password="$2"
 cert_alias="$3"
-git_url="https://github.com/MCOfficer/sheepit-client" # TODO: Change back to upstream
+git_url="https://github.com/laurent-clouet/sheepit-client"
 svn_trunk_url="$git_url/trunk"
 pwd=`pwd`
 tmp_dir=`mktemp -d`
