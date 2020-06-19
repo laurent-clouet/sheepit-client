@@ -13,8 +13,10 @@ jobs:
       run: |
         sudo apt update
         sudo apt install libxml2-utils
+    - name: Decrypt keystore
+      run: gpg --quiet --batch --yes --decrypt --passphrase="${{ secrets.KEYSTORE_ENCRYPTION_PASS }}" --output $HOME/keystore.jks keystore.gpg
     - name: Build jar & exe
-      run: ./create_signed_release.sh
+      run: ./create_signed_release.sh $HOME/keystore.jks ${{ secrets.KEYSTORE_PASS }} ${{ secrets.CERT_ALIAS }}
       env:
         JAVA_HOME: /usr/lib/jvm/zulu-8-azure-amd64
     - name: Upload a Build Artifact
