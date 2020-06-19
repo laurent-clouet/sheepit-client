@@ -3,7 +3,7 @@
 # Requires xmllint (part of `libxml2-utils`), svn, gpg, git (duh), curl and p7zip
 # JAVA_HOME must be set to a java 8 JDK
 #
-# Usage: ./create_signed_jar.sh $PATH_TO_KEYSTORE $PASSWORD $CERTIFICATE_ALIAS
+# Usage: ./create_signed_release.sh $PATH_TO_KEYSTORE $PASSWORD $CERTIFICATE_ALIAS
 
 
 
