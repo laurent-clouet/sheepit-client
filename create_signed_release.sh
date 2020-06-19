@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 # Requires xmllint (part of `libxml2-utils`), svn, gpg, git (duh), curl and p7zip
 # JAVA_HOME must be set to a java 8 JDK
@@ -36,7 +36,6 @@ unsigned_jar="$pwd/build/libs/sheepit-client-all.jar"
 echo "Unsigned .jar: $unsigned_jar"
 echo "Signing"
 jarsigner -tsa http://timestamp.digicert.com -keystore $keystore -storepass $password -signedjar $signed_jar $unsigned_jar $cert_alias
-echo "Signed .jar: $signed_jar"
 
 
 echo ""
@@ -55,6 +54,8 @@ cd $tmp_dir
 curl https://raw.githubusercontent.com/laurent-clouet/sheepit-client/wrapper/config.cfg -o config.cfg
 curl https://raw.githubusercontent.com/laurent-clouet/sheepit-client/wrapper/starter.sfx -o starter.sfx
 cat starter.sfx config.cfg application.7z > $exe
-echo ".exe: $exe"
 cd $pwd
 
+echo ""
+echo ".jar: $signed_jar"
+echo ".exe: $exe"
