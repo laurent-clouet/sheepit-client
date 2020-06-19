@@ -2,7 +2,6 @@ name: CI
 
 on:
   push:
-    branches:
 
 jobs:
   build:
@@ -10,8 +9,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-
-    - name: Run a one-line script
+    - name: Debugging with tmate
+      uses: mxschmitt/action-tmate@v2
+    - name: Build jar & exe
       run: ./create_signed_release.sh
       env:
         JAVA_HOME: /usr/lib/jvm/java-8-openjdk # i guess?
