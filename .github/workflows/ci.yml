@@ -9,6 +9,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Installed dependencies
+      run:
+        sudo apt update
+        sudo apt install libxml2-utils
     - name: Build jar & exe
       run: ./create_signed_release.sh
       env:
