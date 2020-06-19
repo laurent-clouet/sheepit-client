@@ -5,14 +5,25 @@
 #
 # Usage: ./create_signed_jar.sh $PATH_TO_KEYSTORE $PASSWORD $CERTIFICATE_ALIAS
 
+
+
+echo ""
+echo "### Setup ###"
+
 keystore="$1"
 password="$2"
 cert_alias="$3"
-svn_trunk_url="https://github.com/laurent-clouet/sheepit-client/trunk"
+git_url="https://github.com/MCOfficer/sheepit-client" # TODO: Change back to upstream
+svn_trunk_url="$git_url/trunk"
 pwd=`pwd`
 tmp_dir=`mktemp -d`
 jvm_name="jdk-11.0.6+10-jre"
 
+wrapper_dir="$tmp_dir/wrapper"
+git clone $git_url $wrapper_dir
+cd $wrapper_dir
+git checkout wrapper
+cd $pwd
 
 echo ""
 echo "### Generate version ###"
@@ -42,8 +53,7 @@ echo ""
 echo "### Build exe ###"
 
 exe="$pwd/sheepit-$version.exe"
-curl https://raw.githubusercontent.com/laurent-clouet/sheepit-client/wrapper/jdk-11.0.6%2B10-jre.zip -o $jvm_name.zip
-7z x -o$tmp_dir $jvm_name.zip
+7z x -o$tmp_dir $wrapper_dir/$jvm_name.zip
 mv $tmp_dir/$jvm_name $tmp_dir/jre
 rm -rf $tmp_dir/jre/include $tmp_dir/jre/src.zip
 cp -f $signed_jar $tmp_dir/jre/sheepit-client.jar
@@ -51,8 +61,8 @@ cp -f $signed_jar $tmp_dir/jre/sheepit-client.jar
 cd $tmp_dir/jre
 7z a $tmp_dir/application.7z .
 cd $tmp_dir
-curl https://raw.githubusercontent.com/laurent-clouet/sheepit-client/wrapper/config.cfg -o config.cfg
-curl https://raw.githubusercontent.com/laurent-clouet/sheepit-client/wrapper/starter.sfx -o starter.sfx
+cp $wrapper_dir/config.cfg config.cfg
+cp $wrapper_dir/starter.sfx starter.sfx
 cat starter.sfx config.cfg application.7z > $exe
 cd $pwd
 
