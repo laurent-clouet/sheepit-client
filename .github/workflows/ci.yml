@@ -14,7 +14,7 @@ jobs:
     - name: Build jar & exe
       run: ./create_signed_release.sh
       env:
-        JAVA_HOME: /usr/lib/jvm/java-8-openjdk # i guess?
+        JAVA_HOME: /usr/lib/jvm/zulu-8-azure-amd64
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2
       with:
