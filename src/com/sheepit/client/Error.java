@@ -23,7 +23,7 @@ public class Error {
 	public enum Type {
 		// id have to be kept synchronised with the server side.
 		OK(0), UNKNOWN(99), WRONG_CONFIGURATION(1), AUTHENTICATION_FAILED(2), TOO_OLD_CLIENT(3), SESSION_DISABLED(4), RENDERER_NOT_AVAILABLE(
-				5), MISSING_RENDERER(6), MISSING_SCENE(7), NOOUTPUTFILE(8), DOWNLOAD_FILE(9), CAN_NOT_CREATE_DIRECTORY(10), NETWORK_ISSUE(11), RENDERER_CRASHED(
+				5), MISSING_RENDERER(6), MISSING_SCENE(7), NOOUTPUTFILE(8), IMAGE_TOO_LARGE(26), DOWNLOAD_FILE(9), CAN_NOT_CREATE_DIRECTORY(10), NETWORK_ISSUE(11), RENDERER_CRASHED(
 				12), RENDERER_CRASHED_PYTHON_ERROR(24), RENDERER_OUT_OF_VIDEO_MEMORY(13), RENDERER_OUT_OF_MEMORY(21), RENDERER_KILLED(
 				14), RENDERER_KILLED_BY_USER(20), RENDERER_KILLED_BY_USER_OVER_TIME(23), RENDERER_KILLED_BY_SERVER(22), RENDERER_MISSING_LIBRARIES(
 				15), FAILED_TO_EXECUTE(16), OS_NOT_SUPPORTED(17), CPU_NOT_SUPPORTED(18), GPU_NOT_SUPPORTED(19), VALIDATION_FAILED(25),
@@ -56,6 +56,7 @@ public class Error {
 		JOB_VALIDATION_ERROR_MISSING_PARAMETER(300), JOB_VALIDATION_ERROR_BROKEN_MACHINE(301), // in GPU the generated frame is black
 		JOB_VALIDATION_ERROR_FRAME_IS_NOT_IMAGE(302), JOB_VALIDATION_ERROR_UPLOAD_FAILED(303), JOB_VALIDATION_ERROR_SESSION_DISABLED(
 				304), // missing heartbeat or broken machine
+		JOB_VALIDATION_IMAGE_TOO_LARGE(306),
 		
 		KEEPMEALIVE_STOP_RENDERING(400),
 		
@@ -124,6 +125,8 @@ public class Error {
 				return "Error while downloading project files. Will try another project in a few minutes.";
 			case NOOUTPUTFILE:
 				return "Renderer has generated no output file, possibly a wrong project configuration or you are missing required libraries. Will try another project in a few minutes.";
+			case IMAGE_TOO_LARGE:
+				return "The generated image is too big to be handled by the server. Will try another project in a few minutes.";
 			case RENDERER_CRASHED:
 				return "Renderer has crashed. It's usually due to a bad project or not enough memory. There is nothing you can do about it. Will try another project in a few minutes.";
 			case RENDERER_CRASHED_PYTHON_ERROR:
