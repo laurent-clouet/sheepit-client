@@ -887,7 +887,12 @@ import lombok.Data;
 					// no point to retry the request
 					confirmJobReturnCode = Error.Type.UNKNOWN;
 					break retryLoop;
-				
+					
+				case JOB_VALIDATION_IMAGE_TOO_LARGE:
+					// the client cannot recover from this error (it's server side config) so exit the retry loop
+					confirmJobReturnCode = Type.IMAGE_TOO_LARGE;
+					break retryLoop;
+					
 				default:
 					// do nothing, try to do a request on the next loop
 					break;

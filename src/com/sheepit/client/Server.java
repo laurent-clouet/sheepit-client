@@ -528,6 +528,12 @@ public class Server extends Thread {
 			else if (r == HttpURLConnection.HTTP_OK && contentType.startsWith("text/html")) {
 				return ServerCode.ERROR_BAD_RESPONSE;
 			}
+			// We don't check all the HTTP 4xx but the 413 in particular, we can always find a huge image larger than whatever configuration we have in the
+			// server and it's worth to send the error back to the server if this happen
+			else if (r == HttpURLConnection.HTTP_ENTITY_TOO_LARGE) {
+				this.log.error(response.body().string());
+				return ServerCode.JOB_VALIDATION_IMAGE_TOO_LARGE;
+			}
 			else {
 				this.log.error(String.format("Server::HTTPSendFile Unknown response received from server: %s", response.body().string()));
 			}
