@@ -38,7 +38,6 @@ import com.sheepit.client.hardware.gpu.GPUDevice;
 import lombok.Setter;
 
 public class SettingsLoader {
-	final private int MIN_RENDERBUCKET_SIZE = 32;
 	private String path;
 	
 	private String login;
@@ -110,7 +109,7 @@ public class SettingsLoader {
 			gpu = gpu_.getId();
 		}
 		
-		if (renderbucketSize_ >= 32) {
+		if (renderbucketSize_ >= GPU.MIN_RENDERBUCKET_SIZE) {
 			renderbucketSize = String.valueOf(renderbucketSize_);
 		}
 	}
@@ -383,7 +382,7 @@ public class SettingsLoader {
 				config.setGPUDevice(device);
 				
 				// If the user has indicated a render bucket size at least 32x32 px, overwrite the config file value
-				if (config.getRenderbucketSize() >= MIN_RENDERBUCKET_SIZE) {
+				if (config.getRenderbucketSize() >= GPU.MIN_RENDERBUCKET_SIZE) {
 					config.getGPUDevice().setRenderbucketSize(config.getRenderbucketSize());    // Update size
 				}
 				else {
@@ -404,7 +403,7 @@ public class SettingsLoader {
 		else if (config.getGPUDevice() != null) {
 			// The order of conditions is important to ensure the priority or app arguments, then the config file and finally the recommended size (if none
 			// specified or already in config file).
-			if (config.getRenderbucketSize() >= MIN_RENDERBUCKET_SIZE) {
+			if (config.getRenderbucketSize() >= GPU.MIN_RENDERBUCKET_SIZE) {
 				config.getGPUDevice().setRenderbucketSize(config.getRenderbucketSize());
 			}
 			else if (renderbucketSize != null) {

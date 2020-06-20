@@ -266,7 +266,7 @@ public class Worker {
 		config.setComputeMethod(compute_method);
 		
 		// Change the default configuration if the user has specified a minimum renderbucket size of 32
-		if (renderbucketSize >= 32) {
+		if (renderbucketSize >= GPU.MIN_RENDERBUCKET_SIZE) {
 			// Send the proposed renderbucket size and check if viable
 			config.setRenderbucketSize(renderbucketSize);
 		}
