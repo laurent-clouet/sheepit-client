@@ -112,7 +112,7 @@ public class Worker {
 			return;
 		}
 		
-		ComputeType compute_method = ComputeType.CPU;
+		ComputeType compute_method = null;
 		Configuration config = new Configuration(null, login, password);
 		config.setPrintLog(print_log);
 		config.setUsePriority(priority);
@@ -223,10 +223,7 @@ public class Worker {
 			}
 		}
 		else {
-			if (config.getGPUDevice() == null) {
-				compute_method = ComputeType.CPU;
-			}
-			else {
+			if (config.getGPUDevice() != null) {
 				compute_method = ComputeType.GPU;
 			}
 		}
@@ -246,22 +243,24 @@ public class Worker {
 			config.setExtras(extras);
 		}
 		
-		if (compute_method == ComputeType.CPU && config.getGPUDevice() != null) {
-			System.err.println(
+		if (compute_method != null) {
+			if (compute_method == ComputeType.CPU && config.getGPUDevice() != null) {
+				System.err.println(
 					"ERROR: The compute method is set to use CPU only, but a GPU has also been specified. Change the compute method to CPU_GPU or remove the GPU");
-			System.exit(2);
-		}
-		else if (compute_method == ComputeType.CPU_GPU && config.getGPUDevice() == null) {
-			System.err.println(
+				System.exit(2);
+			}
+			else if (compute_method == ComputeType.CPU_GPU && config.getGPUDevice() == null) {
+				System.err.println(
 					"ERROR: The compute method is set to use both CPU and GPU, but no GPU has been specified. Change the compute method to CPU or add a GPU (via -gpu parameter)");
-			System.exit(2);
-		}
-		else if (compute_method == ComputeType.GPU && config.getGPUDevice() == null) {
-			System.err.println("ERROR: The compute method is set to use GPU only, but not GPU has been specified. Please add a GPU (via -gpu parameter)");
-			System.exit(2);
-		}
-		else if (compute_method == ComputeType.CPU) {
-			config.setGPUDevice(null); // remove the GPU
+				System.exit(2);
+			}
+			else if (compute_method == ComputeType.GPU && config.getGPUDevice() == null) {
+				System.err.println("ERROR: The compute method is set to use GPU only, but not GPU has been specified. Please add a GPU (via -gpu parameter)");
+				System.exit(2);
+			}
+			else if (compute_method == ComputeType.CPU) {
+				config.setGPUDevice(null); // remove the GPU
+			}
 		}
 		
 		config.setComputeMethod(compute_method);

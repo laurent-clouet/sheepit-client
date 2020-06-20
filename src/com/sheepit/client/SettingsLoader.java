@@ -361,9 +361,15 @@ public class SettingsLoader {
 			config.setUsePriority(priority);
 		}
 		try {
-			if ((config.getComputeMethod() == null && computeMethod != null) || (computeMethod != null && config.getComputeMethod() != ComputeType
+			if (config.getComputeMethod() == null && computeMethod == null) {
+				config.setComputeMethod(ComputeType.CPU);
+			}
+			else if ((config.getComputeMethod() == null && computeMethod != null) || (computeMethod != null && config.getComputeMethod() != ComputeType
 				.valueOf(computeMethod))) {
-				config.setComputeMethod(ComputeType.valueOf(computeMethod));
+				if (config.getComputeMethod() == null) {
+					config.setComputeMethod(ComputeType.valueOf(computeMethod));
+				}
+				
 			}
 		}
 		catch (IllegalArgumentException e) {
