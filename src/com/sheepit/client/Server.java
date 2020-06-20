@@ -73,6 +73,7 @@ import com.sheepit.client.os.OS;
 
 
 public class Server extends Thread {
+	final private String HTTP_USER_AGENT = "Java/" + System.getProperty("java.version");
 	private String base_url;
 	private final OkHttpClient httpClient;
 	
@@ -387,8 +388,7 @@ public class Server extends Thread {
 
 	public Response HTTPRequest(HttpUrl.Builder httpUrlBuilder, RequestBody data_) throws IOException {
 		String url = httpUrlBuilder.build().toString();
-		Request.Builder builder = new Request.Builder();
-		builder.url(url);
+		Request.Builder builder = new Request.Builder().addHeader("User-Agent", HTTP_USER_AGENT).url(url);
 		
 		this.log.debug("Server::HTTPRequest url(" + url + ")");
 		
@@ -480,7 +480,7 @@ public class Server extends Thread {
 			RequestBody uploadContent = new MultipartBody.Builder().setType(MultipartBody.FORM)
 				.addFormDataPart("file", new File(file1).getName(), RequestBody.create(new File(file1), MEDIA_TYPE)).build();
 			
-			Request request = new Request.Builder().url(surl).post(uploadContent).build();
+			Request request = new Request.Builder().addHeader("User-Agent", HTTP_USER_AGENT).url(surl).post(uploadContent).build();
 			
 			Call call = httpClient.newCall(request);
 			Response response = call.execute();
