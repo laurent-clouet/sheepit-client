@@ -137,11 +137,13 @@ public class Server extends Thread {
 							if (serverCode == ServerCode.KEEPMEALIVE_STOP_RENDERING) {
 								this.log.debug("Server::stayAlive server asked to kill local render process");
 								// kill the current process, it will generate an error but it's okay
-								if (this.client != null && this.client.getRenderingJob() != null
-										&& this.client.getRenderingJob().getProcessRender().getProcess() != null) {
+								if (this.client != null && this.client.getRenderingJob() != null) {
 									this.client.getRenderingJob().setServerBlockJob(true);
-									this.client.getRenderingJob().setAskForRendererKill(true);
-									OS.getOS().kill(this.client.getRenderingJob().getProcessRender().getProcess());
+									
+									if (this.client.getRenderingJob().getProcessRender().getProcess() != null) {
+										this.client.getRenderingJob().setAskForRendererKill(true);
+										OS.getOS().kill(this.client.getRenderingJob().getProcessRender().getProcess());
+									}
 								}
 							}
 						}
@@ -414,19 +416,21 @@ public class Server extends Thread {
 		}
 	}
 	
-	public int HTTPGetFile(String url_, String destination_, Gui gui_, String status_) throws FermeExceptionNoSpaceLeftOnDevice {
-		// the destination_ parent directory must exist
+	public Error.Type HTTPGetFile(String url_, String destination_, Gui gui_, String status_) throws FermeExceptionNoSpaceLeftOnDevice {
+		InputStream is = null;
+		OutputStream output = null;
+
 		try {
 			Response response = this.HTTPRequest(url_);
 			
 			if (response.code() != HttpURLConnection.HTTP_OK) {
 				this.log.error("Server::HTTPGetFile(" + url_ + ", ...) HTTP code is not " + HttpURLConnection.HTTP_OK + " it's " + response.code());
-				return -1;
+				return Error.Type.DOWNLOAD_FILE;
 			}
 			
 			long start = new Date().getTime();
-			InputStream is = response.body().byteStream();
-			OutputStream output = new FileOutputStream(destination_);
+			is = response.body().byteStream();
+			output = new FileOutputStream(destination_);
 			
 			long size = response.body().contentLength();
 			byte[] buffer = new byte[8 * 1024];
@@ -435,6 +439,13 @@ public class Server extends Thread {
 			long lastUpd = 0;    // last GUI progress update
 			
 			while ((len = is.read(buffer)) != -1) {
+				if (this.client.getRenderingJob().isServerBlockJob()) {
+					return Error.Type.RENDERER_KILLED_BY_SERVER;
+				}
+				else if (this.client.getRenderingJob().isUserBlockJob()) {
+					return Error.Type.RENDERER_KILLED_BY_USER;
+				}
+				
 				output.write(buffer, 0, len);
 				written += len;
 				
@@ -444,17 +455,13 @@ public class Server extends Thread {
 				}
 			}
 			
-			output.flush();
-			output.close();
-			is.close();
-			
 			gui_.status(status_, 100, size);
 			
 			long end = new Date().getTime();
 			this.log.debug(String.format("File downloaded at %.1f kB/s, written %d B", ((float) (size / 1000)) / ((float) (end - start) / 1000), written));
 			this.lastRequestTime = new Date().getTime();
 			
-			return 0;
+			return Error.Type.OK;
 		}
 		catch (Exception e) {
 			if (Utils.noFreeSpaceOnDisk(new File(destination_).getParent())) {
@@ -465,8 +472,19 @@ public class Server extends Thread {
 			e.printStackTrace(new PrintWriter(sw));
 			this.log.error("Server::HTTPGetFile Exception " + e + " stacktrace " + sw.toString());
 		}
+		finally {
+			try {
+				output.flush();
+				output.close();
+				is.close();
+			}
+			catch (IOException e) {
+				this.log.debug(String.format("Server::HTTPGetFile Error trying to close the open streams (%s)", e.getMessage()));
+			}
+		}
+		
 		this.log.debug(String.format("Server::HTTPGetFile(%s) did fail", url_));
-		return -2;
+		return Error.Type.DOWNLOAD_FILE;
 	}
 	
 	public ServerCode HTTPSendFile(String surl, String file1, int checkpoint) {

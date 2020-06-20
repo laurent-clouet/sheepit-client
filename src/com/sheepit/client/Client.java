@@ -639,26 +639,26 @@ import lombok.Data;
 	}
 	
 	public Error.Type work(final Job ajob) {
-		int ret;
+		Error.Type downloadRet;
 		
 		gui.setRenderingProjectName(ajob.getName());
 		
 		try {
-			ret = this.downloadExecutable(ajob);
-			if (ret != 0) {
+			downloadRet = this.downloadExecutable(ajob);
+			if (downloadRet != Error.Type.OK) {
 				gui.setRenderingProjectName("");
-				this.log.error("Client::work problem with downloadExecutable (ret " + ret + ")");
-				return Error.Type.DOWNLOAD_FILE;
+				this.log.error("Client::work problem with downloadExecutable (ret " + downloadRet + ")");
+				return downloadRet;
 			}
 			
-			ret = this.downloadSceneFile(ajob);
-			if (ret != 0) {
+			downloadRet = this.downloadSceneFile(ajob);
+			if (downloadRet != Error.Type.OK) {
 				gui.setRenderingProjectName("");
-				this.log.error("Client::work problem with downloadSceneFile (ret " + ret + ")");
-				return Error.Type.DOWNLOAD_FILE;
+				this.log.error("Client::work problem with downloadSceneFile (ret " + downloadRet + ")");
+				return downloadRet;
 			}
 			
-			ret = this.prepareWorkingDirectory(ajob); // decompress renderer and scene archives
+			int ret = this.prepareWorkingDirectory(ajob); // decompress renderer and scene archives
 			if (ret != 0) {
 				gui.setRenderingProjectName("");
 				this.log.error("Client::work problem with this.prepareWorkingDirectory (ret " + ret + ")");
@@ -716,36 +716,40 @@ import lombok.Data;
 		return Error.Type.OK;
 	}
 	
-	protected int downloadSceneFile(Job ajob_) throws FermeExceptionNoSpaceLeftOnDevice {
+	protected Error.Type downloadSceneFile(Job ajob_) throws FermeExceptionNoSpaceLeftOnDevice {
 		return this.downloadFile(ajob_, ajob_.getSceneArchivePath(), ajob_.getSceneMD5(),
 				String.format("%s?type=job&job=%s", this.server.getPage("download-archive"), ajob_.getId()), "project");
 	}
 	
-	protected int downloadExecutable(Job ajob) throws FermeExceptionNoSpaceLeftOnDevice {
+	protected Error.Type downloadExecutable(Job ajob) throws FermeExceptionNoSpaceLeftOnDevice {
 		return this.downloadFile(ajob, ajob.getRendererArchivePath(), ajob.getRendererMD5(),
 				String.format("%s?type=binary&job=%s", this.server.getPage("download-archive"), ajob.getId()), "renderer");
 	}
 	
-	private int downloadFile(Job ajob, String local_path, String md5_server, String url, String download_type) throws FermeExceptionNoSpaceLeftOnDevice {
+	private Error.Type downloadFile(Job ajob, String local_path, String md5_server, String url, String download_type) throws FermeExceptionNoSpaceLeftOnDevice {
 		File local_path_file = new File(local_path);
 		String update_ui = "Downloading " + download_type;
 		
 		if (local_path_file.exists() == true) {
 			this.gui.status("Reusing cached " + download_type);
-			return 0;
+			return Type.OK;
 		}
 		
 		this.gui.status(String.format("Downloading %s", download_type), 0, 0);
 		
 		// must download the archive
-		int ret = this.server.HTTPGetFile(url, local_path, this.gui, update_ui);
+		Error.Type ret = this.server.HTTPGetFile(url, local_path, this.gui, update_ui);
+		
+		if (ret != Type.RENDERER_KILLED_BY_SERVER || ret != Type.RENDERER_KILLED_BY_USER_OVER_TIME) {
+			return ret;
+		}
 		
 		// Try to check the download file even if a download error has occurred (MD5 file check will delete the file if partially downloaded)
 		boolean md5_check = this.checkFile(ajob, local_path, md5_server);
 		int attempts = 1;
 		
-		while ((ret != 0 || md5_check == false) && attempts < this.maxDownloadFileAttempts) {
-			if (ret != 0) {
+		while ((ret != Error.Type.OK || md5_check == false) && attempts < this.maxDownloadFileAttempts) {
+			if (ret != Error.Type.OK) {
 				this.gui.error(String.format("Unable to download %s (error %d). Retrying now", download_type, ret));
 				this.log.debug("Client::downloadFile problem with Server.HTTPGetFile (return: " + ret + ") removing local file (path: " + local_path + ")");
 			}
@@ -758,18 +762,19 @@ import lombok.Data;
 			this.log.debug("Client::downloadFile failed, let's try again (" + (attempts + 1) + "/" + this.maxDownloadFileAttempts + ") ...");
 			
 			ret = this.server.HTTPGetFile(url, local_path, this.gui, update_ui);
+			
 			md5_check = this.checkFile(ajob, local_path, md5_server);
 			attempts++;
 			
-			if ((ret != 0 || md5_check == false) && attempts >= this.maxDownloadFileAttempts) {
+			if ((ret != Error.Type.OK || md5_check == false) && attempts >= this.maxDownloadFileAttempts) {
 				this.log.debug("Client::downloadFile failed after " + this.maxDownloadFileAttempts + " attempts, removing local file (path: " + local_path
 						+ "), stopping...");
 				local_path_file.delete();
-				return -9;
+				return Type.DOWNLOAD_FILE;
 			}
 		}
 		
-		return 0;
+		return Type.OK;
 	}
 	
 	private boolean checkFile(Job ajob, String local_path, String md5_server) {
