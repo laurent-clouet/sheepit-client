@@ -750,7 +750,7 @@ import lombok.Data;
 		
 		while ((ret != Error.Type.OK || md5_check == false) && attempts < this.maxDownloadFileAttempts) {
 			if (ret != Error.Type.OK) {
-				this.gui.error(String.format("Unable to download %s (error %d). Retrying now", download_type, ret));
+				this.gui.error(String.format("Unable to download %s (error %s). Retrying now", download_type, ret));
 				this.log.debug("Client::downloadFile problem with Server.HTTPGetFile (return: " + ret + ") removing local file (path: " + local_path + ")");
 			}
 			else if (md5_check == false) {
