@@ -314,7 +314,7 @@ public class Settings implements Activity {
 			// because is a new one (different from CUDA and OPENCL). In that case, move into a safe position
 			// of 32x32 pixel render bucket and a maximum of 128x128 pixel for the "unknown GPU"
 			int maxRenderbucketSize = 128;
-			int recommendedBucketSize = 32;
+			int recommendedBucketSize = GPU.MIN_RENDERBUCKET_SIZE;
 			
 			if (config.getComputeMethod() == ComputeType.GPU || config.getComputeMethod() == ComputeType.CPU_GPU) {
 				GPULister gpu;
@@ -633,7 +633,7 @@ public class Settings implements Activity {
 				else {
 					GPULister gpu;
 					int maxRenderbucketSize = 128;        // Max default render bucket size
-					int recommendedBucketSize = 32;        // Default recommended render bucket size
+					int recommendedBucketSize = GPU.MIN_RENDERBUCKET_SIZE; 	// Default recommended render bucket size
 					
 					if (useGPUs.get(counter).getGPUDevice().getType().equals("CUDA")) {
 						gpu = new Nvidia();

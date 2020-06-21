@@ -45,6 +45,7 @@ import java.util.regex.Matcher;
 
 import com.sheepit.client.Configuration.ComputeType;
 import com.sheepit.client.Error.Type;
+import com.sheepit.client.hardware.cpu.CPU;
 import com.sheepit.client.hardware.gpu.GPUDevice;
 import com.sheepit.client.hardware.gpu.opencl.OpenCL;
 import com.sheepit.client.os.OS;
@@ -184,7 +185,7 @@ import lombok.Getter;
 		else {
 			// Otherwise (CPU), fix the tile size to 32x32px
 			core_script = "sheepit_set_compute_device(\"NONE\", \"CPU\", \"CPU\")\n";
-			core_script += String.format("bpy.context.scene.render.tile_x = %1$d\nbpy.context.scene.render.tile_y = %1$d\n", 32);
+			core_script += String.format("bpy.context.scene.render.tile_x = %1$d\nbpy.context.scene.render.tile_y = %1$d\n", CPU.MIN_RENDERBUCKET_SIZE);
 			gui.setComputeMethod("CPU");
 		}
 		

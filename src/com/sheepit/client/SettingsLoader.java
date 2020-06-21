@@ -109,7 +109,7 @@ public class SettingsLoader {
 			gpu = gpu_.getId();
 		}
 		
-		if (renderbucketSize_ >= 32) {
+		if (renderbucketSize_ >= GPU.MIN_RENDERBUCKET_SIZE) {
 			renderbucketSize = String.valueOf(renderbucketSize_);
 		}
 	}
@@ -382,7 +382,7 @@ public class SettingsLoader {
 				config.setGPUDevice(device);
 				
 				// If the user has indicated a render bucket size at least 32x32 px, overwrite the config file value
-				if (config.getRenderbucketSize() >= 32) {
+				if (config.getRenderbucketSize() >= GPU.MIN_RENDERBUCKET_SIZE) {
 					config.getGPUDevice().setRenderbucketSize(config.getRenderbucketSize());    // Update size
 				}
 				else {
@@ -398,6 +398,19 @@ public class SettingsLoader {
 				
 				// And now update the client configuration with the new value
 				config.setRenderbucketSize(config.getGPUDevice().getRenderbucketSize());
+			}
+		}
+		else if (config.getGPUDevice() != null) {
+			// The order of conditions is important to ensure the priority or app arguments, then the config file and finally the recommended size (if none
+			// specified or already in config file).
+			if (config.getRenderbucketSize() >= GPU.MIN_RENDERBUCKET_SIZE) {
+				config.getGPUDevice().setRenderbucketSize(config.getRenderbucketSize());
+			}
+			else if (renderbucketSize != null) {
+				config.getGPUDevice().setRenderbucketSize(Integer.parseInt(renderbucketSize));
+			}
+			else {
+				config.getGPUDevice().setRenderbucketSize(config.getGPUDevice().getRecommendedBucketSize());
 			}
 		}
 		
