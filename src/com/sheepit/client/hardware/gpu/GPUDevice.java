@@ -37,7 +37,7 @@ public class GPUDevice {
 		this.model = model;
 		this.memory = ram;
 		this.id = id;
-		this.renderBucketSize = GPU.MIN_RENDERBUCKET_SIZE;;
+		this.renderBucketSize = GPU.MIN_RENDERBUCKET_SIZE;
 	}
 	
 	public GPUDevice(String type, String model, long ram, String id, String oldId) {
@@ -112,7 +112,7 @@ public class GPUDevice {
 			return;
 		}
 		
-		int renderBucketSize = GPU.MIN_RENDERBUCKET_SIZE;;
+		int renderBucketSize = GPU.MIN_RENDERBUCKET_SIZE;
 		
 		if (proposedRenderbucketSize == null) {
 			renderBucketSize = gpu.getRecommendedRenderBucketSize(getMemory());
