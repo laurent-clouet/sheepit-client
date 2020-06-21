@@ -37,7 +37,7 @@ public class GPUDevice {
 		this.model = model;
 		this.memory = ram;
 		this.id = id;
-		this.renderBucketSize = 32;
+		this.renderBucketSize = GPU.MIN_RENDERBUCKET_SIZE;
 	}
 	
 	public GPUDevice(String type, String model, long ram, String id, String oldId) {
@@ -88,9 +88,13 @@ public class GPUDevice {
 	public int getRenderbucketSize() {
 		return this.renderBucketSize;
 	}
+
+	public int getRecommendedBucketSize() {
+		this.setRenderbucketSize(null);
+		return this.renderBucketSize;
+	}
 	
-	public void setRenderbucketSize(int proposedRenderbucketSize) {
-		int renderBucketSize = 32;
+	public void setRenderbucketSize(Integer proposedRenderbucketSize) {
 		GPULister gpu;
 		
 		if (type.equals("CUDA")) {
@@ -104,11 +108,16 @@ public class GPUDevice {
 			// because is a new one (different from CUDA and OPENCL). In that case, move into the safest position
 			// of 32x32 pixel tile sizes
 			System.out.println("GPUDevice::setRenderbucketSize Unable to detect GPU technology. Render bucket size set to 32x32 pixels");
-			this.renderBucketSize = 32;
+			this.renderBucketSize = GPU.MIN_RENDERBUCKET_SIZE;
 			return;
 		}
 		
-		if (proposedRenderbucketSize >= 32) {
+		int renderBucketSize = GPU.MIN_RENDERBUCKET_SIZE;
+		
+		if (proposedRenderbucketSize == null) {
+			renderBucketSize = gpu.getRecommendedRenderBucketSize(getMemory());
+		}
+		else if (proposedRenderbucketSize >= GPU.MIN_RENDERBUCKET_SIZE) {
 			if (proposedRenderbucketSize <= gpu.getMaximumRenderBucketSize(getMemory())) {
 				renderBucketSize = proposedRenderbucketSize;
 			}

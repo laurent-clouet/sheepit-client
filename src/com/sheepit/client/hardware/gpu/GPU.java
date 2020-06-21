@@ -29,6 +29,7 @@ import com.sheepit.client.os.OS;
 import com.sheepit.client.os.Windows;
 
 public class GPU {
+	final public static int MIN_RENDERBUCKET_SIZE = 32;
 	public static List<GPUDevice> devices = null;
 	
 	public static boolean generate() {
