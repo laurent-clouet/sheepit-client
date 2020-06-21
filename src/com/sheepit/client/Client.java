@@ -740,7 +740,7 @@ import lombok.Data;
 		// must download the archive
 		Error.Type ret = this.server.HTTPGetFile(url, local_path, this.gui, update_ui);
 		
-		if (ret != Type.RENDERER_KILLED_BY_SERVER || ret != Type.RENDERER_KILLED_BY_USER_OVER_TIME) {
+		if (ret == Type.RENDERER_KILLED_BY_SERVER || ret == Type.RENDERER_KILLED_BY_USER_OVER_TIME || ret == Type.RENDERER_KILLED_BY_USER) {
 			return ret;
 		}
 		
