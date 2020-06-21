@@ -533,7 +533,7 @@ import lombok.Data;
 		
 		this.log.debug("Sending error to server (type: " + error + ")");
 		try {
-			File temp_file = File.createTempFile("farm_", "");
+			File temp_file = File.createTempFile("farm_", ".txt");
 			temp_file.createNewFile();
 			temp_file.deleteOnExit();
 			FileOutputStream writer = new FileOutputStream(temp_file);
