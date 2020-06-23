@@ -168,4 +168,12 @@ public class GuiTextOneLine implements Gui {
 			System.out.print(" ");
 		}
 	}
+
+	@Override
+	public void setSuspended() {
+	}
+
+	@Override
+	public void setResumed() {
+	}
 }

@@ -41,6 +41,7 @@ public class Error {
 		RENDERER_KILLED(14),
 		RENDERER_KILLED_BY_USER(20),
 		RENDERER_KILLED_BY_USER_OVER_TIME(23),
+		RENDERER_KILLED_BY_USER_INCOMPATIBLE_PROCESS(24),
 		RENDERER_KILLED_BY_SERVER(22),
 		RENDERER_MISSING_LIBRARIES(15),
 		FAILED_TO_EXECUTE(16),
@@ -172,6 +173,8 @@ public class Error {
 				return "The renderer stopped because either you asked to stop or the server did (usually for a render time too high).";
 			case RENDERER_KILLED_BY_USER:
 				return "The renderer stopped because you've blocked its project.";
+			case RENDERER_KILLED_BY_USER_INCOMPATIBLE_PROCESS:
+				return "Paused: Stated process running.";
 			case RENDERER_KILLED_BY_SERVER:
 				return "The renderer stopped because it's been killed by the server. Usually because the project will take too much time or it's been paused.";
 			case SESSION_DISABLED:

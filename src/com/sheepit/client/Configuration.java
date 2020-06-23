@@ -61,6 +61,7 @@ public class Configuration {
 	private String UIType;
 	private int tileSize;
 	private String hostname;
+	private String incompatibleProcess;
 	
 	public Configuration(File cache_dir_, String login_, String password_) {
 		this.login = login_;
@@ -85,6 +86,7 @@ public class Configuration {
 		this.autoSignIn = false;
 		this.UIType = null;
 		this.tileSize = -1; // ie not set
+		this.incompatibleProcess = "";
 	}
 	
 	
@@ -288,6 +290,14 @@ public class Configuration {
 		catch (UnknownHostException e) {
 			return "";
 		}
+	}
+	
+	public void setIncompatibleProcessName(String val) {
+		this.incompatibleProcess = val;
+	}
+	
+	public String getIncompatibleProcessName() {
+		return this.incompatibleProcess;
 	}
 	
 	public void cleanWorkingDirectory() {

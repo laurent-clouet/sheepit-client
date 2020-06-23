@@ -27,8 +27,11 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import com.sheepit.client.Error.ServerCode;
 import com.sheepit.client.Error.Type;
@@ -146,6 +149,12 @@ public class Client {
 			};
 			Thread thread_sender = new Thread(runnable_sender);
 			thread_sender.start();
+			
+			IncompatibleProcessChecker incompatibleProcessChecker = new IncompatibleProcessChecker(this);
+			Timer incompatibleProcessCheckerTimer = new Timer();
+			incompatibleProcessCheckerTimer.schedule(incompatibleProcessChecker, TimeUnit.MINUTES.toMillis(1), TimeUnit.MINUTES.toMillis(1));
+			
+			incompatibleProcessChecker.run(); // before the first request, check if it should be stopped
 			
 			while (this.running == true) {
 				this.renderingJob = null;
@@ -425,10 +434,12 @@ public class Client {
 	
 	public void suspend() {
 		suspended = true;
+		this.gui.setSuspended();
 	}
 	
 	public synchronized void resume() {
 		suspended = false;
+		this.gui.setResumed();
 		notify();
 	}
 	

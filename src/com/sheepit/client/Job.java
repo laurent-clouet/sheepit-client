@@ -66,6 +66,7 @@ public class Job {
 	private boolean askForRendererKill;
 	private boolean userBlockJob;
 	private boolean serverBlockJob;
+	private boolean incompatibleProcessKill;
 	private Gui gui;
 	private Configuration config;
 	private Log log;
@@ -90,6 +91,7 @@ public class Job {
 		askForRendererKill = false;
 		userBlockJob = false;
 		serverBlockJob = false;
+		incompatibleProcessKill = false;
 		log = log_;
 		render = new RenderProcess();
 	}
@@ -153,6 +155,14 @@ public class Job {
 	
 	public void setUserBlockJob(boolean val) {
 		userBlockJob = val;
+	}
+	
+	public boolean getIncompatibleProcessKill() {
+		return incompatibleProcessKill;
+	}
+	
+	public void setIncompatibleProcessKill(boolean val) {
+		incompatibleProcessKill = val;
 	}
 	
 	public boolean getUserBlockJob() {
@@ -407,6 +417,9 @@ public class Job {
 			
 			if (files.length != 0) {
 				new File(files[0].getAbsolutePath()).delete();
+			}
+			if (getIncompatibleProcessKill()) {
+				return Error.Type.RENDERER_KILLED_BY_USER_INCOMPATIBLE_PROCESS;
 			}
 			if (getServerBlockJob()) {
 				return Error.Type.RENDERER_KILLED_BY_SERVER;

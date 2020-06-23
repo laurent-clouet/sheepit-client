@@ -30,6 +30,8 @@
                      <pathelement location="extern/jna.jar"/>
                      <pathelement location="extern/args4j.jar"/>
                      <pathelement location="extern/zip4j.jar"/>
+                     <pathelement location="extern/wmi4java.jar"/>
+                     <pathelement location="extern/jprocesses.jar"/>
                </classpath>
         </javac>
         
@@ -37,6 +39,8 @@
             <filelist dir="." files="extern/jna.jar" />
             <filelist dir="." files="extern/args4j.jar" />
             <filelist dir="." files="extern/zip4j.jar" />
+            <filelist dir="." files="extern/wmi4java.jar" />
+            <filelist dir="." files="extern/jprocesses.jar" />
         </unjar>
         
         <copy file="resources/icon.png" tofile="build/icon.png" overwrite="true" />

@@ -43,4 +43,8 @@ public interface Gui {
 	public void setComputeMethod(String computeMethod_);
 	
 	public Client getClient();
+
+	public void setSuspended();
+
+	public void setResumed();
 }

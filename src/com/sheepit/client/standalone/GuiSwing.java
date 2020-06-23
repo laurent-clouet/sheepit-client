@@ -119,7 +119,7 @@ public class GuiSwing extends JFrame implements Gui {
 		}
 		
 		setTitle("SheepIt Render Farm");
-		setSize(520, 680);
+		setSize(520, 720);
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
@@ -192,6 +192,26 @@ public class GuiSwing extends JFrame implements Gui {
 		}
 		else {
 			System.out.println("GuiSwing::AddFrameRendered() error: no working activity");
+		}
+	}
+	
+	@Override
+	public void setSuspended() {
+		if (activityWorking != null) {
+			this.activityWorking.updatePauseButton();
+		}
+		else {
+			System.out.println("GuiSwing::setSuspended() error: no working activity");
+		}
+	}
+
+	@Override
+	public void setResumed() {
+		if (activityWorking != null) {
+			this.activityWorking.updatePauseButton();
+		}
+		else {
+			System.out.println("GuiSwing::setResumed() error: no working activity");
 		}
 	}
 	

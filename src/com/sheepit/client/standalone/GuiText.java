@@ -145,4 +145,11 @@ public class GuiText implements Gui {
 		return client;
 	}
 	
+	@Override
+	public void setSuspended() {
+	}
+
+	@Override
+	public void setResumed() {
+	}
 }

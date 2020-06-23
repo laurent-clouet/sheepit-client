@@ -76,6 +76,7 @@ public class Settings implements Activity {
 	private JSlider priority;
 	private JTextField proxy;
 	private JTextField hostname;
+	private JTextField incompatibleProcess;
 	
 	private JCheckBox saveFile;
 	private JCheckBox autoSignIn;
@@ -320,7 +321,7 @@ public class Settings implements Activity {
 		parent.getContentPane().add(compute_devices_panel, constraints);
 		
 		// other
-		JPanel advanced_panel = new JPanel(new GridLayout(5, 2));
+		JPanel advanced_panel = new JPanel(new GridLayout(6, 2));
 		advanced_panel.setBorder(BorderFactory.createTitledBorder("Advanced options"));
 		
 		JLabel proxyLabel = new JLabel("Proxy:");
@@ -349,6 +350,13 @@ public class Settings implements Activity {
 		
 		advanced_panel.add(renderTimeLabel);
 		advanced_panel.add(renderTime);
+		
+		JLabel incompatibleProcessLabel = new JLabel("Pause when running:");
+		incompatibleProcess = new JTextField();
+		incompatibleProcess.setText(parent.getConfiguration().getIncompatibleProcessName());
+		
+		advanced_panel.add(incompatibleProcessLabel);
+		advanced_panel.add(incompatibleProcess);
 		
 		JLabel customTileSizeLabel = new JLabel("Custom render tile size:");
 		customTileSize = new JCheckBox("", config.getTileSize() != -1);
@@ -617,7 +625,7 @@ public class Settings implements Activity {
 			}
 			
 			if (saveFile.isSelected()) {
-				new SettingsLoader(login.getText(), new String(password.getPassword()), proxyText, hostnameText, method, selected_gpu, cpu_cores, max_ram, max_rendertime, cachePath, autoSignIn.isSelected(), GuiSwing.type, tile, priority.getValue()).saveFile();
+				new SettingsLoader(login.getText(), new String(password.getPassword()), proxyText, hostnameText, incompatibleProcess.getText(), method, selected_gpu, cpu_cores, max_ram, max_rendertime, cachePath, autoSignIn.isSelected(), GuiSwing.type, tile, priority.getValue()).saveFile();
 			}
 			else {
 				try {

@@ -259,6 +259,18 @@ public class Working implements Activity {
 		}
 	}
 	
+	public void updatePauseButton() {
+		Client client = parent.getClient();
+		if (client != null) {
+			if (client.isSuspended()) {
+				pauseButton.setText("Resume");
+			}
+			else {
+				pauseButton.setText("Pause");
+			}
+		}
+	}
+	
 	public void setRenderedFrame(int n) {
 		renderedFrameContent.setText(String.valueOf(n));
 		showLastRender();
