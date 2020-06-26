@@ -51,7 +51,7 @@ public class Worker {
 	
 	@Option(name = "-login", usage = "User's login", metaVar = "LOGIN", required = false) private String login = "";
 	
-	@Option(name = "-password", usage = "User's password", metaVar = "PASSWORD", required = false) private String password = "";
+	@Option(name = "-password", usage = "User's password or public key (accessible under the Keys tab of the profile page)", metaVar = "PASSWORD", required = false) private String password = "";
 	
 	@Option(name = "-cache-dir", usage = "Cache/Working directory. Caution, everything in it not related to the render-farm will be removed", metaVar = "/tmp/cache", required = false) private String cache_dir = null;
 	
