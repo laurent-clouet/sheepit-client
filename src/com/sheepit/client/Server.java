@@ -200,6 +200,7 @@ public class Server extends Thread {
 				.add("hostname", user_config.getHostname())
 				.add("ui", client.getGui().getClass().getSimpleName())
 				.add("extras", user_config.getExtras())
+				.add("headless", java.awt.GraphicsEnvironment.isHeadless() ? "1" : "0")
 				.build();
 			
 			this.log.debug("Server::getConfiguration url " + remoteURL.build().toString());
