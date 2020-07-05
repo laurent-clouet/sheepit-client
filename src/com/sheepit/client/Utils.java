@@ -210,14 +210,14 @@ public class Utils {
 		return false;
 	}
 
-	public static String findMimeType(String file1) throws IOException {
-		String mimeType = Files.probeContentType(Paths.get(file1));
+	public static String findMimeType(String file) throws IOException {
+		String mimeType = Files.probeContentType(Paths.get(file));
 		if (mimeType == null) {
-			InputStream stream = new BufferedInputStream(new FileInputStream(file1));
+			InputStream stream = new BufferedInputStream(new FileInputStream(file));
 			mimeType = URLConnection.guessContentTypeFromStream(stream);
 		}
 		if (mimeType == null) {
-			mimeType = URLConnection.guessContentTypeFromName(file1);
+			mimeType = URLConnection.guessContentTypeFromName(file);
 		}
 
 		return mimeType;
