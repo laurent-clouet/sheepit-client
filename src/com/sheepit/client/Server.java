@@ -492,8 +492,8 @@ public class Server extends Thread {
 		this.log.debug(checkpoint, "Server::HTTPSendFile(" + surl + "," + file1 + ")");
 		
 		try {
-			String fileMimeType = Files.probeContentType(Paths.get(file1));
-			
+			String fileMimeType = Utils.findMimeType(file1);
+
 			MediaType MEDIA_TYPE = MediaType.parse(fileMimeType); // e.g. "image/png"
 			
 			RequestBody uploadContent = new MultipartBody.Builder().setType(MultipartBody.FORM)
@@ -563,7 +563,7 @@ public class Server extends Thread {
 			return ServerCode.UNKNOWN;
 		}
 	}
-	
+
 	private String generateXMLForMD5cache() {
 		List<FileMD5> md5s = new ArrayList<>();
 		for (File local_file : this.user_config.getLocalCacheFiles()) {
