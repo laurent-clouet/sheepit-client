@@ -563,7 +563,7 @@ public class Server extends Thread {
 			return ServerCode.UNKNOWN;
 		}
 	}
-
+	
 	private String generateXMLForMD5cache() {
 		List<FileMD5> md5s = new ArrayList<>();
 		for (File local_file : this.user_config.getLocalCacheFiles()) {
