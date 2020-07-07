@@ -475,11 +475,16 @@ public class Server extends Thread {
 		}
 		finally {
 			try {
-				output.flush();
-				output.close();
-				is.close();
+				if (output != null) {
+					output.flush();
+					output.close();
+				}
+				
+				if (is != null) {
+					is.close();
+				}
 			}
-			catch (IOException e) {
+			catch (Exception e) {
 				this.log.debug(String.format("Server::HTTPGetFile Error trying to close the open streams (%s)", e.getMessage()));
 			}
 		}
