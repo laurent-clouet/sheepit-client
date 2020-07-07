@@ -492,8 +492,8 @@ public class Server extends Thread {
 		this.log.debug(checkpoint, "Server::HTTPSendFile(" + surl + "," + file1 + ")");
 		
 		try {
-			String fileMimeType = Files.probeContentType(Paths.get(file1));
-			
+			String fileMimeType = Utils.findMimeType(file1);
+
 			MediaType MEDIA_TYPE = MediaType.parse(fileMimeType); // e.g. "image/png"
 			
 			RequestBody uploadContent = new MultipartBody.Builder().setType(MultipartBody.FORM)

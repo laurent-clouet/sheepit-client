@@ -19,11 +19,14 @@
 
 package com.sheepit.client;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.DigestInputStream;
@@ -211,5 +214,18 @@ public class Utils {
 		}
 		
 		return false;
+	}
+
+	public static String findMimeType(String file) throws IOException {
+		String mimeType = Files.probeContentType(Paths.get(file));
+		if (mimeType == null) {
+			InputStream stream = new BufferedInputStream(new FileInputStream(file));
+			mimeType = URLConnection.guessContentTypeFromStream(stream);
+		}
+		if (mimeType == null) {
+			mimeType = URLConnection.guessContentTypeFromName(file);
+		}
+
+		return mimeType;
 	}
 }
