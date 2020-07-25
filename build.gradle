@@ -9,8 +9,8 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'com.github.johnrengelman.shadow'
 
-sourceCompatibility = '1.7'
-targetCompatibility = '1.7'
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
 
 compileJava {
 	// Suppress warnings about internal api usage - https://stackoverflow.com/a/19553686/6238618
