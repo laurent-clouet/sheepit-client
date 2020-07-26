@@ -550,7 +550,7 @@ public class Server extends Thread {
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
 			e.printStackTrace(pw);
-			this.log.error(checkpoint, String.format("Server::HTTPSendFile Error in upload process. Exception %s stacktrace ", e.getMessage(), sw.toString()));
+			this.log.error(checkpoint, String.format("Server::HTTPSendFile Error in upload process. Exception %s stacktrace ", e.getMessage()) + sw.toString());
 			return ServerCode.UNKNOWN;
 		}
 		catch (OutOfMemoryError e) {
