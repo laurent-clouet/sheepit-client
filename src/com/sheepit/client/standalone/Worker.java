@@ -28,8 +28,14 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.LinkedList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.sheepit.client.Client;
 import com.sheepit.client.Configuration;
@@ -70,6 +76,10 @@ public class Worker {
 	@Option(name = "--verbose", usage = "Display log", required = false) private boolean print_log = false;
 	
 	@Option(name = "-request-time", usage = "H1:M1-H2:M2,H3:M3-H4:M4 Use the 24h format. For example to request job between 2am-8.30am and 5pm-11pm you should do --request-time 2:00-8:30,17:00-23:00 Caution, it's the requesting job time to get a project, not the working time", metaVar = "2:00-8:30,17:00-23:00", required = false) private String request_time = null;
+	
+	@Option(name = "-shutdown", usage = "Specify when the client will close and the host computer will shut down in a proper way. The time argument can have two different formats: an absolute date and time in the format yyyy-mm-ddThh:mm:ss (24h format) or a relative time in the format +m where m is the number of minutes from now.", metaVar = "DATETIME or +N", required = false) private String shutdown = null;
+	
+	@Option(name = "-shutdown-mode", usage = "Indicates if the shutdown process waits for the upload queue to finish (wait) or interrupt all the pending tasks immediately (hard). The default shutdown mode is wait.", metaVar = "MODE", required = false) private String shutdownMode = null;
 	
 	@Option(name = "-proxy", usage = "URL of the proxy", metaVar = "http://login:password@host:port", required = false) private String proxy = null;
 	
@@ -284,6 +294,96 @@ public class Worker {
 			config.setTheme(this.theme);
 		}
 		
+		// Shutdown process block
+		if (shutdown != null) {
+			Pattern absoluteTimePattern = Pattern.compile("^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))T([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$");
+			Pattern relativeTimePattern = Pattern.compile("^\\+([0-9]{2,4})$");
+			LocalDateTime shutdownTime = null;
+			
+			Matcher timeAbsolute = absoluteTimePattern.matcher(shutdown);
+			Matcher timeRelative = relativeTimePattern.matcher(shutdown);
+			
+			if (timeAbsolute.find()) {
+				if ((shutdownTime = shutdownTimeParse(shutdown)) != null) {
+					long diffInMillies = ChronoUnit.MILLIS.between(LocalDateTime.now(), shutdownTime);
+					
+					if (diffInMillies < 0) {
+						System.err.println(String
+							.format("\nERROR: The entered shutdown time (%s) is a date on the past. Shutdown time must be at least 30 minutes from now",
+								shutdown));
+						System.err.println("Aborting");
+						System.exit(2);
+					}
+					else if (diffInMillies < 10 * 60 * 1000) {        // 10 minutes
+						System.err.println(String.format(
+							"\nERROR: The specified shutdown time (%s) is expected to happen in less than 10 minutes. Shutdown time must be at least 30 minutes from now",
+							shutdown));
+						System.err.println("Aborting");
+						System.exit(2);
+					}
+					
+					config.setShutdownTime(diffInMillies);
+				}
+				else {
+					System.err.println(String.format(
+						"\nERROR: The format of the entered shutdown time (%s) is not correct.\nThe time argument can have two different formats: an absolute date and time in the format yyyy-mm-ddThh:mm:ss (24h format) or a relative time in the format +m where m is the number of minutes from now (min. +10 minutes, max. +9999 minutes)",
+						shutdown));
+					System.err.println("Aborting");
+					System.exit(2);
+				}
+			}
+			else if (timeRelative.find()) {
+				int minutesUntilShutdown = Integer.parseInt(timeRelative.group(1));
+				config.setShutdownTime(minutesUntilShutdown * 60 * 1000);
+				shutdownTime = LocalDateTime.now().plusMinutes(minutesUntilShutdown);
+			}
+			else {
+				System.err.println(String.format(
+					"\nERROR: The time especified (%s) is less than 10 minutes or the format is not correct.\nThe time argument can have two different formats: an absolute date and time in the format yyyy-mm-ddThh:mm:ss (24h format) or a relative time in the format +m where m is the number of minutes from now (min. +10 minutes, max. +9999 minutes)",
+					shutdown));
+				System.err.println("Aborting");
+				System.exit(2);
+			}
+			
+			if (shutdownMode != null) {
+				if (shutdownMode.toLowerCase().equals("wait") || shutdownMode.toLowerCase().equals("hard")) {
+					config.setShutdownMode(shutdownMode.toLowerCase());
+				}
+				else {
+					System.err
+						.println(String.format("ERROR: The entered shutdown-mode (%s) is invalid. Please enter wait or hard shutdown mode.", shutdownMode));
+					System.err.println("  - Wait: the shutdown process is initiated once the current job and all the queued uploads are finished.");
+					System.err
+						.println("  - Hard: Then shutdown process is executed immediately. Any ongoing rendering process or upload queues will be cancelled.");
+					System.err.println("Aborting");
+					System.exit(2);
+				}
+			}
+			else {
+				// if no shutdown mode specified, then set "wait" mode by default
+				config.setShutdownMode("wait");
+			}
+			
+			System.out.println("==============================================================================");
+			if (config.getShutdownMode().equals("wait")) {
+				System.out.println(String.format(
+					"WARNING!\n\nThe client will stop requesting new jobs at %s.\nTHE EFFECTIVE SHUTDOWN MIGHT OCCUR LATER THAN THE REQUESTED TIME AS THE UPLOAD\nQUEUE MUST BE FULLY UPLOADED BEFORE THE SHUTDOWN PROCESS STARTS.\n\nIf you want to shutdown the computer sharp at the specified time, please\ninclude the '-shutdown-mode hard' parameter in the application call",
+					shutdownTime));
+			}
+			else {
+				System.out.println(String.format(
+					"WARNING!\n\nThe client will initiate the shutdown process at %s.\nALL RENDERS IN PROGRESS AND UPLOAD QUEUES WILL BE CANCELED.\n\nIf you prefer to shutdown the computer once the pending jobs are completed,\nplease include the '-shutdown-mode wait' parameter in the application call",
+					shutdownTime));
+			}
+			System.out.println("==============================================================================\n");
+		}
+		else if (shutdown == null && shutdownMode != null) {
+			System.err.println(
+				"ERROR: The shutdown-mode parameter cannot be entered alone. Please make sure that you also enter a valid shutdown time (using -shutdown parameter)");
+			System.err.println("Aborting");
+			System.exit(2);
+		}
+		
 		if (config_file != null) {
 			if (new File(config_file).exists() == false) {
 				System.err.println(
@@ -338,6 +438,17 @@ public class Worker {
 		}
 		catch (CmdLineException e) {
 			System.err.println(String.format("ERROR: Unable to parse the provided parameter [%s]", e.getMessage()));
+		}
+	}
+	
+	private LocalDateTime shutdownTimeParse(String shutdownTime) {
+		try {
+			DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+			return LocalDateTime.parse(shutdownTime, df);
+		}
+		catch (DateTimeParseException e) {
+			e.printStackTrace();
+			return null;
 		}
 	}
 }

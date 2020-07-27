@@ -227,4 +227,16 @@ public class Windows extends OS {
 		// In windows, nice is not required and therefore we return always true to show the slider in the Settings GUI
 		return true;
 	}
+	
+	@Override public void shutdownComputer(int delayInMinutes) {
+		try {
+			// Shutdown the computer, waiting 60 seconds, force app closure and on the shutdown screen indicate that was initiated by SheepIt app
+			ProcessBuilder builder = new ProcessBuilder("shutdown", "/s", "/f", "/t", String.valueOf(delayInMinutes * 60), "/c", "\"SheepIt App has initiated this computer shutdown.\"");
+			Process process = builder.inheritIO().start();
+		}
+		catch (IOException e) {
+			System.err.println(
+					String.format("Windows::shutdownComputer Unable to execute the command 'shutdown /s /f /t 60...' command. Exception %s", e.getMessage()));
+		}
+	}
 }

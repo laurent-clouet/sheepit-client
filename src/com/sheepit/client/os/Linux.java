@@ -279,4 +279,15 @@ public class Linux extends OS {
 		
 		return false;
 	}
+	
+	@Override public void shutdownComputer(int delayInMinutes) {
+		try {
+			// Shutdown the computer waiting 1 minute to allow all SheepIt threads to close and exit the app
+			ProcessBuilder builder = new ProcessBuilder("shutdown", "-h", String.valueOf(delayInMinutes));
+			Process process = builder.inheritIO().start();
+		}
+		catch (IOException e) {
+			System.err.println(String.format("Linux::shutdownComputer Unable to execute the 'shutdown -h 1' command. Exception %s", e.getMessage()));
+		}
+	}
 }
