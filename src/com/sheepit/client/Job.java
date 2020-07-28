@@ -211,8 +211,6 @@ import lombok.Getter;
 		if (isUseGPU() && configuration.getGPUDevice() != null && configuration.getComputeMethod() != ComputeType.CPU && OpenCL.TYPE
 				.equals(configuration.getGPUDevice().getType())) {
 			new_env.put("CYCLES_OPENCL_SPLIT_KERNEL_TEST", "1");
-			// how we find remaining time in "console log" for show it in the UI: (using updateRenderingStatus(String) below)
-			this.updateRenderingStatusMethod = UPDATE_METHOD_BY_REMAINING_TIME; 
 		}
 		
 		for (String arg : command1) {
