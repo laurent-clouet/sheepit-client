@@ -211,7 +211,6 @@ import lombok.Getter;
 		if (isUseGPU() && configuration.getGPUDevice() != null && configuration.getComputeMethod() != ComputeType.CPU && OpenCL.TYPE
 				.equals(configuration.getGPUDevice().getType())) {
 			new_env.put("CYCLES_OPENCL_SPLIT_KERNEL_TEST", "1");
-			this.updateRenderingStatusMethod = UPDATE_METHOD_BY_TILE; // don't display remaining time
 		}
 		
 		for (String arg : command1) {
