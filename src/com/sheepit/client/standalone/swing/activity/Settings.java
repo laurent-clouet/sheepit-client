@@ -281,7 +281,7 @@ public class Settings implements Activity {
 		compute_devices_panel.add(useCPU);
 		
 		if (gpus.size() > 0) {
-			renderbucketSizeLabel = new JLabel("Renderbucket size:");
+			renderbucketSizeLabel = new JLabel("Renderbucket/Tile size:");
 			renderbucketSize = new JSlider();
 			renderbucketSize.setMajorTickSpacing(1);
 			renderbucketSize.setMinorTickSpacing(1);
