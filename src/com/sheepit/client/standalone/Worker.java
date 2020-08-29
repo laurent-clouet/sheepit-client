@@ -104,6 +104,8 @@ public class Worker {
 	
 	@Option(name = "-renderbucket-size", usage = "Set a custom GPU renderbucket size (32 for 32x32px, 64 for 64x64px, and so on). NVIDIA GPUs support a maximum renderbucket size of 512x512 pixel, while AMD GPUs support a maximum 2048x2048 pixel renderbucket size. Minimum renderbucket size is 32 pixels for all GPUs", required = false) private int renderbucketSize = -1;
 	
+	@Option(name = "-hostname", usage = "Set a custom hostname name (name change will be lost when client is closed)", required = false) private String hostname = null;
+	
 	public static void main(String[] args) {
 		new Worker().doMain(args);
 	}
@@ -395,6 +397,21 @@ public class Worker {
 		
 		new SettingsLoader(config_file).merge(config);
 		Log.getInstance(config).debug("client version " + config.getJarVersion());
+		
+		// Hostname change will overwrite the existing one (default or read from configuration file) but changes will be lost when the client closes
+		if (hostname != null) {
+			Pattern hostnameValidator = Pattern.compile("[^a-z0-9-_]", Pattern.CASE_INSENSITIVE);
+			Matcher hostnameCandidate = hostnameValidator.matcher(hostname);
+			
+			if (hostnameCandidate.find()) {
+				System.err.println(
+					"ERROR: The entered hostname (-hostname parameter) contains invalid characters. Allowed hostname characters are a-z, A-Z, 0-9, - and _");
+				System.exit(2);
+			}
+			else {
+				config.setHostname(hostname);
+			}
+		}
 		
 		Gui gui;
 		String type = config.getUIType();
