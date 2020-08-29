@@ -380,15 +380,6 @@ import lombok.Data;
 					this.noJobRetryIter = 0;
 					
 					ret = this.work(this.renderingJob);
-					if (ret == Error.Type.RENDERER_KILLED) {
-						Job frame_to_reset = this.renderingJob; // copy it because the sendError will take ~5min to execute
-						this.renderingJob = null;
-						this.gui.error(Error.humanString(ret));
-						this.sendError(step, frame_to_reset, ret);
-						this.log.removeCheckPoint(step);
-						continue;
-					}
-					
 					if (ret == Error.Type.NO_SPACE_LEFT_ON_DEVICE) {
 						Job frame_to_reset = this.renderingJob; // copy it because the sendError will take ~5min to execute
 						this.renderingJob = null;
@@ -404,6 +395,22 @@ import lombok.Data;
 						this.gui.error(Error.humanString(ret));
 						this.sendError(step, frame_to_reset, ret);
 						this.log.removeCheckPoint(step);
+						
+						// Initial test frames always have the Job ID below 20. If we have any error while trying to render the initial frame just
+						// halt the execution
+						if (Integer.parseInt(frame_to_reset.getId()) < 20) {
+							// Add the proper explanation to the existing error message and keep the client waiting forever to ensure the user sees the error
+							this.gui.error(Error.humanString(ret) + " The error happened during the test frame render. Restart the client and try again.");
+							while (true && !shuttingdown) {
+								try {
+									Thread.sleep(1000);
+								}
+								catch (InterruptedException e1) {
+								}
+							}
+							break;	// if the shutdown signal is triggered then exit the while (this.running == true) loop to initiate the shutdown process
+						}
+						
 						continue;
 					}
 					
