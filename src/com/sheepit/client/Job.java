@@ -272,7 +272,9 @@ import lombok.Getter;
 			getProcessRender().setProcess(os.exec(command, new_env));
 			BufferedReader input = new BufferedReader(new InputStreamReader(getProcessRender().getProcess().getInputStream()));
 			
-			if (configuration.getMaxRenderTime() > 0) {
+			// Make initial test/power frames ignore the maximum render time in user configuration. Initial test frames have Job IDs below 20
+			// so we just activate the user defined timeout when the scene is not one of the initial ones.
+			if (configuration.getMaxRenderTime() > 0 && Integer.parseInt(this.getId()) >= 20) {
 				timerOfMaxRenderTime = new Timer();
 				timerOfMaxRenderTime.schedule(new TimerTask() {
 					@Override public void run() {
@@ -396,7 +398,7 @@ import lombok.Getter;
 			log.debug("Job::render been asked to end render");
 			
 			long duration = (new Date().getTime() - process.getStartTime()) / 1000; // in seconds
-			if (configuration.getMaxRenderTime() > 0 && duration > configuration.getMaxRenderTime()) {
+			if (configuration.getMaxRenderTime() > 0 && duration > configuration.getMaxRenderTime() && Integer.parseInt(this.getId()) >= 20) {
 				log.debug("Render killed because process duration (" + duration + "s) is over user setting (" + configuration.getMaxRenderTime() + "s)");
 				return Error.Type.RENDERER_KILLED_BY_USER_OVER_TIME;
 			}
