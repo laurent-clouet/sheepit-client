@@ -390,15 +390,15 @@ import lombok.Data;
 					}
 					
 					if (ret != Error.Type.OK) {
-						Job frame_to_reset = this.renderingJob; // copy it because the sendError will take ~5min to execute
+						Job currentJob = this.renderingJob; // copy it because the sendError will take ~5min to execute
 						this.renderingJob = null;
 						this.gui.error(Error.humanString(ret));
-						this.sendError(step, frame_to_reset, ret);
+						this.sendError(step, currentJob, ret);
 						this.log.removeCheckPoint(step);
 						
 						// Initial test frames always have the Job ID below 20. If we have any error while trying to render the initial frame just
 						// halt the execution
-						if (Integer.parseInt(frame_to_reset.getId()) < 20) {
+						if (Integer.parseInt(currentJob.getId()) < 20) {
 							// Add the proper explanation to the existing error message and keep the client waiting forever to ensure the user sees the error
 							this.gui.error(Error.humanString(ret) + " The error happened during the test frame render. Restart the client and try again.");
 							while (true && !shuttingdown) {
