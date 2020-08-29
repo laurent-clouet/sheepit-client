@@ -49,6 +49,7 @@ import com.sheepit.client.Client;
 import com.sheepit.client.Job;
 import com.sheepit.client.Log;
 import com.sheepit.client.Stats;
+import com.sheepit.client.TransferStats;
 import com.sheepit.client.Utils;
 import com.sheepit.client.standalone.GuiSwing;
 import com.sheepit.client.standalone.GuiSwing.ActivityType;
@@ -75,6 +76,8 @@ public class Working implements Activity {
 	private JLabel connected_machines_value;
 	private JLabel user_info_total_rendertime_this_session_value;
 	private JLabel userInfoQueuedUploadsAndSizeValue;
+	private JLabel sessionDownloadsStatsValue;
+	private JLabel sessionUploadsStatsValue;
 	private String currentTheme;
 	private Log log;
 	
@@ -97,6 +100,8 @@ public class Working implements Activity {
 		lastRenderTime = new JLabel("");
 		lastRender = new JLabel("");
 		userInfoQueuedUploadsAndSizeValue = new JLabel("0");
+		sessionDownloadsStatsValue = new JLabel("0KB");
+		sessionUploadsStatsValue = new JLabel("0KB");
 		currentTheme = UIManager.getLookAndFeel().getName();    // Capture the theme on component instantiation
 		previousStatus = "";
 		log = Log.getInstance(parent_.getConfiguration());
@@ -126,6 +131,8 @@ public class Working implements Activity {
 			lastRenderTime = new JLabel(lastRenderTime.getText());
 			lastRender = new JLabel(lastRender.getText());
 			userInfoQueuedUploadsAndSizeValue = new JLabel(userInfoQueuedUploadsAndSizeValue.getText());
+			sessionDownloadsStatsValue = new JLabel(sessionDownloadsStatsValue.getText());
+			sessionUploadsStatsValue = new JLabel(sessionUploadsStatsValue.getText());
 			
 			// set the new theme as the current one
 			currentTheme = UIManager.getLookAndFeel().getName();
@@ -163,6 +170,8 @@ public class Working implements Activity {
 		JLabel user_info_credits_this_session = new JLabel("Points earned: ", JLabel.TRAILING);
 		JLabel user_info_total_rendertime_this_session = new JLabel("Duration: ", JLabel.TRAILING);
 		JLabel user_info_pending_uploads_and_size = new JLabel("Queued uploads: ", JLabel.TRAILING);
+		JLabel session_download_stats = new JLabel("Total Downloads: ", JLabel.TRAILING);
+		JLabel session_upload_stats = new JLabel("Total Uploads: ", JLabel.TRAILING);
 		JLabel user_info_rendered_frame_this_session = new JLabel("Rendered frames: ", JLabel.TRAILING);
 		JLabel global_static_renderable_project = new JLabel("Renderable projects: ", JLabel.TRAILING);
 		
@@ -174,6 +183,12 @@ public class Working implements Activity {
 		
 		session_info_panel.add(user_info_pending_uploads_and_size);
 		session_info_panel.add(userInfoQueuedUploadsAndSizeValue);
+		
+		session_info_panel.add(session_download_stats);
+		session_info_panel.add(sessionDownloadsStatsValue);
+		
+		session_info_panel.add(session_upload_stats);
+		session_info_panel.add(sessionUploadsStatsValue);
 		
 		session_info_panel.add(global_static_renderable_project);
 		session_info_panel.add(renderable_projects_value);
@@ -260,10 +275,10 @@ public class Working implements Activity {
 		widthLeftColumn = Spring.max(widthLeftColumn, getBestWidth(session_info_panel, 4, 2));
 		alignPanel(current_project_panel, 5, 2, widthLeftColumn);
 		alignPanel(global_stats_panel, 4, 2, widthLeftColumn);
-		alignPanel(session_info_panel, 5, 2, widthLeftColumn);
+		alignPanel(session_info_panel, 7, 2, widthLeftColumn);
 		
 		// Set the proper size for the Working (if coming from Settings screen, the window size will be too big for the content!)
-		parent.setSize(520, 760);
+		parent.setSize(520, 820);
 	}
 	
 	public void setStatus(String msg_) {
@@ -303,6 +318,12 @@ public class Working implements Activity {
 		this.current_project_compute_method_value.setText(computeMethod_);
 	}
 	
+	public void displayTransferStats(TransferStats downloads, TransferStats uploads) {
+		sessionDownloadsStatsValue.setText(String.format("%s @ %s/s", downloads.getSessionTraffic(), downloads.getAverageSessionSpeed()));
+		sessionUploadsStatsValue.setText(String.format("%s @ %s/s", uploads.getSessionTraffic(), uploads.getAverageSessionSpeed()));
+		updateTime();
+	}
+	
 	public void displayStats(Stats stats) {
 		DecimalFormat df = new DecimalFormat("##,##,##,##,##,##,##0");
 		remainingFrameContent.setText(df.format(stats.getRemainingFrame()));
@@ -334,7 +355,7 @@ public class Working implements Activity {
 		}
 	}
 	
-	public void updateTime() {
+	public synchronized void updateTime() {
 		if (this.parent.getClient().getStartTime() != 0) {
 			user_info_total_rendertime_this_session_value
 					.setText(Utils.humanDuration(new Date((new Date().getTime() - this.parent.getClient().getStartTime()))));

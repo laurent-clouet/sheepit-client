@@ -50,6 +50,7 @@ import com.sheepit.client.Configuration;
 import com.sheepit.client.Gui;
 import com.sheepit.client.SettingsLoader;
 import com.sheepit.client.Stats;
+import com.sheepit.client.TransferStats;
 import com.sheepit.client.standalone.swing.activity.Settings;
 import com.sheepit.client.standalone.swing.activity.Working;
 import lombok.Getter;
@@ -221,6 +222,10 @@ public class GuiSwing extends JFrame implements Gui {
 		if (activityWorking != null) {
 			this.activityWorking.setRenderingTime(time_);
 		}
+	}
+	
+	@Override public synchronized void displayTransferStats(TransferStats downloads, TransferStats uploads) {
+		this.activityWorking.displayTransferStats(downloads, uploads);
 	}
 	
 	@Override public void AddFrameRendered() {
