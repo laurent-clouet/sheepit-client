@@ -141,12 +141,30 @@ import lombok.Getter;
 		return configuration.getWorkingDirectory().getAbsolutePath() + File.separator + rendererMD5;
 	}
 	
+	public String getRequiredRendererArchivePath() {
+		if (configuration.getSharedDownloadsDirectory() != null) {
+			return configuration.getSharedDownloadsDirectory().getAbsolutePath() + File.separator + rendererMD5 + ".zip";
+		}
+		else {
+			return getRendererArchivePath();
+		}
+	}
+	
 	public String getRendererPath() {
 		return getRendererDirectory() + File.separator + OS.getOS().getRenderBinaryPath();
 	}
 	
 	public String getRendererArchivePath() {
 		return configuration.getStorageDir().getAbsolutePath() + File.separator + rendererMD5 + ".zip";
+	}
+	
+	public String getRequiredSceneArchivePath() {
+		if (configuration.getSharedDownloadsDirectory() != null) {
+			return configuration.getSharedDownloadsDirectory().getAbsolutePath() + File.separator + sceneMD5 + ".zip";
+		}
+		else {
+			return getSceneArchivePath();
+		}
 	}
 	
 	public String getSceneDirectory() {
