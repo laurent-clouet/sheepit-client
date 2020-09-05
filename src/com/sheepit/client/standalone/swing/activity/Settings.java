@@ -159,7 +159,7 @@ public class Settings implements Activity {
 		currentRow++;
 		
 		// authentication
-		CollapsibleJPanel authentication_panel = new CollapsibleJPanel(new GridLayout(2, 2));
+		CollapsibleJPanel authentication_panel = new CollapsibleJPanel(new GridLayout(2, 2), this);
 		authentication_panel.setBorder(BorderFactory.createTitledBorder("Authentication"));
 		
 		JLabel loginLabel = new JLabel("Username:");
@@ -185,7 +185,7 @@ public class Settings implements Activity {
 		parent.getContentPane().add(authentication_panel, constraints);
 		
 		// Theme selection panel
-		CollapsibleJPanel themePanel = new CollapsibleJPanel(new GridLayout(1, 3));
+		CollapsibleJPanel themePanel = new CollapsibleJPanel(new GridLayout(1, 3), this);
 		themePanel.setBorder(BorderFactory.createTitledBorder("Theme"));
 		
 		themeOptionsGroup = new ButtonGroup();
@@ -215,7 +215,7 @@ public class Settings implements Activity {
 		parent.getContentPane().add(themePanel, constraints);
 		
 		// directory
-		CollapsibleJPanel directory_panel = new CollapsibleJPanel(new GridLayout(1, 3));
+		CollapsibleJPanel directory_panel = new CollapsibleJPanel(new GridLayout(1, 3), this);
 		directory_panel.setBorder(BorderFactory.createTitledBorder("Cache"));
 		JLabel cacheLabel = new JLabel("Working directory:");
 		directory_panel.add(cacheLabel);
@@ -249,7 +249,7 @@ public class Settings implements Activity {
 		// compute devices
 		GridBagLayout gridbag = new GridBagLayout();
 		GridBagConstraints compute_devices_constraints = new GridBagConstraints();
-		CollapsibleJPanel compute_devices_panel = new CollapsibleJPanel(gridbag);
+		CollapsibleJPanel compute_devices_panel = new CollapsibleJPanel(gridbag, this);
 		
 		compute_devices_panel.setBorder(BorderFactory.createTitledBorder("Compute devices"));
 		
@@ -453,7 +453,7 @@ public class Settings implements Activity {
 		parent.getContentPane().add(compute_devices_panel, constraints);
 		
 		// other
-		CollapsibleJPanel advanced_panel = new CollapsibleJPanel(new GridLayout(4, 2));
+		CollapsibleJPanel advanced_panel = new CollapsibleJPanel(new GridLayout(4, 2), this);
 		advanced_panel.setBorder(BorderFactory.createTitledBorder("Advanced options"));
 		
 		JLabel useSysTrayLabel = new JLabel("Minimize to SysTray");
@@ -541,6 +541,8 @@ public class Settings implements Activity {
 			new SaveAction().actionPerformed(null);
 		}
 	}
+	
+	public void resizeWindow() { }
 	
 	private void buildRenderBucketSizeSlider(int maxRenderbucketSize, int selectedBucketSize) {
 		Hashtable<Integer, JLabel> renderbucketSizeTable = new Hashtable<Integer, JLabel>();

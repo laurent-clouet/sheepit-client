@@ -53,10 +53,14 @@ import com.sheepit.client.TransferStats;
 import com.sheepit.client.Utils;
 import com.sheepit.client.standalone.GuiSwing;
 import com.sheepit.client.standalone.GuiSwing.ActivityType;
+import com.sheepit.client.standalone.swing.components.CollapsibleJPanel;
 
 public class Working implements Activity {
 	private GuiSwing parent;
 	
+	private CollapsibleJPanel session_info_panel;
+	private CollapsibleJPanel global_stats_panel;
+	private CollapsibleJPanel last_frame_panel;
 	private JLabel statusContent;
 	private String previousStatus;
 	private JLabel renderedFrameContent;
@@ -97,7 +101,7 @@ public class Working implements Activity {
 		waiting_projects_value = new JLabel("");
 		connected_machines_value = new JLabel("");
 		user_info_total_rendertime_this_session_value = new JLabel("");
-		lastRenderTime = new JLabel("");
+		lastRenderTime = new JLabel(" ");        // Insert a space to ensure the component reserves the space in the screen (for the window size calculation)
 		lastRender = new JLabel("");
 		userInfoQueuedUploadsAndSizeValue = new JLabel("0");
 		sessionDownloadsStatsValue = new JLabel("0KB");
@@ -139,7 +143,7 @@ public class Working implements Activity {
 		}
 		
 		// current project
-		JPanel current_project_panel = new JPanel(new SpringLayout());
+		JPanel current_project_panel = new JPanel(new GridLayout(5, 2));
 		current_project_panel.setBorder(BorderFactory.createTitledBorder("Project"));
 		
 		JLabel current_project_status = new JLabel("Status: ", JLabel.TRAILING);
@@ -164,7 +168,7 @@ public class Working implements Activity {
 		current_project_panel.add(current_project_compute_method_value);
 		
 		// user info
-		JPanel session_info_panel = new JPanel(new SpringLayout());
+		session_info_panel = new CollapsibleJPanel(new GridLayout(7, 2), this);
 		session_info_panel.setBorder(BorderFactory.createTitledBorder("Session infos"));
 		
 		JLabel user_info_credits_this_session = new JLabel("Points earned: ", JLabel.TRAILING);
@@ -197,7 +201,7 @@ public class Working implements Activity {
 		session_info_panel.add(user_info_total_rendertime_this_session_value);
 		
 		// global stats
-		JPanel global_stats_panel = new JPanel(new SpringLayout());
+		global_stats_panel = new CollapsibleJPanel(new GridLayout(4, 2), this);
 		global_stats_panel.setBorder(BorderFactory.createTitledBorder("Global stats"));
 		
 		JLabel global_stats_machine_connected = new JLabel("Machines connected: ", JLabel.TRAILING);
@@ -218,9 +222,10 @@ public class Working implements Activity {
 		global_stats_panel.add(user_info_points_total_value);
 		
 		// last frame
-		JPanel last_frame_panel = new JPanel();
+		last_frame_panel = new CollapsibleJPanel(new GridLayout(2, 2), this);
 		last_frame_panel.setLayout(new BoxLayout(last_frame_panel, BoxLayout.Y_AXIS));
 		last_frame_panel.setBorder(BorderFactory.createTitledBorder("Last uploaded frame"));
+		
 		lastRender.setIcon(new ImageIcon(new BufferedImage(200, 120, BufferedImage.TYPE_INT_ARGB)));
 		lastRender.setAlignmentX(Component.CENTER_ALIGNMENT);
 		lastRenderTime.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -270,15 +275,16 @@ public class Working implements Activity {
 		parent.getContentPane().add(new JLabel(" "), global_constraints);        // Add a separator between last panel and buttons
 		parent.getContentPane().add(buttonsPanel, global_constraints);
 		
-		Spring widthLeftColumn = getBestWidth(current_project_panel, 4, 2);
-		widthLeftColumn = Spring.max(widthLeftColumn, getBestWidth(global_stats_panel, 4, 2));
-		widthLeftColumn = Spring.max(widthLeftColumn, getBestWidth(session_info_panel, 4, 2));
-		alignPanel(current_project_panel, 5, 2, widthLeftColumn);
-		alignPanel(global_stats_panel, 4, 2, widthLeftColumn);
-		alignPanel(session_info_panel, 7, 2, widthLeftColumn);
-		
 		// Set the proper size for the Working (if coming from Settings screen, the window size will be too big for the content!)
-		parent.setSize(520, 820);
+		resizeWindow();
+	}
+	
+	public void resizeWindow() {
+		parent.revalidate();
+		parent.repaint();
+		
+		// Calculate the proper size based on the status of the panels (opened/collapsed)
+		parent.setSize(520, (int) (session_info_panel.getHeight() + global_stats_panel.getHeight() + last_frame_panel.getHeight()) + 400);
 	}
 	
 	public void setStatus(String msg_) {

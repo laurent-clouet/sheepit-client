@@ -23,4 +23,6 @@ public interface Activity {
 	
 	public void show();
 	
+	public void resizeWindow();
+	
 }
