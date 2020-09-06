@@ -55,6 +55,7 @@ public class SettingsLoader {
 	private String cacheDir;
 	private String autoSignIn;
 	private String useSysTray;
+	private String useLowBandwidthMode;
 	private String ui;
 	private String theme;
 	private int priority;
@@ -70,7 +71,7 @@ public class SettingsLoader {
 	
 	public SettingsLoader(String path_, String login_, String password_, String proxy_, String hostname_, ComputeType computeMethod_, GPUDevice gpu_,
 		int renderbucketSize_, int cores_, long maxRam_, int maxRenderTime_, String cacheDir_, boolean autoSignIn_, boolean useSysTray_, String ui_,
-		String theme_, int priority_) {
+		String theme_, int priority_, boolean useLowBandwidthMode_) {
 		if (path_ == null) {
 			path = getDefaultFilePath();
 		}
@@ -84,6 +85,7 @@ public class SettingsLoader {
 		cacheDir = cacheDir_;
 		autoSignIn = String.valueOf(autoSignIn_);
 		useSysTray = String.valueOf(useSysTray_);
+		useLowBandwidthMode = String.valueOf(useLowBandwidthMode_);
 		ui = ui_;
 		priority = priority_;
 		theme = theme_;
@@ -181,6 +183,10 @@ public class SettingsLoader {
 				prop.setProperty("use-systray", useSysTray);
 			}
 			
+			if (useLowBandwidthMode != null) {
+				prop.setProperty("low-bandwidth-mode", useLowBandwidthMode);
+			}
+			
 			if (ui != null) {
 				prop.setProperty("ui", ui);
 			}
@@ -232,6 +238,7 @@ public class SettingsLoader {
 		this.cacheDir = null;
 		this.autoSignIn = null;
 		this.useSysTray = null;
+		this.useLowBandwidthMode = null;
 		this.ui = null;
 		this.priority = 19; // must be the same default as Configuration
 		this.ram = null;
@@ -302,6 +309,10 @@ public class SettingsLoader {
 			
 			if (prop.containsKey("use-systray")) {
 				this.useSysTray = prop.getProperty("use-systray");
+			}
+
+			if (prop.containsKey("low-bandwidth-mode")) {
+				this.useLowBandwidthMode = prop.getProperty("low-bandwidth-mode");
 			}
 			
 			if (prop.containsKey("ui")) {
@@ -447,6 +458,11 @@ public class SettingsLoader {
 		// specified and the settings file contains use-systray=false, then deactivate as well.
 		if (!config.isUseSysTray() || (config.isUseSysTray() && useSysTray != null && useSysTray.equals("false"))) {
 			config.setUseSysTray(false);
+		}
+
+		// if the user has invoked the app with --extras scheduler:slow_connectivity, then we just overwrite the existing configuration with (boolean)true.
+		if ((useLowBandwidthMode != null && useLowBandwidthMode.equals("true")) || config.isUseLowBandwidthMode() || config.getExtras().equals("scheduler:slow_connectivity")) {
+			config.setUseLowBandwidthMode(true);
 		}
 		
 		config.setAutoSignIn(Boolean.parseBoolean(autoSignIn));

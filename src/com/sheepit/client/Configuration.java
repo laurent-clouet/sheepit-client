@@ -65,6 +65,7 @@ import lombok.Data;
 	private String extras;
 	private boolean autoSignIn;
 	private boolean useSysTray;
+	private boolean useLowBandwidthMode;
 	private String UIType;
 	private String hostname;
 	private String theme;
@@ -96,6 +97,7 @@ import lombok.Data;
 		this.extras = "";
 		this.autoSignIn = false;
 		this.useSysTray = true;
+		this.useLowBandwidthMode = false;
 		this.UIType = null;
 		this.theme = null;
 	}
