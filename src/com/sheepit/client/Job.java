@@ -46,7 +46,6 @@ import java.util.regex.Matcher;
 import com.sheepit.client.Configuration.ComputeType;
 import com.sheepit.client.Error.Type;
 import com.sheepit.client.hardware.cpu.CPU;
-import com.sheepit.client.hardware.gpu.GPUDevice;
 import com.sheepit.client.hardware.gpu.opencl.OpenCL;
 import com.sheepit.client.os.OS;
 import lombok.Data;
