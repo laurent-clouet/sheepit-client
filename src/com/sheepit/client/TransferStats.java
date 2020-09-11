@@ -1,10 +1,13 @@
 package com.sheepit.client;
 
+import lombok.AllArgsConstructor;
+
 /****************
  * Holds the session traffic statistics. The constructor accepts two parameters:
  * @long bytes - bytes transferred in the session
  * @Job seconds - seconds spent transferring the data
  */
+@AllArgsConstructor
 public class TransferStats {
 	private long bytes;
 	private long millis;
