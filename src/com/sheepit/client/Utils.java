@@ -228,4 +228,24 @@ public class Utils {
 
 		return mimeType;
 	}
+	
+	public static String formatDataConsumption(long bytes) {
+		float divider = 0;
+		String suffix = "";
+		
+		if (bytes > 1099511627776f) {    // 1TB
+			divider = 1099511627776f;
+			suffix = "TB";
+		}
+		else if (bytes > 1073741824) {    // 1GB
+			divider = 1073741824;
+			suffix = "GB";
+		}
+		else {    // 1MB
+			divider = 1048576;
+			suffix = "MB";
+		}
+		
+		return String.format("%.2f%s", (bytes / divider), suffix);
+	}
 }

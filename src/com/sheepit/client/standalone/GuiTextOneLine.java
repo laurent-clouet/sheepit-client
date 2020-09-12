@@ -22,6 +22,7 @@ package com.sheepit.client.standalone;
 import com.sheepit.client.Client;
 import com.sheepit.client.Gui;
 import com.sheepit.client.Stats;
+import com.sheepit.client.TransferStats;
 import com.sheepit.client.standalone.text.CLIInputActionHandler;
 import com.sheepit.client.standalone.text.CLIInputObserver;
 
@@ -152,6 +153,10 @@ public class GuiTextOneLine implements Gui {
 	@Override public void AddFrameRendered() {
 		rendered += 1;
 		updateLine();
+	}
+	
+	@Override public synchronized void displayTransferStats(TransferStats downloads, TransferStats uploads) {
+		// Session traffic stats not shown in the 1 line UI to avoid increasing the line length above 120 chars
 	}
 	
 	@Override public void displayStats(Stats stats) {
