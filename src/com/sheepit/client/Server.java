@@ -466,7 +466,8 @@ public class Server extends Thread {
 			gui_.displayTransferStats(dlStats, ulStats);
 			gui_.status(status_, 100, size);
 			
-			this.log.debug(String.format("File downloaded at %.1f KB/s, written %d bytes", (float) (size/1024) / duration.getSeconds(), written));
+			this.log.debug(String.format("File downloaded at %s/s, written %d bytes", new TransferStats(size, duration.getSeconds() + 1).getAverageSessionSpeed(), written));
+
 			this.lastRequestTime = new Date().getTime();
 			
 			return Error.Type.OK;
@@ -525,7 +526,7 @@ public class Server extends Thread {
 			this.ulStats.calc(fileHandler.length(), ((duration.getSeconds() * 1000) + (duration.getNano() / 1000000)));
 			gui.displayTransferStats(dlStats, ulStats);
 			
-			this.log.debug(String.format("File uploaded at %s/s, uploaded %d bytes", Utils.formatDataConsumption((long) fileHandler.length() / duration.getSeconds()), fileHandler.length()));
+			this.log.debug(String.format("File uploaded at %s/s, uploaded %d bytes", new TransferStats(fileHandler.length(), duration.getSeconds() + 1).getAverageSessionSpeed(), fileHandler.length()));
 			
 			int r = response.code();
 			String contentType = response.body().contentType().toString();
