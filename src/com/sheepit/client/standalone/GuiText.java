@@ -23,6 +23,7 @@ import com.sheepit.client.Client;
 import com.sheepit.client.Gui;
 import com.sheepit.client.Log;
 import com.sheepit.client.Stats;
+import com.sheepit.client.TransferStats;
 import com.sheepit.client.standalone.text.CLIInputActionHandler;
 import com.sheepit.client.standalone.text.CLIInputObserver;
 
@@ -130,6 +131,12 @@ public class GuiText implements Gui {
 	@Override public void AddFrameRendered() {
 		this.framesRendered += 1;
 		System.out.println(String.format("%s Frames rendered: %d", this.df.format(new Date()), this.framesRendered));
+	}
+	
+	@Override public synchronized void displayTransferStats(TransferStats downloads, TransferStats uploads) {
+		System.out.println(String
+			.format("%s Session downloads: %s @ %s/s / Uploads: %s @ %s/s", this.df.format(new Date()), downloads.getSessionTraffic(),
+				downloads.getAverageSessionSpeed(), uploads.getSessionTraffic(), uploads.getAverageSessionSpeed()));
 	}
 	
 	@Override public void displayStats(Stats stats) {

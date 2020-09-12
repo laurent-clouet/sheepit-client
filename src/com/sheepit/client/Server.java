@@ -28,6 +28,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -82,6 +84,9 @@ public class Server extends Thread {
 	private Log log;
 	private long lastRequestTime;
 	private int keepmealive_duration; // time in ms
+	
+	private TransferStats dlStats = new TransferStats();
+	private TransferStats ulStats = new TransferStats();
 	
 	public Server(String url_, Configuration user_config_, Client client_) {
 		super();
@@ -427,7 +432,6 @@ public class Server extends Thread {
 				return Error.Type.DOWNLOAD_FILE;
 			}
 			
-			long start = new Date().getTime();
 			is = response.body().byteStream();
 			output = new FileOutputStream(destination_);
 			
@@ -436,6 +440,8 @@ public class Server extends Thread {
 			int len = 0;
 			long written = 0;
 			long lastUpd = 0;    // last GUI progress update
+			
+			LocalDateTime startRequestTime = LocalDateTime.now();
 			
 			while ((len = is.read(buffer)) != -1) {
 				if (this.client.getRenderingJob().isServerBlockJob()) {
@@ -454,10 +460,13 @@ public class Server extends Thread {
 				}
 			}
 			
+			LocalDateTime endRequestTime = LocalDateTime.now();
+			Duration duration = Duration.between(startRequestTime, endRequestTime);
+			this.dlStats.calc(written, ((duration.getSeconds() * 1000) + (duration.getNano() / 1000000)));
+			gui_.displayTransferStats(dlStats, ulStats);
 			gui_.status(status_, 100, size);
 			
-			long end = new Date().getTime();
-			this.log.debug(String.format("File downloaded at %.1f kB/s, written %d B", ((float) (size / 1000)) / ((float) (end - start) / 1000), written));
+			this.log.debug(String.format("File downloaded at %.1f KB/s, written %d bytes", (float) (size/1024) / duration.getSeconds(), written));
 			this.lastRequestTime = new Date().getTime();
 			
 			return Error.Type.OK;
@@ -491,21 +500,32 @@ public class Server extends Thread {
 		return Error.Type.DOWNLOAD_FILE;
 	}
 	
-	public ServerCode HTTPSendFile(String surl, String file1, int checkpoint) {
+	public ServerCode HTTPSendFile(String surl, String file1, int checkpoint, Gui gui) {
 		this.log.debug(checkpoint, "Server::HTTPSendFile(" + surl + "," + file1 + ")");
 		
 		try {
 			String fileMimeType = Utils.findMimeType(file1);
+			File fileHandler    = new File(file1);
 
 			MediaType MEDIA_TYPE = MediaType.parse(fileMimeType); // e.g. "image/png"
 			
 			RequestBody uploadContent = new MultipartBody.Builder().setType(MultipartBody.FORM)
-				.addFormDataPart("file", new File(file1).getName(), RequestBody.create(new File(file1), MEDIA_TYPE)).build();
+				.addFormDataPart("file", fileHandler.getName(), RequestBody.create(fileHandler, MEDIA_TYPE)).build();
 			
 			Request request = new Request.Builder().addHeader("User-Agent", HTTP_USER_AGENT).url(surl).post(uploadContent).build();
 			
+			LocalDateTime startRequestTime = LocalDateTime.now();
+			
 			Call call = httpClient.newCall(request);
 			Response response = call.execute();
+			
+			LocalDateTime endRequestTime = LocalDateTime.now();
+			Duration duration = Duration.between(startRequestTime, endRequestTime);
+			
+			this.ulStats.calc(fileHandler.length(), ((duration.getSeconds() * 1000) + (duration.getNano() / 1000000)));
+			gui.displayTransferStats(dlStats, ulStats);
+			
+			this.log.debug(String.format("File uploaded at %s/s, uploaded %d bytes", Utils.formatDataConsumption((long) fileHandler.length() / duration.getSeconds()), fileHandler.length()));
 			
 			int r = response.code();
 			String contentType = response.body().contentType().toString();

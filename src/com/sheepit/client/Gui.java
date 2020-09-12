@@ -40,6 +40,8 @@ public interface Gui {
 	
 	public void setRenderingTime(String time_);
 	
+	public void  displayTransferStats(TransferStats downloads, TransferStats uploads);
+	
 	public void displayStats(Stats stats);
 	
 	public void displayUploadQueueStats(int queueSize, long queueVolume);

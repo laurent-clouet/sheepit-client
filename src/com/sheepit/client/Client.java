@@ -647,7 +647,7 @@ import lombok.Data;
 					args += "&extras=" + job_to_reset_.getExtras();
 				}
 			}
-			this.server.HTTPSendFile(this.server.getPage("error") + args, temp_file.getAbsolutePath(), step_);
+			this.server.HTTPSendFile(this.server.getPage("error") + args, temp_file.getAbsolutePath(), step_, this.gui);
 			temp_file.delete();
 		}
 		catch (Exception e) {
@@ -938,7 +938,7 @@ import lombok.Data;
 		Type confirmJobReturnCode = Error.Type.OK;
 		retryLoop:
 		while (nb_try < max_try && ret != ServerCode.OK) {
-			ret = this.server.HTTPSendFile(url_real, ajob.getOutputImagePath(), checkpoint);
+			ret = this.server.HTTPSendFile(url_real, ajob.getOutputImagePath(), checkpoint, this.gui);
 			switch (ret) {
 				case OK:
 					// no issue, exit the loop
