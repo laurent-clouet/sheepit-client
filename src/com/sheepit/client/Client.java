@@ -24,13 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadLocalRandom;
@@ -61,6 +55,7 @@ import lombok.Data;
 	private Job renderingJob;
 	private Job previousJob;
 	private BlockingQueue<QueuedJob> jobsToValidate;
+	private final Queue<File> frameDeletionQueue;
 	private boolean isValidatingJob;
 	private long startTime;
 	
@@ -83,6 +78,7 @@ import lombok.Data;
 		this.renderingJob = null;
 		this.previousJob = null;
 		this.jobsToValidate = new ArrayBlockingQueue<QueuedJob>(5);
+		this.frameDeletionQueue = new LinkedList<>();
 		this.isValidatingJob = false;
 		
 		this.disableErrorSending = false;
@@ -983,9 +979,12 @@ import lombok.Data;
 			gui.AddFrameRendered();
 		}
 		
-		// we can remove the frame file
-		File frame = new File(ajob.getOutputImagePath());
-		frame.delete();
+		if(!frameDeletionQueue.isEmpty()) {
+			// we can remove the previous frame file
+			frameDeletionQueue.poll().delete();
+		}
+		
+		frameDeletionQueue.add(new File(ajob.getOutputImagePath()));
 		ajob.setOutputImagePath(null);
 		
 		return confirmJobReturnCode;
@@ -1004,7 +1003,7 @@ import lombok.Data;
 	 * @int checkpoint - the checkpoint associated with the job (to add any additional log to the render output)
 	 * @Job job - the job to be validated
 	 */
-	@AllArgsConstructor class QueuedJob {
+	@AllArgsConstructor static class QueuedJob {
 		final private int checkpoint;
 		final private Job job;
 	}

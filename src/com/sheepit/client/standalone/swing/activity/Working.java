@@ -19,31 +19,19 @@
 
 package com.sheepit.client.standalone.swing.activity;
 
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
-import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Date;
 
 import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.UIManager;
-import javax.swing.Spring;
-import javax.swing.SpringLayout;
+import javax.swing.*;
 
 import com.sheepit.client.Client;
 import com.sheepit.client.Job;
@@ -223,6 +211,8 @@ public class Working implements Activity {
 		last_frame_panel.setBorder(BorderFactory.createTitledBorder("Last uploaded frame"));
 		lastRender.setIcon(new ImageIcon(new BufferedImage(200, 120, BufferedImage.TYPE_INT_ARGB)));
 		lastRender.setAlignmentX(Component.CENTER_ALIGNMENT);
+		lastRender.setVerticalTextPosition(SwingConstants.BOTTOM);
+		lastRender.setHorizontalTextPosition(SwingConstants.CENTER);
 		lastRenderTime.setAlignmentX(Component.CENTER_ALIGNMENT);
 		last_frame_panel.add(lastRenderTime);
 		last_frame_panel.add(lastRender);
@@ -380,6 +370,10 @@ public class Working implements Activity {
 		if (client != null) {
 			Job lastJob = client.getPreviousJob();
 			if (lastJob != null) {
+				for(MouseListener mouseListener : lastRender.getMouseListeners()) {
+					lastRender.removeMouseListener(mouseListener);
+				}
+				lastRender.setText(null);
 				ImageIcon icon = null;
 				int idInt = Integer.parseInt(lastJob.getId());
 				if (idInt == 1) {
@@ -403,6 +397,26 @@ public class Working implements Activity {
 							factor = Math.min(factor, 200f / width);
 						}
 						icon = new ImageIcon(img.getScaledInstance((int) (width * factor), (int) (height * factor), Image.SCALE_FAST));
+						
+						lastRender.setText("(Click to view in full resolution)");
+						lastRender.addMouseListener(new MouseListener() {
+							
+							@Override public void mouseClicked(MouseEvent e) {
+								try {
+									Desktop.getDesktop().open(new File(path));
+								}
+								catch (IOException exception) {
+									log.error(String.format("Working::showLastRender() Unable to load rendered frame [%s]. Exception %s",
+										lastJob.getOutputImagePath(), exception.getMessage()));
+								}
+							}
+							
+							@Override public void mousePressed(MouseEvent e) {}
+							@Override public void mouseReleased(MouseEvent e) {}
+							@Override public void mouseEntered(MouseEvent e) {}
+							@Override public void mouseExited(MouseEvent e) {}
+							
+						});
 					}
 					catch (IOException e) {
 						log.error(String.format("Working::showLastRender() Unable to load/preview rendered frame [%s]. Exception %s",
