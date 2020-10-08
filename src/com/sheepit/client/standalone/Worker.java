@@ -131,7 +131,12 @@ public class Worker {
 		config.setDetectGPUs(!no_gpu_detection);
 		
 		if (sharedDownloadsDir != null) {
-			config.setSharedDownloadsDirectory(new File(sharedDownloadsDir));
+			File dir = new File(sharedDownloadsDir);
+			if (dir.exists() == false || dir.canWrite() == false) {
+				System.err.println("ERROR: The shared-zip directory must exist and be writeable");
+				return;
+			}
+			config.setSharedDownloadsDirectory(dir);
 		}
 		
 		if (cache_dir != null) {
