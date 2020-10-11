@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.sheepit.client;
+package com.sheepit.client.util;
 
 import java.util.Objects;
 

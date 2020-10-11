@@ -42,7 +42,7 @@ import com.sheepit.client.Configuration;
 import com.sheepit.client.Configuration.ComputeType;
 import com.sheepit.client.Gui;
 import com.sheepit.client.Log;
-import com.sheepit.client.Pair;
+import com.sheepit.client.util.Pair;
 import com.sheepit.client.SettingsLoader;
 import com.sheepit.client.ShutdownHook;
 import com.sheepit.client.Utils;

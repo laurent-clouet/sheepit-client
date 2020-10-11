@@ -34,6 +34,7 @@ import java.util.List;
 import com.sheepit.client.hardware.cpu.CPU;
 import com.sheepit.client.hardware.gpu.GPUDevice;
 import com.sheepit.client.os.OS;
+import com.sheepit.client.util.Pair;
 import lombok.Data;
 
 @Data public class Configuration {

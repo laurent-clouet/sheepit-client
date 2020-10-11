@@ -17,57 +17,20 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package com.sheepit.client;
+package com.sheepit.client.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor
+@Getter
 public class Stats {
-	private int remainingFrame;
-	private int creditsEarned;
-	private int creditsEarnedSession;
-	private int renderableProject;
-	private int waitingProject;
-	private int connectedMachine;
-	
-	public Stats(int frame, int credits, int creditsSession, int renderables, int waitings, int machines) {
-		remainingFrame = frame;
-		creditsEarned = credits;
-		creditsEarnedSession = creditsSession;
-		renderableProject = renderables;
-		waitingProject = waitings;
-		connectedMachine = machines;
-	}
-	
-	public Stats() {
-		remainingFrame = 0;
-		creditsEarned = 0;
-		creditsEarnedSession = 0;
-		renderableProject = 0;
-		waitingProject = 0;
-		connectedMachine = 0;
-	}
-	
-	public int getRemainingFrame() {
-		return remainingFrame;
-	}
-	
-	public int getCreditsEarnedDuringSession() {
-		return creditsEarnedSession;
-	}
-	
-	public int getCreditsEarned() {
-		return creditsEarned;
-	}
-	
-	public int getRenderableProject() {
-		return renderableProject;
-	}
-	
-	public int getWaitingProject() {
-		return waitingProject;
-	}
-	
-	public int getConnectedMachine() {
-		return connectedMachine;
-	}
+	private final int remainingFrame;
+	private final int creditsEarned;
+	private final int creditsEarnedSession;
+	private final int renderableProject;
+	private final int waitingProject;
+	private final int connectedMachine;
 	
 	@Override public String toString() {
 		return "Stats [remainingFrame=" + remainingFrame + ", creditsEarned=" + creditsEarned + ", creditsEarnedSession=" + creditsEarnedSession

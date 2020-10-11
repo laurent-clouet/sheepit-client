@@ -1,5 +1,6 @@
-package com.sheepit.client;
+package com.sheepit.client.dto;
 
+import com.sheepit.client.Utils;
 import lombok.AllArgsConstructor;
 
 /****************

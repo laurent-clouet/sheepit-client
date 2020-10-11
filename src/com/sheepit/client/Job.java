@@ -48,71 +48,67 @@ import com.sheepit.client.Error.Type;
 import com.sheepit.client.hardware.cpu.CPU;
 import com.sheepit.client.hardware.gpu.opencl.OpenCL;
 import com.sheepit.client.os.OS;
-import lombok.Data;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
-@Data public class Job {
+@Builder
+public class Job {
 	public static final String UPDATE_METHOD_BY_REMAINING_TIME = "remainingtime";
 	public static final String UPDATE_METHOD_BLENDER_INTERNAL_BY_PART = "blenderinternal";
 	public static final String UPDATE_METHOD_BY_TILE = "by_tile";
 	
 	public static final int SHOW_BASE_ICON = -1;
 	
-	private String frameNumber;
-	private String sceneMD5;
-	private String rendererMD5;
-	private String id;
+	@Getter
+	private final String frameNumber;
+	@Getter
+	private final String sceneMD5;
+	@Getter
+	private final String rendererMD5;
+	@Getter
+	private final String id;
+	@Getter
+	@Setter
 	private String outputImagePath;
+	@Getter
 	private long outputImageSize;
-	private String path; // path inside of the archive
-	private String rendererCommand;
+	@Getter(AccessLevel.PRIVATE)
+	private final String path; // path inside of the archive
+	@Getter(AccessLevel.PRIVATE)
+	private final String rendererCommand;
+	@Getter
 	private String validationUrl;
-	private String script;
-	private boolean useGPU;
-	private String name;
+	@Getter(AccessLevel.PRIVATE)
+	private final String script;
+	@Getter(AccessLevel.PRIVATE)
+	private final boolean useGPU;
+	@Getter
+	private final String name;
+	@Getter
 	private String password;
-	private String extras;
-	private String updateRenderingStatusMethod;
-	private String blenderShortVersion;
+	@Getter
+	private final String extras;
+	@Getter(AccessLevel.PRIVATE)
+	private final String updateRenderingStatusMethod;
+	@Getter
 	private String blenderLongVersion;
+	@Getter
 	private boolean synchronousUpload;
-	private RenderProcess render;
+	private final RenderProcess render;
+	@Setter
+	@Getter(AccessLevel.PRIVATE)
 	private boolean askForRendererKill;
+	@Getter
+	@Setter
 	private boolean userBlockJob;
+	@Getter
+	@Setter
 	private boolean serverBlockJob;
-	private Gui gui;
-	private Configuration configuration;
-	private Log log;
-	
-	public Job(Configuration config_, Gui gui_, Log log_, String id_, String frame_, String path_, boolean use_gpu, String command_, String validationUrl_,
-			String script_, String sceneMd5_, String rendererMd5_, String name_, String password_, String extras_, boolean synchronous_upload_,
-			String update_method_) {
-		configuration = config_;
-		id = id_;
-		frameNumber = frame_;
-		path = path_;
-		useGPU = use_gpu;
-		rendererCommand = command_;
-		validationUrl = validationUrl_;
-		sceneMD5 = sceneMd5_;
-		rendererMD5 = rendererMd5_;
-		name = name_;
-		password = password_;
-		extras = extras_;
-		synchronousUpload = synchronous_upload_;
-		gui = gui_;
-		outputImagePath = null;
-		outputImageSize = 0;
-		script = script_;
-		updateRenderingStatusMethod = update_method_;
-		askForRendererKill = false;
-		userBlockJob = false;
-		serverBlockJob = false;
-		log = log_;
-		render = new RenderProcess();
-		blenderShortVersion = null;
-		blenderLongVersion = null;
-	}
+	private final Gui gui;
+	private final Configuration configuration;
+	private final Log log;
 	
 	public void block() {
 		setAskForRendererKill(true);
@@ -310,7 +306,6 @@ import lombok.Getter;
 						
 						if (blendDetectedVersion.find()) {
 							blenderLongVersion  = blendDetectedVersion.group(1);
-							blenderShortVersion = blendDetectedVersion.group(2);
 						}
 					}
 					
