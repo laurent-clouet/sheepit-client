@@ -31,7 +31,7 @@ public class Log {
 	
 	private Map<Integer, ArrayList<String>> checkpoints = new HashMap<Integer, ArrayList<String>>();
 	private int lastCheckPoint;
-	private DateFormat dateFormat;
+	private final DateFormat dateFormat = new SimpleDateFormat("dd-MM HH:mm:ss");
 	
 	private boolean printStdOut;
 	
@@ -39,7 +39,6 @@ public class Log {
 		this.printStdOut = print_;
 		this.lastCheckPoint = 0;
 		this.checkpoints.put(this.lastCheckPoint, new ArrayList<String>());
-		this.dateFormat = new SimpleDateFormat("dd-MM HH:mm:ss");
 	}
 	
 	public void debug(String msg_) {
@@ -72,12 +71,12 @@ public class Log {
 		try {
 			int checkpointToWrite = (point_ > 0 ? point_ : this.lastCheckPoint);
 			
-			if (msg_.equals("") == false) {
+			if (!msg_.equals("")) {
 				line = this.dateFormat.format(new java.util.Date()) + " (" + level_ + ") " + msg_;
 				if (this.checkpoints.containsKey(checkpointToWrite) && this.checkpoints.get(checkpointToWrite) != null) {
 					this.checkpoints.get(checkpointToWrite).add(line);
 				}
-				if (this.printStdOut == true) {
+				if (this.printStdOut) {
 					System.out.println(line);
 				}
 			}

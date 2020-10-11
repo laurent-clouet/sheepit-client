@@ -21,8 +21,8 @@ package com.sheepit.client.standalone;
 
 import com.sheepit.client.Client;
 import com.sheepit.client.Gui;
-import com.sheepit.client.Stats;
-import com.sheepit.client.TransferStats;
+import com.sheepit.client.dto.Stats;
+import com.sheepit.client.dto.TransferStats;
 import com.sheepit.client.standalone.text.CLIInputActionHandler;
 import com.sheepit.client.standalone.text.CLIInputObserver;
 
@@ -161,7 +161,7 @@ public class GuiTextOneLine implements Gui {
 	
 	@Override public void displayStats(Stats stats) {
 		remaining = stats.getRemainingFrame();
-		creditsEarned = String.valueOf(stats.getCreditsEarnedDuringSession());
+		creditsEarned = String.valueOf(stats.getCreditsEarnedSession());
 		updateLine();
 	}
 	

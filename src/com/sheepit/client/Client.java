@@ -50,27 +50,38 @@ import com.sheepit.client.exception.FermeServerDown;
 import com.sheepit.client.hardware.cpu.CPU;
 import com.sheepit.client.os.OS;
 
+import com.sheepit.client.util.Pair;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 
-@Data public class Client {
+public class Client {
+	@Getter
 	private Gui gui;
+	@Getter
 	private Server server;
+	@Getter
 	private Configuration configuration;
+	@Getter
 	private Log log;
+	@Getter
 	private Job renderingJob;
+	@Getter
 	private Job previousJob;
 	private BlockingQueue<QueuedJob> jobsToValidate;
 	private boolean isValidatingJob;
+	@Getter
 	private long startTime;
 	
 	private boolean disableErrorSending;
+	@Getter
 	private boolean running;
+	@Getter
 	private boolean suspended;
 	private boolean shuttingdown;
 	
-	private int maxDownloadFileAttempts = 5;
+	private static final int MAX_DOWNLOAD_FILE_ATTEMPTS = 5;
 	
+	@Getter
 	private int uploadQueueSize;
 	private long uploadQueueVolume;
 	private int noJobRetryIter;
@@ -432,10 +443,10 @@ import lombok.Data;
 						this.renderingJob = null;
 					}
 					
-					if (this.shouldWaitBeforeRender() == true) {
+					if (this.shouldWaitBeforeRender()) {
 						this.gui.status("Sending frames. Please wait");
 						
-						while (this.shouldWaitBeforeRender() == true) {
+						while (this.shouldWaitBeforeRender()) {
 							try {
 								Thread.sleep(4000); // wait a little bit
 							}
@@ -814,7 +825,7 @@ import lombok.Data;
 		boolean md5_check = this.checkFile(ajob, local_path, md5_server);
 		int attempts = 1;
 		
-		while ((ret != Error.Type.OK || md5_check == false) && attempts < this.maxDownloadFileAttempts) {
+		while ((ret != Error.Type.OK || md5_check == false) && attempts < MAX_DOWNLOAD_FILE_ATTEMPTS) {
 			if (ret != Error.Type.OK) {
 				this.gui.error(String.format("Unable to download %s (error %s). Retrying now", download_type, ret));
 				this.log.debug("Client::downloadFile problem with Server.HTTPGetFile (return: " + ret + ") removing local file (path: " + local_path + ")");
@@ -825,15 +836,15 @@ import lombok.Data;
 			}
 			local_path_file.delete();
 			
-			this.log.debug("Client::downloadFile failed, let's try again (" + (attempts + 1) + "/" + this.maxDownloadFileAttempts + ") ...");
+			this.log.debug("Client::downloadFile failed, let's try again (" + (attempts + 1) + "/" + MAX_DOWNLOAD_FILE_ATTEMPTS + ") ...");
 			
 			ret = this.server.HTTPGetFile(url, local_path, this.gui, update_ui);
 			
 			md5_check = this.checkFile(ajob, local_path, md5_server);
 			attempts++;
 			
-			if ((ret != Error.Type.OK || md5_check == false) && attempts >= this.maxDownloadFileAttempts) {
-				this.log.debug("Client::downloadFile failed after " + this.maxDownloadFileAttempts + " attempts, removing local file (path: " + local_path
+			if ((ret != Error.Type.OK || md5_check == false) && attempts >= MAX_DOWNLOAD_FILE_ATTEMPTS) {
+				this.log.debug("Client::downloadFile failed after " + MAX_DOWNLOAD_FILE_ATTEMPTS + " attempts, removing local file (path: " + local_path
 						+ "), stopping...");
 				local_path_file.delete();
 				return Type.DOWNLOAD_FILE;

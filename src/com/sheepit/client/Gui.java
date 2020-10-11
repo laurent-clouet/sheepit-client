@@ -19,42 +19,45 @@
 
 package com.sheepit.client;
 
+import com.sheepit.client.dto.Stats;
+import com.sheepit.client.dto.TransferStats;
+
 public interface Gui {
-	public void start();
+	void start();
 	
-	public void stop();
+	void stop();
 	
-	public void status(String msg_);
+	void status(String msg_);
 	
-	public void status(String msg_, boolean overwriteSuspendedMsg);
+	void status(String msg_, boolean overwriteSuspendedMsg);
 	
-	public void status(String msg_, int progress);
+	void status(String msg_, int progress);
 	
-	public void status(String msg_, int progress, long size);
+	void status(String msg_, int progress, long size);
 	
-	public void updateTrayIcon(Integer percentage_);
+	void updateTrayIcon(Integer percentage_);
 	
-	public void setRenderingProjectName(String name_);
+	void setRenderingProjectName(String name_);
 	
-	public void setRemainingTime(String time_);
+	void setRemainingTime(String time_);
 	
-	public void setRenderingTime(String time_);
+	void setRenderingTime(String time_);
 	
-	public void  displayTransferStats(TransferStats downloads, TransferStats uploads);
+	void displayTransferStats(TransferStats downloads, TransferStats uploads);
 	
-	public void displayStats(Stats stats);
+	void displayStats(Stats stats);
 	
-	public void displayUploadQueueStats(int queueSize, long queueVolume);
+	void displayUploadQueueStats(int queueSize, long queueVolume);
 	
-	public void error(String err_);
+	void error(String err_);
 	
-	public void AddFrameRendered();
+	void AddFrameRendered();
 	
-	public void successfulAuthenticationEvent(String publickey);
+	void successfulAuthenticationEvent(String publickey);
 	
-	public void setClient(Client cli);
+	void setClient(Client cli);
 	
-	public void setComputeMethod(String computeMethod_);
+	void setComputeMethod(String computeMethod_);
 	
-	public Client getClient();
+	Client getClient();
 }

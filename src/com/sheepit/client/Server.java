@@ -36,6 +36,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+import com.sheepit.client.dto.Stats;
+import com.sheepit.client.dto.TransferStats;
 import lombok.Getter;
 import org.simpleframework.xml.core.Persister;
 
@@ -344,14 +346,26 @@ public class Server extends Thread {
 				
 				String validationUrl = URLDecoder.decode(jobData.getRenderTask().getValidationUrl(), "UTF-8");
 				
-				Job a_job = new Job(this.user_config, this.client.getGui(), this.client.getLog(), jobData.getRenderTask().getId(),
-						jobData.getRenderTask().getFrame(), jobData.getRenderTask().getPath().replace("/", File.separator),
-						jobData.getRenderTask().getUseGpu() == 1, jobData.getRenderTask().getRendererInfos().getCommandline(), validationUrl, script,
-						jobData.getRenderTask().getArchive_md5(), jobData.getRenderTask().getRendererInfos().getMd5(), jobData.getRenderTask().getName(),
-						jobData.getRenderTask().getPassword(), jobData.getRenderTask().getExtras(), jobData.getRenderTask().getSynchronous_upload().equals("1"),
-						jobData.getRenderTask().getRendererInfos().getUpdate_method());
-				
-				return a_job;
+				return Job.builder()
+					.configuration(this.user_config)
+					.gui(this.client.getGui())
+					.log(this.client.getLog())
+					.id(jobData.getRenderTask().getId())
+					.frameNumber(jobData.getRenderTask().getFrame())
+					.path(jobData.getRenderTask().getPath().replace("/", File.separator))
+					.useGPU(jobData.getRenderTask().getUseGpu() == 1)
+					.rendererCommand(jobData.getRenderTask().getRendererInfos().getCommandline())
+					.validationUrl(validationUrl)
+					.script(script)
+					.sceneMD5(jobData.getRenderTask().getArchive_md5())
+					.rendererMD5(jobData.getRenderTask().getRendererInfos().getMd5())
+					.name(jobData.getRenderTask().getName())
+					.password(jobData.getRenderTask().getPassword())
+					.extras(jobData.getRenderTask().getExtras())
+					.synchronousUpload(jobData.getRenderTask().getSynchronous_upload().equals("1"))
+					.updateRenderingStatusMethod(jobData.getRenderTask().getRendererInfos().getUpdate_method())
+					.render(new RenderProcess())
+					.build();
 			}
 			else {
 				System.out.println("Server::requestJob url " + url_contents + " r " + r + " contentType " + contentType);

@@ -48,8 +48,8 @@ import javax.swing.SpringLayout;
 import com.sheepit.client.Client;
 import com.sheepit.client.Job;
 import com.sheepit.client.Log;
-import com.sheepit.client.Stats;
-import com.sheepit.client.TransferStats;
+import com.sheepit.client.dto.Stats;
+import com.sheepit.client.dto.TransferStats;
 import com.sheepit.client.Utils;
 import com.sheepit.client.standalone.GuiSwing;
 import com.sheepit.client.standalone.GuiSwing.ActivityType;
@@ -327,7 +327,7 @@ public class Working implements Activity {
 	public void displayStats(Stats stats) {
 		DecimalFormat df = new DecimalFormat("##,##,##,##,##,##,##0");
 		remainingFrameContent.setText(df.format(stats.getRemainingFrame()));
-		creditEarned.setText(df.format(stats.getCreditsEarnedDuringSession()));
+		creditEarned.setText(df.format(stats.getCreditsEarnedSession()));
 		user_info_points_total_value.setText(df.format(stats.getCreditsEarned()));
 		renderable_projects_value.setText(df.format(stats.getRenderableProject()));
 		waiting_projects_value.setText(df.format(stats.getWaitingProject()));

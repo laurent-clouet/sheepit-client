@@ -44,11 +44,6 @@ import net.lingala.zip4j.model.UnzipParameters;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
-import com.sheepit.client.Error.ServerCode;
 import com.sheepit.client.exception.FermeExceptionNoSpaceLeftOnDevice;
 
 public class Utils {
@@ -110,21 +105,6 @@ public class Utils {
 		}
 		
 		return max;
-	}
-	
-	public static ServerCode statusIsOK(Document document_, String rootname_) {
-		if (document_ == null) {
-			return Error.ServerCode.UNKNOWN;
-		}
-		NodeList ns = document_.getElementsByTagName(rootname_);
-		if (ns.getLength() == 0) {
-			return Error.ServerCode.ERROR_NO_ROOT;
-		}
-		Element a_node = (Element) ns.item(0);
-		if (a_node.hasAttribute("status")) {
-			return Error.ServerCode.fromInt(Integer.parseInt(a_node.getAttribute("status")));
-		}
-		return Error.ServerCode.UNKNOWN;
 	}
 	
 	/**

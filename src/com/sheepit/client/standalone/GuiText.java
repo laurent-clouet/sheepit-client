@@ -22,8 +22,8 @@ package com.sheepit.client.standalone;
 import com.sheepit.client.Client;
 import com.sheepit.client.Gui;
 import com.sheepit.client.Log;
-import com.sheepit.client.Stats;
-import com.sheepit.client.TransferStats;
+import com.sheepit.client.dto.Stats;
+import com.sheepit.client.dto.TransferStats;
 import com.sheepit.client.standalone.text.CLIInputActionHandler;
 import com.sheepit.client.standalone.text.CLIInputObserver;
 
@@ -141,7 +141,7 @@ public class GuiText implements Gui {
 	
 	@Override public void displayStats(Stats stats) {
 		System.out.println(String.format("%s Frames remaining: %d", this.df.format(new Date()), stats.getRemainingFrame()));
-		System.out.println(String.format("%s Credits earned: %d", this.df.format(new Date()), stats.getCreditsEarnedDuringSession()));
+		System.out.println(String.format("%s Credits earned: %d", this.df.format(new Date()), stats.getCreditsEarnedSession()));
 	}
 	
 	@Override public void displayUploadQueueStats(int queueSize, long queueVolume) {
