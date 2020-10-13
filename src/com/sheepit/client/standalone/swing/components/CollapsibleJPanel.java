@@ -17,6 +17,8 @@
  */
 package com.sheepit.client.standalone.swing.components;
 
+import com.sheepit.client.standalone.swing.activity.Activity;
+
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.LayoutManager;
@@ -35,10 +37,12 @@ public class CollapsibleJPanel extends JPanel {
 	private String borderTitle = "";
 	private int COLLAPSED_HEIGHT = 22;
 	private boolean[] originalVisibilty;
+	private Activity parent;
 	
-	public CollapsibleJPanel(LayoutManager layoutManager) {
+	public CollapsibleJPanel(LayoutManager layoutManager, Activity parent) {
 		setLayout(layoutManager);
 		addMouseListener(new onClickHandler());
+		this.parent = parent;
 	}
 	
 	public void setCollapsed(boolean aFlag) {
@@ -134,6 +138,9 @@ public class CollapsibleJPanel extends JPanel {
 			if (e.getPoint().y < COLLAPSED_HEIGHT) { // Only if click is on top of panel
 				((CollapsibleJPanel) e.getComponent()).toggleCollapsed();
 			}
+			
+			// Recalculate the proper window size
+			parent.resizeWindow();
 		}
 		
 		@Override public void mouseEntered(MouseEvent e) {
