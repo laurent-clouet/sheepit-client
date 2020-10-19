@@ -74,6 +74,7 @@ import com.sheepit.client.os.OS;
 
 public class Server extends Thread {
 	final private String HTTP_USER_AGENT = "Java/" + System.getProperty("java.version");
+	final private String LOW_CONNECTIVITY_MODE = "scheduler:slow_connectivity";
 	private String base_url;
 	private final OkHttpClient httpClient;
 	
@@ -187,6 +188,12 @@ public class Server extends Thread {
 	public Error.Type getConfiguration() {
 		OS os = OS.getOS();
 		String publickey = null;
+		
+		// If user has configured low-bandwidth mode and the information is not already in the extras string, the add to whatever value has already
+		if (user_config.isUseLowBandwidthMode() && user_config.getExtras().indexOf(LOW_CONNECTIVITY_MODE) == -1) {
+			user_config.setExtras((LOW_CONNECTIVITY_MODE + " " + user_config.getExtras()).trim());
+		}
+		
 		try {
 			HttpUrl.Builder remoteURL = Objects.requireNonNull(HttpUrl.parse(this.base_url + "/server/config.php")).newBuilder();
 			FormBody formBody = new FormBody.Builder()

@@ -86,6 +86,7 @@ public class Settings implements Activity {
 	private JCheckBox useCPU;
 	private List<JCheckBoxGPU> useGPUs;
 	private JCheckBox useSysTray;
+	private JCheckBox useLowBandwidthMode;
 	private JLabel renderbucketSizeLabel;
 	private JSlider renderbucketSize;
 	private JSlider cpuCores;
@@ -105,6 +106,7 @@ public class Settings implements Activity {
 	
 	private boolean haveAutoStarted;
 	private boolean useSysTrayPrevState;
+	private boolean useLowBandwidthPrevState;
 	
 	public Settings(GuiSwing parent_) {
 		parent = parent_;
@@ -117,6 +119,7 @@ public class Settings implements Activity {
 		Configuration config = parent.getConfiguration();
 		new SettingsLoader(config.getConfigFilePath()).merge(config);
 		useSysTrayPrevState = config.isUseSysTray();
+		useLowBandwidthPrevState = config.isUseLowBandwidthMode();
 		
 		applyTheme(config.getTheme());    // apply the proper theme (light/dark)
 		
@@ -453,7 +456,7 @@ public class Settings implements Activity {
 		parent.getContentPane().add(compute_devices_panel, constraints);
 		
 		// other
-		CollapsibleJPanel advanced_panel = new CollapsibleJPanel(new GridLayout(4, 2));
+		CollapsibleJPanel advanced_panel = new CollapsibleJPanel(new GridLayout(5, 2));
 		advanced_panel.setBorder(BorderFactory.createTitledBorder("Advanced options"));
 		
 		JLabel useSysTrayLabel = new JLabel("Minimize to SysTray");
@@ -462,6 +465,13 @@ public class Settings implements Activity {
 		useSysTray.setSelected(config.isUseSysTray());
 		advanced_panel.add(useSysTrayLabel);
 		advanced_panel.add(useSysTray);
+		
+		JLabel useLowBandwidthModeLabel = new JLabel("Use low-bandwidth mode");
+		
+		useLowBandwidthMode = new JCheckBox();
+		useLowBandwidthMode.setSelected(config.isUseLowBandwidthMode());
+		advanced_panel.add(useLowBandwidthModeLabel);
+		advanced_panel.add(useLowBandwidthMode);
 		
 		JLabel proxyLabel = new JLabel("Proxy:");
 		proxyLabel.setToolTipText("http://login:password@host:port");
@@ -533,7 +543,7 @@ public class Settings implements Activity {
 		parent.getContentPane().add(saveButton, constraints);
 
 		// Increase the size of the app Window to ensure it shows all the information with the Advanced Options panel opened.
-		parent.setSize(520,850);
+		parent.setSize(520,870);
 		
 		if (haveAutoStarted == false && config.isAutoSignIn() && checkDisplaySaveButton()) {
 			// auto start
@@ -787,7 +797,7 @@ public class Settings implements Activity {
 				parent.setSettingsLoader(
 						new SettingsLoader(config.getConfigFilePath(), login.getText(), new String(password.getPassword()), proxyText, hostnameText, method,
 								selected_gpu, renderbucket_size, cpu_cores, max_ram, max_rendertime, cachePath, autoSignIn.isSelected(), useSysTray.isSelected(),
-								GuiSwing.type, themeOptionsGroup.getSelection().getActionCommand(), priority.getValue()));
+								GuiSwing.type, themeOptionsGroup.getSelection().getActionCommand(), priority.getValue(), useLowBandwidthMode.isSelected()));
 				
 				// wait for successful authentication (to store the public key)
 				// or do we already have one?
@@ -797,6 +807,10 @@ public class Settings implements Activity {
 				
 				if (useSysTrayPrevState != useSysTray.isSelected()) {
 					JOptionPane.showMessageDialog(null, "You must restart the SheepIt app for the SysTray change to take effect");
+				}
+				
+				if (useLowBandwidthPrevState != useLowBandwidthMode.isSelected()) {
+					JOptionPane.showMessageDialog(null, "You must restart the SheepIt app for the low-bandwidth mode change to take effect");
 				}
 			}
 		}
