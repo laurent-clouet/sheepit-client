@@ -262,6 +262,12 @@ import lombok.Data;
 				files.addAll(Arrays.asList(filesInDirectory));
 			}
 		}
+		if (this.sharedDownloadsDirectory != null) {
+			File[] filesInDirectory = this.sharedDownloadsDirectory.listFiles();
+			if (filesInDirectory != null) {
+				files.addAll(Arrays.asList(filesInDirectory));
+			}
+		}
 		
 		for (File file : files) {
 			if (file.isFile()) {
