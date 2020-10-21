@@ -61,6 +61,8 @@ public class Worker {
 	
 	@Option(name = "-cache-dir", usage = "Cache/Working directory. Caution, everything in it not related to the render-farm will be removed", metaVar = "/tmp/cache", required = false) private String cache_dir = null;
 	
+	@Option(name = "-shared-zip", usage = "Shared directory for downloaded binaries and scenes. Useful when running two or more clients in the same computer/network to download once and render many times. IMPORTANT: This option and value must be identical in ALL clients sharing the directory.", required = false) private String sharedDownloadsDir = null;
+	
 	@Option(name = "-gpu", usage = "Name of the GPU used for the render, for example CUDA_0 for Nvidia or OPENCL_0 for AMD/Intel card", metaVar = "CUDA_0", required = false) private String gpu_device = null;
 	
 	@Option(name = "--no-gpu", usage = "Don't detect GPUs", required = false) private boolean no_gpu_detection = false;
@@ -129,6 +131,15 @@ public class Worker {
 		config.setPrintLog(print_log);
 		config.setUsePriority(priority);
 		config.setDetectGPUs(!no_gpu_detection);
+		
+		if (sharedDownloadsDir != null) {
+			File dir = new File(sharedDownloadsDir);
+			if (dir.exists() == false || dir.canWrite() == false) {
+				System.err.println("ERROR: The shared-zip directory must exist and be writeable");
+				return;
+			}
+			config.setSharedDownloadsDirectory(dir);
+		}
 		
 		if (cache_dir != null) {
 			File a_dir = new File(cache_dir);

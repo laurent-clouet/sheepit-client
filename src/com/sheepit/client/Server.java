@@ -433,7 +433,7 @@ public class Server extends Thread {
 			}
 			
 			is = response.body().byteStream();
-			output = new FileOutputStream(destination_);
+			output = new FileOutputStream(destination_ + ".partial");
 			
 			long size = response.body().contentLength();
 			byte[] buffer = new byte[8 * 1024];
@@ -488,6 +488,17 @@ public class Server extends Thread {
 					output.close();
 				}
 				
+				File downloadedFile = new File(destination_ + ".partial");
+				
+				if (downloadedFile.exists()) {
+					// Rename file (or directory)
+					boolean success = downloadedFile.renameTo(new File(destination_));
+					
+					if (!success) {
+						this.log.debug(String.format("Server::HTTPGetFile Error trying to rename the downloaded file to final name (%s)", destination_));
+					}
+				}
+
 				if (is != null) {
 					is.close();
 				}
@@ -629,6 +640,14 @@ public class Server extends Thread {
 					File file_to_delete = new File(path + ".zip");
 					file_to_delete.delete();
 					Utils.delete(new File(path));
+					
+					// If we are using a shared downloads directory, then delete the file from the shared downloads directory as well :)
+					if (this.user_config.getSharedDownloadsDirectory() != null) {
+						String commonCacheFile = this.user_config.getSharedDownloadsDirectory().getAbsolutePath() + File.separatorChar + fileMD5.getMd5();
+						this.log.debug("Server::handleFileMD5DeleteDocument delete common file " + commonCacheFile + ".zip");
+						file_to_delete = new File(commonCacheFile + ".zip");
+						file_to_delete.delete();
+					}
 				}
 			}
 		}

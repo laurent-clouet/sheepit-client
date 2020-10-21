@@ -24,16 +24,21 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 import com.sheepit.client.Error.ServerCode;
 import com.sheepit.client.Error.Type;
@@ -783,12 +788,12 @@ import lombok.Data;
 	}
 	
 	protected Error.Type downloadSceneFile(Job ajob_) throws FermeExceptionNoSpaceLeftOnDevice {
-		return this.downloadFile(ajob_, ajob_.getSceneArchivePath(), ajob_.getSceneMD5(),
+		return this.downloadFile(ajob_, ajob_.getRequiredSceneArchivePath(), ajob_.getSceneMD5(),
 				String.format("%s?type=job&job=%s", this.server.getPage("download-archive"), ajob_.getId()), "project");
 	}
 	
 	protected Error.Type downloadExecutable(Job ajob) throws FermeExceptionNoSpaceLeftOnDevice {
-		return this.downloadFile(ajob, ajob.getRendererArchivePath(), ajob.getRendererMD5(),
+		return this.downloadFile(ajob, ajob.getRequiredRendererArchivePath(), ajob.getRendererMD5(),
 				String.format("%s?type=binary&job=%s", this.server.getPage("download-archive"), ajob.getId()), "renderer");
 	}
 	
@@ -796,9 +801,64 @@ import lombok.Data;
 		File local_path_file = new File(local_path);
 		String update_ui = "Downloading " + download_type;
 		
-		if (local_path_file.exists() == true) {
-			this.gui.status("Reusing cached " + download_type);
-			return Type.OK;
+		int remaining = 1800000; // 30 minutes max timeout
+		
+		try {
+			// If the client is using a shared cache then introduce some random delay to minimise race conditions on the partial file creation on multiple
+			// instances of a client (when started with a script or rendering a recently downloaded scene)
+			if (configuration.getSharedDownloadsDirectory() != null) {
+				Thread.sleep((new Random().nextInt(9) + 1) * 1000);
+			}
+			
+			// For a maximum of 30 minutes
+			do {
+				// if the binary or scene already exists in the cache
+				if (local_path_file.exists() == true) {
+					this.gui.status("Reusing cached " + download_type);
+					return Type.OK;
+				}
+				// if the binary or scene is being downloaded by another client
+				else if (new File(local_path + ".partial").exists()) {
+					// Wait and check every second for file download completion but only update the GUI every 10 seconds to minimise CPU load
+					if (remaining % 10000 == 0) {
+						this.gui.status(String.format("Another client is downloading the %s. Cancel in %dmin %ds",
+							download_type,
+							TimeUnit.MILLISECONDS.toMinutes(remaining),
+							TimeUnit.MILLISECONDS.toSeconds(remaining) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(remaining))
+						));
+					}
+				}
+				else {
+					// The file doesn't yet existing not is being downloaded by another client, so immediately create the file with zero bytes to allow early
+					// detection by other concurrent clients and start downloading process
+					try {
+						File file = new File(local_path + ".partial");
+						file.createNewFile();
+						file.deleteOnExit();    // if the client crashes, the temporary file will be removed
+					} catch (IOException e) {
+						StringWriter sw = new StringWriter();
+						e.printStackTrace(new PrintWriter(sw));
+						this.log.error("Client::DownloadFile Unable to create .partial temp file for binary/scene " + local_path);
+						this.log.error("Client::DownloadFile Exception " + e + " stacktrace " + sw.toString());
+					}
+					
+					break;
+				}
+				
+				// Reduce 1 second the waiting time
+				Thread.sleep(1000);
+				remaining -= 1000;
+			} while (remaining > 0);
+		}
+		catch (InterruptedException e) {
+			log.debug("Error in the thread wait. Exception " + e.getMessage());
+		}
+		finally {
+			// If we have reached the timeout (30 minutes trying to download the client) delete the partial downloaded copy and try to download again
+			if (remaining <= 0) {
+				log.debug("ERROR while waiting for download to finish in another client. Deleting the partial file and downloading a fresh copy now!.");
+				new File(local_path + ".partial").delete();
+			}
 		}
 		
 		this.gui.status(String.format("Downloading %s", download_type), 0, 0);
@@ -869,17 +929,27 @@ import lombok.Data;
 	
 	protected int prepareWorkingDirectory(Job ajob) throws FermeExceptionNoSpaceLeftOnDevice {
 		int ret;
+		String bestRendererArchive = ajob.getRequiredRendererArchivePath();
 		String renderer_archive = ajob.getRendererArchivePath();
 		String renderer_path = ajob.getRendererDirectory();
 		File renderer_path_file = new File(renderer_path);
 		
-		if (renderer_path_file.exists()) {
-			// Directory already exists -> do nothing
+		if (!new File(renderer_archive).exists()) {
+			this.gui.status("Copying renderer from shared downloads directory");
+			
+			try {
+				Files.copy(Paths.get(bestRendererArchive), Paths.get(renderer_archive), StandardCopyOption.REPLACE_EXISTING);
+			}
+			catch (IOException e) {
+				this.gui.error("Error while copying renderer from shared downloads directory to working dir");
+			}
 		}
-		else {
-			this.gui.status("Extracting renderer");
+		
+		if (!renderer_path_file.exists()) {
 			// we create the directory
 			renderer_path_file.mkdir();
+			
+			this.gui.status("Extracting renderer");
 			
 			// unzip the archive
 			ret = Utils.unzipFileIntoDirectory(renderer_archive, renderer_path, null, log);
@@ -899,17 +969,27 @@ import lombok.Data;
 			}
 		}
 		
+		String bestSceneArchive = ajob.getRequiredSceneArchivePath();
 		String scene_archive = ajob.getSceneArchivePath();
 		String scene_path = ajob.getSceneDirectory();
 		File scene_path_file = new File(scene_path);
 		
-		if (scene_path_file.exists()) {
-			// Directory already exists -> do nothing
+		if (!new File(scene_archive).exists()) {
+			this.gui.status("Copying scene from common directory");
+			
+			try {
+				Files.copy(Paths.get(bestSceneArchive), Paths.get(scene_archive), StandardCopyOption.REPLACE_EXISTING);
+			}
+			catch (IOException e) {
+				this.gui.error("Error while copying scene from common directory to working dir");
+			}
 		}
-		else {
-			this.gui.status("Extracting project");
+		
+		if (!scene_path_file.exists()) {
 			// we create the directory
 			scene_path_file.mkdir();
+			
+			this.gui.status("Extracting project");
 			
 			// unzip the archive
 			ret = Utils.unzipFileIntoDirectory(scene_archive, scene_path, ajob.getPassword(), log);

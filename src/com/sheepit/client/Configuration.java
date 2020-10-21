@@ -43,6 +43,7 @@ import lombok.Data;
 	
 	private String configFilePath;
 	private File workingDirectory;
+	private File sharedDownloadsDirectory;
 	private File storageDirectory; // for permanent storage (binary archive)
 	private boolean userHasSpecifiedACacheDir;
 	private String static_exeDirName;
@@ -87,6 +88,7 @@ import lombok.Data;
 		this.userHasSpecifiedACacheDir = false;
 		this.detectGPUs = true;
 		this.workingDirectory = null;
+		this.sharedDownloadsDirectory = null;
 		this.storageDirectory = null;
 		this.setCacheDir(cache_dir_);
 		this.printLog = false;
@@ -147,6 +149,13 @@ import lombok.Data;
 			this.storageDirectory.mkdirs();
 		}
 		
+		if (this.sharedDownloadsDirectory != null) {
+			this.sharedDownloadsDirectory.mkdirs();
+			
+			if (!this.sharedDownloadsDirectory.exists()) {
+				System.err.println("Configuration::setCacheDir Unable to create common directory " + this.sharedDownloadsDirectory.getAbsolutePath());
+			}
+		}
 	}
 	
 	public void setStorageDir(File dir) {
@@ -249,6 +258,12 @@ import lombok.Data;
 		}
 		if (this.storageDirectory != null) {
 			File[] filesInDirectory = this.storageDirectory.listFiles();
+			if (filesInDirectory != null) {
+				files.addAll(Arrays.asList(filesInDirectory));
+			}
+		}
+		if (this.sharedDownloadsDirectory != null) {
+			File[] filesInDirectory = this.sharedDownloadsDirectory.listFiles();
 			if (filesInDirectory != null) {
 				files.addAll(Arrays.asList(filesInDirectory));
 			}
